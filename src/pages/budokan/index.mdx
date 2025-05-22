@@ -1,0 +1,51 @@
+---
+layout: docs
+---
+
+import { ContractTable } from '../../components/ContractTable'
+import { Button } from 'vocs/components'
+
+![Overview](/banner-1200x630.webp)
+
+# Budokan
+
+Budokan is an onchain tournament system designed to power competitive gaming experiences on Starknet. It provides a robust, modular, and extensible framework for:
+
+- Creating and managing tournaments with flexible schedules and rules
+- Supporting a variety of entry requirements and fee structures
+- Handling prize pools and distribution (ERC20, ERC721, and custom tokens)
+- Integrating with embeddable game standards for seamless game onboarding
+- Leveraging Dojo world storage and event systems for composability and upgradability
+
+<Button href="https://your-app-url.com" target="_blank" className="bg-white text-black" size="lg">
+  Launch App
+</Button>
+
+
+## Table of Contents
+- [Key Functions](/budokan/key-functions)
+- [Guide](/budokan/guide)
+- [FAQ](/budokan/faq)
+
+## Contracts
+
+<ContractTable 
+  contracts={[[
+    { name: "Budokan", address: "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3" },
+    { name: "Budokan", address: "0x5accc0e54259cb3176450fa730fc5824cf2d3e550aec385cdaaa6250efdff27" }
+  ]]}
+/>
+
+## Key Features
+- **Modular Architecture**: Components for tournaments, games, schedules, and prizes can be extended or replaced.
+- **Secure and Permissionless**: Anyone can create or enter tournaments, with robust checks for entry requirements and prize claims.
+- **Flexible Entry and Prize Logic**: Supports entry fees, qualification proofs, and multiple prize types.
+- **Leaderboard and Scoring**: Built-in leaderboard management and score submission.
+
+## Use Cases
+- Esports tournaments for onchain games
+- Community competitions and challenges
+- Automated prize distribution for game events
+- Open standards for game developers to integrate with tournament infrastructure
+
+Budokan is designed to be the backbone for provable, transparent, and fair onchain competitions, enabling new forms of player engagement and game design. 

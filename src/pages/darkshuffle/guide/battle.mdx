@@ -1,0 +1,96 @@
+---
+layout: docs
+---
+
+# Battle
+
+Battles are the heart of Dark Shuffle—where your drafted deck, strategy, and luck are put to the test against powerful beasts. Winning battles earns you rewards and brings you closer to victory, while defeat can end your run!
+
+## Battle Screen Layout
+
+<div style={{ maxWidth: '900px', margin: '2rem auto' }}>
+  <img 
+    src="/docs/darkshuffle/battle.png" 
+    alt="Battle Screen" 
+    style={{ width: '100%', display: 'block', margin: '0 auto' }} 
+  />
+  <br />
+  <em style={{ display: 'block', textAlign: 'center' }}>Figure 1: Battle screen layout.</em>
+</div>
+
+| Area                        | Description                                                                                 |
+|-----------------------------|---------------------------------------------------------------------------------------------|
+| **Reset Turn (Top Left)**   | Button to reset your current turn and try a different play sequence.                        |
+| **Beast Opponent (Top Center)** | The beast you're battling. Hover to see its effects and stats.                        |
+| **Battle Field (Center)**   | Place your cards here to attack the beast.                                                  |
+| **End Turn Button (Right)** | Ends your turn and simulates the battle phase.                                              |
+| **Current Effect Rewards (Bottom Left)** | Shows rewards earned for triggering certain effects or type advantages.      |
+| **Player Area (Bottom Center)** | Displays your hero (energy, health) and your current hand of cards.                  |
+| **Remaining Card Counter (Bottom Right)** | Shows how many cards are left in your deck.                              |
+
+## How a Turn Works
+
+At the start of each turn:
+- Your hero's energy is refilled to the current max.
+- You draw cards up to your hand size (both are set by the [game settings](/darkshuffle/settings)).
+- You can play cards by dragging them to the battlefield, spending energy and triggering any play effects.
+
+> **Tip:** Some cards have effects that trigger on play, attack, or death. Hover over a card to see its attributes
+and synergize your hand for maximum impact.
+
+<div style={{ maxWidth: '700px', margin: '2rem auto' }}>
+  <img 
+    src="/docs/darkshuffle/playing-card.png" 
+    alt="Playing Card" 
+    style={{ width: '100%', display: 'block', margin: '0 auto' }} 
+  />
+  <br />
+  <em style={{ display: 'block', textAlign: 'center' }}>Figure 2: Dragging a card to the battlefield.</em>
+</div>
+
+- When a card's health drops to zero, it dies and is removed from your deck (death effects may trigger).
+- You can reset your turn at any time before ending it.
+
+## Ending Your Turn
+
+When you're satisfied with your plays, press **End Turn** to simulate the battle:
+- The beast and your cards exchange attacks.
+- Effects (play, attack, death) are resolved.
+- Your hero's energy is increased by 1 for the next turn.
+- Cards are drawn from your deck according to the game settings.
+
+<div style={{ maxWidth: '900px', margin: '2rem auto' }}>
+  <img 
+    src="/docs/darkshuffle/beast-death.png" 
+    alt="Beast Defeated" 
+    style={{ width: '100%', display: 'block', margin: '0 auto' }} 
+  />
+  <br />
+  <em style={{ display: 'block', textAlign: 'center' }}>Figure 3: Card defeated at end of turn.</em>
+</div>
+
+## End of Battle
+
+A battle ends when:
+- The beast is defeated (you win!), or
+- Your hero's health drops to zero (game over).
+
+If you win:
+- You earn rewards (shown bottom left and on the map).
+- Progress to the next map node or battle.
+
+<div style={{ maxWidth: '700px', margin: '2rem auto' }}>
+  <img 
+    src="/docs/darkshuffle/reward.png" 
+    alt="Reward Display" 
+    style={{ width: '100%', display: 'block', margin: '0 auto' }} 
+  />
+  <br />
+  <em style={{ display: 'block', textAlign: 'center' }}>Figure 4: Rewards earned after a battle.</em>
+</div>
+
+> **Info:** All battle actions and outcomes are managed by smart contracts, ensuring fairness and transparency. For technical details, see the [Key Functions](/darkshuffle/key-functions#battle_actions) reference.
+
+---
+
+If you want to master battles, experiment with different decks and strategies, and check the [Cards Guide](/darkshuffle/guide/cards) for effect and synergy ideas!

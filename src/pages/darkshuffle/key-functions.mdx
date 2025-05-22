@@ -1,0 +1,241 @@
+---
+layout: docs
+---
+
+# Dark Shuffle: Key Functions
+
+This section details the primary functions exposed by the Dark Shuffle game system. Each function is designed to be permissionless, composable, and secure.
+
+## Game System (`contracts/src/systems/game/contracts.cairo`)
+
+### `start_game`
+```cairo
+fn start_game(ref self: T, game_id: u64);
+```
+**Purpose:** Initializes a new game instance for a player, setting up the draft or auto-drafting cards, and emits a game creation event.
+
+**Parameters:**
+- `game_id`: The unique identifier for the game.
+
+---
+
+### `pick_card`
+```cairo
+fn pick_card(ref self: T, game_id: u64, option_id: u8);
+```
+**Purpose:** Allows the player to pick a card during the draft phase. Updates the draft and game state.
+
+**Parameters:**
+- `game_id`: The game instance.
+- `option_id`: The index of the card option to pick.
+
+---
+
+### `generate_tree`
+```cairo
+fn generate_tree(ref self: T, game_id: u64);
+```
+**Purpose:** Generates a new map/tree for the current game level, advancing the game to the next map phase.
+
+**Parameters:**
+- `game_id`: The game instance.
+
+---
+
+### `select_node`
+```cairo
+fn select_node(ref self: T, game_id: u64, node_id: u8);
+```
+**Purpose:** Selects a node on the map, which typically starts a new battle with a monster.
+
+**Parameters:**
+- `game_id`: The game instance.
+- `node_id`: The node to select.
+
+---
+
+### `player_name`
+```cairo
+fn player_name(self: @T, game_id: u64) -> felt252;
+```
+**Purpose:** Returns the player's name for a given game.
+
+---
+
+### `health`
+```cairo
+fn health(self: @T, game_id: u64) -> u8;
+```
+**Purpose:** Returns the hero's current health.
+
+---
+
+### `game_state`
+```cairo
+fn game_state(self: @T, game_id: u64) -> GameState;
+```
+**Purpose:** Returns the current state of the game (Draft, Battle, Map, Over).
+
+---
+
+### `xp`
+```cairo
+fn xp(self: @T, game_id: u64) -> u16;
+```
+**Purpose:** Returns the hero's experience points.
+
+---
+
+### `cards`
+```cairo
+fn cards(self: @T, game_id: u64) -> Span<felt252>;
+```
+**Purpose:** Returns the names of the cards in the player's deck.
+
+---
+
+### `monsters_slain`
+```cairo
+fn monsters_slain(self: @T, game_id: u64) -> u16;
+```
+**Purpose:** Returns the number of monsters defeated in the game.
+
+---
+
+### `level`
+```cairo
+fn level(self: @T, game_id: u64) -> u8;
+```
+**Purpose:** Returns the current map level.
+
+---
+
+### `map_depth`
+```cairo
+fn map_depth(self: @T, game_id: u64) -> u8;
+```
+**Purpose:** Returns the current depth in the map.
+
+---
+
+### `last_node_id`
+```cairo
+fn last_node_id(self: @T, game_id: u64) -> u8;
+```
+**Purpose:** Returns the last selected node on the map.
+
+---
+
+### `action_count`
+```cairo
+fn action_count(self: @T, game_id: u64) -> u16;
+```
+**Purpose:** Returns the number of actions taken in the game.
+
+## Battle System (`contracts/src/systems/battle/contracts.cairo`)
+
+### `battle_actions`
+```cairo
+fn battle_actions(ref self: T, game_id: u64, battle_id: u16, actions: Span<Span<u8>>);
+```
+**Purpose:** Executes a sequence of battle actions (play cards, attack, end turn) for a given battle. Handles all game logic for a turn, including card effects, monster actions, and state updates.
+
+**Parameters:**
+- `game_id`: The game instance.
+- `battle_id`: The battle instance.
+- `actions`: A sequence of encoded actions (e.g., play card, attack, end turn).
+
+## Config System (`contracts/src/systems/config/contracts.cairo`)
+
+### `add_settings`
+```cairo
+fn add_settings(
+    ref self: T,
+    name: felt252,
+    description: ByteArray,
+    starting_health: u8,
+    start_energy: u8,
+    start_hand_size: u8,
+    draft_size: u8,
+    max_energy: u8,
+    max_hand_size: u8,
+    draw_amount: u8,
+    card_ids: Span<u64>,
+    card_rarity_weights: CardRarityWeights,
+    auto_draft: bool,
+    persistent_health: bool,
+    possible_branches: u8,
+    level_depth: u8,
+    enemy_attack_min: u8,
+    enemy_attack_max: u8,
+    enemy_health_min: u8,
+    enemy_health_max: u8,
+    enemy_attack_scaling: u8,
+    enemy_health_scaling: u8,
+) -> u32;
+```
+**Purpose:** Adds a new game settings profile, which defines the rules and parameters for a game instance.
+
+---
+
+### `add_random_settings`
+```cairo
+fn add_random_settings(ref self: T) -> u32;
+```
+**Purpose:** Adds a new game settings profile with randomized parameters.
+
+---
+
+### `add_creature_card`
+```cairo
+fn add_creature_card(ref self: T, name: felt252, rarity: u8, cost: u8, attack: u8, health: u8, card_type: u8, play_effect: CardEffect, attack_effect: CardEffect, death_effect: CardEffect);
+```
+**Purpose:** Adds a new creature card to the card pool.
+
+---
+
+### `add_spell_card`
+```cairo
+fn add_spell_card(ref self: T, name: felt252, rarity: u8, cost: u8, card_type: u8, effect: CardEffect, extra_effect: CardEffect);
+```
+**Purpose:** Adds a new spell card to the card pool.
+
+---
+
+### `setting_details`
+```cairo
+fn setting_details(self: @T, settings_id: u32) -> GameSettings;
+```
+**Purpose:** Returns the details of a game settings profile.
+
+---
+
+### `settings_exists`
+```cairo
+fn settings_exists(self: @T, settings_id: u32) -> bool;
+```
+**Purpose:** Checks if a settings profile exists.
+
+---
+
+### `game_settings`
+```cairo
+fn game_settings(self: @T, game_id: u64) -> GameSettings;
+```
+**Purpose:** Returns the game settings for a given game instance.
+
+## Additional Utility Functions
+
+- **Draft/Deck Management:**  
+  - `get_weighted_draft_list`, `get_draft_options`, `auto_draft` (see `utils/draft.cairo`): Used for generating draft options and decks.
+- **Battle/Board Management:**  
+  - `attack_monster`, `remove_hand_card`, `draw_cards`, etc. (see `utils/board.cairo`, `utils/hand.cairo`): Used for in-battle logic and card management.
+- **Map/Node Management:**  
+  - `node_available`, `get_monster_node`, `start_battle` (see `utils/map.cairo`): Used for map navigation and starting battles.
+
+## Data Models
+
+- **Game:** Tracks the state, health, XP, monsters slain, map progress, and actions.
+- **Battle:** Tracks the current battle, hero/monster stats, and effects.
+- **Draft:** Tracks the draft phase, available options, and selected cards.
+- **GameSettings:** Defines the rules for a game instance (health, energy, deck size, etc.).

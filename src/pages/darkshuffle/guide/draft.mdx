@@ -1,0 +1,55 @@
+---
+layout: docs
+---
+
+# Draft Phase: Building Your Deck
+
+The draft phase is the first step in every Dark Shuffle game (unless Auto-Draft is enabled in your [Settings](/darkshuffle/settings)). Here, you select cards from randomly generated options to build your deck—the foundation for your strategy throughout the game.
+
+## How Draft Works (Player Experience)
+
+  During the draft, you'll be presented with several card options each round. Pick one card per round to add to your deck. The process repeats until your deck is complete. Your choices shape your playstyle and chances in battle!
+
+![Draft Page](/docs/darkshuffle/draft.png) 
+
+<em style={{ display: 'block', textAlign: 'center' }}>Figure: Drafting cards for your deck.</em>
+
+> **Tip:** The cards you draft determine your deck for the entire game. Choose wisely—rarer cards are more powerful but less likely to appear!
+
+## Draft Page Layout
+
+- **Draft Options (center):** Where you pick from the current card choices.
+- **Picks Analysis (bottom):** See stats like Draft Counter, Energy Chart, and Card Type Counter to help balance your deck.
+- **Picks Display (right):** Shows cards you've already chosen. Hover for details.
+
+## Rarity & Card Types
+
+Cards are marked with rarity, which affects how often they appear. Rarer cards are generally stronger. For a full list of card types and rarities, see the [Cards Guide](/darkshuffle/guide/cards).
+
+## How Draft Works On-Chain
+
+The draft phase is powered by smart contracts, ensuring fairness and transparency. Here's what happens under the hood:
+
+- **Game Start:**
+  - The contract function [`start_game`](/darkshuffle/key-functions#start_game) initializes your game and sets up the draft (or auto-draft if enabled).
+- **Drafting Cards:**
+  - Each time you pick a card, the [`pick_card`](/darkshuffle/key-functions#pick_card) function updates your deck and the draft state.
+  - The contract uses [VRF](https://docs.cartridge.gg/vrf/overview) to generate one set of selections ensuring options
+  are fair and tamper-proof.
+- **Deck Completion:**
+  - Once all picks are made, your deck is locked in for the rest of the game.
+
+> **Info:** All draft actions are recorded on-chain, making the process provable and tamper-proof. You can view the full list of game contract functions in the [Key Functions](/darkshuffle/key-functions) reference.
+
+## Advanced: Custom Draft Settings
+
+Game creators can define custom draft rules (deck size, rarity weights, etc.) using the [`add_settings`](/darkshuffle/key-functions#add_settings) contract function. This enables new game modes and experiments with deck-building mechanics.
+
+## Next Steps & Related Guides
+
+- [Cards Guide](/darkshuffle/guide/cards): Learn about card types and rarities
+- [Battle Guide](/darkshuffle/guide/battle): See how your drafted deck is used in combat
+- [Key Functions](/darkshuffle/key-functions): Technical reference for all game contract functions
+- [Settings](/darkshuffle/settings): Enable Auto-Draft or customize your game experience
+
+If you have questions or want to dive deeper into the contract logic, check the [Key Functions](/darkshuffle/key-functions) page or reach out via the app's support channels.

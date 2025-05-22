@@ -1,0 +1,113 @@
+---
+layout: docs
+---
+
+# Settings
+
+Settings are one of the most powerful features of Dark Shuffle. They let you customize nearly every aspect of the game—deck size, draft rules, battle mechanics, map structure, and more. This flexibility is made possible by the [Embeddable Game Standard (EGS)](/embeddable-game-standard), allowing anyone to create, share, and use custom settings for new game modes, tournaments, and quests.
+
+<div className="flex flex-row gap-6 items-start" style={{ margin: '2rem 0' }}>
+  <div className="flex-1">
+    <p>
+      The settings viewer lets you browse and select from available settings profiles. Each profile can dramatically change how the game is played, from deck size to map structure.
+    </p>
+  </div>
+  <div style={{ flexShrink: 0, minWidth: 220, maxWidth: 320 }}>
+    <img 
+      src="/docs/darkshuffle/play-settings.png" 
+      alt="Settings Viewer" 
+      style={{ width: '100%', display: 'block', margin: '0 auto' }} 
+    />
+    <br />
+    <em style={{ display: 'block', textAlign: 'center' }}>Figure 1: Settings viewer in Dark Shuffle.</em>
+  </div>
+</div>
+
+## What Can You Configure?
+
+Settings are grouped into four main categories:
+
+| Category | What You Can Change |
+|----------|--------------------|
+| **Game**   | Player health, energy, hand size, deck size, and more. |
+| **Battle** | Enemy stats, energy scaling, effect triggers, etc.     |
+| **Draft**  | Number of picks, rarity weights, auto-draft mode, etc. |
+| **Map**    | Map depth, branching, node types, and progression.     |
+
+> **Tip:** Custom settings let you create unique challenges, speedruns, or even entirely new game modes!
+
+## Creating a Setting
+
+<div className="flex flex-row gap-6 items-start" style={{ margin: '2rem 0' }}>
+  <div className="flex-1">
+    <ol>
+      <li>Open the settings menu and select <strong>Create New Setting</strong>.</li>
+      <li>Choose which parameters to customize (game, battle, draft, map).</li>
+      <li>Save and name your setting—it's now available for you and others to use!</li>
+    </ol>
+    <p><strong>Info:</strong> All settings are stored on-chain, making them permissionless and composable. Anyone can use your setting for their own games or tournaments.</p>
+  </div>
+  <div style={{ flexShrink: 0, minWidth: 220, maxWidth: 320 }}>
+    <img 
+      src="/docs/darkshuffle/create-settings.png" 
+      alt="Create Settings" 
+      style={{ width: '100%', display: 'block', margin: '0 auto' }} 
+    />
+    <br />
+    <em style={{ display: 'block', textAlign: 'center' }}>Figure 2: Creating a new setting.</em>
+  </div>
+</div>
+
+## Applying Settings: Real-World Examples
+
+Custom settings unlock a huge variety of applications:
+
+### Unique Tournaments
+
+Any setting can be used by [Budokan](/budokan/guide/submission) to create a competitive structure. For example, you can design a tournament with special draft rules, unique battle mechanics, or custom rewards.
+
+### Eternum Quests
+
+Dark Shuffle debuted in Eternum Season 1, where a specific set of settings created fast and varied experiences for players. One key setting was <strong>Auto-Draft mode</strong>, which skips the draft phase and drops players straight into battle—perfect for quick games and cross-game events.
+
+<div className="flex flex-row gap-6 items-start" style={{ margin: '2rem 0' }}>
+  <div style={{ flex: 1, minWidth: 180, maxWidth: 320 }}>
+    <img 
+      src="/docs/darkshuffle/settings-view-1.png" 
+      alt="Settings Example 1" 
+      style={{ width: '100%', display: 'block', margin: '0 auto' }} 
+    />
+    <br />
+    <em style={{ display: 'block', textAlign: 'center' }}>Figure 3: Example custom settings in action.</em>
+  </div>
+  <div style={{ flex: 1, minWidth: 180, maxWidth: 320 }}>
+    <img 
+      src="/docs/darkshuffle/settings-view-2.png" 
+      alt="Settings Example 2" 
+      style={{ width: '100%', display: 'block', margin: '0 auto' }} 
+    />
+    <br />
+    <em style={{ display: 'block', textAlign: 'center' }}>Figure 4: Another custom settings view.</em>
+  </div>
+</div>
+
+## Advanced: On-Chain Settings & Contract Functions
+
+Settings are managed by smart contracts, making them transparent and tamper-proof. Key contract functions include:
+
+- [`add_settings`](/darkshuffle/key-functions#add_settings): Create a new settings profile.
+- [`setting_details`](/darkshuffle/key-functions#setting_details): View the details of a setting.
+- [`game_settings`](/darkshuffle/key-functions#game_settings): See which settings are applied to a game.
+
+> **Info:** Developers and advanced users can use these functions to automate tournaments, create new game types, or integrate with other on-chain games.
+
+---
+
+## Related Guides
+
+- [Draft Guide](/darkshuffle/guide/draft): How settings affect the draft phase
+- [Battle Guide](/darkshuffle/guide/battle): How settings change battle mechanics
+- [Key Functions](/darkshuffle/key-functions): Technical reference for all contract functions
+- [Budokan Tournaments](/budokan/guide/submission): Using settings for competitive play
+
+If you have questions or want to share your custom settings, join the community or reach out via the app's support channels!

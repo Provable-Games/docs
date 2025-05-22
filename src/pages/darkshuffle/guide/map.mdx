@@ -1,0 +1,46 @@
+---
+layout: docs
+---
+
+# Map
+
+Maps are randomly generated and split into levels, where each level contains various nodes and branches to choose from. The path you take through the map shapes your encounters, rewards, and overall strategy.
+
+<div style={{ maxWidth: '700px', margin: '2rem auto' }}>
+  <img 
+    src="/docs/darkshuffle/map.png" 
+    alt="Map" 
+    style={{ width: '100%', display: 'block', margin: '0 auto' }} 
+  />
+  <br />
+  <em style={{ display: 'block', textAlign: 'center' }}>Figure 1: Example of a randomly generated map.</em>
+</div>
+
+## How Maps Work
+
+- **Levels & Nodes:**  
+  Each map is divided into levels. Every level contains several nodes (encounters), and you choose which node to visit next.
+
+- **Branching Paths:**  
+  Each node consists of multiple branches to choose from to following nodes. Your choices affect the difficulty, types of encounters, and potential rewards.
+
+- **Progression:**  
+  As you advance, the map gets more challenging, with tougher monsters and better rewards.
+
+> **Tip:** Plan your route based on your deck's strengths and the types of nodes ahead. Some paths may offer healing, rare rewards, or easier battles.
+
+## On-Chain Map Generation & Logic
+
+The map system is powered by smart contracts to ensure fairness and unpredictability:
+
+- **Random Generation:**  
+  When you start a new game or advance to a new level, the contract uses secure randomness (via [VRF](https://docs.cartridge.gg/vrf/overview)) to generate the map layout and available nodes. This means no one—not even the game creators—can predict or manipulate your map.
+
+- **Key Contract Functions:**
+  - [`generate_tree`](/darkshuffle/key-functions#generate_tree): Generates a new map/tree for the current game level.
+  - [`select_node`](/darkshuffle/key-functions#select_node): Lets you choose which node to visit next, triggering the appropriate encounter.
+
+- **Node Types:**  
+  The contract can generate different types of encounters based on the current level and your progress. The variety and frequency of nodes can be customized via [Settings](/darkshuffle/settings).
+
+> **Info:** All map actions and choices are recorded on-chain, making your journey provable and tamper-proof. For technical details, see the [Key Functions](/darkshuffle/key-functions) reference.
