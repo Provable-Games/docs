@@ -1,14 +1,5 @@
-@layer vocs_preflight {
-    @tailwind base;
-}
+@import "tailwindcss";
 
-@tailwind components;
-@tailwind utilities;
-
-:root {
-    --color-brand: 225, 249, 128;
-}
-
-.banner {
-    border: 1px solid var(--color-brand);
+@theme {
+    --color-primary: #46A9F0;
 }

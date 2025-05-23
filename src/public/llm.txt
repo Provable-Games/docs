@@ -146,7 +146,7 @@ Budokan is an onchain tournament system designed to power competitive gaming exp
 * Integrating with embeddable game standards for seamless game onboarding
 * Leveraging Dojo world storage and event systems for composability and upgradability
 
-<Button href="https://your-app-url.com" target="_blank" className="bg-white text-black" size="lg">
+<Button href="https://budokan.gg" target="_blank" className="bg-white text-black" size="lg">
   Launch App
 </Button>
 
@@ -366,314 +366,104 @@ fn get_leaderboard(
 
 ---
 
-file: docs/embeddable-game-standard/games.mdx
-meta: {
-  "layout": "docs"
-}
-
-import { GameCard } from '../../components/GameCard'
-
-# Embeddable Game Standard: Games
-
-Here is a list of games that have implemented the emeddable game standard and are benefitting from the tools provided:
-
-<GameCard icon="https://darkshuffle.io/favicon.svg" name="Dark Shuffle" url="https://darkshuffle.io" description="Dark Shuffle is a turn-based, collectible card game. Build your deck, battle monsters, and explore a procedurally generated world." developer="Provable Games" />
-
-<GameCard icon="https://app.zkube.xyz/assets/pwa-512x512.png" name="zKube" url="https://app.zkube.xyz/" description="zKube is an engaging puzzle game that puts players' strategic thinking to the test. Set within a dynamic grid, the objective is simple: manipulate blocks to form solid lines and earn points.	" developer="zKorp" />
-
-## Why Build Games with EGS?
-
-* Instantly reach new audiences by making your game embeddable in multiple apps and platforms
-* Focus on gameplay and innovation, not infrastructure
-* Extend the way your game is played through permissionless settings creation
-* Benefit from community-driven tournaments, quests, and rewards
-
-
-
----
-
-file: docs/embeddable-game-standard/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard
-
-The Embeddable Game Standard (EGS) enables games to communicate across platforms. Beyond integration into [Budokan](/budokan) for powering onchain tournaments, EGS allows games to be utilized in various applications, creating a unified onchain gaming ecosystem.
-
-## Table of Contents
-
-* [Overview](#overview)
-* [Architecture](#architecture)
-* [Key Functions](#key-functions)
-* [Implementation Guide](#implementation-guide)
-
-## Overview
-
-The standard provides a blueprint for game contracts to:
-
-* Mint game tokens (ERC721) for tournament entries
-* Store and expose game and player metadata
-* Track scores and settings in a standardized way
-* Emit events for metadata updates and lifecycle changes
-
-By adhering to this standard, games can:
-
-* Be listed and used in Budokan tournaments
-* Enable automated leaderboard and prize logic
-* Support composable, upgradable tournament experiences
-
-## Architecture
-
-* **Game Component:** Implements the core logic for minting, metadata management, and score tracking. See `contracts/src/components/game.cairo`.
-* **Models & Interfaces:** Define the data structures for game metadata, token metadata, settings, and lifecycle events.
-* **Integration Points:** Games must expose the required interfaces and implement the necessary storage and event logic.
-
-## Key Functions
-
-* `mint`: Mint a new game token for a player, with associated metadata and settings.
-* `game_metadata`: Retrieve metadata for the game contract.
-* `token_metadata`: Retrieve metadata for a specific game token.
-* `game_count`: Get the total number of games/tokens minted.
-* `emit_metadata_update`: Emit an event when token metadata is updated.
-* `initializer`: Initialize the game contract with metadata, settings, and storage configuration.
-
-## Implementation Guide
-
-1. **Implement the Game Component:**
-   * Use the provided `game_component` module as a base.
-   * Implement the required storage, events, and interface functions.
-2. **Define Metadata and Settings:**
-   * Use the standard models for game and token metadata.
-   * Store settings and score models as required by your game logic.
-3. **Integrate with Budokan:**
-   * Ensure your contract exposes the required interfaces (ERC721, metadata, settings).
-   * Test minting, metadata retrieval, and event emission with Budokan tournament flows.
-4. **Deploy and Register:**
-   * Deploy your game contract to Starknet.
-   * Register the game with Budokan for tournament use.
-
-## Games
-
-The current games that have implemented the standard:
-
-* Dark Shuffle
-* Zkube
-* Loot Survivor (coming soon)
-
-By following this standard, your game will be compatible with Budokan and other systems that adopt the Embeddable Game Standard.
-
-
-
----
-
-file: docs/embeddable-game-standard/key-functions.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Key Functions
-
-This section details the primary functions that a game contract must implement to comply with the Embeddable Game Standard and be compatible with Budokan tournaments.
-
-## `mint`
-
-```cairo
-fn mint(
-    ref self: ComponentState<TContractState>,
-    player_name: felt252,
-    settings_id: u32,
-    start: Option<u64>,
-    end: Option<u64>,
-    to: ContractAddress,
-) -> u64;
-```
-
-**Purpose:** Mint a new game token (ERC721) for a player, with associated metadata and settings.
-
-**Parameters:**
-
-* `player_name`: Name of the player (felt252).
-* `settings_id`: ID of the game settings to use.
-* `start`, `end`: Optional start and end timestamps for the game session.
-* `to`: Address to mint the token to.
-
-**Returns:** Token ID of the newly minted game token.
-
-***
-
-## `game_metadata`
-
-```cairo
-fn game_metadata(self: @ComponentState<TContractState>) -> GameMetadata;
-```
-
-**Purpose:** Retrieve metadata for the game contract (name, description, developer, etc.).
-
-**Returns:** GameMetadata struct.
-
-***
-
-## `token_metadata`
-
-```cairo
-fn token_metadata(self: @ComponentState<TContractState>, token_id: u64) -> TokenMetadata;
-```
-
-**Purpose:** Retrieve metadata for a specific game token (player, settings, lifecycle, etc.).
-
-**Parameters:**
-
-* `token_id`: ID of the game token.
-
-**Returns:** TokenMetadata struct.
-
-***
-
-## `game_count`
-
-```cairo
-fn game_count(self: @ComponentState<TContractState>) -> u64;
-```
-
-**Purpose:** Get the total number of games/tokens minted by the contract.
-
-**Returns:** Total count (u64).
-
-***
-
-## `emit_metadata_update`
-
-```cairo
-fn emit_metadata_update(ref self: ComponentState<TContractState>, game_id: u64);
-```
-
-**Purpose:** Emit an event when token metadata is updated, for offchain indexing and UI updates.
-
-**Parameters:**
-
-* `game_id`: ID of the game token whose metadata was updated.
-
-***
-
-## `initializer`
-
-```cairo
-fn initializer(
-    ref self: ComponentState<TContractState>,
-    creator_address: ContractAddress,
-    name: felt252,
-    description: ByteArray,
-    developer: felt252,
-    publisher: felt252,
-    genre: felt252,
-    image: ByteArray,
-    namespace: ByteArray,
-    score_model: ByteArray,
-    score_attribute: ByteArray,
-    settings_model: ByteArray,
-);
-```
-
-**Purpose:** Initialize the game contract with metadata, settings, and storage configuration. Mints a creator token and registers interfaces.
-
-**Parameters:**
-
-* `creator_address`: Address of the game creator.
-* `name`, `description`, `developer`, `publisher`, `genre`, `image`: Metadata fields.
-* `namespace`, `score_model`, `score_attribute`, `settings_model`: Storage and configuration fields.
-
-***
-
-## Additional Functions
-
-* `namespace`: Returns the namespace used for storage.
-* `score_model`: Returns the score model identifier.
-* `score_attribute`: Returns the score attribute identifier.
-* `settings_model`: Returns the settings model identifier.
-* `set_settings`: Set or update game settings details.
-* `assert_setting_exists`: Ensure a settings ID exists before minting.
-
-
-
----
-
-file: docs/embeddable-game-standard/meta-apps.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Meta-Apps
-
-The Embeddable Game Standard (EGS) unlocks powerful new possibilities for both game developers and platforms. By making games permissionlessly embeddable, EGS enables a growing ecosystem of apps to integrate, distribute, and build on top of games in novel ways. This page highlights some of the leading apps leveraging EGS today.
-
-## Budokan: Permissionless Tournaments
-
-Budokan uses the EGS to provide a fully permissionless tournament protocol. With EGS, games no longer need to implement their own leaderboard or revenue logic—instead, they can plug into Budokan's aggregated platform, which:
-
-* Accepts any supported token for entry fees and prizes
-* Offers extensive customization for tournament formats, entry requirements, and prize structures
-* Handles all leaderboard, prize, and entry logic on behalf of the game
-
-This makes it easy for game developers to reach new audiences and for players to discover and compete in a wide variety of tournaments.
-
-![Budokan Overview](/docs/overview.png)
-*Figure 1: Budokan overview page.*
-
-> **Tip:** By integrating with Budokan, game developers can focus on gameplay while the platform handles tournaments, rewards, and community engagement.
-
-## Eternum: Expanding Gameplay with Embedded Mini-Games
-
-Eternum, a next-generation MMO, leverages EGS to embed mini-games directly into its core experience. In Season 1, Eternum introduced a new quest system powered by EGS, allowing:
-
-* Seamless integration of third-party mini-games as quests
-* Emergence of new strategies and gameplay loops
-* A more dynamic, deconstructed MMO experience
-
-![Eternum Quest](/docs/eternum-quest.png)
-*Figure 2: Eternum Quest.*
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      Embedding games within Eternum allows mini-games to reach a much wider audience, maximizing their distribution and exposure. For Eternum, this approach brings significant value by introducing a diverse range of gameplay experiences to their core player base, keeping the platform fresh and engaging. By integrating a variety of mini-games, Eternum can continually offer new challenges and entertainment, enhancing player retention and satisfaction.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/eternum-quest-post.png" alt="Eternum Quest Post" width="400" height="300" />
-
-    <br />
-
-    <em>Figure 3: Eternum Quest Post.</em>
-  </div>
-</div>
-
-> **Note:** EGS makes it easy for any platform to embed, remix, or build on top of games, opening up new opportunities for both developers and communities.
-
-## Why Build Meta-Apps with EGS?
-
-* Offer a diverse library of games and experiences
-* Easily add new content and features without building from scratch
-* Foster engagement and retention by providing variety to your users
-
-> **Tip:** The EGS ecosystem is growing—consider how your app or game could benefit from permissionless embedding and integration.
-
-## Related Guides
-
-* [Embeddable Game Standard Overview](/embeddable-game-standard)
-* [Budokan Tournaments](/budokan)
-* [Game Integration Guide](/embeddable-game-standard/implementation)
-
-If you have questions or want to feature your app here, contact the Budokan team or join the community!
-
-
-
----
-
 file: docs/darkshuffle/faq.mdx
-meta: {}
+meta: {
+  "layout": "docs"
+}
 
+# Dark Shuffle: FAQ
+
+Find answers to the most common questions about Dark Shuffle. If you have a question not covered here, check the relevant guide section or reach out via the app's support channels.
+
+## General
+
+**What is Dark Shuffle?**
+
+Dark Shuffle is a fully onchain deck-building roguelike game where you draft cards, battle monsters, and navigate a branching map—all powered by smart contracts for fairness and transparency.
+
+**Do I need a wallet to play?**
+
+Yes, you'll need a compatible wallet to play. See the [Onboarding Guide](/darkshuffle/guide/onboarding) for setup instructions.
+
+**Is Dark Shuffle free to play?**
+
+Yes! You can start and play games for free. Some tournaments or special events may have entry requirements.
+
+## Gameplay & Progression
+
+**How do I start a new game?**
+
+Go to the main menu and select "Start Game." You'll be guided through onboarding if it's your first time. See [Onboarding](/darkshuffle/guide/onboarding).
+
+**What happens if I lose all my health?**
+
+Your run ends and you'll need to start a new game. Try a different strategy or deck next time!
+
+**Can I play multiple games at once?**
+
+Yes, you can have multiple active games, each tracked separately.
+
+## Drafting & Cards
+
+**How does the draft phase work?**
+
+You'll be presented with random card options each round. Pick one per round until your deck is complete. See the [Draft Guide](/darkshuffle/guide/draft).
+
+**What do card rarities mean?**
+
+Rarer cards are more powerful but appear less often in drafts. See [Cards Guide](/darkshuffle/guide/cards) for details.
+
+**What are card effects?**
+
+Cards can have effects that trigger on play, attack, or death. Combining effects can create powerful combos. More in the [Cards Guide](/darkshuffle/guide/cards).
+
+## Battles
+
+**How do battles work?**
+
+Drag cards from your hand to the battlefield to attack the beast. Use your energy wisely and plan for card effects. See the [Battle Guide](/darkshuffle/guide/battle).
+
+**What happens when a card dies?**
+
+It's removed from your deck for the rest of the run. Some cards have death effects that trigger when destroyed.
+
+**How do I win a battle?**
+
+Defeat the beast before your hero's health drops to zero. Winning grants rewards and lets you progress on the map.
+
+## Map & Nodes
+
+**How is the map generated?**
+
+Maps are randomly generated using secure onchain randomness. Each level has branching paths and different node types. See the [Map Guide](/darkshuffle/guide/map).
+
+**What are nodes?**
+
+Nodes are the beast encounters you see on the the map, each with connecting branches. Your choices affect the difficulty and rewards.
+
+## Settings & Customization
+
+**Can I customize the game rules?**
+
+Yes! Use the settings menu to create or select custom game modes, draft rules, and more. See the [Settings Guide](/darkshuffle/settings).
+
+**What is Auto-Draft mode?**
+
+Auto-Draft skips the manual draft phase and gives you a pre-built deck. Great for quick games or special events.
+
+## Tournaments & Competitions
+
+**How do I join a tournament?**
+
+There is a link to Budokan tournaments on the home page, see the [Enter Tournaments](/budokan/guide/enter) section on how to enter.
+
+**Are there prizes?**
+
+Yes! Many tournaments offer prizes for top players. Details are listed in each event.
+
+***
+
+If you have more questions, explore the rest of the [Dark Shuffle Guide](/darkshuffle/guide/index) or contact support through the app.
 
 
 
@@ -685,12 +475,17 @@ meta: {
 }
 
 import { ContractTable } from '../../components/ContractTable'
+import { Button } from 'vocs/components'
 
 ![Overview](docs/ds-banner.png)
 
 # Dark Shuffle
 
 Dark Shuffle is a turn-based, collectible card game. Build your deck, battle monsters, and explore a procedurally generated world.
+
+<Button href="https://darkshuffle.io" target="_blank" className="bg-white text-black" size="lg">
+  Play
+</Button>
 
 ## Table of Contents
 
@@ -1131,6 +926,311 @@ If you have questions or want to share your custom settings, join the community 
 
 ---
 
+file: docs/embeddable-game-standard/applications.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Applications
+
+The Embeddable Game Standard (EGS) unlocks powerful new possibilities for both game developers and platforms. By making games permissionlessly embeddable, EGS enables a growing ecosystem of apps to integrate, distribute, and build on top of games in novel ways. This page highlights some of the leading apps leveraging EGS today.
+
+## Budokan: Permissionless Tournaments
+
+Budokan uses the EGS to provide a fully permissionless tournament protocol. With EGS, games no longer need to implement their own leaderboard or revenue logic—instead, they can plug into Budokan's aggregated platform, which:
+
+* Accepts any supported token for entry fees and prizes
+* Offers extensive customization for tournament formats, entry requirements, and prize structures
+* Handles all leaderboard, prize, and entry logic on behalf of the game
+
+This makes it easy for game developers to reach new audiences and for players to discover and compete in a wide variety of tournaments.
+
+![Budokan Overview](/docs/overview.png)
+*Figure 1: Budokan overview page.*
+
+> **Tip:** By integrating with Budokan, game developers can focus on gameplay while the platform handles tournaments, rewards, and community engagement.
+
+## Eternum: Expanding Gameplay with Embedded Mini-Games
+
+Eternum, a next-generation MMO, leverages EGS to embed mini-games directly into its core experience. In Season 1, Eternum introduced a new quest system powered by EGS, allowing:
+
+* Seamless integration of third-party mini-games as quests
+* Emergence of new strategies and gameplay loops
+* A more dynamic, deconstructed MMO experience
+
+![Eternum Quest](/docs/eternum-quest.png)
+*Figure 2: Eternum Quest.*
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      Embedding games within Eternum allows mini-games to reach a much wider audience, maximizing their distribution and exposure. For Eternum, this approach brings significant value by introducing a diverse range of gameplay experiences to their core player base, keeping the platform fresh and engaging. By integrating a variety of mini-games, Eternum can continually offer new challenges and entertainment, enhancing player retention and satisfaction.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/eternum-quest-post.png" alt="Eternum Quest Post" width="400" height="300" />
+
+    <br />
+
+    <em>Figure 3: Eternum Quest Post.</em>
+  </div>
+</div>
+
+> **Note:** EGS makes it easy for any platform to embed, remix, or build on top of games, opening up new opportunities for both developers and communities.
+
+## Why Build Applications with EGS?
+
+* Offer a diverse library of games and experiences
+* Easily add new content and features without building from scratch
+* Foster engagement and retention by providing variety to your users
+
+> **Tip:** The EGS ecosystem is growing—consider how your app or game could benefit from permissionless embedding and integration.
+
+## Related Guides
+
+* [Embeddable Game Standard Overview](/embeddable-game-standard)
+* [Budokan Tournaments](/budokan)
+* [Game Integration Guide](/embeddable-game-standard/implementation)
+
+If you have questions or want to feature your app here, contact the Budokan team or join the community!
+
+
+
+---
+
+file: docs/embeddable-game-standard/games.mdx
+meta: {
+  "layout": "docs"
+}
+
+import { GameCard } from '../../components/GameCard'
+
+# Embeddable Game Standard: Games
+
+Here is a list of games that have implemented the emeddable game standard and are benefitting from the tools provided:
+
+<GameCard icon="https://darkshuffle.io/favicon.svg" name="Dark Shuffle" url="https://darkshuffle.io" description="Dark Shuffle is a turn-based, collectible card game. Build your deck, battle monsters, and explore a procedurally generated world." developer="Provable Games" />
+
+<GameCard icon="https://app.zkube.xyz/assets/pwa-512x512.png" name="zKube" url="https://app.zkube.xyz/" description="zKube is an engaging puzzle game that puts players' strategic thinking to the test. Set within a dynamic grid, the objective is simple: manipulate blocks to form solid lines and earn points.	" developer="zKorp" />
+
+## Why Build Games with EGS?
+
+* Instantly reach new audiences by making your game embeddable in multiple apps and platforms
+* Focus on gameplay and innovation, not infrastructure
+* Extend the way your game is played through permissionless settings creation
+* Benefit from community-driven tournaments, quests, and rewards
+
+
+
+---
+
+file: docs/embeddable-game-standard/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard
+
+The Embeddable Game Standard (EGS) enables games to communicate across platforms. Beyond integration into [Budokan](/budokan) for powering onchain tournaments, EGS allows games to be utilized in various applications, creating a unified onchain gaming ecosystem.
+
+## Table of Contents
+
+* [Overview](#overview)
+* [Architecture](#architecture)
+* [Key Functions](#key-functions)
+* [Implementation Guide](#implementation-guide)
+
+## Overview
+
+The standard provides a blueprint for game contracts to:
+
+* Mint game tokens (ERC721) for tournament entries
+* Store and expose game and player metadata
+* Track scores and settings in a standardized way
+* Emit events for metadata updates and lifecycle changes
+
+By adhering to this standard, games can:
+
+* Be listed and used in Budokan tournaments
+* Enable automated leaderboard and prize logic
+* Support composable, upgradable tournament experiences
+
+## Architecture
+
+* **Game Component:** Implements the core logic for minting, metadata management, and score tracking. See `contracts/src/components/game.cairo`.
+* **Models & Interfaces:** Define the data structures for game metadata, token metadata, settings, and lifecycle events.
+* **Integration Points:** Games must expose the required interfaces and implement the necessary storage and event logic.
+
+## Key Functions
+
+* `mint`: Mint a new game token for a player, with associated metadata and settings.
+* `game_metadata`: Retrieve metadata for the game contract.
+* `token_metadata`: Retrieve metadata for a specific game token.
+* `game_count`: Get the total number of games/tokens minted.
+* `emit_metadata_update`: Emit an event when token metadata is updated.
+* `initializer`: Initialize the game contract with metadata, settings, and storage configuration.
+
+## Implementation Guide
+
+1. **Implement the Game Component:**
+   * Use the provided `game_component` module as a base.
+   * Implement the required storage, events, and interface functions.
+2. **Define Metadata and Settings:**
+   * Use the standard models for game and token metadata.
+   * Store settings and score models as required by your game logic.
+3. **Integrate with Budokan:**
+   * Ensure your contract exposes the required interfaces (ERC721, metadata, settings).
+   * Test minting, metadata retrieval, and event emission with Budokan tournament flows.
+4. **Deploy and Register:**
+   * Deploy your game contract to Starknet.
+   * Register the game with Budokan for tournament use.
+
+## Games
+
+The current games that have implemented the standard:
+
+* Dark Shuffle
+* Zkube
+* Loot Survivor (coming soon)
+
+By following this standard, your game will be compatible with Budokan and other systems that adopt the Embeddable Game Standard.
+
+
+
+---
+
+file: docs/embeddable-game-standard/key-functions.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Key Functions
+
+This section details the primary functions that a game contract must implement to comply with the Embeddable Game Standard and be compatible with Budokan tournaments.
+
+## `mint`
+
+```cairo
+fn mint(
+    ref self: ComponentState<TContractState>,
+    player_name: felt252,
+    settings_id: u32,
+    start: Option<u64>,
+    end: Option<u64>,
+    to: ContractAddress,
+) -> u64;
+```
+
+**Purpose:** Mint a new game token (ERC721) for a player, with associated metadata and settings.
+
+**Parameters:**
+
+* `player_name`: Name of the player (felt252).
+* `settings_id`: ID of the game settings to use.
+* `start`, `end`: Optional start and end timestamps for the game session.
+* `to`: Address to mint the token to.
+
+**Returns:** Token ID of the newly minted game token.
+
+***
+
+## `game_metadata`
+
+```cairo
+fn game_metadata(self: @ComponentState<TContractState>) -> GameMetadata;
+```
+
+**Purpose:** Retrieve metadata for the game contract (name, description, developer, etc.).
+
+**Returns:** GameMetadata struct.
+
+***
+
+## `token_metadata`
+
+```cairo
+fn token_metadata(self: @ComponentState<TContractState>, token_id: u64) -> TokenMetadata;
+```
+
+**Purpose:** Retrieve metadata for a specific game token (player, settings, lifecycle, etc.).
+
+**Parameters:**
+
+* `token_id`: ID of the game token.
+
+**Returns:** TokenMetadata struct.
+
+***
+
+## `game_count`
+
+```cairo
+fn game_count(self: @ComponentState<TContractState>) -> u64;
+```
+
+**Purpose:** Get the total number of games/tokens minted by the contract.
+
+**Returns:** Total count (u64).
+
+***
+
+## `emit_metadata_update`
+
+```cairo
+fn emit_metadata_update(ref self: ComponentState<TContractState>, game_id: u64);
+```
+
+**Purpose:** Emit an event when token metadata is updated, for offchain indexing and UI updates.
+
+**Parameters:**
+
+* `game_id`: ID of the game token whose metadata was updated.
+
+***
+
+## `initializer`
+
+```cairo
+fn initializer(
+    ref self: ComponentState<TContractState>,
+    creator_address: ContractAddress,
+    name: felt252,
+    description: ByteArray,
+    developer: felt252,
+    publisher: felt252,
+    genre: felt252,
+    image: ByteArray,
+    namespace: ByteArray,
+    score_model: ByteArray,
+    score_attribute: ByteArray,
+    settings_model: ByteArray,
+);
+```
+
+**Purpose:** Initialize the game contract with metadata, settings, and storage configuration. Mints a creator token and registers interfaces.
+
+**Parameters:**
+
+* `creator_address`: Address of the game creator.
+* `name`, `description`, `developer`, `publisher`, `genre`, `image`: Metadata fields.
+* `namespace`, `score_model`, `score_attribute`, `settings_model`: Storage and configuration fields.
+
+***
+
+## Additional Functions
+
+* `namespace`: Returns the namespace used for storage.
+* `score_model`: Returns the score model identifier.
+* `score_attribute`: Returns the score attribute identifier.
+* `settings_model`: Returns the settings model identifier.
+* `set_settings`: Set or update game settings details.
+* `assert_setting_exists`: Ensure a settings ID exists before minting.
+
+
+
+---
+
 file: docs/budokan/guide/enter.mdx
 meta: {
   "layout": "docs"
@@ -1507,137 +1607,6 @@ You can find the code and instructions for running your own submission bot here:
 * [FAQ](/budokan/faq)
 
 If you have questions or need help, check the FAQ or contact support through the app.
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/embedding-games.mdx
-meta: {}
-
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Implementation Guide
-
-This guide walks through the steps required for a game developer to implement the
-Embeddable Game Standard and integrate with Budokan tournaments as well as any other meta apps.
-
-## 1. Contract Structure
-
-Start by creating a new Cairo contract that imports and uses the `game_component` module from Budokan.
-
-```cairo
-use tournaments::components::game::game_component;
-
-#[dojo::contract]
-pub mod MyGame {
-    component!(path: game_component, storage: game, event: GameEvent);
-    #[abi(embed_v0)]
-    impl GameComponentImpl = game_component::GameImpl<ContractState>;
-    impl GameComponentInternalImpl = game_component::InternalImpl<ContractState>;
-    // ... additional game logic ...
-}
-```
-
-## 2. Implement Required Storage and Events
-
-Define the required storage fields and events as specified in the standard.
-
-```cairo
-#[storage]
-struct Storage {
-    #[substorage(v0)]
-    game: game_component::Storage,
-    #[substorage(v0)]
-    erc721: ERC721Component::Storage,
-    #[substorage(v0)]
-    src5: SRC5Component::Storage,
-}
-
-#[event]
-#[derive(Drop, starknet::Event)]
-enum Event {
-    #[flat]
-    GameEvent: game_component::Event,
-    #[flat]
-    ERC721Event: ERC721Component::Event,
-    #[flat]
-    SRC5Event: SRC5Component::Event,
-}
-```
-
-## 3. Expose Required Interfaces
-
-Ensure your contract exposes the following:
-
-* ERC721 interface for game tokens
-* Metadata and settings interfaces
-* Functions for minting, metadata retrieval, and event emission
-
-## 4. Implement Initialization Logic
-
-Implement the `initializer` function to set up game metadata, settings, and storage configuration.
-
-```cairo
-fn initializer(
-    ref self: ComponentState<TContractState>,
-    creator_address: ContractAddress,
-    name: felt252,
-    description: ByteArray,
-    developer: felt252,
-    publisher: felt252,
-    genre: felt252,
-    image: ByteArray,
-    namespace: ByteArray,
-    score_model: ByteArray,
-    score_attribute: ByteArray,
-    settings_model: ByteArray,
-) {
-    // ... initialization logic ...
-}
-```
-
-## 5. Get score function
-
-* Contract view function to return score attribute on score model
-* IGameDetails
-
-## 6. Settings exist
-
-* If no settings, accept settings id 0 but reject more than
-* ISettings
-
-## 7. Integrate with Budokan
-
-* Test minting game tokens via Budokan tournament flows
-* Ensure metadata and events are correctly emitted and indexed
-* Register your game contract with Budokan for tournament use
-
-## 8. Test and Deploy
-
-* Thoroughly test your contract for compatibility and security
-* Deploy to Starknet and register with Budokan
-
-By following these steps, your game will be fully compatible with the Budokan tournament system and the Embeddable Game Standard.
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/settings.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Game Settings
 
 
 
@@ -2064,6 +2033,290 @@ All games of Dark Shuffle are themselves an NFT, so this menu keeps track of the
 * [FAQ](/darkshuffle/faq)
 
 If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
+file: docs/embeddable-game-standard/implementation/embedding-games.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Embedding Games
+
+Easily integrate onchain games into your own application or platform using the Embeddable Game Standard (EGS). This guide walks you through the process of minting a game instance for a player and validating their results, with code examples and best practices.
+
+## What Does "Embedding" Mean?
+
+Embedding a game means allowing your users to launch, play, and track progress in a provable onchain game—directly from your app. You can mint new game instances, monitor scores, and even run tournaments or quests using these standards.
+
+## 1. Mint a Game Instance
+
+To let a user start a new game, call the mint function on the game's contract. This creates a unique game token (NFT) for the player, with the desired settings and timing.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameTokenDispatcher, IGameTokenDispatcherTrait,
+};
+
+let game_dispatcher = IGameTokenDispatcher { contract_address: quest_tile.game_address };
+let game_token_id: u64 = game_dispatcher
+    .mint(player_name, config.settings_id, game_start_delay, game_expiration, to_address);
+```
+
+* `player_name`: The player's display name or identifier.
+* `settings_id`: The ID of the game settings profile to use (see [Settings](/embeddable-game-standard/implementation/settings)).
+* `game_start_delay`: Optional delay before the game can be started.
+* `game_expiration`: When the game expires (for time-limited quests or tournaments).
+* `to_address`: The wallet address to receive the game token.
+
+> **Tip:** Each minted game is a unique NFT, making it easy to track, transfer, or verify ownership and results.
+
+## 2. Validate Game Results
+
+To check a player's score or progress, use the `score` view function. This is enforced by the EGS and available on all compliant games.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameDetailsDispatcher, IGameDetailsDispatcherTrait
+};
+
+let game_dispatcher = IGameDetailsDispatcher { contract_address: quest_tile.game_address };
+let score: u32 = game_dispatcher.score(quest.game_token_id);
+```
+
+* `quest.game_token_id`: The unique token ID for the player's game instance.
+* Returns the player's score or result, which you can use for leaderboards, rewards, or validation.
+
+> **Info:** You can also query other view functions (like player stats, completion status, etc.) depending on the game's implementation. See the [View Functions](/embeddable-game-standard/implementation#6-add-view-functions) section for more.
+
+## Best Practices & Next Steps
+
+* Use the [Settings](/embeddable-game-standard/implementation/settings) standard to offer custom game modes or difficulty levels.
+* Integrate with [Budokan](/budokan) for tournament management, prize distribution, and more.
+* For advanced integrations, see the [Key Functions](/embeddable-game-standard/key-functions) and [Implementation Guide](/embeddable-game-standard/implementation).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
+
+
+
+---
+
+file: docs/embeddable-game-standard/implementation/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Implementation
+
+This guide walks through the steps required for a game developer to implement the
+Embeddable Game Standard and integrate with Budokan tournaments as well as any other meta apps.
+
+## 1. Add EGS library
+
+Start by adding the EGS library in your `Scarb.toml`. You will also need to build the external models to be included
+
+```cairo
+tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }
+```
+
+```cairo
+build-external-contracts = [
+    "tournaments::components::models::game::m_GameMetadata",
+    "tournaments::components::models::game::m_TokenMetadata",
+    "tournaments::components::models::game::m_GameCounter",
+    "tournaments::components::models::game::m_Score",
+    "tournaments::components::models::game::m_Settings",
+    "tournaments::components::models::game::m_SettingsDetails",
+    "tournaments::components::models::game::m_SettingsCounter",
+]
+```
+
+## 2. Import Component
+
+Import and use the `game_component` module from EGS.
+
+```cairo
+use tournaments::components::game::game_component;
+
+#[dojo::contract]
+pub mod MyGame {
+    component!(path: game_component, storage: game, event: GameEvent);
+    #[abi(embed_v0)]
+    impl GameComponentImpl = game_component::GameImpl<ContractState>;
+    impl GameComponentInternalImpl = game_component::InternalImpl<ContractState>;
+    // ... additional game logic ...
+}
+```
+
+## 3. Implement Required Storage and Events
+
+Define the required storage fields and events as specified in the standard.
+
+```cairo
+#[storage]
+struct Storage {
+    #[substorage(v0)]
+    game: game_component::Storage,
+    #[substorage(v0)]
+    erc721: ERC721Component::Storage,
+    #[substorage(v0)]
+    src5: SRC5Component::Storage,
+}
+
+#[event]
+#[derive(Drop, starknet::Event)]
+enum Event {
+    #[flat]
+    GameEvent: game_component::Event,
+    #[flat]
+    ERC721Event: ERC721Component::Event,
+    #[flat]
+    SRC5Event: SRC5Component::Event,
+}
+```
+
+## 4. Expose Required Interfaces
+
+Ensure your contract exposes the following:
+
+* ERC721 interface for game tokens
+* Metadata and settings interfaces
+* Functions for minting, metadata retrieval, and event emission
+
+## 5. Implement Initialization Logic
+
+Implement the `initializer` function to set up game metadata, settings, and storage configuration.
+
+```cairo
+fn initializer(
+    ref self: ComponentState<TContractState>,
+    creator_address: ContractAddress,
+    name: felt252,
+    description: ByteArray,
+    developer: felt252,
+    publisher: felt252,
+    genre: felt252,
+    image: ByteArray,
+    namespace: ByteArray,
+    score_model: ByteArray,
+    score_attribute: ByteArray,
+    settings_model: ByteArray,
+) {
+    // ... initialization logic ...
+}
+```
+
+## 6. Add View Functions
+
+Add Contract view function to return the following:
+
+* The score of a game id
+* Whether a particular settings id exists
+
+```cairo
+use tournaments::components::interfaces::{IGameDetails, ISettings};
+
+#[abi(embed_v0)]
+impl GameDetailsImpl of IGameDetails<ContractState> {
+    fn score(self: @ContractState, game_id: u64) -> u32 {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let game: Game = world.read_model(game_id);
+        game.score.into()
+    }
+}
+
+#[abi(embed_v0)]
+impl SettingsImpl of ISettings<ContractState> {
+    fn setting_exists(self: @ContractState, settings_id: u32) -> bool {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let settings: GameSettings = world.read_model(settings_id);
+        settings.exists()
+    }
+}
+```
+
+## 7. Check Lifecycle
+
+In each game interaction ensure that the following lifecycle check is made
+
+```cairo
+use tournaments::components::libs::lifecycle::{
+    LifecycleAssertionsImpl, LifecycleAssertionsTrait
+};
+
+let token_metadata: TokenMetadata = world.read_model(game_id);
+token_metadata.lifecycle.assert_is_playable(game_id, get_block_timestamp());
+```
+
+By following these steps, your game will be fully compatible with [Budokan](/budokan) and any other application using the Embeddable Game Standard.
+
+
+
+---
+
+file: docs/embeddable-game-standard/implementation/settings.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Settings
+
+Settings are a core feature of the Embeddable Game Standard (EGS), enabling games to be highly customizable and composable. By associating a game instance with a specific set of settings, you can create unique game modes, difficulty levels, or event rules—all onchain and provable.
+
+## Why Use Settings?
+
+* **Custom Game Modes:** Offer players or tournament organizers the ability to define special rules, deck sizes, or win conditions.
+* **Composability:** Settings can be reused across games, quests, or tournaments, making it easy to launch new experiences.
+* **Transparency:** All settings are stored onchain, so anyone can verify the rules for a given game instance.
+
+> **Tip:** Use settings to power seasonal events, speedruns, or community challenges—just stamp a new settings profile and share the ID!
+
+## How Settings Work in EGS
+
+Each game instance can be linked to a settings profile via a unique `settings_id`. The settings metadata is stored onchain and can be queried or updated as needed.
+
+### Storing Settings Metadata
+
+Within the EGS component, the `SettingsDetails` model is used to store metadata for each settings profile. Here's how you can set or update a settings profile:
+
+```cairo
+fn set_settings(
+    ref self: ComponentState<TContractState>,
+    settings_id: u32,
+    name: felt252,
+    description: ByteArray,
+) {
+    let mut world = WorldTrait::storage(
+        self.get_contract().world_dispatcher(), @self.namespace.read(),
+    );
+    let mut store: Store = StoreTrait::new(world);
+    store
+        .set_settings_details(
+            @SettingsDetails { id: settings_id, name, description, exists: true },
+        );
+}
+```
+
+* `settings_id`: Unique identifier for the settings profile.
+* `name`: Human-readable name for the settings.
+* `description`: Description or metadata for the settings profile.
+
+> **Info:** The `SettingsDetails` model can be extended to include more fields (e.g., difficulty, allowed cards, etc.) depending on your game's needs.
+
+## Creating Settings in Your Game
+
+Within the Game contract, you will store the settings for a particular id in the model you defined as `settings_model` on [initialization](/embeddable-game-standard/implementation#5-implement-initialization-logic). Here's how you can set or update a settings profile:
+
+## Best Practices & Next Steps
+
+* Use clear names and descriptions for each settings profile.
+* Store all relevant game rules in the settings metadata for transparency.
+* Encourage your community to create and share custom settings for new challenges.
+* For more on minting and using settings, see [Embedding Games](/embeddable-game-standard/implementation/embedding-games) and [Key Functions](/embeddable-game-standard/key-functions).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
 
 
 

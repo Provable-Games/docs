@@ -1,0 +1,59 @@
+---
+layout: docs
+---
+
+# Embeddable Game Standard: Embedding Games
+
+Easily integrate onchain games into your own application or platform using the Embeddable Game Standard (EGS). This guide walks you through the process of minting a game instance for a player and validating their results, with code examples and best practices.
+
+## What Does "Embedding" Mean?
+
+Embedding a game means allowing your users to launch, play, and track progress in a provable onchain game—directly from your app. You can mint new game instances, monitor scores, and even run tournaments or quests using these standards.
+
+## 1. Mint a Game Instance
+
+To let a user start a new game, call the mint function on the game's contract. This creates a unique game token (NFT) for the player, with the desired settings and timing.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameTokenDispatcher, IGameTokenDispatcherTrait,
+};
+
+let game_dispatcher = IGameTokenDispatcher { contract_address: quest_tile.game_address };
+let game_token_id: u64 = game_dispatcher
+    .mint(player_name, config.settings_id, game_start_delay, game_expiration, to_address);
+```
+
+- `player_name`: The player's display name or identifier.
+- `settings_id`: The ID of the game settings profile to use (see [Settings](/embeddable-game-standard/implementation/settings)).
+- `game_start_delay`: Optional delay before the game can be started.
+- `game_expiration`: When the game expires (for time-limited quests or tournaments).
+- `to_address`: The wallet address to receive the game token.
+
+> **Tip:** Each minted game is a unique NFT, making it easy to track, transfer, or verify ownership and results.
+
+## 2. Validate Game Results
+
+To check a player's score or progress, use the `score` view function. This is enforced by the EGS and available on all compliant games.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameDetailsDispatcher, IGameDetailsDispatcherTrait
+};
+
+let game_dispatcher = IGameDetailsDispatcher { contract_address: quest_tile.game_address };
+let score: u32 = game_dispatcher.score(quest.game_token_id);
+```
+
+- `quest.game_token_id`: The unique token ID for the player's game instance.
+- Returns the player's score or result, which you can use for leaderboards, rewards, or validation.
+
+> **Info:** You can also query other view functions (like player stats, completion status, etc.) depending on the game's implementation. See the [View Functions](/embeddable-game-standard/implementation#6-add-view-functions) section for more.
+
+## Best Practices & Next Steps
+
+- Use the [Settings](/embeddable-game-standard/implementation/settings) standard to offer custom game modes or difficulty levels.
+- Integrate with [Budokan](/budokan) for tournament management, prize distribution, and more.
+- For advanced integrations, see the [Key Functions](/embeddable-game-standard/key-functions) and [Implementation Guide](/embeddable-game-standard/implementation).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!

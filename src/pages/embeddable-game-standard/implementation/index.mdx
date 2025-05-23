@@ -2,13 +2,32 @@
 layout: docs
 ---
 
-# Embeddable Game Standard: Implementation Guide
+# Embeddable Game Standard: Implementation
 
 This guide walks through the steps required for a game developer to implement the 
 Embeddable Game Standard and integrate with Budokan tournaments as well as any other meta apps.
 
-## 1. Contract Structure
-Start by creating a new Cairo contract that imports and uses the `game_component` module from Budokan.
+## 1. Add EGS library
+Start by adding the EGS library in your `Scarb.toml`. You will also need to build the external models to be included
+
+```cairo
+tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }
+```
+
+```cairo
+build-external-contracts = [
+    "tournaments::components::models::game::m_GameMetadata",
+    "tournaments::components::models::game::m_TokenMetadata",
+    "tournaments::components::models::game::m_GameCounter",
+    "tournaments::components::models::game::m_Score",
+    "tournaments::components::models::game::m_Settings",
+    "tournaments::components::models::game::m_SettingsDetails",
+    "tournaments::components::models::game::m_SettingsCounter",
+]
+```
+
+## 2. Import Component
+Import and use the `game_component` module from EGS.
 
 ```cairo
 use tournaments::components::game::game_component;
@@ -23,7 +42,7 @@ pub mod MyGame {
 }
 ```
 
-## 2. Implement Required Storage and Events
+## 3. Implement Required Storage and Events
 Define the required storage fields and events as specified in the standard.
 
 ```cairo
@@ -49,13 +68,13 @@ enum Event {
 }
 ```
 
-## 3. Expose Required Interfaces
+## 4. Expose Required Interfaces
 Ensure your contract exposes the following:
 - ERC721 interface for game tokens
 - Metadata and settings interfaces
 - Functions for minting, metadata retrieval, and event emission
 
-## 4. Implement Initialization Logic
+## 5. Implement Initialization Logic
 Implement the `initializer` function to set up game metadata, settings, and storage configuration.
 
 ```cairo
@@ -77,21 +96,44 @@ fn initializer(
 }
 ```
 
-## 5. Get score function
-- Contract view function to return score attribute on score model
-- IGameDetails
+## 6. Add View Functions
+Add Contract view function to return the following:
+- The score of a game id
+- Whether a particular settings id exists
 
-## 6. Settings exist
-- If no settings, accept settings id 0 but reject more than
-- ISettings
 
-## 7. Integrate with Budokan
-- Test minting game tokens via Budokan tournament flows
-- Ensure metadata and events are correctly emitted and indexed
-- Register your game contract with Budokan for tournament use
+```cairo
+use tournaments::components::interfaces::{IGameDetails, ISettings};
 
-## 8. Test and Deploy
-- Thoroughly test your contract for compatibility and security
-- Deploy to Starknet and register with Budokan
+#[abi(embed_v0)]
+impl GameDetailsImpl of IGameDetails<ContractState> {
+    fn score(self: @ContractState, game_id: u64) -> u32 {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let game: Game = world.read_model(game_id);
+        game.score.into()
+    }
+}
 
-By following these steps, your game will be fully compatible with the Budokan tournament system and the Embeddable Game Standard. 
+#[abi(embed_v0)]
+impl SettingsImpl of ISettings<ContractState> {
+    fn setting_exists(self: @ContractState, settings_id: u32) -> bool {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let settings: GameSettings = world.read_model(settings_id);
+        settings.exists()
+    }
+}
+```
+
+## 7. Check Lifecycle
+In each game interaction ensure that the following lifecycle check is made 
+
+```cairo
+use tournaments::components::libs::lifecycle::{
+    LifecycleAssertionsImpl, LifecycleAssertionsTrait
+};
+
+let token_metadata: TokenMetadata = world.read_model(game_id);
+token_metadata.lifecycle.assert_is_playable(game_id, get_block_timestamp());
+```
+
+By following these steps, your game will be fully compatible with [Budokan](/budokan) and any other application using the Embeddable Game Standard. 

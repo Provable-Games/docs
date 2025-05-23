@@ -25,14 +25,18 @@ export default defineConfig({
       link: "https://x.com/budokan_gg",
     },
   ],
+  editLink: {
+    pattern: "https://github.com/provable-games/docs/blob/main/src/pages/:path",
+    text: "Edit on GitHub",
+  },
   theme: {
     colorScheme: "dark",
     variables: {
       color: {
-        textAccent: "#f6c297",
-        background: "#14100d",
-        backgroundDark: "#14100d",
-        noteBackground: "#14100d",
+        textAccent: "#46A9F0",
+        background: "#0c0c0c",
+        backgroundDark: "#121212",
+        noteBackground: "#1a1a1a",
       },
     },
   },
@@ -42,13 +46,12 @@ export default defineConfig({
       collapsed: false,
       items: [
         { text: "Overview", link: "/budokan" },
-        { text: "Key Functions", link: "/budokan/key-functions" },
         {
           text: "Guide",
           link: "/budokan/guide",
           collapsed: true,
           items: [
-            { text: "Overview", link: "/budokan/guide" },
+            // { text: "Overview", link: "/budokan/guide" },
             { text: "Onboarding", link: "/budokan/guide/onboarding" },
             { text: "Enter Tournaments", link: "/budokan/guide/enter" },
             { text: "Submission", link: "/budokan/guide/submission" },
@@ -61,7 +64,6 @@ export default defineConfig({
               link: "/budokan/guide/create",
               collapsed: true,
               items: [
-                { text: "Overview", link: "/budokan/guide/create" },
                 {
                   text: "Game Settings",
                   link: "/budokan/guide/create/game-settings",
@@ -78,6 +80,7 @@ export default defineConfig({
             },
           ],
         },
+        { text: "Key Functions", link: "/budokan/key-functions" },
         { text: "FAQ", link: "/budokan/faq" },
       ],
     },
@@ -94,13 +97,10 @@ export default defineConfig({
           link: "/embeddable-game-standard/key-functions",
         },
         {
-          text: "Implementation Guide",
+          text: "Implementation",
+          link: "/embeddable-game-standard/implementation",
           collapsed: true,
           items: [
-            {
-              text: "Overview",
-              link: "/embeddable-game-standard/implementation",
-            },
             {
               text: "Game Settings",
               link: "/embeddable-game-standard/implementation/settings",
@@ -117,7 +117,7 @@ export default defineConfig({
         },
         {
           text: "Applications",
-          link: "/embeddable-game-standard/meta-apps",
+          link: "/embeddable-game-standard/applications",
         },
       ],
     },
@@ -130,14 +130,10 @@ export default defineConfig({
           link: "/darkshuffle",
         },
         {
-          text: "Key Functions",
-          link: "/darkshuffle/key-functions",
-        },
-        {
           text: "Guide",
           link: "/darkshuffle/guide",
+          collapsed: true,
           items: [
-            { text: "Overview", link: "/darkshuffle/guide" },
             { text: "Onboarding", link: "/darkshuffle/guide/onboarding" },
             { text: "Draft", link: "/darkshuffle/guide/draft" },
             { text: "Cards", link: "/darkshuffle/guide/cards" },
@@ -146,9 +142,14 @@ export default defineConfig({
           ],
         },
         {
+          text: "Key Functions",
+          link: "/darkshuffle/key-functions",
+        },
+        {
           text: "Settings",
           link: "/darkshuffle/settings",
         },
+        { text: "FAQ", link: "/darkshuffle/faq" },
       ],
     },
   ],

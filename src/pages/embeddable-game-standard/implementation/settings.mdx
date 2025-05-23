@@ -2,4 +2,59 @@
 layout: docs
 ---
 
-# Embeddable Game Standard: Game Settings
+# Embeddable Game Standard: Settings
+
+Settings are a core feature of the Embeddable Game Standard (EGS), enabling games to be highly customizable and composable. By associating a game instance with a specific set of settings, you can create unique game modes, difficulty levels, or event rules—all onchain and provable.
+
+## Why Use Settings?
+
+- **Custom Game Modes:** Offer players or tournament organizers the ability to define special rules, deck sizes, or win conditions.
+- **Composability:** Settings can be reused across games, quests, or tournaments, making it easy to launch new experiences.
+- **Transparency:** All settings are stored onchain, so anyone can verify the rules for a given game instance.
+
+> **Tip:** Use settings to power seasonal events, speedruns, or community challenges—just stamp a new settings profile and share the ID!
+
+## How Settings Work in EGS
+
+Each game instance can be linked to a settings profile via a unique `settings_id`. The settings metadata is stored onchain and can be queried or updated as needed.
+
+### Storing Settings Metadata
+
+Within the EGS component, the `SettingsDetails` model is used to store metadata for each settings profile. Here's how you can set or update a settings profile:
+
+```cairo
+fn set_settings(
+    ref self: ComponentState<TContractState>,
+    settings_id: u32,
+    name: felt252,
+    description: ByteArray,
+) {
+    let mut world = WorldTrait::storage(
+        self.get_contract().world_dispatcher(), @self.namespace.read(),
+    );
+    let mut store: Store = StoreTrait::new(world);
+    store
+        .set_settings_details(
+            @SettingsDetails { id: settings_id, name, description, exists: true },
+        );
+}
+```
+
+- `settings_id`: Unique identifier for the settings profile.
+- `name`: Human-readable name for the settings.
+- `description`: Description or metadata for the settings profile.
+
+> **Info:** The `SettingsDetails` model can be extended to include more fields (e.g., difficulty, allowed cards, etc.) depending on your game's needs.
+
+## Creating Settings in Your Game
+Within the Game contract, you will store the settings for a particular id in the model you defined as `settings_model` on [initialization](/embeddable-game-standard/implementation#5-implement-initialization-logic). Here's how you can set or update a settings profile:
+
+
+## Best Practices & Next Steps
+
+- Use clear names and descriptions for each settings profile.
+- Store all relevant game rules in the settings metadata for transparency.
+- Encourage your community to create and share custom settings for new challenges.
+- For more on minting and using settings, see [Embedding Games](/embeddable-game-standard/implementation/embedding-games) and [Key Functions](/embeddable-game-standard/key-functions).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
