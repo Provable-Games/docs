@@ -11,7 +11,7 @@ export default defineConfig({
     "A Web3 game studio specializing in games and autonomous worlds that can be cryptographically verified using zero-knowledge proofs.",
   iconUrl: "/favicon.ico",
   logoUrl: "/logo.svg",
-  ogImageUrl: "/logo.svg",
+  ogImageUrl: "/og-banner.png",
   socials: [
     {
       icon: "github",
