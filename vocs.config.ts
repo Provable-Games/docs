@@ -14,15 +14,15 @@ export default defineConfig({
   socials: [
     {
       icon: "github",
-      link: "https://github.com/Provable-Games/tournaments",
+      link: "https://github.com/Provable-Games",
     },
     {
       icon: "discord",
-      link: "https://discord.com/channels/884211910222970891/1354444557449822308",
+      link: "https://discord.com/channels/884211910222970891/1208181734030450709",
     },
     {
       icon: "x",
-      link: "https://x.com/budokan_gg",
+      link: "https://x.com/provablegames",
     },
   ],
   editLink: {
