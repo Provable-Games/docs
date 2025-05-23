@@ -7,7 +7,8 @@ export default defineConfig({
   },
   rootDir: "src",
   title: "Provable Games",
-  description: "A Dojo-powered tournament platform",
+  description:
+    "A Web3 game studio specializing in games and autonomous worlds that can be cryptographically verified using zero-knowledge proofs.",
   iconUrl: "/favicon.ico",
   logoUrl: "/logo.svg",
   ogImageUrl: "/logo.svg",
