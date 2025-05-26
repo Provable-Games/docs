@@ -1,24 +1,24 @@
 const cardContent = [
   {
-    title: "Play tournaments with",
-    icon: "/budokan-logo.svg",
-    link: "/budokan",
-    description:
-      "A fully onchain tournament platform. Built for developers and players alike, Budokan provides unprecedented flexibility and composability for onchain games.",
-  },
-  {
-    title: "Build games with",
+    title: "Build",
     icon: "/EGS.png",
     link: "/embeddable-game-standard",
     description:
-      "The Embeddable Game Standard (EGS) enables games to communicate across platforms. Beyond powering onchain tournaments, EGS allows games to be utilized in various applications, creating a unified onchain gaming ecosystem.",
+      "Makes onchain game portable, composable, and compatible with an ever-expanding ecosystem of applications.",
   },
   {
     title: "Play",
     icon: "/DS - Horizontal Logo.svg",
     link: "/darkshuffle",
     description:
-      "Dark Shuffle is a turn-based, collectible card game. Build your deck, battle monsters, and explore a procedurally generated world.",
+      "A build-your-own and bring-your-own-tokens onchain deck builder.",
+  },
+  {
+    title: "Compete",
+    icon: "/budokan-logo.svg",
+    link: "/budokan",
+    description:
+      "A feature-rich onchain tournament platform that lets anyone create and compete in onchain tournaments.",
   },
 ];
 
