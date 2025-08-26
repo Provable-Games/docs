@@ -1,0 +1,227 @@
+---
+layout: docs
+---
+
+# Combat Mechanics
+
+Combat in Loot Survivor involves complex calculations that determine damage output between adventurers and beasts. Understanding these mechanics helps you optimize your build and strategy.
+
+## Combat Overview
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0' }}>
+
+Combat damage is calculated through a series of steps:
+
+1. **Base Damage Calculation** - Weapon tier and level determine base power
+2. **Elemental Adjustments** - Type advantages modify damage by ±50%
+3. **Strength Bonus** - STR stat adds 10% damage per point
+4. **Critical Hit Bonus** - LUCK determines critical chance and damage
+5. **Special Bonuses** - Name matches and special abilities
+6. **Armor Reduction** - Defender's armor reduces final damage
+7. **Minimum Damage** - Ensures attacks always deal some damage
+
+</div>
+
+## Damage Calculation Formula
+
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '2rem 0' }}>
+
+### Step 1: Base Attack & Defense
+
+```
+Base Attack = Item Level × (6 - Tier)
+Base Defense = Armor Level × (6 - Tier)
+```
+
+**Tier Damage Formula:**
+
+| Tier | Formula (6 - Tier) | Example (Level 10) |
+|------|-------------------|-------------------|
+| **T1** | 10 × (6 - 1) = 10 × 5 | 50 damage |
+| **T2** | 10 × (6 - 2) = 10 × 4 | 40 damage |
+| **T3** | 10 × (6 - 3) = 10 × 3 | 30 damage |
+| **T4** | 10 × (6 - 4) = 10 × 2 | 20 damage |
+| **T5** | 10 × (6 - 5) = 10 × 1 | 10 damage |
+
+### Step 2: Elemental Adjustment
+
+```
+Elemental Effect = Base Attack / 2
+```
+
+- **Strong** (Type advantage): `Base Attack + Elemental Effect` (+50% damage)
+- **Fair** (Neutral): `Base Attack` (no change)  
+- **Weak** (Type disadvantage): `Base Attack - Elemental Effect` (-50% damage)
+
+### Step 3: Add Bonuses
+
+```
+Total Attack = Elemental Adjusted Damage 
+             + Strength Bonus (10% per STR point)
+             + Critical Hit Bonus (if triggered)
+             + Special Bonuses (name matches, etc.)
+```
+
+### Step 4: Final Damage
+
+```
+Final Damage = MAX(Minimum Damage, Total Attack - Base Defense)
+```
+
+</div>
+
+## Combat Type System
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0' }}>
+
+### The Three Combat Types
+
+| Combat Type | Weapon | Armor | Strong Against | Weak Against |
+|-------------|--------|-------|----------------|-------------|
+| **Brute** | Bludgeon | Metal | Hunter | Magical |
+| **Hunter** | Blade | Hide | Magical | Brute |
+| **Magical** | Magic | Cloth | Brute | Hunter |
+
+### Type Advantage Cycle
+
+```
+Brute → Hunter → Magical → Brute
+```
+
+- **Brute** (Bludgeon + Metal) beats **Hunter** (Blade + Hide)
+- **Hunter** (Blade + Hide) beats **Magical** (Magic + Cloth)  
+- **Magical** (Magic + Cloth) beats **Brute** (Bludgeon + Metal)
+
+> **Combat Rule:** Type advantage grants +50% damage, disadvantage gives -50% damage
+
+</div>
+
+## Critical Hits
+
+<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '1px solid #a855f7', margin: '1rem 0' }}>
+
+Critical hits provide bonus damage based on your LUCK stat:
+
+### Critical Hit Chance
+```
+Crit Chance = LUCK / 100 (%)
+```
+
+| LUCK | Crit Chance |
+|------|-------------|
+| 0 | 0% |
+| 25 | 25% |
+| 50 | 50% |
+| 75 | 75% |
+| 100 | 100% |
+
+### Critical Hit Damage
+When a critical hit occurs, bonus damage is added:
+
+- **Minimum bonus:** 20% of elemental-adjusted damage
+- **Maximum bonus:** 100% of elemental-adjusted damage
+- The actual bonus is randomly determined between these values
+
+</div>
+
+## Name Match Bonuses
+
+<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #10b981', margin: '1rem 0' }}>
+
+High-level beasts (19+) and items (Greatness 19+) have special name prefixes that provide combat bonuses when matched.
+
+### Name Structure
+Items and beasts can have names like "**Whisper** **Glow** Demon" where:
+
+- **Prefix 1:** "Whisper" (primary name)
+- **Prefix 2:** "Glow" (secondary name)
+
+### Bonus Calculation
+
+| Match Type | Damage Multiplier |
+|------------|------------------|
+| **Prefix 2 Match** | 20-100% bonus |
+| **Prefix 1 Match** | 4-7× damage |
+| **Both Match** | Cumulative bonuses |
+
+> **Pro Tip:** Collecting items with matching names to high-level beasts provides massive damage bonuses!
+
+</div>
+
+## Strength Bonus
+
+<div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0' }}>
+
+The Strength stat provides a direct damage increase:
+
+```
+Strength Bonus = (Elemental Adjusted Damage × STR) / 10
+```
+
+| STR | Damage Increase |
+|-----|-----------------|
+| 0 | +0% |
+| 5 | +50% |
+| 10 | +100% |
+| 15 | +150% |
+| 20 | +200% |
+
+</div>
+
+## Combat Example
+
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0' }}>
+
+**Scenario:** Level 10 Adventurer with T3 Blade attacking a Beast with T4 Hide armor
+
+```
+1. Base Attack = 10 (level) × (6 - 3) = 10 × 3 = 30
+2. Elemental: Blade vs Hide = Fair (no change) = 30
+3. Strength Bonus (STR=5): 30 × 0.5 = +15
+4. No critical hit
+5. Total Attack = 30 + 15 = 45
+
+Beast Defense = 10 (level) × (6 - 4) = 10 × 2 = 20
+
+Final Damage = 45 - 20 = 25 HP
+```
+
+**Alternative with Type Advantage:**
+```
+If using T3 Bludgeon vs Hide armor (Strong advantage):
+1. Base Attack = 30 (same as above)
+2. Elemental Effect = 30 / 2 = 15
+   Adjusted Attack = 30 + 15 = 45 (+50% damage)
+3. Strength Bonus (STR=5): 45 × 0.5 = +22
+5. Total Attack = 45 + 22 = 67
+Final Damage = 67 - 20 = 47 HP (nearly 2× damage!)
+```
+
+</div>
+
+## Combat Strategy Tips
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0' }}>
+
+### Optimization Guidelines
+
+1. **Prioritize Type Advantages** - +50% damage is a significant boost
+2. **Stack STR for Consistent Damage** - Linear scaling with no cap
+3. **LUCK for Burst Potential** - Critical hits can turn battles
+4. **Match Tier to Level** - Higher tier = more base damage
+5. **Name Matching Endgame** - Massive multipliers at high levels
+
+### Common Pitfalls
+
+- Fighting with type disadvantage (-50% damage reduction)
+- Neglecting STR investment (missing easy damage boost)
+- Using low-tier weapons at high levels
+- Ignoring name match opportunities
+
+</div>
+
+## See Also
+
+- [Battle Guide](/lootsurvivor/guide/battle) - Combat interface and tactics
+- [Stats Guide](/lootsurvivor/stats) - Detailed stat explanations
+- [Loot System](/lootsurvivor/loot) - Equipment and tier information

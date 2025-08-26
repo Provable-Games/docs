@@ -1,0 +1,270 @@
+---
+layout: docs
+---
+
+# Stats
+
+Understanding and optimizing your adventurer's stats is crucial for survival in Loot Survivor. Each of the seven core stats plays a vital role in different aspects of gameplay, from combat effectiveness to market efficiency. Master stat allocation to create powerful builds tailored to your playstyle!
+
+## Stats Overview
+
+<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '2px solid #3b82f6', margin: '2rem 0', lineHeight: '1.8' }}>
+
+<div style={{ marginBottom: '1rem' }}>
+
+Every adventurer has **7 core stats** that define their capabilities:
+
+</div>
+
+<div style={{ marginBottom: '1rem' }}>
+
+- **Physical Stats**: Strength, Dexterity, Vitality
+- **Mental Stats**: Intelligence, Wisdom, Charisma
+- **Metaphysical**: Luck (special stat with unique mechanics)
+
+</div>
+
+> **📈 Progression Note:** You gain 1 stat point per level to allocate freely, except for Luck which can only be increased through items!
+
+</div>
+
+## The Seven Core Stats
+
+### Physical Stats
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
+
+<div style={{ background: '#2a1a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc2626' }}>
+
+#### 💪 Strength (STR)
+
+**Primary Effect:** Boosts attack damage by 10%
+
+| Aspect            | Details                   |
+| ----------------- | ------------------------- |
+| **Damage Bonus**  | +10% attack damage        |
+| **Weapon Types**  | All physical weapons      |
+| **Scaling**       | Linear (2-3 damage/point) |
+| **Max Effective** | No cap                    |
+
+**Build Synergy:**
+
+- Pairs with VIT for tank builds
+- Combines with LUCK for crit builds
+- Essential for melee fighters
+
+> **⚔️ Pro Tip:** 10 STR doubles your attack damage output!
+
+</div>
+
+<div style={{ background: '#1a2a2a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #10b981' }}>
+
+#### 🏃 Dexterity (DEX)
+
+**Primary Effect:** Improves chances of successfully fleeing
+
+| Aspect           | Details                |
+| ---------------- | ---------------------- |
+| **Flee Success** | DEX/Level ratio        |
+| **Base Formula** | Success% = DEX/Level   |
+| **Scaling**      | Linear with ratio      |
+| **Future**       | Will affect initiative |
+
+**Flee Success Formula:**
+
+```
+Success% = (DEX / Level) × 100
+```
+
+> **🏃 Escape Artist:** DEX equal to your level = guaranteed escape!
+
+</div>
+
+<div style={{ background: '#1a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7' }}>
+
+#### ❤️ Vitality (VIT)
+
+**Primary Effect:** Increases max health and current by +15HP
+
+| Aspect       | Details                  |
+| ------------ | ------------------------ |
+| **HP Bonus** | +15 HP per point         |
+| **Base HP**  | 100 at level 1           |
+| **Healing**  | Also heals when upgraded |
+| **Scaling**  | Unlimited                |
+
+**Health Calculation:**
+
+```
+Max HP = 100 + (VIT × 15)
+```
+
+| VIT | Total HP | Survivability |
+| --- | -------- | ------------- |
+| 0   | 100      | Fragile       |
+| 10  | 250      | Sturdy        |
+| 20  | 400      | Tanky         |
+| 30  | 550      | Unkillable    |
+
+> **🛡️ Tank Secret:** VIT upgrades heal you instantly - use strategically!
+
+</div>
+
+</div>
+
+### Mental Stats
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
+
+<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7' }}>
+
+#### 🧠 Intelligence (INT)
+
+**Primary Effect:** Aids in avoiding obstacles
+
+| Aspect                 | Details                             |
+| ---------------------- | ----------------------------------- |
+| **Obstacle Avoidance** | INT/Level ratio                     |
+| **Base Formula**       | Success% = INT/Level                |
+| **Application**        | Environmental hazards               |
+| **Special**            | Complete obstacle immunity possible |
+
+**Obstacle Avoidance Formula:**
+
+```
+Avoidance% = (INT / Level) × 100
+```
+
+| INT/Level Ratio | Avoidance Rate |
+| --------------- | -------------- |
+| 0.5             | 50%            |
+| 1.0             | 100%           |
+| 1.5             | 100% (capped)  |
+| 2.0+            | 100% (capped)  |
+
+> **🧠 Intelligence Power:** High INT builds can completely avoid obstacle damage!
+
+</div>
+
+<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #eab308' }}>
+
+#### 📚 Wisdom (WIS)
+
+**Primary Effect:** Helps evade beast ambushes and improves exploration
+
+| Aspect             | Details                  |
+| ------------------ | ------------------------ |
+| **Ambush Evasion** | Level-based formula      |
+| **Exploration**    | Better discovery rates   |
+| **Future**         | Spell cooldowns, secrets |
+| **Scaling**        | Percentage-based         |
+
+**Ambush Avoidance Formula:**
+
+```
+Evasion% = (WIS / Level) × 100
+```
+
+| WIS | At Level 10 | At Level 20 |
+| --- | ----------- | ----------- |
+| 5   | 50%         | 25%         |
+| 10  | 100%        | 50%         |
+| 15  | 150% (cap)  | 75%         |
+
+> **👁️ Foresight:** High WIS reveals hidden treasures and paths!
+
+</div>
+
+<div style={{ background: '#3e2a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #f59e0b' }}>
+
+#### 😎 Charisma (CHA)
+
+**Primary Effect:** Gives gold discount on items and health potions
+
+| Aspect           | Details          |
+| ---------------- | ---------------- |
+| **Discount**     | -1% per point    |
+| **Max Discount** | ~50% practical   |
+| **Applies To**   | All market items |
+| **Future**       | NPC interactions |
+
+**Price Calculation:**
+
+```
+Final Price = Base Price × (1 - CHA/100)
+```
+
+| CHA | Discount | 100g Item | 50g Potion |
+| --- | -------- | --------- | ---------- |
+| 0   | 0%       | 100g      | 50g        |
+| 10  | 10%      | 90g       | 45g        |
+| 20  | 20%      | 80g       | 40g        |
+| 30  | 30%      | 70g       | 35g        |
+
+> **💰 Economy Master:** 30 CHA saves 30% on everything!
+
+</div>
+
+</div>
+
+### Metaphysical Stat
+
+<div style={{ background: '#2a1a2a', padding: '2rem', borderRadius: '8px', border: '2px solid #10b981', margin: '2rem 0' }}>
+
+#### 🍀 Luck (LUCK)
+
+**The Special Stat** - Raises chances of critical damage and cannot be upgraded directly!
+
+| Aspect              | Details           |
+| ------------------- | ----------------- |
+| **Critical Chance** | LUCK / 100        |
+| **Base Crit**       | 0% at 0 LUCK      |
+| **Max Crit**        | 100% at 100 LUCK  |
+| **Loot Quality**    | Better drop rates |
+| **How to Increase** | Equipment only    |
+
+**Critical Hit Mechanics:**
+
+```
+Crit Chance = LUCK / 100
+Crit Damage = Base Damage × 2
+Max LUCK = 100 (100% crit chance)
+```
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', margin: '1rem 0' }}>
+
+<div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px' }}>
+
+**Luck Sources:**
+
+- Jewelry items (Rings, Amulets)
+- "of Fortune" suffix items
+- Special legendary items
+- Temporary buffs (future)
+
+</div>
+
+<div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px' }}>
+
+**Crit Chance Examples:**
+| LUCK | Crit Chance | Combat Impact |
+|------|-------------|---------------|
+| 0    | 0%          | No crits      |
+| 25   | 25%         | 1 in 4 hits   |
+| 50   | 50%         | Half your hits|
+| 75   | 75%         | 3 in 4 hits   |
+| 100  | 100%        | Every hit!    |
+
+</div>
+
+</div>
+
+> **🎰 RNG Master:** Stack LUCK items for massive critical damage and legendary drops!
+
+</div>
+
+## Conclusion
+
+Stats are the foundation of every successful adventurer in Loot Survivor. Whether you choose to be an unstoppable tank, a glass cannon dealing massive damage, or a nimble escape artist, understanding stat mechanics is key to survival. Remember: there's no single "best" build - the optimal stat distribution depends on your playstyle, the items you find, and your ability to adapt to the dungeon's challenges.
+
+> **🏆 Final Wisdom:** The best stat allocation is one that keeps you alive and progressing. When in doubt, add VIT!

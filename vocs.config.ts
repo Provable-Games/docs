@@ -19,7 +19,7 @@ export default defineConfig({
     },
     {
       icon: "discord",
-      link: "https://discord.com/channels/884211910222970891/1208181734030450709",
+      link: "https://discord.gg/Q36rUxS66c",
     },
     {
       icon: "x",
@@ -151,6 +151,75 @@ export default defineConfig({
           link: "/darkshuffle/settings",
         },
         { text: "FAQ", link: "/darkshuffle/faq" },
+      ],
+    },
+    {
+      text: "Loot Survivor",
+      collapsed: false,
+      items: [
+        {
+          text: "Overview",
+          link: "/lootsurvivor",
+        },
+        {
+          text: "Guide",
+          link: "/lootsurvivor/guide",
+          collapsed: true,
+          items: [
+            {
+              text: "Getting Started",
+              link: "/lootsurvivor/guide/getting-started",
+            },
+            { text: "Explore", link: "/lootsurvivor/guide/explore" },
+            { text: "Battle", link: "/lootsurvivor/guide/battle" },
+            { text: "Upgrade", link: "/lootsurvivor/guide/upgrade" },
+          ],
+        },
+        {
+          text: "Stats",
+          link: "/lootsurvivor/stats",
+        },
+        {
+          text: "Loot",
+          link: "/lootsurvivor/loot",
+          collapsed: true,
+          items: [
+            { text: "Suffix Boosts", link: "/lootsurvivor/loot/suffix-boost" },
+            { text: "Jewelry", link: "/lootsurvivor/loot/jewelry" },
+          ],
+        },
+        {
+          text: "Beasts",
+          link: "/lootsurvivor/beasts",
+          collapsed: true,
+          items: [
+            { text: "Collectibles", link: "/lootsurvivor/beasts/collectibles" },
+          ],
+        },
+        {
+          text: "Combat",
+          link: "/lootsurvivor/combat",
+        },
+        // {
+        //   text: "Technical Documentation",
+        //   link: "/lootsurvivor/technical",
+        //   collapsed: true,
+        //   items: [
+        //     {
+        //       text: "Architecture",
+        //       link: "/lootsurvivor/technical/architecture",
+        //     },
+        //     {
+        //       text: "Smart Contracts",
+        //       link: "/lootsurvivor/technical/contracts",
+        //     },
+        //     {
+        //       text: "Integration",
+        //       link: "/lootsurvivor/technical/integration",
+        //     },
+        //   ],
+        // },
+        { text: "FAQ", link: "/lootsurvivor/faq" },
       ],
     },
   ],

@@ -1,0 +1,701 @@
+---
+layout: docs
+---
+
+# Smart Contracts Documentation
+
+This document provides detailed information about the Loot Survivor smart contracts, their interfaces, and how to interact with them.
+
+## Contract Overview
+
+Loot Survivor's smart contracts are written in Cairo and deployed on StarkNet. The contracts follow a modular architecture using the Dojo framework's Entity-Component-System (ECS) pattern.
+
+## Core Contracts
+
+### Game Contract
+
+The main orchestrator managing the entire game flow.
+
+**Address (Mainnet)**: `0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3`
+
+#### Key Functions
+
+##### start_game
+```cairo
+fn start_game(
+    client_reward_address: ContractAddress,
+    weapon_type: WeaponType,
+    name: felt252,
+    golden_token_id: u256,
+    interface_camel: bool
+) -> u256
+```
+- Starts a new adventure
+- Returns the adventurer ID
+- Requires payment (ETH or LORDS)
+
+##### explore
+```cairo
+fn explore(adventurer_id: u256, till_beast: bool)
+```
+- Explores the dungeon
+- `till_beast`: Continue until beast encounter if true
+- Triggers obstacles and discoveries
+
+##### attack
+```cairo
+fn attack(adventurer_id: u256, to_the_death: bool)
+```
+- Attacks the current beast
+- `to_the_death`: Fight until death if true
+- Calculates damage and rewards
+
+##### flee
+```cairo
+fn flee(
+    adventurer_id: u256,
+    to_the_death: bool
+)
+```
+- Attempts to flee from combat
+- Success based on Dexterity
+- May take damage on failure
+
+##### upgrade
+```cairo
+fn upgrade(
+    adventurer_id: u256,
+    stat_upgrades: Stats,
+    items_to_purchase: Array<ItemPurchase>
+)
+```
+- Allocates stat points
+- Purchases items from market
+- Called after leveling up
+
+### Adventurer Contract
+
+Manages adventurer data and progression.
+
+**Address (Mainnet)**: `0x3befa9c969bf82bbfa0a96374da9f7aab172101298c0ff2611ec8c2fd02692`
+
+#### Data Structures
+
+##### Adventurer
+```cairo
+struct Adventurer {
+    // Identity
+    id: u256,
+    owner: ContractAddress,
+    name: felt252,
+    
+    // Progression
+    level: u8,
+    experience: u32,
+    
+    // Health
+    health: u16,
+    max_health: u16,
+    
+    // Resources
+    gold: u16,
+    
+    // Stats
+    strength: u8,
+    dexterity: u8,
+    vitality: u8,
+    intelligence: u8,
+    wisdom: u8,
+    charisma: u8,
+    luck: u8,
+    
+    // Equipment
+    weapon: Item,
+    chest: Item,
+    head: Item,
+    waist: Item,
+    foot: Item,
+    hand: Item,
+    neck: Item,
+    ring: Item,
+    
+    // Inventory
+    bag: Bag,
+    
+    // State
+    beast_id: u32,
+    stat_points_available: u8,
+    actions_per_block: u8,
+    mutated: bool,
+}
+```
+
+##### Stats
+```cairo
+struct Stats {
+    strength: u8,
+    dexterity: u8,
+    vitality: u8,
+    intelligence: u8,
+    wisdom: u8,
+    charisma: u8,
+    luck: u8,
+}
+```
+
+#### Key Functions
+
+##### get_adventurer
+```cairo
+fn get_adventurer(adventurer_id: u256) -> Adventurer
+```
+- Returns full adventurer data
+- Read-only function (no gas)
+
+##### get_adventurer_stats
+```cairo
+fn get_adventurer_stats(adventurer_id: u256) -> Stats
+```
+- Returns just the stats
+- Useful for calculations
+
+##### update_adventurer
+```cairo
+fn update_adventurer(adventurer: Adventurer)
+```
+- Internal function
+- Updates adventurer state
+
+### Beast Contract
+
+Handles beast generation and combat.
+
+**Address (Mainnet)**: `0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038`
+
+#### Data Structures
+
+##### Beast
+```cairo
+struct Beast {
+    id: u32,
+    beast_type: BeastType,
+    tier: Tier,
+    level: u8,
+    health: u16,
+    starting_health: u16,
+    special_abilities: SpecialAbilities,
+}
+```
+
+##### BeastType Enum
+```cairo
+enum BeastType {
+    // Starter (T5)
+    Rat, Gnome, Goblin, Skeleton,
+    
+    // Common (T4)
+    Wolf, Orc, Troll, Zombie,
+    DireWolf, Bear, Spider, Ghoul,
+    
+    // Uncommon (T3)
+    Minotaur, Cyclops, Griffin, Vampire,
+    Manticore, Phoenix, Dragon, Lich,
+    
+    // Rare (T2)
+    Balrog, Titan, Leviathan, Tarrasque,
+    Typhon, Fenrir, Hydra, Colossus,
+    
+    // Legendary (T1)
+    // ... 75 total beasts
+}
+```
+
+#### Key Functions
+
+##### generate_beast
+```cairo
+fn generate_beast(
+    seed: felt252,
+    adventurer_level: u8
+) -> Beast
+```
+- Creates a new beast encounter
+- Level scales with adventurer
+- Deterministic based on seed
+
+##### calculate_damage
+```cairo
+fn calculate_damage(
+    attacker_strength: u8,
+    weapon_type: WeaponType,
+    beast_type: BeastType,
+    is_critical: bool
+) -> u16
+```
+- Calculates combat damage
+- Includes type advantages
+- Critical hit multiplier
+
+### Loot Contract
+
+Manages item generation and evolution.
+
+**Address (Mainnet)**: `0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038`
+
+#### Data Structures
+
+##### Item
+```cairo
+struct Item {
+    id: u32,
+    item_type: ItemType,
+    tier: Tier,
+    slot: Slot,
+    
+    // Evolution
+    level: u8,
+    greatness: u8,
+    
+    // Special properties
+    prefix: Option<ItemPrefix>,
+    suffix: Option<ItemSuffix>,
+    
+    // Stats
+    damage: u16,
+    armor: u16,
+    stat_bonuses: Stats,
+}
+```
+
+##### ItemType Enum
+```cairo
+enum ItemType {
+    // Weapons
+    Blade, Bludgeon, Magic,
+    
+    // Armor
+    Cloth, Hide, Metal,
+    
+    // Accessories
+    Ring, Amulet, Pendant,
+}
+```
+
+##### Tier Enum
+```cairo
+enum Tier {
+    T1, // Legendary (most expensive)
+    T2, // Rare
+    T3, // Uncommon
+    T4, // Common
+    T5, // Starter (cheapest)
+}
+```
+
+#### Key Functions
+
+##### generate_item
+```cairo
+fn generate_item(
+    seed: felt252,
+    slot: Slot,
+    tier: Tier
+) -> Item
+```
+- Creates a new item
+- Deterministic generation
+- Tier affects rarity
+
+##### evolve_item
+```cairo
+fn evolve_item(
+    item: Item,
+    xp_gained: u32
+) -> Item
+```
+- Levels up an item
+- Unlocks suffixes at level 15
+- Unlocks prefixes at level 20
+
+### Market Contract
+
+Handles the in-game marketplace.
+
+#### Data Structures
+
+##### Market
+```cairo
+struct Market {
+    seed: felt252,
+    items: Array<MarketItem>,
+    potion_price: u16,
+    refreshed_at: u64,
+}
+```
+
+##### MarketItem
+```cairo
+struct MarketItem {
+    item: Item,
+    price: u16,
+    stock: u8,
+}
+```
+
+#### Key Functions
+
+##### generate_market
+```cairo
+fn generate_market(
+    seed: felt252,
+    adventurer_level: u8,
+    charisma: u8
+) -> Market
+```
+- Creates market inventory
+- Prices based on charisma
+- Refreshes on level up
+
+##### purchase_item
+```cairo
+fn purchase_item(
+    market: Market,
+    item_id: u32,
+    adventurer_gold: u16
+) -> (Market, u16)
+```
+- Processes item purchase
+- Returns updated market and remaining gold
+
+## Events
+
+### Combat Events
+
+```cairo
+#[event]
+struct AttackEvent {
+    adventurer_id: u256,
+    beast_id: u32,
+    damage_dealt: u16,
+    damage_taken: u16,
+    is_critical: bool,
+}
+
+#[event]
+struct BeastSlainEvent {
+    adventurer_id: u256,
+    beast_id: u32,
+    beast_type: BeastType,
+    gold_earned: u16,
+    xp_earned: u32,
+    items_dropped: Array<Item>,
+}
+
+#[event]
+struct FleeAttemptEvent {
+    adventurer_id: u256,
+    beast_id: u32,
+    success: bool,
+    damage_taken: u16,
+}
+```
+
+### Progression Events
+
+```cairo
+#[event]
+struct LevelUpEvent {
+    adventurer_id: u256,
+    new_level: u8,
+    stat_points_gained: u8,
+}
+
+#[event]
+struct ItemLevelUpEvent {
+    adventurer_id: u256,
+    item_id: u32,
+    new_level: u8,
+    suffix_unlocked: Option<ItemSuffix>,
+    prefix_unlocked: Option<ItemPrefix>,
+}
+```
+
+### Market Events
+
+```cairo
+#[event]
+struct ItemPurchasedEvent {
+    adventurer_id: u256,
+    item_id: u32,
+    price: u16,
+}
+
+#[event]
+struct MarketRefreshedEvent {
+    adventurer_id: u256,
+    seed: felt252,
+    items_available: u8,
+}
+```
+
+## Integration Examples
+
+### Starting a Game
+
+```typescript
+// TypeScript/JavaScript
+const startGame = async () => {
+    const tx = await gameContract.start_game(
+        rewardAddress,     // Address for rewards
+        WeaponType.Blade,  // Starting weapon
+        "Adventurer",      // Name
+        0,                 // Golden token ID (0 if none)
+        false              // Interface camel case
+    );
+    
+    const receipt = await tx.wait();
+    const adventurerId = receipt.events[0].adventurer_id;
+    return adventurerId;
+};
+```
+
+### Combat Loop
+
+```typescript
+const combatLoop = async (adventurerId: bigint) => {
+    // Attack until victory or death
+    const tx = await gameContract.attack(
+        adventurerId,
+        true  // to_the_death
+    );
+    
+    await tx.wait();
+    
+    // Check if adventurer survived
+    const adventurer = await adventurerContract.get_adventurer(adventurerId);
+    if (adventurer.health === 0) {
+        console.log("Game Over!");
+    }
+};
+```
+
+### Upgrading After Level Up
+
+```typescript
+const upgrade = async (adventurerId: bigint) => {
+    const statUpgrades = {
+        strength: 1,
+        dexterity: 0,
+        vitality: 0,
+        intelligence: 0,
+        wisdom: 0,
+        charisma: 0,
+        luck: 0,
+    };
+    
+    const itemsToPurchase = [
+        { item_id: 123, equip: true },
+        { item_id: 456, equip: false },
+    ];
+    
+    await gameContract.upgrade(
+        adventurerId,
+        statUpgrades,
+        itemsToPurchase
+    );
+};
+```
+
+## Gas Optimization
+
+### Batch Operations
+
+```cairo
+// Efficient: Single transaction
+fn batch_actions(actions: Array<Action>) {
+    for action in actions {
+        process_action(action);
+    }
+}
+
+// Inefficient: Multiple transactions
+fn single_action(action: Action) {
+    process_action(action);
+}
+```
+
+### Storage Packing
+
+```cairo
+// Packed storage (efficient)
+struct PackedAdventurer {
+    // Multiple values in single felt252
+    packed_stats: felt252,
+    packed_equipment: felt252,
+}
+
+// Unpacked storage (less efficient)
+struct UnpackedAdventurer {
+    strength: u8,
+    dexterity: u8,
+    vitality: u8,
+    // ... each stat separate
+}
+```
+
+## Security Considerations
+
+### Access Control
+
+All contracts implement access control:
+
+```cairo
+#[external(v0)]
+fn admin_function() {
+    assert_caller_is_admin();
+    // Admin logic
+}
+
+fn assert_caller_is_admin() {
+    let caller = get_caller_address();
+    assert(caller == ADMIN_ADDRESS, 'Unauthorized');
+}
+```
+
+### Input Validation
+
+All user inputs are validated:
+
+```cairo
+fn validate_stat_upgrade(stats: Stats) {
+    let total = stats.strength + stats.dexterity + // ...
+    assert(total <= available_points, 'Invalid points');
+    assert(stats.strength <= MAX_STAT, 'Stat too high');
+}
+```
+
+### Reentrancy Protection
+
+Critical functions use reentrancy guards:
+
+```cairo
+fn critical_function() {
+    assert(!is_locked(), 'Reentrant');
+    set_locked(true);
+    
+    // Function logic
+    
+    set_locked(false);
+}
+```
+
+## Testing Contracts
+
+### Unit Tests
+
+```cairo
+#[test]
+fn test_combat_damage() {
+    let damage = calculate_damage(
+        strength: 10,
+        weapon_type: WeaponType::Blade,
+        beast_type: BeastType::Goblin,
+        is_critical: false
+    );
+    assert(damage > 0, 'Damage should be positive');
+}
+```
+
+### Integration Tests
+
+```cairo
+#[test]
+fn test_full_game_flow() {
+    let adventurer_id = start_game(...);
+    explore(adventurer_id, false);
+    attack(adventurer_id, false);
+    upgrade(adventurer_id, ...);
+    // Assert final state
+}
+```
+
+## Contract Addresses
+
+### Mainnet Contracts
+
+| Contract | Address |
+|----------|---------|
+| Game | `0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3` |
+| Adventurer | `0x3befa9c969bf82bbfa0a96374da9f7aab172101298c0ff2611ec8c2fd02692` |
+| Beast | `0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038` |
+| Loot | `0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038` |
+| Market | `0x1e1c477f2ef896fd638b50caa31e3aa8f504d5c6cb3c09c99cd0b72523f07f7` |
+
+### Testnet Contracts (Sepolia)
+
+| Contract | Address |
+|----------|---------|
+| Game | `0x[TESTNET_GAME_ADDRESS]` |
+| Adventurer | `0x[TESTNET_ADVENTURER_ADDRESS]` |
+| Beast | `0x[TESTNET_BEAST_ADDRESS]` |
+| Loot | `0x[TESTNET_LOOT_ADDRESS]` |
+| Market | `0x[TESTNET_MARKET_ADDRESS]` |
+
+## ABI Documentation
+
+Full ABI specifications are available in the generated files:
+- `/contracts/target/dev/[contract_name].contract_class.json`
+
+## Upgradeability
+
+Contracts use the Dojo framework's upgrade system:
+
+```cairo
+#[starknet::contract]
+mod UpgradeableContract {
+    #[external(v0)]
+    fn upgrade(new_class_hash: ClassHash) {
+        assert_caller_is_admin();
+        replace_class_syscall(new_class_hash);
+    }
+}
+```
+
+## Best Practices
+
+### Reading Contract State
+
+```typescript
+// Always use view functions for reading
+const adventurer = await contract.get_adventurer(id);
+// These are free (no gas)
+```
+
+### Writing to Contracts
+
+```typescript
+// Batch operations when possible
+const tx = await contract.batch_actions([
+    action1,
+    action2,
+    action3,
+]);
+// Single transaction = less gas
+```
+
+### Error Handling
+
+```typescript
+try {
+    const tx = await contract.attack(adventurerId, true);
+    await tx.wait();
+} catch (error) {
+    if (error.message.includes('Dead adventurer')) {
+        // Handle game over
+    }
+}
+```
+
+## Conclusion
+
+The Loot Survivor smart contracts provide a robust, gas-efficient foundation for fully onchain gaming. The modular architecture allows for easy extension while maintaining security and performance.

@@ -1,0 +1,167 @@
+---
+layout: docs
+---
+
+# Combat Guide
+
+Combat in Loot Survivor is where preparation meets execution. Every encounter tests your understanding of type advantages, stat optimization, and tactical decision-making. Master the art of battle to survive Death Mountain's deadliest challenges.
+
+> **🎯 Combat Philosophy:** Every battle is a risk/reward calculation. Sometimes survival means avoiding the fight entirely.
+
+## Battle Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/battle.png"
+    alt="Loot Survivor Battle Screen"
+    style={{
+      width: "100%",
+      display: "block",
+      margin: "0 auto",
+      borderRadius: "8px",
+      border: "2px solid #333",
+    }}
+  />
+  <br />
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Battle interface showing adventurer vs beast encounter
+  </em>
+</div>
+
+### Interface Elements
+
+| Element              | Location   | Function                 | Description                                       |
+| -------------------- | ---------- | ------------------------ | ------------------------------------------------- |
+| **Adventurer Panel** | Left       | Your stats and equipment | Health, damage potential, equipped items          |
+| **Combat Log**       | Center     | Action history           | Damage dealt/taken, critical hits, flee attempts |
+| **Beast Display**    | Right      | Enemy information        | Type, level, health, special abilities           |
+| **Action Bar**       | Bottom     | Combat controls          | Attack, Flee, Switch Gear options                |
+| **Type Indicator**   | Top Center | Advantage display        | Shows damage multipliers and effectiveness        |
+
+---
+
+# Combat Mechanics
+
+## Damage System
+
+Combat damage is calculated using several factors:
+
+- **⚔️ Base Damage** - Weapon tier × level (T1=5×, T2=4×, T3=3×, T4=2×, T5=1×)
+- **🎯 Type Advantage** - +50% when strong, -50% when weak
+- **💪 Strength Bonus** - +10% damage per STR point
+- **✨ Critical Hits** - LUCK/100% chance for 100% bonus damage (see [Combat Mechanics](/lootsurvivor/combat) for details)
+
+## Type Advantage System
+
+The combat system follows a rock-paper-scissors pattern:
+
+**🔨 Brute** (Bludgeon + Metal) → beats **🏹 Hunter** (Blade + Hide) → beats **✨ Magical** (Magic + Cloth) → beats **🔨 Brute**
+
+### Type Advantage Effects
+
+**📈 With Advantage:**
+- **Damage Multiplier:** +50%
+- **Example:** 20 base damage → 30 damage output
+- **Visual Cue:** Green damage numbers in combat log
+
+**📉 With Disadvantage:**
+- **Damage Multiplier:** -50%  
+- **Example:** 20 base damage → 10 damage output
+- **Visual Cue:** Red damage numbers in combat log
+
+---
+
+# Combat Actions
+
+## ⚔️ Attack Options
+
+### Single Attack
+Execute one calculated strike against your opponent.
+
+**Stat Influences:**
+- **STR:** +10% damage per point
+- **LUCK:** Critical hit chance (LUCK/100%)
+- **Weapon Tier:** Base damage multiplier
+
+**Best for:** Controlled combat, testing damage, conserving resources
+
+### Attack Until Death
+Chain attacks automatically until victory or defeat.
+
+**⚠️ High Risk Mode:**
+- No control once initiated
+- Fight continues until resolution
+- Cannot flee mid-sequence
+
+**Use when:**
+- Beast health is very low
+- You have type advantage
+- Confident in victory
+- Emergency/desperate situations
+
+## 🏃 Flee Mechanics
+
+**Flee Formula:**
+```
+Success Rate = (DEX / Level) × 100%
+```
+
+| DEX/Level | Success | Level 10 Example | Level 20 Example |
+|-----------|---------|------------------|------------------|
+| 0.5       | 50%     | DEX 5            | DEX 10           |
+| 0.75      | 75%     | DEX 7-8          | DEX 15           |
+| 1.0       | 100%    | DEX 10           | DEX 20           |
+| 1.5       | 100%    | DEX 15           | DEX 30           |
+
+**Key Points:**
+- DEX equal to level = 100% success
+- Success rate caps at 100%
+- Failed flee attempts waste a turn
+- Ambush encounters have no additional penalties
+
+## 🛡️ Equipment Switching
+
+Strategic equipment swapping can turn the tide of battle:
+
+| Action                | Cost                   | Benefit                 |
+| --------------------- | ---------------------- | ----------------------- |
+| **Switch Weapon**     | Beast gets free attack | Match type advantage    |
+| **Switch Armor**      | Beast gets free attack | Reduce incoming damage  |
+| **Multiple Switches** | One free attack total  | Complete loadout change |
+
+> **💡 Important:** Bundle all gear changes into one action to minimize the number of free attacks the beast gets.
+
+### Switching Examples
+
+**Scenario 1:** Fighting Magic-type beast with Blade weapon  
+→ Switch to Bludgeon weapon for +50% damage advantage
+
+**Scenario 2:** Taking heavy damage from Bludgeon attacks  
+→ Switch to Cloth armor for 50% damage reduction
+
+**Scenario 3:** Completely mismatched against strong opponent  
+→ Full equipment swap for optimal type coverage
+
+---
+
+# Combat Decision Making
+
+When entering combat, consider these factors:
+
+- **🏃 Flee** - When you have low HP, type disadvantage, or facing a stronger beast
+- **🔄 Switch Gear** - When you have the wrong equipment type and need advantage
+- **⚔️ Attack** - When you have good matchup and are confident in victory
+- **💀 All-Out Attack** - When beast has very low HP and victory is guaranteed
+
+---
+
+# Summary
+
+Combat success in Loot Survivor comes from understanding type advantages, optimizing your stats, and making tactical decisions. Every battle offers multiple approaches - from switching gear for advantages to knowing when discretion is the better part of valor.
+
+**Key Combat Principles:**
+- Type advantage provides significant damage bonuses/penalties
+- STR scaling makes strength investment worthwhile for damage dealers
+- DEX equal to your level guarantees successful escapes
+- Gear switching can turn losing fights into victories
+- Sometimes the best fight is the one you avoid

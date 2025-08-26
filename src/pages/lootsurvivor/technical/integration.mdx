@@ -1,0 +1,788 @@
+---
+layout: docs
+---
+
+# Integration Guide
+
+This guide explains how to integrate with Loot Survivor, whether you're building a frontend client, creating tools, or extending the game with additional features.
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+ or your preferred runtime
+- StarkNet wallet or programmatic account
+- Basic understanding of StarkNet and Cairo
+
+### Installation
+
+#### JavaScript/TypeScript
+
+```bash
+# Using npm
+npm install starknet @dojoengine/core
+
+# Using pnpm
+pnpm add starknet @dojoengine/core
+
+# Using yarn
+yarn add starknet @dojoengine/core
+```
+
+#### Python
+
+```bash
+pip install starknet-py
+```
+
+## Setting Up Connection
+
+### Initialize Provider
+
+```typescript
+import { Provider, constants } from 'starknet';
+
+// Mainnet
+const provider = new Provider({
+    sequencer: {
+        network: constants.NetworkName.SN_MAIN,
+    },
+});
+
+// Testnet (Sepolia)
+const provider = new Provider({
+    sequencer: {
+        network: constants.NetworkName.SN_SEPOLIA,
+    },
+});
+```
+
+### Contract Instances
+
+```typescript
+import { Contract } from 'starknet';
+import GameABI from './abis/Game.json';
+import AdventurerABI from './abis/Adventurer.json';
+
+const GAME_ADDRESS = "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3";
+const ADVENTURER_ADDRESS = "0x3befa9c969bf82bbfa0a96374da9f7aab172101298c0ff2611ec8c2fd02692";
+
+const gameContract = new Contract(GameABI, GAME_ADDRESS, provider);
+const adventurerContract = new Contract(AdventurerABI, ADVENTURER_ADDRESS, provider);
+```
+
+## Wallet Integration
+
+### Using StarknetKit
+
+```typescript
+import { connect, disconnect } from '@starknet-io/get-starknet';
+
+const connectWallet = async () => {
+    const starknet = await connect({
+        modalMode: "alwaysAsk",
+        modalTheme: "dark",
+    });
+    
+    if (!starknet?.isConnected) {
+        throw new Error("Failed to connect wallet");
+    }
+    
+    return starknet;
+};
+```
+
+### Using Cartridge Controller
+
+```typescript
+import Controller from '@cartridge/controller';
+
+const controller = new Controller({
+    policies: [
+        {
+            target: GAME_ADDRESS,
+            method: 'attack',
+        },
+        {
+            target: GAME_ADDRESS,
+            method: 'explore',
+        },
+    ],
+    rpc: "https://api.cartridge.gg/x/starknet/mainnet",
+});
+
+await controller.connect();
+```
+
+## Reading Game State
+
+### Get Adventurer Data
+
+```typescript
+interface Adventurer {
+    id: bigint;
+    owner: string;
+    name: string;
+    level: number;
+    health: number;
+    gold: number;
+    experience: number;
+    stats: Stats;
+    equipment: Equipment;
+}
+
+const getAdventurer = async (adventurerId: bigint): Promise<Adventurer> => {
+    const result = await adventurerContract.get_adventurer(adventurerId);
+    
+    return {
+        id: result.id,
+        owner: result.owner,
+        name: result.name,
+        level: Number(result.level),
+        health: Number(result.health),
+        gold: Number(result.gold),
+        experience: Number(result.experience),
+        stats: parseStats(result.stats),
+        equipment: parseEquipment(result.equipment),
+    };
+};
+```
+
+### Get Current Beast
+
+```typescript
+const getCurrentBeast = async (adventurerId: bigint) => {
+    const beast = await gameContract.get_current_beast(adventurerId);
+    
+    if (!beast) return null;
+    
+    return {
+        id: beast.id,
+        type: beast.beast_type,
+        level: Number(beast.level),
+        health: Number(beast.health),
+        maxHealth: Number(beast.starting_health),
+    };
+};
+```
+
+### Get Market Items
+
+```typescript
+const getMarketItems = async (adventurerId: bigint) => {
+    const market = await gameContract.get_market(adventurerId);
+    
+    return market.items.map(item => ({
+        id: item.id,
+        name: item.name,
+        type: item.item_type,
+        tier: item.tier,
+        price: Number(item.price),
+        slot: item.slot,
+    }));
+};
+```
+
+## Writing Transactions
+
+### Starting a Game
+
+```typescript
+const startAdventure = async (
+    account: Account,
+    weaponType: number,
+    name: string
+) => {
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'start_game',
+        calldata: [
+            account.address,  // reward address
+            weaponType,       // 0: Blade, 1: Bludgeon, 2: Magic
+            name,            // adventurer name
+            0,               // golden token (0 if none)
+            0,               // interface camel case (0 for snake)
+        ],
+    });
+    
+    const receipt = await provider.waitForTransaction(tx.transaction_hash);
+    
+    // Extract adventurer ID from events
+    const adventurerId = extractAdventurerIdFromEvents(receipt.events);
+    return adventurerId;
+};
+```
+
+### Combat Actions
+
+```typescript
+// Attack beast
+const attack = async (
+    account: Account,
+    adventurerId: bigint,
+    tillDeath: boolean = false
+) => {
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'attack',
+        calldata: [
+            adventurerId.toString(),
+            tillDeath ? 1 : 0,
+        ],
+    });
+    
+    return await provider.waitForTransaction(tx.transaction_hash);
+};
+
+// Flee from combat
+const flee = async (
+    account: Account,
+    adventurerId: bigint
+) => {
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'flee',
+        calldata: [
+            adventurerId.toString(),
+            0, // to_the_death
+        ],
+    });
+    
+    return await provider.waitForTransaction(tx.transaction_hash);
+};
+```
+
+### Exploration
+
+```typescript
+const explore = async (
+    account: Account,
+    adventurerId: bigint,
+    tillBeast: boolean = false
+) => {
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'explore',
+        calldata: [
+            adventurerId.toString(),
+            tillBeast ? 1 : 0,
+        ],
+    });
+    
+    return await provider.waitForTransaction(tx.transaction_hash);
+};
+```
+
+### Upgrading
+
+```typescript
+interface StatUpgrade {
+    strength: number;
+    dexterity: number;
+    vitality: number;
+    intelligence: number;
+    wisdom: number;
+    charisma: number;
+    luck: number;
+}
+
+interface ItemPurchase {
+    item_id: number;
+    equip: boolean;
+}
+
+const upgrade = async (
+    account: Account,
+    adventurerId: bigint,
+    stats: StatUpgrade,
+    items: ItemPurchase[]
+) => {
+    const calldata = [
+        adventurerId.toString(),
+        // Stats (must sum to available points)
+        stats.strength,
+        stats.dexterity,
+        stats.vitality,
+        stats.intelligence,
+        stats.wisdom,
+        stats.charisma,
+        stats.luck,
+        // Items array
+        items.length,
+        ...items.flatMap(i => [i.item_id, i.equip ? 1 : 0]),
+    ];
+    
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'upgrade',
+        calldata,
+    });
+    
+    return await provider.waitForTransaction(tx.transaction_hash);
+};
+```
+
+## Event Listening
+
+### Setting Up Event Listeners
+
+```typescript
+import { events } from 'starknet';
+
+const subscribeToEvents = (adventurerId: bigint) => {
+    // Listen for combat events
+    gameContract.on('AttackEvent', (event) => {
+        if (event.adventurer_id === adventurerId) {
+            console.log('Attack:', {
+                damage_dealt: event.damage_dealt,
+                damage_taken: event.damage_taken,
+                is_critical: event.is_critical,
+            });
+        }
+    });
+    
+    // Listen for level up
+    gameContract.on('LevelUpEvent', (event) => {
+        if (event.adventurer_id === adventurerId) {
+            console.log('Level Up! New level:', event.new_level);
+        }
+    });
+    
+    // Listen for death
+    gameContract.on('AdventurerDiedEvent', (event) => {
+        if (event.adventurer_id === adventurerId) {
+            console.log('Game Over! Final level:', event.level);
+        }
+    });
+};
+```
+
+### Processing Historical Events
+
+```typescript
+const getAdventurerHistory = async (adventurerId: bigint) => {
+    const events = await provider.getEvents({
+        address: GAME_ADDRESS,
+        from_block: { block_number: 0 },
+        to_block: 'latest',
+        keys: [[adventurerId.toString()]],
+        chunk_size: 100,
+    });
+    
+    return events.events.map(parseEvent);
+};
+```
+
+## Using Torii Indexer
+
+### GraphQL Queries
+
+```typescript
+const TORII_URL = "https://api.cartridge.gg/x/lootsurvivor/torii/graphql";
+
+const query = `
+    query GetAdventurer($id: String!) {
+        adventurer(id: $id) {
+            id
+            owner
+            level
+            health
+            gold
+            experience
+            stats {
+                strength
+                dexterity
+                vitality
+                intelligence
+                wisdom
+                charisma
+                luck
+            }
+        }
+    }
+`;
+
+const fetchAdventurerData = async (adventurerId: string) => {
+    const response = await fetch(TORII_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query,
+            variables: { id: adventurerId },
+        }),
+    });
+    
+    const data = await response.json();
+    return data.data.adventurer;
+};
+```
+
+### WebSocket Subscriptions
+
+```typescript
+import { createClient } from 'graphql-ws';
+
+const client = createClient({
+    url: 'wss://api.cartridge.gg/x/lootsurvivor/torii/ws',
+});
+
+const subscription = `
+    subscription OnAdventurerUpdate($id: String!) {
+        adventurerUpdated(id: $id) {
+            id
+            level
+            health
+            gold
+        }
+    }
+`;
+
+client.subscribe(
+    {
+        query: subscription,
+        variables: { id: adventurerId },
+    },
+    {
+        next: (data) => console.log('Update:', data),
+        error: (err) => console.error('Error:', err),
+        complete: () => console.log('Subscription complete'),
+    }
+);
+```
+
+## Building Custom Frontends
+
+### React Hook Example
+
+```typescript
+import { useState, useEffect } from 'react';
+
+const useAdventurer = (adventurerId: bigint) => {
+    const [adventurer, setAdventurer] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const data = await getAdventurer(adventurerId);
+                setAdventurer(data);
+            } catch (err) {
+                setError(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchData();
+        
+        // Set up event listeners
+        const unsubscribe = subscribeToAdventurerUpdates(
+            adventurerId,
+            setAdventurer
+        );
+        
+        return unsubscribe;
+    }, [adventurerId]);
+    
+    return { adventurer, loading, error };
+};
+```
+
+### State Management
+
+```typescript
+import { create } from 'zustand';
+
+interface GameStore {
+    adventurer: Adventurer | null;
+    beast: Beast | null;
+    market: MarketItem[];
+    
+    setAdventurer: (adventurer: Adventurer) => void;
+    setBeast: (beast: Beast) => void;
+    setMarket: (items: MarketItem[]) => void;
+    
+    attack: () => Promise<void>;
+    flee: () => Promise<void>;
+    explore: () => Promise<void>;
+}
+
+const useGameStore = create<GameStore>((set, get) => ({
+    adventurer: null,
+    beast: null,
+    market: [],
+    
+    setAdventurer: (adventurer) => set({ adventurer }),
+    setBeast: (beast) => set({ beast }),
+    setMarket: (market) => set({ market }),
+    
+    attack: async () => {
+        const { adventurer } = get();
+        if (!adventurer) return;
+        
+        const result = await attackBeast(adventurer.id);
+        // Update state based on result
+    },
+    
+    // ... other actions
+}));
+```
+
+## Building Game Tools
+
+### Leaderboard API
+
+```typescript
+const getLeaderboard = async (limit = 100) => {
+    const query = `
+        query GetLeaderboard($limit: Int!) {
+            adventurers(
+                orderBy: "level",
+                orderDirection: "desc",
+                limit: $limit
+            ) {
+                id
+                owner
+                name
+                level
+                gold
+                timestamp
+            }
+        }
+    `;
+    
+    const response = await fetch(TORII_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query,
+            variables: { limit },
+        }),
+    });
+    
+    const data = await response.json();
+    return data.data.adventurers;
+};
+```
+
+### Statistics Tracker
+
+```typescript
+const getPlayerStats = async (playerAddress: string) => {
+    const query = `
+        query GetPlayerStats($owner: String!) {
+            adventurers(where: { owner: $owner }) {
+                id
+                level
+                gold
+                experience
+                timestamp
+                died_at
+            }
+        }
+    `;
+    
+    const response = await fetch(TORII_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query,
+            variables: { owner: playerAddress },
+        }),
+    });
+    
+    const data = await response.json();
+    
+    // Calculate statistics
+    const adventures = data.data.adventurers;
+    return {
+        totalAdventures: adventures.length,
+        highestLevel: Math.max(...adventures.map(a => a.level)),
+        totalGold: adventures.reduce((sum, a) => sum + a.gold, 0),
+        averageLevel: adventures.reduce((sum, a) => sum + a.level, 0) / adventures.length,
+    };
+};
+```
+
+## Error Handling
+
+### Common Errors
+
+```typescript
+const handleGameAction = async (action: () => Promise<any>) => {
+    try {
+        const result = await action();
+        return { success: true, data: result };
+    } catch (error) {
+        // Handle specific errors
+        if (error.message.includes('Adventurer is dead')) {
+            return { success: false, error: 'GAME_OVER' };
+        }
+        if (error.message.includes('Insufficient gold')) {
+            return { success: false, error: 'INSUFFICIENT_FUNDS' };
+        }
+        if (error.message.includes('Invalid stat allocation')) {
+            return { success: false, error: 'INVALID_STATS' };
+        }
+        
+        // Generic error
+        return { success: false, error: error.message };
+    }
+};
+```
+
+### Retry Logic
+
+```typescript
+const retryWithBackoff = async (
+    fn: () => Promise<any>,
+    maxRetries = 3,
+    delay = 1000
+) => {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (i === maxRetries - 1) throw error;
+            await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+        }
+    }
+};
+```
+
+## Testing Integration
+
+### Unit Tests
+
+```typescript
+import { describe, it, expect } from 'vitest';
+
+describe('Game Integration', () => {
+    it('should start a new game', async () => {
+        const adventurerId = await startAdventure(
+            mockAccount,
+            WeaponType.Blade,
+            'Test Hero'
+        );
+        
+        expect(adventurerId).toBeGreaterThan(0n);
+    });
+    
+    it('should handle combat', async () => {
+        const result = await attack(mockAccount, adventurerId);
+        expect(result.status).toBe('ACCEPTED');
+    });
+});
+```
+
+### Integration Tests
+
+```typescript
+describe('Full Game Flow', () => {
+    it('should complete a full game cycle', async () => {
+        // Start game
+        const id = await startAdventure(account, 0, 'Hero');
+        
+        // Explore
+        await explore(account, id, false);
+        
+        // Combat
+        const beast = await getCurrentBeast(id);
+        if (beast) {
+            await attack(account, id, false);
+        }
+        
+        // Check state
+        const adventurer = await getAdventurer(id);
+        expect(adventurer.experience).toBeGreaterThan(0);
+    });
+});
+```
+
+## Performance Optimization
+
+### Caching Strategy
+
+```typescript
+class GameCache {
+    private cache = new Map();
+    private ttl = 5000; // 5 seconds
+    
+    async get(key: string, fetcher: () => Promise<any>) {
+        const cached = this.cache.get(key);
+        
+        if (cached && Date.now() - cached.timestamp < this.ttl) {
+            return cached.data;
+        }
+        
+        const data = await fetcher();
+        this.cache.set(key, { data, timestamp: Date.now() });
+        return data;
+    }
+}
+
+const cache = new GameCache();
+
+const getCachedAdventurer = (id: bigint) =>
+    cache.get(`adventurer:${id}`, () => getAdventurer(id));
+```
+
+### Batch Requests
+
+```typescript
+const batchGetAdventurers = async (ids: bigint[]) => {
+    const promises = ids.map(id => getAdventurer(id));
+    return await Promise.all(promises);
+};
+```
+
+## Security Best Practices
+
+### Input Validation
+
+```typescript
+const validateAdventurerId = (id: any): bigint => {
+    if (typeof id !== 'bigint' && typeof id !== 'string') {
+        throw new Error('Invalid adventurer ID type');
+    }
+    
+    const bigIntId = BigInt(id);
+    
+    if (bigIntId <= 0n) {
+        throw new Error('Adventurer ID must be positive');
+    }
+    
+    return bigIntId;
+};
+```
+
+### Rate Limiting
+
+```typescript
+class RateLimiter {
+    private requests = new Map();
+    private limit = 10; // requests per second
+    
+    canMakeRequest(key: string): boolean {
+        const now = Date.now();
+        const requests = this.requests.get(key) || [];
+        
+        // Remove old requests
+        const recent = requests.filter(t => now - t < 1000);
+        
+        if (recent.length >= this.limit) {
+            return false;
+        }
+        
+        recent.push(now);
+        this.requests.set(key, recent);
+        return true;
+    }
+}
+```
+
+## Conclusion
+
+This integration guide provides the foundation for building applications that interact with Loot Survivor. Whether you're creating a custom frontend, building tools, or extending the game, these patterns and examples will help you get started quickly and build robust integrations.

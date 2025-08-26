@@ -1032,7 +1032,7 @@ meta: {
 
 # Embeddable Game Standard
 
-The Embeddable Game Standard (EGS) enables games to communicate across platforms. Beyond integration into [Budokan](/budokan) for powering onchain tournaments, EGS allows games to be utilized in various applications, creating a unified onchain gaming ecosystem.
+The Embeddable Game Standard (EGS) is a foundational blueprint for Starknet games, designed to ensure interoperability and unlock access to an ever-growing ecosystem of powerful onchain applications, including the [Budokan](/budokan) tournament platform and the Tanken Quest platform (coming soon). It standardizes essential game contract functionalities such as ERC721 token minting for unique game instances, comprehensive metadata management, and robust score or progress tracking, which are vital for both competitive play and objective-based questing. By adhering to EGS, games can be seamlessly integrated into systems that distribute game instances as NFTs, associate them with diverse rewards (for victory, completion, or participation), and support varied engagement models. From high-stakes tournaments to narrative-driven campaigns, onboarding tutorials, and community-tailored challenges.
 
 ## Table of Contents
 
@@ -1226,6 +1226,1072 @@ fn initializer(
 * `settings_model`: Returns the settings model identifier.
 * `set_settings`: Set or update game settings details.
 * `assert_setting_exists`: Ensure a settings ID exists before minting.
+
+
+
+---
+
+file: docs/lootsurvivor/combat.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Combat Mechanics
+
+Combat in Loot Survivor involves complex calculations that determine damage output between adventurers and beasts. Understanding these mechanics helps you optimize your build and strategy.
+
+## Combat Overview
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0' }}>
+  Combat damage is calculated through a series of steps:
+
+  1. **Base Damage Calculation** - Weapon tier and level determine base power
+  2. **Elemental Adjustments** - Type advantages modify damage by ±50%
+  3. **Strength Bonus** - STR stat adds 10% damage per point
+  4. **Critical Hit Bonus** - LUCK determines critical chance and damage
+  5. **Special Bonuses** - Name matches and special abilities
+  6. **Armor Reduction** - Defender's armor reduces final damage
+  7. **Minimum Damage** - Ensures attacks always deal some damage
+</div>
+
+## Damage Calculation Formula
+
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '2rem 0' }}>
+  ### Step 1: Base Attack & Defense
+
+  ```
+  Base Attack = Item Level × (6 - Tier)
+  Base Defense = Armor Level × (6 - Tier)
+  ```
+
+  **Tier Damage Formula:**
+
+  | Tier   | Formula (6 - Tier)    | Example (Level 10) |
+  | ------ | --------------------- | ------------------ |
+  | **T1** | 10 × (6 - 1) = 10 × 5 | 50 damage          |
+  | **T2** | 10 × (6 - 2) = 10 × 4 | 40 damage          |
+  | **T3** | 10 × (6 - 3) = 10 × 3 | 30 damage          |
+  | **T4** | 10 × (6 - 4) = 10 × 2 | 20 damage          |
+  | **T5** | 10 × (6 - 5) = 10 × 1 | 10 damage          |
+
+  ### Step 2: Elemental Adjustment
+
+  ```
+  Elemental Effect = Base Attack / 2
+  ```
+
+  * **Strong** (Type advantage): `Base Attack + Elemental Effect` (+50% damage)
+  * **Fair** (Neutral): `Base Attack` (no change)
+  * **Weak** (Type disadvantage): `Base Attack - Elemental Effect` (-50% damage)
+
+  ### Step 3: Add Bonuses
+
+  ```
+  Total Attack = Elemental Adjusted Damage 
+               + Strength Bonus (10% per STR point)
+               + Critical Hit Bonus (if triggered)
+               + Special Bonuses (name matches, etc.)
+  ```
+
+  ### Step 4: Final Damage
+
+  ```
+  Final Damage = MAX(Minimum Damage, Total Attack - Base Defense)
+  ```
+</div>
+
+## Combat Type System
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0' }}>
+  ### The Three Combat Types
+
+  | Combat Type | Weapon   | Armor | Strong Against | Weak Against |
+  | ----------- | -------- | ----- | -------------- | ------------ |
+  | **Brute**   | Bludgeon | Metal | Hunter         | Magical      |
+  | **Hunter**  | Blade    | Hide  | Magical        | Brute        |
+  | **Magical** | Magic    | Cloth | Brute          | Hunter       |
+
+  ### Type Advantage Cycle
+
+  ```
+  Brute → Hunter → Magical → Brute
+  ```
+
+  * **Brute** (Bludgeon + Metal) beats **Hunter** (Blade + Hide)
+  * **Hunter** (Blade + Hide) beats **Magical** (Magic + Cloth)
+  * **Magical** (Magic + Cloth) beats **Brute** (Bludgeon + Metal)
+
+  > **Combat Rule:** Type advantage grants +50% damage, disadvantage gives -50% damage
+</div>
+
+## Critical Hits
+
+<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '1px solid #a855f7', margin: '1rem 0' }}>
+  Critical hits provide bonus damage based on your LUCK stat:
+
+  ### Critical Hit Chance
+
+  ```
+  Crit Chance = LUCK / 100 (%)
+  ```
+
+  | LUCK | Crit Chance |
+  | ---- | ----------- |
+  | 0    | 0%          |
+  | 25   | 25%         |
+  | 50   | 50%         |
+  | 75   | 75%         |
+  | 100  | 100%        |
+
+  ### Critical Hit Damage
+
+  When a critical hit occurs, bonus damage is added:
+
+  * **Minimum bonus:** 20% of elemental-adjusted damage
+  * **Maximum bonus:** 100% of elemental-adjusted damage
+  * The actual bonus is randomly determined between these values
+</div>
+
+## Name Match Bonuses
+
+<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #10b981', margin: '1rem 0' }}>
+  High-level beasts (19+) and items (Greatness 19+) have special name prefixes that provide combat bonuses when matched.
+
+  ### Name Structure
+
+  Items and beasts can have names like "**Whisper** **Glow** Demon" where:
+
+  * **Prefix 1:** "Whisper" (primary name)
+  * **Prefix 2:** "Glow" (secondary name)
+
+  ### Bonus Calculation
+
+  | Match Type         | Damage Multiplier  |
+  | ------------------ | ------------------ |
+  | **Prefix 2 Match** | 20-100% bonus      |
+  | **Prefix 1 Match** | 4-7× damage        |
+  | **Both Match**     | Cumulative bonuses |
+
+  > **Pro Tip:** Collecting items with matching names to high-level beasts provides massive damage bonuses!
+</div>
+
+## Strength Bonus
+
+<div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0' }}>
+  The Strength stat provides a direct damage increase:
+
+  ```
+  Strength Bonus = (Elemental Adjusted Damage × STR) / 10
+  ```
+
+  | STR | Damage Increase |
+  | --- | --------------- |
+  | 0   | +0%             |
+  | 5   | +50%            |
+  | 10  | +100%           |
+  | 15  | +150%           |
+  | 20  | +200%           |
+</div>
+
+## Combat Example
+
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0' }}>
+  **Scenario:** Level 10 Adventurer with T3 Blade attacking a Beast with T4 Hide armor
+
+  ```
+  1. Base Attack = 10 (level) × (6 - 3) = 10 × 3 = 30
+  2. Elemental: Blade vs Hide = Fair (no change) = 30
+  3. Strength Bonus (STR=5): 30 × 0.5 = +15
+  4. No critical hit
+  5. Total Attack = 30 + 15 = 45
+
+  Beast Defense = 10 (level) × (6 - 4) = 10 × 2 = 20
+
+  Final Damage = 45 - 20 = 25 HP
+  ```
+
+  **Alternative with Type Advantage:**
+
+  ```
+  If using T3 Bludgeon vs Hide armor (Strong advantage):
+  1. Base Attack = 30 (same as above)
+  2. Elemental Effect = 30 / 2 = 15
+     Adjusted Attack = 30 + 15 = 45 (+50% damage)
+  3. Strength Bonus (STR=5): 45 × 0.5 = +22
+  5. Total Attack = 45 + 22 = 67
+  Final Damage = 67 - 20 = 47 HP (nearly 2× damage!)
+  ```
+</div>
+
+## Combat Strategy Tips
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0' }}>
+  ### Optimization Guidelines
+
+  1. **Prioritize Type Advantages** - +50% damage is a significant boost
+  2. **Stack STR for Consistent Damage** - Linear scaling with no cap
+  3. **LUCK for Burst Potential** - Critical hits can turn battles
+  4. **Match Tier to Level** - Higher tier = more base damage
+  5. **Name Matching Endgame** - Massive multipliers at high levels
+
+  ### Common Pitfalls
+
+  * Fighting with type disadvantage (-50% damage reduction)
+  * Neglecting STR investment (missing easy damage boost)
+  * Using low-tier weapons at high levels
+  * Ignoring name match opportunities
+</div>
+
+## See Also
+
+* [Battle Guide](/lootsurvivor/guide/battle) - Combat interface and tactics
+* [Stats Guide](/lootsurvivor/stats) - Detailed stat explanations
+* [Loot System](/lootsurvivor/loot) - Equipment and tier information
+
+
+
+---
+
+file: docs/lootsurvivor/faq.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Frequently Asked Questions
+
+## General Questions
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0' }}>
+  ### 🎮 What is Loot Survivor?
+
+  Loot Survivor is a fully onchain dungeon crawler RPG built on StarkNet. Every action, from combat to loot generation, happens directly on the blockchain, making the game transparent, verifiable, and permanent.
+
+  > **Key Point:** Your achievements live forever on the blockchain!
+</div>
+
+### Is Loot Survivor free to play?
+
+Yes Loot Survivor has a completely free game mode for players to practice their skills. For the full dungeon experience a ticket is required to enter which is purchased from an Ekubo dca pool. No gas required.
+
+### 🔧 What do I need to play?
+
+<div style={{ background: '#1a2332', padding: '1rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0' }}>
+  | Requirement | Free Version | Full Version | Details                              |
+  | ----------- | ------------ | ------------ | ------------------------------------ |
+  | **Wallet**  | Not Required | Essential    | Cartridge Controller for VRF support |
+  | **Gas/ETH** | Not Required | Not Required | No gas fees for either version       |
+  | **Ticket**  | Not Required | Required     | Purchase from Ekubo for full dungeon |
+  | **Browser** | Essential    | Essential    | Chrome, Firefox, Safari, Edge        |
+  | **LORDS**   | Not Required | Optional     | For special tournament modes         |
+
+  > **Free Version:** Practice mode without wallet • **Full Version:** Complete experience with dungeon ticket
+</div>
+
+### Is the game mobile-friendly?
+
+Yes! Loot Survivor has a fully responsive design with a dedicated mobile interface optimized for touch controls and smaller screens.
+
+## Gameplay Questions
+
+### How do I start playing?
+
+Just choose your game mode and click "New Game" to start exploring! See the [Getting Started Guide](/lootsurvivor/guide/getting-started) for detailed instructions.
+
+### What happens when my adventurer dies?
+
+Death is permanent - your adventurer's journey ends but earned assets remain onchain forever. Start a new adventure anytime. Learn more in the [Getting Started Guide](/lootsurvivor/guide/getting-started).
+
+### Can I have multiple adventurers?
+
+Yes! Each adventurer is a separate NFT with unique progression. See [Getting Started Guide](/lootsurvivor/guide/getting-started) for details.
+
+### ⚔️ How does combat work?
+
+Turn-based combat with rock-paper-scissors type advantages (±50% damage). Each weapon/armor type beats one and loses to another.
+
+See detailed guides: [Battle Guide](/lootsurvivor/guide/battle) • [Combat Mechanics](/lootsurvivor/combat)
+
+### 📊 What are the different stats and what do they do?
+
+Seven core stats: STR (damage), DEX (flee), VIT (HP), INT (obstacles), WIS (ambush), CHA (prices), LUCK (crits). Each affects combat and exploration differently.
+
+Full details: [Stats Guide](/lootsurvivor/stats)
+
+### How do items work?
+
+5 tiers (T5 common → T1 legendary). Items level up and unlock suffixes (Lv15) and prefixes (Lv20) for bonuses.
+
+See: [Loot Guide](/lootsurvivor/loot)
+
+### What's the best strategy?
+
+No single best strategy! Focus on type advantages, stat balance, tactical decisions, and resource management.
+
+Strategies covered in: [Battle Guide](/lootsurvivor/guide/battle) • [Getting Started](/lootsurvivor/guide/getting-started)
+
+## Technical Questions
+
+<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '1px solid #a855f7', margin: '1rem 0' }}>
+  ### ⛓️ What blockchain is Loot Survivor on?
+
+  Loot Survivor runs on **StarkNet**, a Layer 2 scaling solution for Ethereum.
+
+  | Feature         | Benefit                  |
+  | --------------- | ------------------------ |
+  | **Low Fees**    | \< $0.01 per transaction |
+  | **High Speed**  | 1-3 second confirmations |
+  | **Security**    | Ethereum-level security  |
+  | **Scalability** | Thousands of TPS         |
+</div>
+
+### Are the game outcomes truly random?
+
+Uses VRF (Verifiable Random Function) seeds by default for true randomness. Can be configured to use deterministic seeds in settings.
+
+Technical details: [Architecture Overview](/lootsurvivor/technical/architecture)
+
+### Can I verify the game logic?
+
+Yes! All contracts are open source and verified on StarkNet. You can inspect the code on [GitHub](https://github.com/Provable-Games/death-mountain) and verify any game action onchain.
+
+### What is Dojo?
+
+StarkNet game engine framework using Entity-Component-System architecture for efficient onchain state management.
+
+Learn more: [Technical Architecture](/lootsurvivor/technical/architecture)
+
+### How are gas fees kept low?
+
+Optimizations: packed storage, batch operations, efficient algorithms, plus StarkNet's L2 scaling benefits.
+
+Details: [Technical Architecture](/lootsurvivor/technical/architecture)
+
+## Economic Questions
+
+### What are LORDS tokens?
+
+LORDS is the native token of the Realms ecosystem. In Loot Survivor, LORDS can be used for:
+
+* Entry fees for special game modes
+* Purchasing premium features
+* Tournament entries
+
+### How does the market work?
+
+The in-game market:
+
+* Refreshes when you level up
+* Uses VRF seeds for item generation
+* Prices decrease with Charisma
+* No real money transactions between players
+
+### Can I trade items with other players?
+
+Currently, direct player-to-player trading is not implemented. All trading happens through the in-game market system.
+
+### 🏆 Are there rewards for playing?
+
+<div style={{ background: '#2a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #eab308', margin: '1rem 0' }}>
+  | Game Mode          | Rewards                            | Frequency |
+  | ------------------ | ---------------------------------- | --------- |
+  | **Standard Play**  | Leaderboard rankings, achievements | Always    |
+  | **Tournaments**    | Prize pools (100-10,000 LORDS)     | Weekly    |
+  | **Special Events** | NFTs, exclusive items              | Monthly   |
+  | **Seasonal**       | Unique titles, cosmetics           | Quarterly |
+
+  > **💰 Current Prize Pool:** Check Discord for latest tournament info!
+</div>
+
+## Wallet & Account Questions
+
+### Which wallets are supported?
+
+**For VRF (Tournament) Mode:**
+
+* Cartridge Controller (required for VRF compatibility)
+
+**For Standard Mode:**
+
+* Any StarkNet-compatible wallet (Argent X, Braavos, etc.)
+
+### I lost access to my wallet. Can I recover my adventurer?
+
+If you lose wallet access, you lose access to your adventurers. Always keep your recovery phrase secure and backed up.
+
+### Can I play on multiple devices?
+
+Yes! Your adventurers are tied to your wallet address, not your device. You can play from any device where you can access your wallet.
+
+### Why do transactions sometimes fail?
+
+Common reasons:
+
+* Insufficient gas fees
+* Network congestion
+* Wallet not properly connected
+* Game state changed (e.g., beast already defeated)
+
+## Advanced Questions
+
+### Can I build on top of Loot Survivor?
+
+Yes! Loot Survivor is open source and designed to be composable. You can:
+
+* Build custom frontends
+* Create analytical tools
+* Extend game mechanics
+* Integrate with other protocols
+
+### How do I integrate Loot Survivor into my app?
+
+See our [Integration Guide](/lootsurvivor/technical/integration) for detailed instructions on building with Loot Survivor's contracts.
+
+### What's the maximum level?
+
+There's no hard level cap. The theoretical maximum depends on your ability to survive increasingly difficult challenges.
+
+### How are beasts generated?
+
+Beasts are generated from VRF seeds based on:
+
+* Your adventurer's level
+* A random seed value
+* Tier distribution tables
+
+See: [Combat Mechanics](/lootsurvivor/combat)
+
+### Can I predict market items?
+
+No - market items use VRF seeds for true randomness (unless configured otherwise in settings).
+
+See: [Technical Architecture](/lootsurvivor/technical/architecture)
+
+## Troubleshooting
+
+<div style={{ background: '#3e1a1a', padding: '1rem', borderRadius: '8px', border: '2px solid #dc2626', margin: '1rem 0' }}>
+  ### 🔧 The game won't load
+
+  **Quick Fix Checklist:**
+
+  | Step | Action                                                 | Success Rate |
+  | ---- | ------------------------------------------------------ | ------------ |
+  | 1    | Clear browser cache (Ctrl+Shift+Del)                   | 40%          |
+  | 2    | Disable ad blockers                                    | 25%          |
+  | 3    | Try Chrome/Firefox                                     | 20%          |
+  | 4    | Check [status.starknet.io](https://status.starknet.io) | 10%          |
+  | 5    | Enable JavaScript                                      | 5%           |
+
+  > **💡 Most Common:** Ad blockers interfere with wallet connection!
+</div>
+
+### Transactions are stuck
+
+Wait for network congestion to clear, check block explorer, refresh page, or reconnect wallet.
+
+More help: [Getting Started Guide](/lootsurvivor/guide/getting-started)
+
+### I can't connect my wallet
+
+Ensure wallet is installed/unlocked, check network, refresh page, try different browser, or update wallet.
+
+Setup help: [Getting Started Guide](/lootsurvivor/guide/getting-started)
+
+### The game shows incorrect data
+
+Sync issue - refresh page, clear cache, reconnect wallet, or wait for indexer.
+
+Troubleshooting: [Getting Started Guide](/lootsurvivor/guide/getting-started)
+
+## Community Questions
+
+### How can I contribute?
+
+* Report bugs on [GitHub](https://github.com/Provable-Games/death-mountain/issues)
+* Suggest features in Discord
+* Build tools and integrations
+* Create content and guides
+* Participate in governance
+
+### Where can I get help?
+
+* [Discord Community](https://discord.gg/Q36rUxS66c)
+* [Twitter](https://twitter.com/lootsurvivor)
+* [GitHub Discussions](https://github.com/Provable-Games/death-mountain/discussions)
+
+### Are there tournaments?
+
+Yes! Regular tournaments with prize pools are held. Check Discord for announcements and schedules.
+
+### Can I stream or create content about Loot Survivor?
+
+Absolutely! We encourage content creation. Tag us on social media so we can share your content with the community.
+
+## Future Development
+
+### What features are coming?
+
+Planned features include:
+
+* Multiplayer dungeons
+* Guild systems
+* Crafting mechanics
+* Quest system
+* Achievement system
+* More beast types
+* Custom dungeons
+
+### Will there be a mobile app?
+
+While the web version is mobile-optimized, native mobile apps may be developed in the future based on community demand.
+
+### Are there plans for other chains?
+
+Currently focused on StarkNet, but the architecture allows for potential multi-chain deployment in the future.
+
+### How can I stay updated?
+
+Follow us on:
+
+* [Twitter](https://twitter.com/lootsurvivor)
+* [Discord](https://discord.gg/Q36rUxS66c)
+* [GitHub](https://github.com/Provable-Games/death-mountain)
+
+## Legal & Safety
+
+### Is Loot Survivor audited?
+
+The smart contracts have undergone security reviews. However, as with all blockchain applications, use at your own risk.
+
+### Is this gambling?
+
+Loot Survivor is a skill-based game with random elements. The outcome depends on player decisions and strategy, not purely chance.
+
+### What data is collected?
+
+Only onchain data (transactions, game actions) is recorded. No personal information is collected or stored off-chain.
+
+### Can I lose money playing?
+
+You pay gas fees for transactions and potentially entry fees for certain game modes. Never spend more than you can afford to lose.
+
+## Getting More Help
+
+If your question isn't answered here:
+
+1. Check the [comprehensive guides](/lootsurvivor/guide)
+2. Read the [technical documentation](/lootsurvivor/technical/architecture)
+3. Ask in [Discord](https://discord.gg/Q36rUxS66c)
+4. Open a [GitHub issue](https://github.com/Provable-Games/death-mountain/issues)
+
+Remember: The community is here to help! Don't hesitate to ask questions and share your experiences.
+
+
+
+---
+
+file: docs/lootsurvivor/game-modes.mdx
+meta: {}
+
+
+
+
+---
+
+file: docs/lootsurvivor/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+import { ContractTable } from "../../components/ContractTable";
+import { Button } from "vocs/components";
+
+![Overview](docs/ls2-banner.png)
+
+# Loot Survivor
+
+Loot Survivor is a fully onchain dungeon crawler RPG built on StarkNet using the Dojo engine. Navigate through procedurally generated dungeons, battle fierce beasts, overcome deadly obstacles, and collect legendary loot in your quest for survival and glory.
+
+<Button href="https://lootsurvivor.io" target="_blank" className="bg-white text-black" size="lg">
+  Play Now
+</Button>
+
+## Overview
+
+Death Mountain powers Loot Survivor - a token-agnostic, no-code onchain dungeon creator that provides a complete RPG experience. Every action, from combat to loot generation, is verifiable and deterministic on the blockchain.
+
+### Key Features
+
+<div
+  style={{
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+  gap: "1rem",
+  margin: "2rem 0",
+}}
+>
+  <div
+    style={{
+    background: "#1a1a1a",
+    padding: "1rem",
+    borderRadius: "8px",
+    border: "1px solid #333",
+  }}
+  >
+    <h4>🗡️ Deep RPG Mechanics</h4>
+    <p>7 core stats, 8 equipment slots, and level-based progression</p>
+  </div>
+
+  <div
+    style={{
+    background: "#1a1a1a",
+    padding: "1rem",
+    borderRadius: "8px",
+    border: "1px solid #333",
+  }}
+  >
+    <h4>👾 75 Unique Beasts</h4>
+    <p>From lowly gnomes to mighty dragons, each with distinct behaviors</p>
+  </div>
+
+  <div
+    style={{
+    background: "#1a1a1a",
+    padding: "1rem",
+    borderRadius: "8px",
+    border: "1px solid #333",
+  }}
+  >
+    <h4>⚡ 75 Deadly Obstacles</h4>
+    <p>Magical, sharp, and crushing hazards to overcome</p>
+  </div>
+
+  <div
+    style={{
+    background: "#1a1a1a",
+    padding: "1rem",
+    borderRadius: "8px",
+    border: "1px solid #333",
+  }}
+  >
+    <h4>💎 101 Unique Items</h4>
+    <p>Tier-based loot system with evolving item powers</p>
+  </div>
+
+  <div
+    style={{
+    background: "#1a1a1a",
+    padding: "1rem",
+    borderRadius: "8px",
+    border: "1px solid #333",
+  }}
+  >
+    <h4>🏪 Dynamic Market</h4>
+    <p>Charisma-based pricing and rotating inventory</p>
+  </div>
+
+  <div
+    style={{
+    background: "#1a1a1a",
+    padding: "1rem",
+    borderRadius: "8px",
+    border: "1px solid #333",
+  }}
+  >
+    <h4>🎲 Verifiable Randomness</h4>
+    <p>Optional VRF integration for true randomness</p>
+  </div>
+
+  <div
+    style={{
+    background: "#1a1a1a",
+    padding: "1rem",
+    borderRadius: "8px",
+    border: "1px solid #333",
+  }}
+  >
+    <h4>⛓️ Fully Onchain</h4>
+    <p>All game logic executed on StarkNet</p>
+  </div>
+</div>
+
+## Game Systems
+
+### Adventurer System
+
+Create and develop your character with comprehensive RPG mechanics:
+
+* **Stats**: Strength, Dexterity, Vitality, Intelligence, Wisdom, Charisma, Luck
+* **Equipment**: Weapon, Chest, Head, Waist, Foot, Hand, Neck, Ring slots
+* **Progression**: XP-based leveling with stat point allocation
+* **Health**: Starting HP of 100, scalable with Vitality
+
+### Combat System
+
+Engage in strategic turn-based combat:
+
+* **Beast Encounters**: Fight 75 different beast types with scaling difficulty
+* **Combat Types**: Weapon triangle system (Magic > Hide > Metal > Magic)
+* **Critical Hits**: High-level beasts and lucky strikes
+* **Flee Mechanics**: Dexterity-based escape chances
+
+### Exploration
+
+Navigate through dangerous dungeons:
+
+* **Obstacles**: 75 unique environmental hazards
+* **Discovery**: Find items, gold, and XP through exploration
+* **Strategic Choices**: Decide when to fight, flee, or explore
+
+### Item System
+
+Collect and upgrade powerful equipment:
+
+* **Tier System**: T1-T5 items with inverse pricing
+* **Item Evolution**: Items gain "greatness" unlocking suffixes and prefixes
+* **Special Powers**: 16 unique suffixes providing stat bonuses
+* **Type Advantages**: Strategic equipment choices based on enemy types
+
+## Documentation
+
+### 🎮 Getting Started
+
+* [Game Modes](/lootsurvivor/game-modes) - Free vs. Full game modes
+* [Getting Started Guide](/lootsurvivor/guide/getting-started) - Your first adventure
+* [Settings](/lootsurvivor/settings) - Game configuration and VRF options
+* [FAQ](/lootsurvivor/faq) - Frequently asked questions
+
+### ⚔️ Game Mechanics
+
+* [Stats System](/lootsurvivor/stats) - Character attributes and progression
+* [Combat Mechanics](/lootsurvivor/combat) - Damage calculations and formulas
+* [Battle Guide](/lootsurvivor/guide/battle) - Combat tactics and interface
+* [Exploration](/lootsurvivor/guide/explore) - Discovery and obstacles
+* [Character Upgrade](/lootsurvivor/guide/upgrade) - Leveling and stat allocation
+
+### 🎒 Items & Creatures
+
+* [Loot System](/lootsurvivor/loot) - Equipment, tiers, and bonuses
+  * [Jewelry](/lootsurvivor/loot/jewelry) - Rings, amulets, and accessories
+  * [Suffix Boosts](/lootsurvivor/loot/suffix-boost) - Item enhancement system
+  * [Prefixes](/lootsurvivor/loot/prefixes) - Complete prefix and suffix reference
+* [Beasts](/lootsurvivor/beasts) - Combat types, tiers, and strategies
+  * [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Achievement system
+
+## Smart Contracts
+
+<ContractTable
+  contracts={[
+  [
+    {
+      name: "Game",
+      address:
+        "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3",
+    },
+    {
+      name: "Game",
+      address:
+        "0x1e1c477f2ef896fd638b50caa31e3aa8f504d5c6cb3c09c99cd0b72523f07f7",
+    },
+  ],
+  [
+    {
+      name: "Adventurer",
+      address:
+        "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3",
+    },
+    {
+      name: "Adventurer",
+      address:
+        "0x3befa9c969bf82bbfa0a96374da9f7aab172101298c0ff2611ec8c2fd02692",
+    },
+  ],
+  [
+    {
+      name: "Beast",
+      address:
+        "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3",
+    },
+    {
+      name: "Beast",
+      address:
+        "0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038",
+    },
+  ],
+  [
+    {
+      name: "Loot",
+      address:
+        "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3",
+    },
+    {
+      name: "Loot",
+      address:
+        "0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038",
+    },
+  ],
+]}
+/>
+
+## Quick Links
+
+* [GitHub Repository](https://github.com/Provable-Games/death-mountain)
+* [Discord Community](https://discord.gg/Q36rUxS66c)
+* [Twitter](https://twitter.com/lootsurvivor)
+
+
+
+---
+
+file: docs/lootsurvivor/settings.mdx
+meta: {}
+
+
+
+
+---
+
+file: docs/lootsurvivor/stats.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Stats
+
+Understanding and optimizing your adventurer's stats is crucial for survival in Loot Survivor. Each of the seven core stats plays a vital role in different aspects of gameplay, from combat effectiveness to market efficiency. Master stat allocation to create powerful builds tailored to your playstyle!
+
+## Stats Overview
+
+<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '2px solid #3b82f6', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    Every adventurer has **7 core stats** that define their capabilities:
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    * **Physical Stats**: Strength, Dexterity, Vitality
+    * **Mental Stats**: Intelligence, Wisdom, Charisma
+    * **Metaphysical**: Luck (special stat with unique mechanics)
+  </div>
+
+  > **📈 Progression Note:** You gain 1 stat point per level to allocate freely, except for Luck which can only be increased through items!
+</div>
+
+## The Seven Core Stats
+
+### Physical Stats
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
+  <div style={{ background: '#2a1a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc2626' }}>
+    #### 💪 Strength (STR)
+
+    **Primary Effect:** Boosts attack damage by 10%
+
+    | Aspect            | Details                   |
+    | ----------------- | ------------------------- |
+    | **Damage Bonus**  | +10% attack damage        |
+    | **Weapon Types**  | All physical weapons      |
+    | **Scaling**       | Linear (2-3 damage/point) |
+    | **Max Effective** | No cap                    |
+
+    **Build Synergy:**
+
+    * Pairs with VIT for tank builds
+    * Combines with LUCK for crit builds
+    * Essential for melee fighters
+
+    > **⚔️ Pro Tip:** 10 STR doubles your attack damage output!
+  </div>
+
+  <div style={{ background: '#1a2a2a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #10b981' }}>
+    #### 🏃 Dexterity (DEX)
+
+    **Primary Effect:** Improves chances of successfully fleeing
+
+    | Aspect           | Details                |
+    | ---------------- | ---------------------- |
+    | **Flee Success** | DEX/Level ratio        |
+    | **Base Formula** | Success% = DEX/Level   |
+    | **Scaling**      | Linear with ratio      |
+    | **Future**       | Will affect initiative |
+
+    **Flee Success Formula:**
+
+    ```
+    Success% = (DEX / Level) × 100
+    ```
+
+    > **🏃 Escape Artist:** DEX equal to your level = guaranteed escape!
+  </div>
+
+  <div style={{ background: '#1a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7' }}>
+    #### ❤️ Vitality (VIT)
+
+    **Primary Effect:** Increases max health and current by +15HP
+
+    | Aspect       | Details                  |
+    | ------------ | ------------------------ |
+    | **HP Bonus** | +15 HP per point         |
+    | **Base HP**  | 100 at level 1           |
+    | **Healing**  | Also heals when upgraded |
+    | **Scaling**  | Unlimited                |
+
+    **Health Calculation:**
+
+    ```
+    Max HP = 100 + (VIT × 15)
+    ```
+
+    | VIT | Total HP | Survivability |
+    | --- | -------- | ------------- |
+    | 0   | 100      | Fragile       |
+    | 10  | 250      | Sturdy        |
+    | 20  | 400      | Tanky         |
+    | 30  | 550      | Unkillable    |
+
+    > **🛡️ Tank Secret:** VIT upgrades heal you instantly - use strategically!
+  </div>
+</div>
+
+### Mental Stats
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
+  <div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7' }}>
+    #### 🧠 Intelligence (INT)
+
+    **Primary Effect:** Aids in avoiding obstacles
+
+    | Aspect                 | Details                             |
+    | ---------------------- | ----------------------------------- |
+    | **Obstacle Avoidance** | INT/Level ratio                     |
+    | **Base Formula**       | Success% = INT/Level                |
+    | **Application**        | Environmental hazards               |
+    | **Special**            | Complete obstacle immunity possible |
+
+    **Obstacle Avoidance Formula:**
+
+    ```
+    Avoidance% = (INT / Level) × 100
+    ```
+
+    | INT/Level Ratio | Avoidance Rate |
+    | --------------- | -------------- |
+    | 0.5             | 50%            |
+    | 1.0             | 100%           |
+    | 1.5             | 100% (capped)  |
+    | 2.0+            | 100% (capped)  |
+
+    > **🧠 Intelligence Power:** High INT builds can completely avoid obstacle damage!
+  </div>
+
+  <div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #eab308' }}>
+    #### 📚 Wisdom (WIS)
+
+    **Primary Effect:** Helps evade beast ambushes and improves exploration
+
+    | Aspect             | Details                  |
+    | ------------------ | ------------------------ |
+    | **Ambush Evasion** | Level-based formula      |
+    | **Exploration**    | Better discovery rates   |
+    | **Future**         | Spell cooldowns, secrets |
+    | **Scaling**        | Percentage-based         |
+
+    **Ambush Avoidance Formula:**
+
+    ```
+    Evasion% = (WIS / Level) × 100
+    ```
+
+    | WIS | At Level 10 | At Level 20 |
+    | --- | ----------- | ----------- |
+    | 5   | 50%         | 25%         |
+    | 10  | 100%        | 50%         |
+    | 15  | 150% (cap)  | 75%         |
+
+    > **👁️ Foresight:** High WIS reveals hidden treasures and paths!
+  </div>
+
+  <div style={{ background: '#3e2a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #f59e0b' }}>
+    #### 😎 Charisma (CHA)
+
+    **Primary Effect:** Gives gold discount on items and health potions
+
+    | Aspect           | Details          |
+    | ---------------- | ---------------- |
+    | **Discount**     | -1% per point    |
+    | **Max Discount** | \~50% practical  |
+    | **Applies To**   | All market items |
+    | **Future**       | NPC interactions |
+
+    **Price Calculation:**
+
+    ```
+    Final Price = Base Price × (1 - CHA/100)
+    ```
+
+    | CHA | Discount | 100g Item | 50g Potion |
+    | --- | -------- | --------- | ---------- |
+    | 0   | 0%       | 100g      | 50g        |
+    | 10  | 10%      | 90g       | 45g        |
+    | 20  | 20%      | 80g       | 40g        |
+    | 30  | 30%      | 70g       | 35g        |
+
+    > **💰 Economy Master:** 30 CHA saves 30% on everything!
+  </div>
+</div>
+
+### Metaphysical Stat
+
+<div style={{ background: '#2a1a2a', padding: '2rem', borderRadius: '8px', border: '2px solid #10b981', margin: '2rem 0' }}>
+  #### 🍀 Luck (LUCK)
+
+  **The Special Stat** - Raises chances of critical damage and cannot be upgraded directly!
+
+  | Aspect              | Details           |
+  | ------------------- | ----------------- |
+  | **Critical Chance** | LUCK / 100        |
+  | **Base Crit**       | 0% at 0 LUCK      |
+  | **Max Crit**        | 100% at 100 LUCK  |
+  | **Loot Quality**    | Better drop rates |
+  | **How to Increase** | Equipment only    |
+
+  **Critical Hit Mechanics:**
+
+  ```
+  Crit Chance = LUCK / 100
+  Crit Damage = Base Damage × 2
+  Max LUCK = 100 (100% crit chance)
+  ```
+
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', margin: '1rem 0' }}>
+    <div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px' }}>
+      **Luck Sources:**
+
+      * Jewelry items (Rings, Amulets)
+      * "of Fortune" suffix items
+      * Special legendary items
+      * Temporary buffs (future)
+    </div>
+
+    <div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px' }}>
+      **Crit Chance Examples:**
+
+      | LUCK | Crit Chance | Combat Impact  |
+      | ---- | ----------- | -------------- |
+      | 0    | 0%          | No crits       |
+      | 25   | 25%         | 1 in 4 hits    |
+      | 50   | 50%         | Half your hits |
+      | 75   | 75%         | 3 in 4 hits    |
+      | 100  | 100%        | Every hit!     |
+    </div>
+  </div>
+
+  > **🎰 RNG Master:** Stack LUCK items for massive critical damage and legendary drops!
+</div>
+
+## Conclusion
+
+Stats are the foundation of every successful adventurer in Loot Survivor. Whether you choose to be an unstoppable tank, a glass cannon dealing massive damage, or a nimble escape artist, understanding stat mechanics is key to survival. Remember: there's no single "best" build - the optimal stat distribution depends on your playstyle, the items you find, and your ability to adapt to the dungeon's challenges.
+
+> **🏆 Final Wisdom:** The best stat allocation is one that keeps you alive and progressing. When in doubt, add VIT!
 
 
 
@@ -2317,6 +3383,4090 @@ Within the Game contract, you will store the settings for a particular id in the
 * For more on minting and using settings, see [Embedding Games](/embeddable-game-standard/implementation/embedding-games) and [Key Functions](/embeddable-game-standard/key-functions).
 
 If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
+
+
+
+---
+
+file: docs/lootsurvivor/beasts/collectibles.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Beast Collectibles
+
+In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint an NFT to your wallet.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', margin: '2rem 0', textAlign: 'center' }}>
+  <div>
+    <img
+      src="/docs/lootsurvivor/pixel-warlock.svg"
+      alt="Warlock - Magical Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #a855f7",
+  }}
+    />
+
+    <h4 style={{ color: "#a855f7", margin: "0.75rem 0 0.25rem" }}>🪄 Magical</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Warlock - T1 Legendary
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/pixel-dragon.svg"
+      alt="Dragon - Hunter Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #10b981",
+  }}
+    />
+
+    <h4 style={{ color: "#10b981", margin: "0.75rem 0 0.25rem" }}>🏹 Hunter</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Dragon - T1 Legendary
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/pixel-kraken.svg"
+      alt="Kraken - Brute Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #dc2626",
+  }}
+    />
+
+    <h4 style={{ color: "#dc2626", margin: "0.75rem 0 0.25rem" }}>🔨 Brute</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Kraken - T1 Legendary
+    </p>
+  </div>
+</div>
+
+## Beast Mode NFT System
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.6' }}>
+  **NFT Minting:** Defeating uncollected named beasts automatically mints collectible NFTs to your wallet
+
+  **Beast Mode Features:**
+
+  * **Named Beast Focus**: Only special named beasts (Level 19+) mint NFTs
+  * **First Victory Bonus**: NFTs only mint on first defeat of each named beast
+  * **Automatic Collection**: No manual claiming - NFTs appear directly in your wallet
+  * **Permanent Ownership**: Each NFT represents a unique named beast victory
+
+  > **Collect Them All:** Build your personal gallery of defeated legendary named beasts!
+</div>
+
+### 🎨 NFT Visual Rarity & Properties
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1.5rem' }}>
+    **NFT Visual Rarities:**
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    | Visual Type          | Rarity Chance | Description                | Collection Value |
+    | -------------------- | ------------- | -------------------------- | ---------------- |
+    | **Standard**         | 92.16%        | Regular static beast image | Base             |
+    | **Animated Only**    | 3.84%         | Moving/animated beast NFT  | Rare             |
+    | **Shiny Only**       | 3.84%         | Shimmering visual effects  | Rare             |
+    | **Animated + Shiny** | 0.16%         | Both animated AND shiny    | Ultra Rare       |
+  </div>
+
+  <div style={{ marginBottom: '1.5rem' }}>
+    **NFT Metadata (All Beasts Include):**
+  </div>
+
+  <div style={{ marginBottom: '0' }}>
+    * **Health**: Beast's health when first discovered
+    * **Tier Level**: T1 (Legendary) through T5 (Common)
+    * **Beast Name**: Base creature name (e.g., "Warlock", "Dragon")
+    * **Prefix**: Special name prefix if applicable (e.g., "Doom", "Blood")
+    * **Victory Timestamp**: Onchain record of when defeated
+  </div>
+</div>
+
+## NFT Minting Requirements
+
+<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eab308', margin: '1rem 0', lineHeight: '1.6' }}>
+  ### Named Beast NFT Mechanics
+
+  **Level Requirement:** Only beasts level 19+ can gain special names and mint NFTs\
+  **Name Structure:** \[Prefix] + \[Beast Name] = Unique NFT\
+  **Example:** "Doom Phoenix" or "Blood Kraken" mint as separate collectibles
+
+  ### NFT Minting Rules
+
+  **First Victory Only:** Each named beast can only mint one NFT per wallet\
+  **Automatic Process:** No manual claiming - NFT appears immediately after victory\
+  **Unique Metadata:** Each NFT contains beast stats, prefix, and victory timestamp\
+  **Permanent Record:** NFTs serve as proof of your legendary victories
+
+  ### Available Prefixes (69 Total NFT Variants)
+
+  Named beasts use the same prefix system as high-greatness items. For the complete list of all 69 prefixes organized by theme, see: **[Prefixes Guide](/lootsurvivor/loot/prefixes)**
+
+  **Notable Ultra Rare Prefixes:**
+
+  * **Shimmering** (#69) - The rarest and most valuable prefix
+  * **Lights** (#68) - Extremely uncommon and highly sought after
+
+  > **Complete Reference:** Visit the loot section for the full categorized list of all 69 prefixes!
+</div>
+
+## NFT Ownership Benefits
+
+### Digital Asset Value
+
+* **True Ownership**: NFTs belong to you, not the game
+* **Transferable Assets**: Trade or sell your named beast NFTs
+* **Provable Rarity**: Onchain verification of NFT scarcity
+* **Permanent Record**: Victory achievements stored forever on StarkNet
+
+### Collection Advantages
+
+* **Portfolio Building**: Curate valuable named beast collections
+* **Community Status**: Display rare NFTs as proof of skill
+* **Market Participation**: Engage in NFT trading and collecting
+* **Cross-Game Recognition**: Potential utility in future Realms ecosystem games
+
+### Future Utility
+
+* **Summit Game Access**: Beast NFT holders get exclusive access to compete in Summit, a new upcoming game
+* **Enhanced Gameplay**: NFTs may unlock special features across the ecosystem
+* **Community Events**: Exclusive tournaments for NFT holders
+* **Ecosystem Integration**: Use named beast NFTs across multiple Realms games
+* **Social Features**: Show off your legendary victories and exclusive access
+
+## Community & Competition
+
+### Leaderboards
+
+* **First Completionist**: Race to complete full beast collection
+* **Named Beast Masters**: Specialists in rare named variants
+* **Speed Collections**: Fastest time to collection milestones
+* **Type Champions**: Masters of specific beast type collections
+
+### Social Sharing
+
+* **Discord Showcases**: Share rare beast victories with community
+* **Collection Galleries**: Display complete collections as achievements
+* **Strategy Guides**: Share successful beast hunting approaches
+
+***
+
+*Beast collections represent the ultimate test of adventurer skill, patience, and strategic thinking. Every encounter contributes to your permanent legacy in the Loot Survivor universe.*
+
+## See Also
+
+* [Beast Overview](/lootsurvivor/beasts) - Complete beast guide and combat types
+* [Combat Mechanics](/lootsurvivor/combat) - Damage calculations and combat system
+* [Battle Guide](/lootsurvivor/guide/battle) - Tactical combat strategies
+
+
+
+---
+
+file: docs/lootsurvivor/beasts/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Beasts
+
+Beasts are the creatures you'll encounter and battle throughout your adventures in Loot Survivor. Understanding beast types, tiers, and combat advantages is crucial for survival and progression.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', margin: '2rem 0', textAlign: 'center' }}>
+  <div>
+    <img
+      src="/docs/lootsurvivor/warlock.png"
+      alt="Warlock - Magical Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #a855f7",
+  }}
+    />
+
+    <h4 style={{ color: "#a855f7", margin: "0.75rem 0 0.25rem" }}>🪄 Magical</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Warlock - T1 Legendary
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/dragon.png"
+      alt="Dragon - Hunter Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #10b981",
+  }}
+    />
+
+    <h4 style={{ color: "#10b981", margin: "0.75rem 0 0.25rem" }}>🏹 Hunter</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Dragon - T1 Legendary
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/kraken.png"
+      alt="Kraken - Brute Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #dc2626",
+  }}
+    />
+
+    <h4 style={{ color: "#dc2626", margin: "0.75rem 0 0.25rem" }}>🔨 Brute</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Kraken - T1 Legendary
+    </p>
+  </div>
+</div>
+
+## Beast Overview
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **75 unique beasts** populate Loot Survivor, each with distinct characteristics:
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    * **3 Combat Types**: Magical, Hunter, and Brute
+    * **5 Tiers**: T1 (Legendary) to T5 (Common)
+    * **Special Names**: High-level beasts gain name prefixes at level 19+
+    * **Dynamic Generation**: Each encounter uses VRF seeds for true randomness
+  </div>
+
+  > **Combat Focus:** Every beast follows the rock-paper-scissors combat system - choose your equipment wisely!
+</div>
+
+## Beast Tier System
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  | Tier   | Rarity      | Power Level | Gold Reward | XP Reward | Examples                 |
+  | ------ | ----------- | ----------- | ----------- | --------- | ------------------------ |
+  | **T1** | Legendary   | Highest     | 5× level    | Maximum   | Warlock, Griffin, Kraken |
+  | **T2** | Rare        | High        | 4× level    | High      | Gorgon, Qilin, Titan     |
+  | **T3** | Uncommon    | Medium      | 3× level    | Medium    | Werewolf, Wyvern, Oni    |
+  | **T4** | Common      | Low         | 2× level    | Low       | Goblin, Fenrir, Yeti     |
+  | **T5** | Very Common | Lowest      | 1× level    | Minimum   | Fairy, Bear, Troll       |
+
+  **Reward Formula:** Gold = (Tier Multiplier × Beast Level) ÷ 2
+</div>
+
+## Beast Categories
+
+### 🪄 Magical Beasts (25 Total)
+
+<div style={{ background: '#2a1a3e', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  **T1 Legendary (5):** Warlock, Typhon, Jiangshi, Anansi, Basilisk\
+  **T2 Rare (5):** Gorgon, Kitsune, Lich, Chimera, Wendigo\
+  **T3 Uncommon (5):** Rakshasa, Werewolf, Banshee, Draugr, Vampire\
+  **T4 Common (5):** Goblin, Ghoul, Wraith, Sprite, Kappa\
+  **T5 Very Common (5):** Fairy, Leprechaun, Kelpie, Pixie, Gnome
+</div>
+
+### 🏹 Hunter Beasts (25 Total)
+
+<div style={{ background: '#2a3e1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  **T1 Legendary (5):** Griffin, Manticore, Phoenix, Dragon, Minotaur\
+  **T2 Rare (5):** Qilin, Ammit, Nue, Skinwalker, Chupacabra\
+  **T3 Uncommon (5):** Weretiger, Wyvern, Roc, Harpy, Pegasus\
+  **T4 Common (5):** Hippogriff, Fenrir, Jaguar, Satori, Direwolf\
+  **T5 Very Common (5):** Bear, Wolf, Mantis, Spider, Rat
+</div>
+
+### 🔨 Brute Beasts (25 Total)
+
+<div style={{ background: '#3e1a1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  **T1 Legendary (5):** Kraken, Colossus, Balrog, Leviathan, Tarrasque\
+  **T2 Rare (5):** Titan, Nephilim, Behemoth, Hydra, Juggernaut\
+  **T3 Uncommon (5):** Oni, Jotunn, Ettin, Cyclops, Giant\
+  **T4 Common (5):** Nemeanlion, Berserker, Yeti, Golem, Ent\
+  **T5 Very Common (5):** Troll, Bigfoot, Ogre, Orc, Skeleton
+</div>
+
+## Special Beast Names
+
+<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eab308', margin: '1rem 0', lineHeight: '1.8' }}>
+  ### Naming System
+
+  <div style={{ marginBottom: '1rem' }}>
+    High-level beasts (Level 19+) can gain **special name prefixes** that provide:
+  </div>
+
+  <div style={{ marginBottom: '1.5rem' }}>
+    * **Enhanced Combat Power**: Named beasts are significantly stronger
+    * **Bonus Rewards**: Higher gold and XP rewards
+    * **Collectible Value**: Named beast encounters become permanent achievements
+  </div>
+
+  ### Example Names
+
+  <div style={{ marginBottom: '1rem' }}>
+    **Prefix Examples:** Agony, Apocalypse, Armageddon, Beast, Behemoth, Blood, Death, Demon, Doom, Dragon
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    **Full Named Beast:** "**Doom** **Phoenix**" or "**Blood** **Kraken**"
+  </div>
+
+  > **Pro Tip:** Named beasts are dangerous but offer the best rewards and collectible potential!
+</div>
+
+## Beast Encounter Mechanics
+
+<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.6' }}>
+  ### Generation System
+
+  * **VRF Seeds**: True randomness for beast selection (configurable in settings)
+  * **Level Scaling**: Beast power increases with your adventurer level
+  * **Tier Distribution**: Higher tiers become more common at lower levels
+  * **Special Names**: 19+ level beasts can gain name prefixes randomly
+
+  ### Combat Rewards
+
+  ```
+  Gold Reward = (Tier Multiplier × Beast Level) ÷ 2
+  XP Reward = Minimum 4 + beast tier bonuses
+  ```
+
+  **Bonus Multipliers:**
+
+  * Critical hits from LUCK stat
+  * Name match bonuses (weapon/armor names matching beast names)
+  * Type advantage damage (+50%)
+</div>
+
+## See Also
+
+* [Combat Mechanics](/lootsurvivor/combat) - Detailed damage calculations
+* [Battle Guide](/lootsurvivor/guide/battle) - Combat tactics and interface
+* [Loot System](/lootsurvivor/loot) - Equipment and weapons
+* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Achievement system
+
+
+
+---
+
+file: docs/lootsurvivor/guide/battle.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Combat Guide
+
+Combat in Loot Survivor is where preparation meets execution. Every encounter tests your understanding of type advantages, stat optimization, and tactical decision-making. Master the art of battle to survive Death Mountain's deadliest challenges.
+
+> **🎯 Combat Philosophy:** Every battle is a risk/reward calculation. Sometimes survival means avoiding the fight entirely.
+
+## Battle Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/battle.png"
+    alt="Loot Survivor Battle Screen"
+    style={{
+    width: "100%",
+    display: "block",
+    margin: "0 auto",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+  />
+
+  <br />
+
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Battle interface showing adventurer vs beast encounter
+  </em>
+</div>
+
+### Interface Elements
+
+| Element              | Location   | Function                 | Description                                      |
+| -------------------- | ---------- | ------------------------ | ------------------------------------------------ |
+| **Adventurer Panel** | Left       | Your stats and equipment | Health, damage potential, equipped items         |
+| **Combat Log**       | Center     | Action history           | Damage dealt/taken, critical hits, flee attempts |
+| **Beast Display**    | Right      | Enemy information        | Type, level, health, special abilities           |
+| **Action Bar**       | Bottom     | Combat controls          | Attack, Flee, Switch Gear options                |
+| **Type Indicator**   | Top Center | Advantage display        | Shows damage multipliers and effectiveness       |
+
+***
+
+# Combat Mechanics
+
+## Damage System
+
+Combat damage is calculated using several factors:
+
+* **⚔️ Base Damage** - Weapon tier × level (T1=5×, T2=4×, T3=3×, T4=2×, T5=1×)
+* **🎯 Type Advantage** - +50% when strong, -50% when weak
+* **💪 Strength Bonus** - +10% damage per STR point
+* **✨ Critical Hits** - LUCK/100% chance for 100% bonus damage (see [Combat Mechanics](/lootsurvivor/combat) for details)
+
+## Type Advantage System
+
+The combat system follows a rock-paper-scissors pattern:
+
+**🔨 Brute** (Bludgeon + Metal) → beats **🏹 Hunter** (Blade + Hide) → beats **✨ Magical** (Magic + Cloth) → beats **🔨 Brute**
+
+### Type Advantage Effects
+
+**📈 With Advantage:**
+
+* **Damage Multiplier:** +50%
+* **Example:** 20 base damage → 30 damage output
+* **Visual Cue:** Green damage numbers in combat log
+
+**📉 With Disadvantage:**
+
+* **Damage Multiplier:** -50%
+* **Example:** 20 base damage → 10 damage output
+* **Visual Cue:** Red damage numbers in combat log
+
+***
+
+# Combat Actions
+
+## ⚔️ Attack Options
+
+### Single Attack
+
+Execute one calculated strike against your opponent.
+
+**Stat Influences:**
+
+* **STR:** +10% damage per point
+* **LUCK:** Critical hit chance (LUCK/100%)
+* **Weapon Tier:** Base damage multiplier
+
+**Best for:** Controlled combat, testing damage, conserving resources
+
+### Attack Until Death
+
+Chain attacks automatically until victory or defeat.
+
+**⚠️ High Risk Mode:**
+
+* No control once initiated
+* Fight continues until resolution
+* Cannot flee mid-sequence
+
+**Use when:**
+
+* Beast health is very low
+* You have type advantage
+* Confident in victory
+* Emergency/desperate situations
+
+## 🏃 Flee Mechanics
+
+**Flee Formula:**
+
+```
+Success Rate = (DEX / Level) × 100%
+```
+
+| DEX/Level | Success | Level 10 Example | Level 20 Example |
+| --------- | ------- | ---------------- | ---------------- |
+| 0.5       | 50%     | DEX 5            | DEX 10           |
+| 0.75      | 75%     | DEX 7-8          | DEX 15           |
+| 1.0       | 100%    | DEX 10           | DEX 20           |
+| 1.5       | 100%    | DEX 15           | DEX 30           |
+
+**Key Points:**
+
+* DEX equal to level = 100% success
+* Success rate caps at 100%
+* Failed flee attempts waste a turn
+* Ambush encounters have no additional penalties
+
+## 🛡️ Equipment Switching
+
+Strategic equipment swapping can turn the tide of battle:
+
+| Action                | Cost                   | Benefit                 |
+| --------------------- | ---------------------- | ----------------------- |
+| **Switch Weapon**     | Beast gets free attack | Match type advantage    |
+| **Switch Armor**      | Beast gets free attack | Reduce incoming damage  |
+| **Multiple Switches** | One free attack total  | Complete loadout change |
+
+> **💡 Important:** Bundle all gear changes into one action to minimize the number of free attacks the beast gets.
+
+### Switching Examples
+
+**Scenario 1:** Fighting Magic-type beast with Blade weapon\
+→ Switch to Bludgeon weapon for +50% damage advantage
+
+**Scenario 2:** Taking heavy damage from Bludgeon attacks\
+→ Switch to Cloth armor for 50% damage reduction
+
+**Scenario 3:** Completely mismatched against strong opponent\
+→ Full equipment swap for optimal type coverage
+
+***
+
+# Combat Decision Making
+
+When entering combat, consider these factors:
+
+* **🏃 Flee** - When you have low HP, type disadvantage, or facing a stronger beast
+* **🔄 Switch Gear** - When you have the wrong equipment type and need advantage
+* **⚔️ Attack** - When you have good matchup and are confident in victory
+* **💀 All-Out Attack** - When beast has very low HP and victory is guaranteed
+
+***
+
+# Summary
+
+Combat success in Loot Survivor comes from understanding type advantages, optimizing your stats, and making tactical decisions. Every battle offers multiple approaches - from switching gear for advantages to knowing when discretion is the better part of valor.
+
+**Key Combat Principles:**
+
+* Type advantage provides significant damage bonuses/penalties
+* STR scaling makes strength investment worthwhile for damage dealers
+* DEX equal to your level guarantees successful escapes
+* Gear switching can turn losing fights into victories
+* Sometimes the best fight is the one you avoid
+
+
+
+---
+
+file: docs/lootsurvivor/guide/explore.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Exploration Guide
+
+Exploration is the heart of Loot Survivor's gameplay loop. Every step into the unknown brings potential rewards and deadly dangers. Understanding the exploration system is key to surviving Death Mountain's treacherous depths.
+
+> **🎲 Random Encounters:** Every exploration is a roll of the dice with equal chances for discovery, obstacles, or beasts!
+
+## Exploration Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/explore.png"
+    alt="Loot Survivor Exploration Screen"
+    style={{
+    width: "100%",
+    display: "block",
+    margin: "0 auto",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+  />
+
+  <br />
+
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Exploration interface with adventure log and market
+  </em>
+</div>
+
+### Interface Elements
+
+| Element              | Location   | Function                       | Description                                  |
+| -------------------- | ---------- | ------------------------------ | -------------------------------------------- |
+| **Adventurer Panel** | Left       | Character status and equipment | Health, damage potential, equipped items     |
+| **Adventure Log**    | Center     | Exploration history            | Recent discoveries, damage taken, outcomes   |
+| **Market Panel**     | Right      | Purchase potions & equipment   | Spend gold on items for your adventurer      |
+| **Explore Button**   | Bottom     | Trigger exploration action     | Click to explore deeper into the dungeon     |
+| **Type Indicator**   | Top Center | Combat advantage display       | Shows damage multipliers for equipped weapon |
+
+***
+
+# How Exploration Works
+
+When you click "Explore", the game rolls for one of three equally likely outcomes:
+
+* **📦 Item Discovery (33.33%)** - Find gold, potions, or equipment
+* **🪨 Obstacle (33.33%)** - Environmental hazards to overcome
+* **👹 Beast Encounter (33.33%)** - Mandatory combat encounters
+
+## Item Discovery Breakdown
+
+When you hit the 33% item discovery chance, it subdivides into:
+
+* **💰 Gold (45% of discoveries)** - Currency for market purchases (\~15% of all explores)
+* **🧪 Health Potion (45% of discoveries)** - Restores HP when used (\~15% of all explores)
+* **⚔️ Equipment (10% of discoveries)** - Weapons, armor, jewelry (\~3.3% of all explores)
+
+***
+
+# Discovery Types
+
+## 💰 Gold Discovery
+
+**Formula:** `Gold = Random(1 to Adventurer Level)`
+
+| Level | Gold Range | Average |
+| ----- | ---------- | ------- |
+| 5     | 1-5g       | 3g      |
+| 10    | 1-10g      | 5.5g    |
+| 20    | 1-20g      | 10.5g   |
+| 30    | 1-30g      | 15.5g   |
+| 50    | 1-50g      | 25.5g   |
+
+**Key Features:**
+
+* Amount scales with your level
+* Can be saved between explorations
+* CHA stat reduces market prices
+* Essential for equipment upgrades
+
+## ⚔️ Equipment Discovery
+
+Equipment drops are your primary source of gear upgrades. When you discover loot (3.3% of all explores), the tier distribution is:
+
+| Item Tier          | Drop Rate | Of All Explores | Description     |
+| ------------------ | --------- | --------------- | --------------- |
+| **T5 (Common)**    | 50%       | \~1.65%         | Basic gear      |
+| **T4 (Uncommon)**  | 30%       | \~1.0%          | Decent upgrades |
+| **T3 (Rare)**      | 12%       | \~0.4%          | Good equipment  |
+| **T2 (Epic)**      | 6%        | \~0.2%          | Powerful items  |
+| **T1 (Legendary)** | 2%        | \~0.066%        | Best in slot    |
+
+> **Item assigning:** Items are automatically equipped or added to bag if there are free slots. Otherwise, if items are already discovered or there is no space they are converted to gold.
+
+## 🧪 Health Discovery
+
+**Formula:** `HP = Random(2 to Level × 2)`
+
+| Level | HP Range | Average | % of 100 HP |
+| ----- | -------- | ------- | ----------- |
+| 5     | 2-10 HP  | 6 HP    | \~6%        |
+| 10    | 2-20 HP  | 11 HP   | \~11%       |
+| 20    | 2-40 HP  | 21 HP   | \~21%       |
+| 30    | 2-60 HP  | 31 HP   | \~31%       |
+| 50    | 2-100 HP | 51 HP   | \~51%       |
+
+**Potion Information:**
+
+* Found in 15% of all explores
+* Instantly restores HP when discovered
+
+## ⭐ Experience Gains
+
+Exploration provides consistent experience points for leveling up:
+
+| XP Source          | XP Gained                           | Scaling | Risk Level |
+| ------------------ | ----------------------------------- | ------- | ---------- |
+| **Item Discovery** | 1                                   | None    | Safe       |
+| **Beast Kills**    | Beast Level × (Tier Multiplier - 1) | Decayed | High       |
+| **Obstacles**      | Same as above                       | Decayed | Medium     |
+
+***
+
+# Environmental Challenges
+
+## 🪨 Obstacle System
+
+Obstacles are unavoidable environmental hazards with three distinct categories:
+
+### Obstacle Types
+
+**✨ Magical Obstacles (25 types)**
+
+* Examples: Demonic Altar, Vortex of Despair, Cursed Tomb
+* **Counter:** Hide armor
+
+**🗡️ Blade Obstacles (25 types)**
+
+* Examples: Pendulum Blades, Poison Darts, Hidden Arrows
+* **Counter:** Metal armor
+
+**🔨 Bludgeon Obstacles (25 types)**
+
+* Examples: Collapsing Ceiling, Rolling Boulder, Crushing Walls
+* **Counter:** Cloth armor
+
+### Damage Mitigation
+
+| Method            | Effect               | Requirement          |
+| ----------------- | -------------------- | -------------------- |
+| **Intelligence**  | Complete avoidance   | INT ≥ obstacle level |
+| **Armor Match**   | 50% damage reduction | Correct armor type   |
+| **No Protection** | Full damage          | No mitigation        |
+
+***
+
+# Beast Encounters
+
+<div style={{ background: '#2a1a2a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc2626', margin: '2rem 0' }}>
+  ## ⚠️ Mandatory Combat
+
+  **IMPORTANT:** Discovering a beast during exploration **always locks you into combat**. There is no way to avoid the fight once a beast is encountered.
+
+  **Combat is Unavoidable:**
+
+  * Beast encounters force immediate battle
+  * No option to flee before combat begins
+  * You must fight until victory, defeat, or successful flee attempt
+  * See the [Battle Guide](/lootsurvivor/guide/battle) for detailed combat mechanics
+</div>
+
+## Ambush Disadvantages
+
+Beast encounters during exploration catch you off-guard with several penalties:
+
+* **⚡ Initiative Loss** - Beast attacks first in combat
+* **🛡️ No Preparation** - Cannot switch gear before combat begins
+
+## Ambush Avoidance
+
+**Ambush Avoidance Formula:**
+
+```
+Avoidance Chance = (WIS / Level) × 100%
+```
+
+| WIS/Level | Avoidance | Level 10 Example | Level 20 Example |
+| --------- | --------- | ---------------- | ---------------- |
+| 0.5       | 50%       | WIS 5            | WIS 10           |
+| 0.75      | 75%       | WIS 7-8          | WIS 15           |
+| 1.0       | 100%      | WIS 10           | WIS 20           |
+| 1.5       | 100%      | WIS 15           | WIS 30           |
+
+**Key Points:**
+
+* WIS equal to level = 100% avoidance
+* Success rate caps at 100%
+* Only applies to beast encounters
+* Does not prevent the encounter entirely
+
+> **👁️ Important:** Wisdom helps avoid the ambush penalties, but you will still be locked into combat when a beast is encountered.
+
+***
+
+# Summary
+
+Exploration provides the foundation for your Death Mountain adventure through consistent rewards and progression opportunities. Understanding the 33/33/33 split between discoveries, obstacles, and beasts helps you make informed decisions about when and how to explore.
+
+**Key Takeaways:**
+
+* Equal chances for all three outcome types
+* Higher levels = better gold and health discoveries
+* LUCK influences equipment tier drops
+* INT helps avoid obstacles, WIS helps avoid ambushes
+* Choose exploration modes based on your current needs
+
+
+
+---
+
+file: docs/lootsurvivor/guide/getting-started.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Getting Started with Loot Survivor
+
+Welcome, adventurer! This guide will help you begin your journey into the depths of Death Mountain. Whether you're new to blockchain gaming or StarkNet, we'll get you up and running quickly.
+
+> **⚡ Fast Track:** Want to play right now? Click "Practice Mode" and start exploring immediately!
+
+## Game Modes
+
+**🎮 Practice Mode**
+
+* Zero setup required
+* Instant play
+* Learn mechanics safely
+* No wallet needed
+* No rewards or progression
+
+**🏆 Beast Mode**
+
+* Real rewards and NFTs
+* Permanent progression
+* Competitive leaderboards
+* Collectible beasts
+* Requires wallet setup
+
+> **Recommendation:** Start with Practice Mode to learn the basics, then upgrade to Beast Mode for the full experience.
+
+## Main Menu Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/menu.png"
+    alt="Loot Survivor Main Menu"
+    style={{
+    width: "100%",
+    display: "block",
+    margin: "0 auto",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+  />
+
+  <br />
+
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Main menu interface
+  </em>
+</div>
+
+### Interface Elements
+
+| Element            | Location      | Function                   | Description                                      |
+| ------------------ | ------------- | -------------------------- | ------------------------------------------------ |
+| **New Game**       | Left (Top)    | Start new adventure        | Creates a new adventurer and begins gameplay     |
+| **My Adventurers** | Left (Top)    | View past adventures       | Browse your adventurer history and achievements  |
+| **Settings**       | Left (Middle) | Configure game options     | Adjust volume, switch between mobile/desktop     |
+| **Switch Mode**    | Left (Bottom) | Toggle Practice/Beast Mode | Change between free practice and paid Beast Mode |
+| **Login**          | Left (Bottom) | Connect wallet             | Required for Beast Mode only                     |
+
+***
+
+# Beast Mode Setup
+
+> **Ready for the full experience?** Beast Mode offers real blockchain rewards, NFT beasts, and permanent progression.
+
+## Prerequisites
+
+**🔐 Wallet Required**
+
+* Cartridge Controller
+* Built for gaming with gasless transactions
+* Supports social login and multi-platform access
+
+**💰 Payment Options**
+
+* Multiple crypto tokens accepted (ETH, USDC, STRK, and more)
+* Credit card payments supported
+* Variable ticket pricing based on demand
+* Recommended: $5-10 worth for hundreds of games
+
+## Wallet Setup Process
+
+### Step 1: Create Controller Wallet
+
+<div
+  style={{
+  display: "flex",
+  gap: "2rem",
+  alignItems: "flex-start",
+  margin: "1rem 0",
+}}
+>
+  <div style={{ flex: "1", minWidth: "300px" }}>
+    <strong>Choose your signup method:</strong>
+
+    <ul
+      style={{
+      paddingLeft: "1.5rem",
+      marginTop: "0.5rem",
+      listStyleType: "disc",
+    }}
+    >
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🔐 Social Login</strong> - Discord, Google, GitHub
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🔑 Passkey</strong> - Biometric authentication
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>💼 Existing Wallet</strong> - MetaMask, Phantom, Rabby
+      </li>
+    </ul>
+
+    <br />
+
+    <strong>Benefits of Controller:</strong>
+
+    <ul
+      style={{
+      paddingLeft: "1.5rem",
+      marginTop: "0.5rem",
+      listStyleType: "disc",
+    }}
+    >
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Gasless transactions for smooth gameplay
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Social login convenience
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Multi-platform access
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Built specifically for gaming
+      </li>
+    </ul>
+  </div>
+
+  <div style={{ flex: "1", textAlign: "center" }}>
+    <img
+      src="/docs/lootsurvivor/controller-sign-up.png"
+      alt="Controller sign-up interface"
+      style={{
+      width: "100%",
+      maxWidth: "400px",
+      borderRadius: "8px",
+      border: "1px solid #333",
+    }}
+    />
+
+    <em style={{ display: "block", marginTop: "0.5rem", fontSize: "0.9em" }}>
+      Controller sign-up interface
+    </em>
+  </div>
+</div>
+
+### Step 2: Connect and Purchase
+
+<div
+  style={{
+  display: "flex",
+  gap: "2rem",
+  alignItems: "flex-start",
+  margin: "1rem 0",
+}}
+>
+  <div style={{ flex: "1", minWidth: "300px" }}>
+    <strong>Follow these steps:</strong>
+
+    <ol
+      style={{
+      paddingLeft: "1.5rem",
+      marginTop: "0.5rem",
+      listStyleType: "decimal",
+    }}
+    >
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🌐 Visit Game</strong> - Navigate to lootsurvivor.io
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🔗 Connect Wallet</strong> - Click "Login" and approve
+        connection
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🎟️ Buy Ticket</strong> - Purchase dungeon entry with crypto or
+        credit card
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>⚔️ Start Adventure</strong> - Create your adventurer
+      </li>
+    </ol>
+
+    <br />
+
+    <strong>Pro Tips:</strong>
+
+    <ul
+      style={{
+      paddingLeft: "1.5rem",
+      marginTop: "0.5rem",
+      listStyleType: "disc",
+    }}
+    >
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Keep some funds for multiple games
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Ticket prices vary based on demand
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Your progress saves to the blockchain
+      </li>
+    </ul>
+  </div>
+
+  <div style={{ flex: "1", textAlign: "center" }}>
+    <img
+      src="/docs/lootsurvivor/ticket-purchase.png"
+      alt="Dungeon ticket purchase interface"
+      style={{
+      width: "100%",
+      maxWidth: "400px",
+      borderRadius: "8px",
+      border: "2px solid #333",
+    }}
+    />
+
+    <em style={{ display: "block", marginTop: "0.5rem", fontSize: "0.9em" }}>
+      Dungeon ticket purchase interface
+    </em>
+  </div>
+</div>
+
+***
+
+# Your First Adventure
+
+## Understanding Your Adventurer
+
+When you create a new adventurer, you'll receive:
+
+* **⚔️ Starting Weapon** - Random Tier 5 weapon
+* **📊 Base Stats** - 12 points randomly distributed
+* **❤️ Health** - 100 HP + VIT bonus
+
+## Core Game Loop
+
+The adventure follows a simple cycle:
+
+1. **🔍 Explore** - Search for items, gold, and XP
+2. **⚔️ Combat** - Fight or flee from beasts
+3. **📈 Level Up** - Allocate stat points
+4. **🛍️ Market** - Buy equipment and potions
+5. **🔄 Repeat** - Continue deeper into Death Mountain
+
+**Goal:** Survive as long as possible!
+
+## Game Interface Overview
+
+### Main HUD Elements
+
+| Element         | Icon | Description                   | Location     |
+| --------------- | ---- | ----------------------------- | ------------ |
+| **Health Bar**  | ❤️   | Current HP (100 + VIT bonus)  | Top left     |
+| **XP Progress** | ⭐    | Experience toward next level  | Below health |
+| **Gold**        | 🪙   | Currency for market purchases | Top right    |
+| **Equipment**   | 🛡️  | 8 equipped item slots         | Center panel |
+| **Inventory**   | 🎒   | 11 additional storage slots   | Right panel  |
+
+### Action Controls
+
+* **🔍 Explore** - Continue deeper into the dungeon
+* **⚔️ Attack** - Fight beasts you encounter
+* **🏃 Flee** - Escape from combat encounters
+* **📈 Upgrade** - Allocate stat points when available
+* **🛍️ Market** - Buy equipment and potions
+
+***
+
+# Community & Support
+
+Join the Loot Survivor community:
+
+* **💬 Discord:** [discord.gg/lootsurvivor](https://discord.gg/Q36rUxS66c)
+* **🐦 Twitter:** [@lootsurvivor](https://twitter.com/lootsurvivor)
+* **🐙 GitHub:** [Report Issues](https://github.com/Provable-Games/death-mountain/issues)
+
+***
+
+# Ready to Begin?
+
+Every adventure is unique, every death is permanent, and every decision matters. Start with **Practice Mode** to learn the basics, then upgrade to **Beast Mode** for the full blockchain experience!
+
+
+
+---
+
+file: docs/lootsurvivor/guide/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Loot Survivor: Guide
+
+Welcome to the Loot Survivor guide! Here you'll find everything you need to get started and master the core mechanics. Whether you're a new adventurer or looking to understand the game systems, this guide covers the essential aspects of gameplay.
+
+## Table of Contents
+
+* [Getting Started](/lootsurvivor/guide/getting-started): Setting up your wallet and starting your first adventure
+* [Explore](/lootsurvivor/guide/explore): Navigating the dungeon and discovering challenges
+* [Battle](/lootsurvivor/guide/battle): Combat mechanics and defeating beasts
+* [Upgrade](/lootsurvivor/guide/upgrade): Leveling up and stat allocation
+
+## Overview
+
+Loot Survivor is a fully onchain dungeon crawler roguelike where every decision could be your last. In this guide, you'll learn:
+
+1. **How to onboard and set up your wallet** for seamless play on StarkNet
+2. **The core gameplay loop**—from exploring dungeons to battling beasts
+3. **How to allocate stats** when leveling up your adventurer
+4. **Combat mechanics** including type advantages and battle actions
+
+Each section provides clear explanations and visuals to help you understand the game mechanics. Dive in and start your journey!
+
+
+
+---
+
+file: docs/lootsurvivor/guide/upgrade.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Upgrade Guide
+
+Leveling up and upgrading your adventurer is a pivotal moment in every Loot Survivor run. Each level brings stat points to allocate and opens the market with fresh items. Master the upgrade system to transform your adventurer from a fragile newcomer into an unstoppable force!
+
+> **⚡ Power Spike:** Every level up is an opportunity to dramatically increase your power. Plan your upgrades carefully!
+
+## Upgrade Overview
+
+The upgrade system consists of three key components:
+
+1. **Stat Allocation** - Distribute points to enhance your adventurer's capabilities
+2. **Market Refresh** - Access new items with each level up
+3. **Purchase Decisions** - Buy equipment and potions from the market
+
+## Upgrade Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/upgrade.png"
+    alt="Loot Survivor Upgrade Screen"
+    style={{
+    width: "100%",
+    display: "block",
+    margin: "0 auto",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+  />
+
+  <br />
+
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Upgrade interface with stat menu
+  </em>
+</div>
+
+### Interface Elements
+
+| Element           | Location | Description                     | Key Information                           |
+| ----------------- | -------- | ------------------------------- | ----------------------------------------- |
+| **Upgrades Menu** | Left     | Menu to choose stats to upgrade | Inventory, stats additions                |
+| **Explore Log**   | Center   | Explore history                 | Last explore/battle outcome               |
+| **Select Stats**  | Bottom   | Button to select                | Click to continue to explore & new market |
+
+***
+
+# Stat Allocation
+
+## Stat Point Distribution
+
+You receive **1 stat point per level** to allocate among:
+
+| Stat     | Effect per Point               | Primary Use          |
+| -------- | ------------------------------ | -------------------- |
+| **STR**  | +10% attack damage             | Combat damage        |
+| **DEX**  | Improves flee success          | Escaping from beasts |
+| **VIT**  | +15 HP max & current           | Health and survival  |
+| **INT**  | Aids obstacle avoidance        | Avoiding obstacles   |
+| **WIS**  | Helps evade beast ambushes     | Ambush prevention    |
+| **CHA**  | Gold discount on items/potions | Market purchases     |
+| **LUCK** | ❌ Cannot upgrade               | Item discovery only  |
+
+> **🎯 Allocation Note:** Consider focusing on 2-3 primary stats rather than spreading points evenly across all stats.
+
+## Multi-Levelling System
+
+### What is Multi-Levelling?
+
+In Loot Survivor, it's possible to **level up multiple times in a single explore action**. This powerful mechanic can dramatically accelerate your adventurer's progression when you gain large amounts of experience at once.
+
+### How Multi-Levelling Works
+
+<div style={{ display: "flex", gap: "2rem", alignItems: "flex-start", margin: "1rem 0" }}>
+  <div style={{ flex: "1", minWidth: "300px" }}>
+    <strong>When multi-levelling occurs:</strong>
+
+    <ul style={{ paddingLeft: "1.5rem", marginTop: "0.5rem", listStyleType: "disc" }}>
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Defeating high-level beasts</li>
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Finding rare items with bonus XP</li>
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Successful obstacle navigation</li>
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Lucky exploration events</li>
+    </ul>
+  </div>
+
+  <div style={{ flex: "1", minWidth: "300px" }}>
+    <strong>Multi-level benefits:</strong>
+
+    <ul style={{ paddingLeft: "1.5rem", marginTop: "0.5rem", listStyleType: "disc" }}>
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Multiple stat points to allocate</li>
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Expanded market selection</li>
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Rapid power progression</li>
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Enhanced item variety</li>
+    </ul>
+  </div>
+</div>
+
+### Stat Point Allocation
+
+**🔢 Multiple Level Formula:**
+
+* **Stat Points = Number of Levels Gained**
+* Level up 3 times → Get 3 stat points to allocate
+* Level up 5 times → Get 5 stat points to allocate
+
+> **💡 Strategic Tip:** Multi-levelling allows you to make significant stat investments in a single upgrade session, enabling focused builds and powerful specialization.
+
+### Market Size Expansion
+
+The market dramatically expands with multi-levelling:
+
+| Levels Gained | Market Size     | Items Available    |
+| ------------- | --------------- | ------------------ |
+| **1 Level**   | 20 items        | Standard selection |
+| **2+ Levels** | Up to 101 items | Massive selection  |
+
+**🛍️ Market Benefits:**
+
+* **Expanded Inventory:** More weapons, armor, and potions
+* **Better Odds:** Higher chance of finding specific item types
+* **Tier Variety:** Access to items across multiple tiers
+* **Strategic Choices:** More options for optimizing your build
+
+> **⚡ Power Spike Alert:** Multi-levelling creates the most significant power increases in the game. The combination of multiple stat points plus an expanded market can transform a struggling adventurer into a dominant force!
+
+
+
+---
+
+file: docs/lootsurvivor/loot/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Loot System
+
+<div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start', margin: '2rem 0' }}>
+  <div
+    style={{ 
+fontSize: '1.1rem', 
+lineHeight: '1.8', 
+paddingRight: '2rem',
+color: '#e5e5e5'
+}}
+  >
+    <p style={{ marginBottom: "1.2rem", fontWeight: "400" }}>
+      The loot system in Loot Survivor is inspired by the original{" "}
+
+      <a href="https://docs.loot.foundation/" style={{ color: "#3b82f6" }}>
+        Loot collection
+      </a>
+
+      {" "}
+
+      and forms the backbone of your adventurer's power progression.
+    </p>
+
+    <p style={{ marginBottom: "0", fontWeight: "400" }}>
+      Understanding how items work, their tiers, and special properties is essential
+      for survival in Death Mountain. Each piece of equipment can evolve and gain
+      powerful bonuses as you progress through the dangerous depths.
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/loot.png"
+      alt="Loot Survivor Items Display"
+      style={{
+    width: "100%",
+    display: "block",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+    />
+
+    <em
+      style={{
+    display: "block",
+    textAlign: "center",
+    marginTop: "0.5rem",
+    fontSize: "0.9rem",
+    opacity: "0.8",
+  }}
+    >
+      Loot item display showing tier and special properties
+    </em>
+  </div>
+</div>
+
+***
+
+# Item Categories
+
+## Equipment Types
+
+Loot Survivor features 8 equipment slots for different item types:
+
+| Equipment Slot | Item Types                            | Function               | Examples                       |
+| -------------- | ------------------------------------- | ---------------------- | ------------------------------ |
+| **Weapon**     | Katana, Wand, Club, Short Sword       | Primary damage dealing | Katana, Wand, Club             |
+| **Chest**      | Divine Robe, Shirt, Demon Husk        | Torso protection       | Divine Robe, Shirt, Demon Husk |
+| **Head**       | Crown, Cap, Helm                      | Head protection        | Crown, Cap, Helm               |
+| **Waist**      | Ornate Belt, Sash, Heavy Belt         | Waist protection       | Ornate Belt, Sash              |
+| **Foot**       | Divine Slippers, Boots, Shoes         | Foot protection        | Divine Slippers, Boots         |
+| **Hand**       | Divine Gloves, Gloves, Gauntlets      | Hand protection        | Divine Gloves, Gloves          |
+| **Neck**       | Amulet, Pendant, Necklace             | Neck accessories       | Amulet, Pendant                |
+| **Ring**       | Platinum Ring, Gold Ring, Silver Ring | Finger accessories     | Platinum Ring, Gold Ring       |
+
+## Item Properties
+
+Each item has several key properties that determine its effectiveness:
+
+* **Tier** - Base power level (T1-T5)
+* **Greatness** - Special enhancement level (0-20)
+* **Suffix** - Name suffix at Greatness 15+
+* **Prefixes** - Additional bonuses at Greatness 19+
+* **+1** - +1 modifier at Greatness 20
+
+***
+
+# Item Tiers
+
+Items in Loot Survivor are categorized into 5 tiers, with T1 being the most powerful:
+
+| Tier   | Name      | Rarity    | Base Power    | Drop Rate | Description                                |
+| ------ | --------- | --------- | ------------- | --------- | ------------------------------------------ |
+| **T1** | Legendary | Highest   | 5× multiplier | \~0.066%  | Best-in-slot items with maximum base stats |
+| **T2** | Epic      | Very High | 4× multiplier | \~0.2%    | Powerful items with excellent stats        |
+| **T3** | Rare      | High      | 3× multiplier | \~0.4%    | Good equipment with solid performance      |
+| **T4** | Uncommon  | Medium    | 2× multiplier | \~1.0%    | Decent upgrades over starting gear         |
+| **T5** | Common    | Low       | 1× multiplier | \~1.65%   | Basic gear and starting equipment          |
+
+**Tier Effects:**
+
+* Higher tiers provide better base damage/protection
+* Tier multiplier affects combat calculations
+* Better tiers are more likely to have special properties
+* All tiers can potentially have suffixes and prefixes
+
+***
+
+# Greatness System
+
+Greatness is a special property that enhances items beyond their base tier:
+
+## Greatness Levels
+
+| Greatness | Enhancement       | Special Property               |
+| --------- | ----------------- | ------------------------------ |
+| **1-14**  | Base item         | Standard tier bonuses only     |
+| **15**    | Suffix unlocked   | +3 stat bonus from suffix      |
+| **16-18** | Enhanced suffix   | Suffix bonuses continue        |
+| **19**    | Prefix unlocked   | Additional stat bonuses        |
+| **20**    | Maximum greatness | Full prefix and suffix bonuses |
+
+## How Greatness Works
+
+* Items can spawn with greatness levels 1-20
+* Higher greatness is rarer but provides significant bonuses
+* Greatness 15+ items gain [suffix bonuses](/lootsurvivor/loot/suffix-boost)
+* Greatness 19+ items gain additional prefix bonuses
+* Greatness affects the item's overall power and desirability
+
+***
+
+# Combat Types & Materials
+
+Items have dual classifications that affect combat performance:
+
+## Weapon Types
+
+**⚔️ Blade Weapons**
+
+* Strong vs Hide armor
+* Weak vs Metal armor
+* Examples: Katana, Short Sword, Scimitar
+
+**🔨 Bludgeon Weapons**
+
+* Strong vs Metal armor
+* Weak vs Cloth armor
+* Examples: Club, Mace, War Hammer
+
+**✨ Magic Weapons**
+
+* Strong vs Cloth armor
+* Weak vs Hide armor
+* Examples: Wand, Book, Ghost Wand
+
+## Armor Materials
+
+**🛡️ Hide Armor**
+
+* Resists Blade attacks
+* Weak to Magic attacks
+* Examples: Leather armor, Dragon skin
+
+**⚡ Metal Armor**
+
+* Resists Bludgeon attacks
+* Weak to Blade attacks
+* Examples: Chain mail, Plate armor
+
+**🧙 Cloth Armor**
+
+* Resists Magic attacks
+* Weak to Bludgeon attacks
+* Examples: Robes, Shirts
+
+***
+
+# Item Acquisition
+
+## Discovery Methods
+
+Items can be obtained through several methods:
+
+| Method                 | Rate                | Quality     | Notes                           |
+| ---------------------- | ------------------- | ----------- | ------------------------------- |
+| **Exploration**        | 3.3% of explores    | Random tier | Primary acquisition method      |
+| **Market Purchase**    | Level-dependent     | Variable    | Costs gold, refresh on level up |
+| **Starting Equipment** | 1 weapon guaranteed | T5 only     | Random weapon type              |
+
+## Market System
+
+* Market refreshes completely on each level up
+* Available items are randomly generated
+* Item count increases with adventurer level
+* CHA stat reduces purchase prices
+* Market items follow same tier distribution as drops
+
+***
+
+# Item Management
+
+## Inventory System
+
+* **8 Equipment Slots** - One for each equipment type
+* **11 Bag Slots** - Additional storage for backup items
+* **Auto-equip** - New items automatically equip if slots are empty
+* **Gold Conversion** - Duplicate items convert to gold if no space
+
+## Item Usage
+
+**Equipping Items:**
+
+* Drag from bag to equipment slot
+* Items provide immediate stat bonuses
+* Combat type/material affects battle performance
+* Can switch equipment during exploration (not in combat)
+
+**Item Stacking:**
+
+* Only one item per equipment slot
+* Identical items convert to gold
+* Higher tier items typically replace lower tier
+* Consider suffix/prefix bonuses when deciding
+
+***
+
+# Special Properties
+
+## Suffixes
+
+Items with Greatness 15+ gain powerful suffix bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for complete details.
+
+## Prefixes
+
+Items with Greatness 19+ gain additional prefix bonuses that stack with suffix effects. These same prefixes are also used for named beasts in Beast Mode NFTs.
+
+**Complete Prefix & Suffix Reference:** See [Prefixes Guide](/lootsurvivor/loot/prefixes) for the full library of all 69 prefixes and 18 suffixes.
+
+***
+
+# Summary
+
+The loot system provides deep character customization through equipment choices, tier progression, and special properties. Understanding how tiers, greatness, suffixes, and prefixes work together allows you to build powerful adventurers capable of surviving Death Mountain's greatest challenges.
+
+**Key Loot Principles:**
+
+* Higher tiers provide better base power
+* Greatness 15+ items gain significant suffix bonuses
+* Greatness 19+ items gain additional prefix bonuses
+* Combat type and material matter for battle effectiveness
+* Market refreshes provide new acquisition opportunities each level
+
+
+
+---
+
+file: docs/lootsurvivor/loot/jewelry.mdx
+meta: {}
+
+# Jewelry Items
+
+Jewelry items can be used to increase Luck and unlock special abilities. Luck gives an increased chance of achieving critical hits. Jewelry items will contribute to Luck even when bagged.
+
+| Item          | Boost                                                                              |
+| ------------- | ---------------------------------------------------------------------------------- |
+| Pendant       | 3% increase per greatness hide armor defence.                                      |
+| Necklace      | 3% increase per greatness metal armor defence.                                     |
+| Amulet        | 3% increase per greatness cloth armor defence.                                     |
+| Bronze Ring   | No special ability (economy option).                                               |
+| Silver Ring   | +20 Luck boost when equipped at G20 and +1 bonus luck per greatness when equipped. |
+| Gold Ring     | 3% per greatness increase in gold rewards from beasts.                             |
+| Platinum Ring | 3% per greatness increase in name match damage bonus.                              |
+| Titanium Ring | 3% per greatness increase in critical hit damage bonus.                            |
+
+
+
+---
+
+file: docs/lootsurvivor/loot/prefixes.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Item & Beast Prefixes
+
+Prefixes are special name modifiers that appear on high-greatness items (Level 19+) and named beasts. This comprehensive reference covers all 69 prefixes and 18 suffixes used throughout Loot Survivor.
+
+## Prefix System Overview
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **Dual Usage:** Prefixes serve two important functions in the game:
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    * **Item Enhancement**: High-greatness items (19+) gain prefix bonuses for additional stats
+    * **Beast Names**: Named beasts (Level 19+) use these same prefixes for unique identities
+    * **NFT Collection**: Beast Mode NFTs mint with prefix names for collectible variety
+  </div>
+
+  > **Cross-System Integration:** The same 69 prefixes create both powerful equipment and collectible named beasts!
+</div>
+
+## Complete Prefix Library (69 Total)
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+    <div style={{ background: '#2a1a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #dc2626' }}>
+      ### 🌑 Dark Themes (17)
+
+      1. Agony
+      2. Apocalypse
+      3. Armageddon
+      4. Blight
+      5. Blood
+      6. Corruption
+      7. Damnation
+      8. Death
+      9. Demon
+      10. Dire
+      11. Doom
+      12. Dread
+      13. Ghoul
+      14. Gloom
+      15. Grim
+      16. Hate
+      17. Horror
+    </div>
+
+    <div style={{ background: '#2a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #eab308' }}>
+      ### 🏆 Power & Creatures (17)
+
+      18. Beast
+      19. Behemoth
+      20. Dragon
+      21. Empyrean
+      22. Fate
+      23. Golem
+      24. Honour
+      25. Kraken
+      26. Miracle
+      27. Phoenix
+      28. Skull
+      29. Soul
+      30. Spirit
+      31. Victory
+      32. Viper
+      33. Brood
+      34. Chimeric
+    </div>
+
+    <div style={{ background: '#1a2a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #10b981' }}>
+      ### 🌊 Elemental & Nature (17)
+
+      35. Bramble
+      36. Brimstone
+      37. Carrion
+      38. Corpse
+      39. Dusk
+      40. Eagle
+      41. Gale
+      42. Maelstrom
+      43. Sol
+      44. Storm
+      45. Tempest
+      46. Vortex
+      47. Cataclysm
+      48. Foe
+      49. Havoc
+      50. Onslaught
+      51. Plague
+    </div>
+
+    <div style={{ background: '#2a1a3a', padding: '1rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
+      ### ✨ Mystical & Abstract (18)
+
+      52. Glyph
+      53. Hypnotic
+      54. Loath
+      55. Mind
+      56. Morbid
+      57. Oblivion
+      58. Pain
+      59. Pandemonium
+      60. Rage
+      61. Rapture
+      62. Rune
+      63. Sorrow
+      64. Torment
+      65. Vengeance
+      66. Woe
+      67. Wrath
+      68. **Lights** ⭐
+      69. **Shimmering** ⭐
+    </div>
+  </div>
+
+  ### Ultra Rare Prefixes
+
+  **Lights (#68)** and **Shimmering (#69)** are considered the most valuable and rare prefixes in the entire system, making items or beast NFTs with these names extremely sought after by collectors.
+</div>
+
+## Complete Suffix Library (18 Total)
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+    <div>
+      | ID | Suffix     |
+      | -- | ---------- |
+      | 1. | Bane       |
+      | 2. | Root       |
+      | 3. | Bite       |
+      | 4. | Song       |
+      | 5. | Roar       |
+      | 6. | Grasp      |
+      | 7. | Instrument |
+      | 8. | Glow       |
+      | 9. | Bender     |
+    </div>
+
+    <div>
+      | ID  | Suffix  |
+      | --- | ------- |
+      | 10. | Shadow  |
+      | 11. | Whisper |
+      | 12. | Shout   |
+      | 13. | Growl   |
+      | 14. | Tear    |
+      | 15. | Peak    |
+      | 16. | Form    |
+      | 17. | Sun     |
+      | 18. | Moon    |
+    </div>
+  </div>
+
+  **Suffix Usage:** Only applies to items with Greatness 15+ for stat bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for detailed stat effects.
+</div>
+
+## Usage Examples
+
+### Item Naming Examples
+
+<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **High-Greatness Item Examples:**
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    * **"Doom Katana of Power"** - Prefix: Doom, Base: Katana, Suffix: of Power
+    * **"Shimmering Divine Robe of Giants"** - Prefix: Shimmering, Base: Divine Robe, Suffix: of Giants
+    * **"Blood Wand of Skill"** - Prefix: Blood, Base: Wand, Suffix: of Skill
+  </div>
+
+  **Beast Naming Examples:**
+
+  <div style={{ marginBottom: '0' }}>
+    * **"Apocalypse Dragon"** - Prefix: Apocalypse, Beast: Dragon
+    * **"Lights Kraken"** - Prefix: Lights, Beast: Kraken
+    * **"Storm Phoenix"** - Prefix: Storm, Beast: Phoenix
+  </div>
+</div>
+
+## Cross-Reference Usage
+
+### When to Use This Page
+
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0', lineHeight: '1.6' }}>
+  **Reference Scenarios:**
+
+  1. **Item Identification**: Understanding what prefix names mean on your equipment
+  2. **Beast NFT Hunting**: Identifying valuable prefix combinations for collection
+  3. **Market Evaluation**: Determining item value based on prefix rarity
+  4. **Collection Planning**: Targeting specific prefixes for complete sets
+  5. **Cross-Game Integration**: Understanding naming for Summit game access
+
+  **Documentation Links:**
+
+  * Items with prefixes: Reference this page from item evaluation
+  * Named beasts: Reference this page from beast documentation
+  * NFT collecting: Use for understanding collectible variety
+</div>
+
+## See Also
+
+* [Loot System](/lootsurvivor/loot) - Main equipment and tier information
+* [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) - Detailed suffix stat effects
+* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Named beast NFT system
+* [Beast Overview](/lootsurvivor/beasts) - Combat types and beast information
+
+
+
+---
+
+file: docs/lootsurvivor/loot/suffix-boost.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Suffix Boosts
+
+When an item reaches Greatness 15, it gains a powerful suffix that provides significant stat bonuses. These suffixes are based on the [16 Orders of Divinity](https://docs.loot.foundation/canonical-principles/loot/the-16-orders) from the original Loot collection and follow canonical loot lore.
+
+> **⚡ Power Boost:** Suffix bonuses can make a T3 item with the right suffix more powerful than a base T1 item!
+
+## How Suffixes Work
+
+* **Greatness Requirement:** Items must reach Greatness 15 to unlock suffix bonuses
+* **Random Assignment:** Suffixes are randomly assigned based on the Orders of Divinity
+* **Permanent Bonuses:** Suffix bonuses are permanent and stack with base item stats
+* **Lore Integration:** Each suffix follows canonical Loot Foundation principles
+
+***
+
+# Complete Suffix List
+
+## Suffix Bonuses by Order
+
+| Item Suffix          | Stat Bonuses                              | Total Bonus | Order Association                 |
+| -------------------- | ----------------------------------------- | ----------- | --------------------------------- |
+| **Of Power**         | Strength +3                               | +3          | Power-focused enhancement         |
+| **Of Giant**         | Vitality +3                               | +3          | Health and endurance boost        |
+| **Of Titans**        | Strength +2, Charisma +1                  | +3          | Balanced physical prowess         |
+| **Of Skill**         | Dexterity +3                              | +3          | Agility and precision enhancement |
+| **Of Perfection**    | Strength +1, Dexterity +1, Vitality +1    | +3          | Balanced all-around improvement   |
+| **Of Brilliance**    | Intelligence +3                           | +3          | Mental acuity enhancement         |
+| **Of Enlightenment** | Wisdom +3                                 | +3          | Spiritual awareness boost         |
+| **Of Protection**    | Vitality +2, Dexterity +1                 | +3          | Defensive-focused bonuses         |
+| **Of Anger**         | Strength +2, Dexterity +1                 | +3          | Aggressive combat enhancement     |
+| **Of Rage**          | Wisdom +1, Strength +1, Charisma +1       | +3          | Controlled fury bonuses           |
+| **Of Fury**          | Vitality +1, Charisma +1, Intelligence +1 | +3          | Passionate intensity boost        |
+| **Of Vitriol**       | Intelligence +2, Wisdom +1                | +3          | Sharp mental enhancement          |
+| **Of the Fox**       | Dexterity +2, Charisma +1                 | +3          | Cunning and agility boost         |
+| **Of Detection**     | Wisdom +2, Dexterity +1                   | +3          | Awareness and reflexes            |
+| **Of Reflection**    | Wisdom +2, Intelligence +1                | +3          | Contemplative wisdom boost        |
+| **Of the Twins**     | Charisma +3                               | +3          | Social influence enhancement      |
+
+***
+
+# Suffix Categories
+
+## Single Stat Focus
+
+These suffixes provide maximum bonuses to one primary stat:
+
+* **Of Power** - Pure Strength focus for maximum damage
+* **Of Giant** - Pure Vitality focus for maximum health
+* **Of Skill** - Pure Dexterity focus for escape mastery
+* **Of Brilliance** - Pure Intelligence focus for obstacle avoidance
+* **Of Enlightenment** - Pure Wisdom focus for ambush prevention
+* **Of the Twins** - Pure Charisma focus for market optimization
+
+## Balanced Combinations
+
+These suffixes provide balanced stat distributions:
+
+* **Of Perfection** - Equal bonuses across STR/DEX/VIT
+* **Of Rage** - Equal bonuses across WIS/STR/CHA
+* **Of Fury** - Equal bonuses across VIT/CHA/INT
+
+## Specialized Builds
+
+These suffixes target specific build archetypes:
+
+* **Of Titans** - Combat-focused (STR+CHA)
+* **Of Protection** - Defense-focused (VIT+DEX)
+* **Of Anger** - Aggressive melee (STR+DEX)
+* **Of Vitriol** - Mental mastery (INT+WIS)
+* **Of the Fox** - Agile trader (DEX+CHA)
+* **Of Detection** - Alert explorer (WIS+DEX)
+* **Of Reflection** - Wise scholar (WIS+INT)
+
+***
+
+# Suffix Strategy
+
+## Evaluating Suffix Value
+
+When comparing items with suffixes, consider:
+
+1. **Your Build Focus** - Does the suffix support your stat priorities?
+2. **Current Weaknesses** - Does the suffix shore up weak areas?
+3. **Base Tier vs Suffix** - A T3+suffix might beat a base T1
+4. **Total Stat Impact** - All +3 bonuses are equally valuable mathematically
+
+## Suffix Synergies
+
+**Combat Builds:**
+
+* **Of Power** - Maximum damage output
+* **Of Titans** - Damage + market efficiency
+* **Of Anger** - Damage + escape capability
+
+**Survival Builds:**
+
+* **Of Giant** - Maximum health pool
+* **Of Protection** - Health + escape ability
+* **Of Perfection** - Balanced survivability
+
+**Utility Builds:**
+
+* **Of the Fox** - Escape + market efficiency
+* **Of Detection** - Awareness + agility
+* **Of Reflection** - Mental mastery
+
+***
+
+# Summary
+
+Suffix bonuses transform the loot system from simple tier progression to complex item evaluation. A well-rolled suffix can make any item tier competitive, while the wrong suffix might make you overlook a potentially powerful piece of equipment.
+
+**Key Suffix Principles:**
+
+* All suffixes provide exactly +3 total stat points
+* Suffixes unlock at Greatness 15
+* Suffix distribution matters more than individual bonuses
+* Consider your build when evaluating suffix value
+* Don't automatically dismiss lower tiers with good suffixes
+
+
+
+---
+
+file: docs/lootsurvivor/technical/architecture.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Technical Architecture
+
+Loot Survivor is built on StarkNet using the Dojo engine, implementing a fully onchain game architecture where all game logic, state management, and randomness are handled by smart contracts.
+
+## Technology Stack
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
+  <div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6' }}>
+    ### ⛓️ Blockchain Layer
+
+    | Component     | Technology     | Version |
+    | ------------- | -------------- | ------- |
+    | **Network**   | StarkNet L2    | Mainnet |
+    | **Language**  | Cairo          | 2.10.1  |
+    | **Framework** | Dojo           | 1.6.2   |
+    | **Standards** | ERC20/721/1155 | Latest  |
+  </div>
+
+  <div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #10b981' }}>
+    ### 🌐 Frontend Stack
+
+    | Component     | Technology     | Purpose           |
+    | ------------- | -------------- | ----------------- |
+    | **Framework** | React 18       | UI rendering      |
+    | **Language**  | TypeScript     | Type safety       |
+    | **Build**     | Vite           | Fast bundling     |
+    | **State**     | Zustand        | State management  |
+    | **Styling**   | Tailwind + MUI | Responsive design |
+  </div>
+
+  <div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
+    ### 🏭 Infrastructure
+
+    | Service     | Provider   | Purpose           |
+    | ----------- | ---------- | ----------------- |
+    | **Indexer** | Torii      | Event indexing    |
+    | **RPC**     | StarkNet   | Blockchain access |
+    | **Storage** | IPFS       | Asset storage     |
+    | **CDN**     | Cloudflare | Global delivery   |
+  </div>
+</div>
+
+### Frontend Stack
+
+* **Framework**: React 18 with TypeScript
+* **Build Tool**: Vite
+* **State Management**: Zustand
+* **Styling**: Tailwind CSS + Material-UI
+* **Wallet Integration**: StarknetKit + Cartridge Controller
+
+### Infrastructure
+
+* **Indexer**: Torii (Dojo's indexer)
+* **RPC**: StarkNet full nodes
+* **Storage**: IPFS for assets
+* **CDN**: Cloudflare for static assets
+
+## System Architecture
+
+### High-Level Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         Frontend (React)                      │
+├─────────────────────────────────────────────────────────────┤
+│                     StarknetKit / Cartridge                   │
+├─────────────────────────────────────────────────────────────┤
+│                          Torii Indexer                        │
+├─────────────────────────────────────────────────────────────┤
+│                      Dojo Framework (ECS)                     │
+├─────────────────────────────────────────────────────────────┤
+│                    Cairo Smart Contracts                      │
+├─────────────────────────────────────────────────────────────┤
+│                         StarkNet L2                           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Component Architecture
+
+#### Smart Contract Layer
+
+The contract architecture follows a modular system design:
+
+```
+contracts/
+├── systems/
+│   ├── adventurer/     # Player character logic
+│   ├── beast/          # Enemy AI and combat
+│   ├── game/           # Core game loop
+│   ├── loot/           # Item generation
+│   ├── market/         # Trading system
+│   └── settings/       # Configuration
+├── models/
+│   ├── adventurer/     # Character data structures
+│   ├── beast.cairo     # Beast entities
+│   ├── combat.cairo    # Combat state
+│   ├── loot.cairo      # Item models
+│   └── market.cairo    # Market state
+└── libs/
+    ├── game.cairo      # Game utilities
+    └── settings.cairo  # Config helpers
+```
+
+#### Frontend Architecture
+
+```
+client/src/
+├── desktop/           # Desktop-optimized UI
+│   ├── components/   # Reusable components
+│   ├── overlays/     # Screen overlays
+│   └── pages/        # Route pages
+├── mobile/           # Mobile-optimized UI
+│   ├── components/   # Mobile components
+│   ├── containers/   # Screen containers
+│   └── pages/        # Mobile routes
+├── dojo/             # Blockchain integration
+│   ├── useSystemCalls.ts    # Contract interactions
+│   ├── useGameSettings.ts   # Settings hooks
+│   └── useQuests.ts         # Quest system
+├── stores/           # Zustand state management
+│   ├── gameStore.ts # Game state
+│   ├── marketStore.ts # Market state
+│   └── uiStore.ts    # UI state
+└── generated/        # Auto-generated bindings
+```
+
+## Data Models
+
+### Entity-Component System (ECS)
+
+Dojo uses an ECS architecture where:
+
+* **Entities**: Unique identifiers (adventurer ID, beast ID)
+* **Components**: Data containers (stats, equipment, position)
+* **Systems**: Logic processors (combat, movement, trading)
+
+### Core Entities
+
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0' }}>
+  #### 🧿 Adventurer Entity
+
+  ```cairo
+  pub struct Adventurer {
+      pub health: u16, // 10 bits
+      pub xp: u16, // 15 bits
+      pub gold: u16, // 9 bits
+      pub beast_health: u16, // 10 bits
+      pub stat_upgrades_available: u8, // 4 bits
+      pub stats: Stats, // 30 bits - 7 core attributes
+      pub equipment: Equipment, // 128 bits - 8 gear slots
+      pub item_specials_seed: u16, // 16 bits
+      pub action_count: u16,
+  }
+  ```
+
+  > **💡 Storage Optimization:** Entire adventurer state packed into a single storage slot!
+</div>
+
+#### Beast Entity
+
+```cairo
+struct Beast {
+    id: u32,
+    beast_type: BeastType,
+    level: u8,
+    health: u16,
+    damage: u16,
+    special_abilities: Array<Ability>,
+}
+```
+
+#### Item Entity
+
+```cairo
+struct Item {
+    id: u32,
+    item_type: ItemType,
+    tier: Tier,
+    level: u8,
+    prefix: Option<Prefix>,
+    suffix: Option<Suffix>,
+    greatness: u8,
+}
+```
+
+### State Management
+
+#### Onchain State
+
+* **Persistent**: Adventurer data, items, achievements
+* **Session**: Current combat, market seed, active quests
+* **Global**: Leaderboards, statistics, events
+
+#### Client State
+
+```typescript
+interface GameState {
+  adventurer: Adventurer | null;
+  currentBeast: Beast | null;
+  market: MarketItem[];
+  combatLog: CombatEvent[];
+  isLoading: boolean;
+}
+```
+
+## Smart Contract Systems
+
+### Game System
+
+Central orchestrator managing game flow:
+
+* Action validation
+* State transitions
+* Event emission
+* Gas optimization
+
+### Adventurer System
+
+Handles player character logic:
+
+* Stat management
+* Equipment handling
+* Level progression
+* Health/death mechanics
+
+### Combat System
+
+Manages battle mechanics:
+
+* Damage calculation
+* Type advantages
+* Critical hits
+* Flee mechanics
+
+### Loot System
+
+Generates and manages items:
+
+* Deterministic generation
+* Tier distribution
+* Prefix/suffix assignment
+* Item evolution
+
+### Market System
+
+Handles trading mechanics:
+
+* Seed-based generation
+* Price calculation
+* Inventory rotation
+* Transaction processing
+
+## Network Architecture
+
+### Transaction Flow
+
+1. **User Action**: Player initiates action in UI
+2. **Wallet Signing**: Transaction signed via wallet
+3. **Contract Execution**: Cairo contract processes logic
+4. **State Update**: Dojo updates entity state
+5. **Event Emission**: Events logged onchain
+6. **Indexer Update**: Torii indexes new state
+7. **UI Update**: Frontend reflects changes
+
+### Gas Optimization
+
+#### Packed Storage
+
+```cairo
+// Efficient packing of multiple values
+struct PackedStats {
+    // All stats in single felt252
+    packed: felt252,
+}
+```
+
+#### Batch Operations
+
+```cairo
+// Multiple actions in single transaction
+fn batch_actions(actions: Array<Action>) {
+    // Process all actions together
+}
+```
+
+## Integration Points
+
+### Wallet Integration
+
+#### StarknetKit Connection
+
+```typescript
+const { connect, connectors } = useStarknet();
+
+// Available connectors
+const wallets = [argentX(), braavos(), cartridge()];
+```
+
+### RPC Integration
+
+#### Contract Calls
+
+```typescript
+// Read operations (free)
+const adventurer = await contract.get_adventurer(id);
+
+// Write operations (gas required)
+const tx = await contract.attack_beast();
+```
+
+### Event System
+
+#### Event Structure
+
+```cairo
+#[event]
+struct BeastSlain {
+    adventurer_id: u256,
+    beast_id: u32,
+    gold_earned: u16,
+    xp_earned: u32,
+}
+```
+
+#### Event Listening
+
+```typescript
+contract.on("BeastSlain", (event) => {
+  updateGameState(event);
+});
+```
+
+## Randomness Architecture
+
+### Deterministic Randomness
+
+Default mode using blockchain data:
+
+```cairo
+fn get_random_seed() -> felt252 {
+    let info = get_block_info().unbox();
+    pedersen(info.block_number, info.block_timestamp)
+}
+```
+
+### VRF Integration
+
+Optional true randomness:
+
+```cairo
+fn request_random() -> u256 {
+    let vrf = IVRFProvider::new();
+    vrf.request_random(callback)
+}
+```
+
+## Security Architecture
+
+<div style={{ background: '#2a1a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc2626', margin: '1rem 0' }}>
+  ### 🔐 Access Control
+
+  ```cairo
+  #[external(v0)]
+  fn admin_action() {
+      assert(get_caller_address() == ADMIN, 'Not authorized');
+      // Admin logic
+  }
+  ```
+
+  | Security Layer       | Protection             | Implementation        |
+  | -------------------- | ---------------------- | --------------------- |
+  | **Access Control**   | Role-based permissions | Owner/Admin checks    |
+  | **Input Validation** | Parameter sanitization | Assert statements     |
+  | **Reentrancy Guard** | Attack prevention      | Lock mechanisms       |
+  | **Integer Overflow** | Math safety            | Cairo built-in checks |
+
+  > **⚠️ Security Note:** All contracts audited by \[Auditor Name] in \[Date]
+</div>
+
+### Input Validation
+
+```cairo
+fn validate_action(action: Action) {
+    assert(action.is_valid(), 'Invalid action');
+    assert(has_resources(), 'Insufficient resources');
+}
+```
+
+### Reentrancy Protection
+
+```cairo
+mod ReentrancyGuard {
+    fn start() {
+        assert(!is_locked(), 'Reentrant call');
+        set_locked(true);
+    }
+
+    fn end() {
+        set_locked(false);
+    }
+}
+```
+
+## Performance Optimization
+
+### Frontend Optimization
+
+#### Code Splitting
+
+```typescript
+const GamePage = lazy(() => import("./pages/GamePage"));
+const MarketPage = lazy(() => import("./pages/MarketPage"));
+```
+
+#### State Management
+
+```typescript
+// Zustand with persistence
+const useGameStore = create(
+  persist(
+    (set) => ({
+      // Minimal state updates
+    }),
+    { name: "game-storage" }
+  )
+);
+```
+
+### Contract Optimization
+
+#### Storage Patterns
+
+```cairo
+// Use packed structs
+// Minimize storage writes
+// Batch operations
+```
+
+#### Computation Optimization
+
+```cairo
+// Precompute values
+// Use lookup tables
+// Minimize loops
+```
+
+## Deployment Architecture
+
+### Environment Configuration
+
+#### Development
+
+```toml
+[environment]
+rpc_url = "http://localhost:5050"
+account_address = "0xDEV"
+private_key = "0xDEV_KEY"
+```
+
+#### Production
+
+```toml
+[environment]
+rpc_url = "https://starknet-mainnet.public.blastapi.io"
+account_address = "0xPROD"
+private_key = "$PROD_KEY"
+```
+
+### Contract Deployment
+
+#### Using Dojo CLI
+
+```bash
+# Build contracts
+sozo build
+
+# Deploy to network
+sozo deploy --world 0xWORLD_ADDRESS
+
+# Verify deployment
+sozo inspect
+```
+
+### Frontend Deployment
+
+#### Build Process
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build for production
+pnpm build
+
+# Deploy to CDN
+pnpm deploy
+```
+
+## Monitoring and Analytics
+
+### Onchain Metrics
+
+* Transaction volume
+* Active players
+* Gas usage
+* Error rates
+
+### Application Metrics
+
+* Page load times
+* API latencies
+* User engagement
+* Error tracking
+
+### Performance Monitoring
+
+```typescript
+// Performance tracking
+performance.mark("action-start");
+await performAction();
+performance.mark("action-end");
+performance.measure("action", "action-start", "action-end");
+```
+
+## Scaling Considerations
+
+### Horizontal Scaling
+
+* Multiple RPC endpoints
+* Load balancing
+* CDN distribution
+* Regional deployments
+
+### Vertical Scaling
+
+* Optimized contracts
+* Efficient indexing
+* Caching strategies
+* Database optimization
+
+## Future Architecture
+
+### Planned Enhancements
+
+#### Multi-chain Support
+
+* Ethereum L1 integration
+* Cross-chain bridges
+* Multi-network deployment
+
+#### Advanced Features
+
+* Multiplayer dungeons
+* Guild systems
+* Tournament infrastructure
+* Achievement system
+
+#### Technical Improvements
+
+* ZK proof integration
+* Advanced VRF
+* State channels
+* Optimistic updates
+
+## Development Workflow
+
+### Local Development
+
+1. Start local StarkNet node
+2. Deploy contracts locally
+3. Run frontend dev server
+4. Connect to local network
+
+### Testing Pipeline
+
+1. Unit tests (Cairo)
+2. Integration tests
+3. Frontend tests
+4. E2E tests
+
+### Deployment Pipeline
+
+1. Code review
+2. Automated testing
+3. Staging deployment
+4. Production release
+
+## Best Practices
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
+  <div style={{ background: '#1a2332', padding: '1rem', borderRadius: '8px', border: '1px solid #3b82f6' }}>
+    ### 📝 Contract Development
+
+    | Practice             | Implementation          |
+    | -------------------- | ----------------------- |
+    | **Modular Design**   | Separate concerns       |
+    | **Gas Optimization** | Pack storage, batch ops |
+    | **Testing**          | 90%+ coverage           |
+    | **Security**         | Regular audits          |
+  </div>
+
+  <div style={{ background: '#1a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #10b981' }}>
+    ### 🌐 Frontend Development
+
+    | Practice        | Implementation            |
+    | --------------- | ------------------------- |
+    | **Components**  | Reusable, typed           |
+    | **State**       | Minimal, efficient        |
+    | **Performance** | Code splitting, lazy load |
+    | **Design**      | Mobile-first, accessible  |
+  </div>
+
+  <div style={{ background: '#2a1a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
+    ### 🔗 Integration Guidelines
+
+    | Practice      | Implementation         |
+    | ------------- | ---------------------- |
+    | **Errors**    | Graceful handling      |
+    | **Retries**   | Exponential backoff    |
+    | **Fallbacks** | Degradation paths      |
+    | **Feedback**  | Loading states, toasts |
+  </div>
+</div>
+
+> **🏆 Excellence Standard:** Follow these practices for production-ready code!
+
+## Conclusion
+
+The Loot Survivor architecture demonstrates how complex game mechanics can be implemented fully onchain while maintaining performance and user experience. The modular design allows for easy extension and modification, making it an ideal foundation for blockchain gaming.
+
+
+
+---
+
+file: docs/lootsurvivor/technical/contracts.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Smart Contracts Documentation
+
+This document provides detailed information about the Loot Survivor smart contracts, their interfaces, and how to interact with them.
+
+## Contract Overview
+
+Loot Survivor's smart contracts are written in Cairo and deployed on StarkNet. The contracts follow a modular architecture using the Dojo framework's Entity-Component-System (ECS) pattern.
+
+## Core Contracts
+
+### Game Contract
+
+The main orchestrator managing the entire game flow.
+
+**Address (Mainnet)**: `0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3`
+
+#### Key Functions
+
+##### start\_game
+
+```cairo
+fn start_game(
+    client_reward_address: ContractAddress,
+    weapon_type: WeaponType,
+    name: felt252,
+    golden_token_id: u256,
+    interface_camel: bool
+) -> u256
+```
+
+* Starts a new adventure
+* Returns the adventurer ID
+* Requires payment (ETH or LORDS)
+
+##### explore
+
+```cairo
+fn explore(adventurer_id: u256, till_beast: bool)
+```
+
+* Explores the dungeon
+* `till_beast`: Continue until beast encounter if true
+* Triggers obstacles and discoveries
+
+##### attack
+
+```cairo
+fn attack(adventurer_id: u256, to_the_death: bool)
+```
+
+* Attacks the current beast
+* `to_the_death`: Fight until death if true
+* Calculates damage and rewards
+
+##### flee
+
+```cairo
+fn flee(
+    adventurer_id: u256,
+    to_the_death: bool
+)
+```
+
+* Attempts to flee from combat
+* Success based on Dexterity
+* May take damage on failure
+
+##### upgrade
+
+```cairo
+fn upgrade(
+    adventurer_id: u256,
+    stat_upgrades: Stats,
+    items_to_purchase: Array<ItemPurchase>
+)
+```
+
+* Allocates stat points
+* Purchases items from market
+* Called after leveling up
+
+### Adventurer Contract
+
+Manages adventurer data and progression.
+
+**Address (Mainnet)**: `0x3befa9c969bf82bbfa0a96374da9f7aab172101298c0ff2611ec8c2fd02692`
+
+#### Data Structures
+
+##### Adventurer
+
+```cairo
+struct Adventurer {
+    // Identity
+    id: u256,
+    owner: ContractAddress,
+    name: felt252,
+    
+    // Progression
+    level: u8,
+    experience: u32,
+    
+    // Health
+    health: u16,
+    max_health: u16,
+    
+    // Resources
+    gold: u16,
+    
+    // Stats
+    strength: u8,
+    dexterity: u8,
+    vitality: u8,
+    intelligence: u8,
+    wisdom: u8,
+    charisma: u8,
+    luck: u8,
+    
+    // Equipment
+    weapon: Item,
+    chest: Item,
+    head: Item,
+    waist: Item,
+    foot: Item,
+    hand: Item,
+    neck: Item,
+    ring: Item,
+    
+    // Inventory
+    bag: Bag,
+    
+    // State
+    beast_id: u32,
+    stat_points_available: u8,
+    actions_per_block: u8,
+    mutated: bool,
+}
+```
+
+##### Stats
+
+```cairo
+struct Stats {
+    strength: u8,
+    dexterity: u8,
+    vitality: u8,
+    intelligence: u8,
+    wisdom: u8,
+    charisma: u8,
+    luck: u8,
+}
+```
+
+#### Key Functions
+
+##### get\_adventurer
+
+```cairo
+fn get_adventurer(adventurer_id: u256) -> Adventurer
+```
+
+* Returns full adventurer data
+* Read-only function (no gas)
+
+##### get\_adventurer\_stats
+
+```cairo
+fn get_adventurer_stats(adventurer_id: u256) -> Stats
+```
+
+* Returns just the stats
+* Useful for calculations
+
+##### update\_adventurer
+
+```cairo
+fn update_adventurer(adventurer: Adventurer)
+```
+
+* Internal function
+* Updates adventurer state
+
+### Beast Contract
+
+Handles beast generation and combat.
+
+**Address (Mainnet)**: `0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038`
+
+#### Data Structures
+
+##### Beast
+
+```cairo
+struct Beast {
+    id: u32,
+    beast_type: BeastType,
+    tier: Tier,
+    level: u8,
+    health: u16,
+    starting_health: u16,
+    special_abilities: SpecialAbilities,
+}
+```
+
+##### BeastType Enum
+
+```cairo
+enum BeastType {
+    // Starter (T5)
+    Rat, Gnome, Goblin, Skeleton,
+    
+    // Common (T4)
+    Wolf, Orc, Troll, Zombie,
+    DireWolf, Bear, Spider, Ghoul,
+    
+    // Uncommon (T3)
+    Minotaur, Cyclops, Griffin, Vampire,
+    Manticore, Phoenix, Dragon, Lich,
+    
+    // Rare (T2)
+    Balrog, Titan, Leviathan, Tarrasque,
+    Typhon, Fenrir, Hydra, Colossus,
+    
+    // Legendary (T1)
+    // ... 75 total beasts
+}
+```
+
+#### Key Functions
+
+##### generate\_beast
+
+```cairo
+fn generate_beast(
+    seed: felt252,
+    adventurer_level: u8
+) -> Beast
+```
+
+* Creates a new beast encounter
+* Level scales with adventurer
+* Deterministic based on seed
+
+##### calculate\_damage
+
+```cairo
+fn calculate_damage(
+    attacker_strength: u8,
+    weapon_type: WeaponType,
+    beast_type: BeastType,
+    is_critical: bool
+) -> u16
+```
+
+* Calculates combat damage
+* Includes type advantages
+* Critical hit multiplier
+
+### Loot Contract
+
+Manages item generation and evolution.
+
+**Address (Mainnet)**: `0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038`
+
+#### Data Structures
+
+##### Item
+
+```cairo
+struct Item {
+    id: u32,
+    item_type: ItemType,
+    tier: Tier,
+    slot: Slot,
+    
+    // Evolution
+    level: u8,
+    greatness: u8,
+    
+    // Special properties
+    prefix: Option<ItemPrefix>,
+    suffix: Option<ItemSuffix>,
+    
+    // Stats
+    damage: u16,
+    armor: u16,
+    stat_bonuses: Stats,
+}
+```
+
+##### ItemType Enum
+
+```cairo
+enum ItemType {
+    // Weapons
+    Blade, Bludgeon, Magic,
+    
+    // Armor
+    Cloth, Hide, Metal,
+    
+    // Accessories
+    Ring, Amulet, Pendant,
+}
+```
+
+##### Tier Enum
+
+```cairo
+enum Tier {
+    T1, // Legendary (most expensive)
+    T2, // Rare
+    T3, // Uncommon
+    T4, // Common
+    T5, // Starter (cheapest)
+}
+```
+
+#### Key Functions
+
+##### generate\_item
+
+```cairo
+fn generate_item(
+    seed: felt252,
+    slot: Slot,
+    tier: Tier
+) -> Item
+```
+
+* Creates a new item
+* Deterministic generation
+* Tier affects rarity
+
+##### evolve\_item
+
+```cairo
+fn evolve_item(
+    item: Item,
+    xp_gained: u32
+) -> Item
+```
+
+* Levels up an item
+* Unlocks suffixes at level 15
+* Unlocks prefixes at level 20
+
+### Market Contract
+
+Handles the in-game marketplace.
+
+#### Data Structures
+
+##### Market
+
+```cairo
+struct Market {
+    seed: felt252,
+    items: Array<MarketItem>,
+    potion_price: u16,
+    refreshed_at: u64,
+}
+```
+
+##### MarketItem
+
+```cairo
+struct MarketItem {
+    item: Item,
+    price: u16,
+    stock: u8,
+}
+```
+
+#### Key Functions
+
+##### generate\_market
+
+```cairo
+fn generate_market(
+    seed: felt252,
+    adventurer_level: u8,
+    charisma: u8
+) -> Market
+```
+
+* Creates market inventory
+* Prices based on charisma
+* Refreshes on level up
+
+##### purchase\_item
+
+```cairo
+fn purchase_item(
+    market: Market,
+    item_id: u32,
+    adventurer_gold: u16
+) -> (Market, u16)
+```
+
+* Processes item purchase
+* Returns updated market and remaining gold
+
+## Events
+
+### Combat Events
+
+```cairo
+#[event]
+struct AttackEvent {
+    adventurer_id: u256,
+    beast_id: u32,
+    damage_dealt: u16,
+    damage_taken: u16,
+    is_critical: bool,
+}
+
+#[event]
+struct BeastSlainEvent {
+    adventurer_id: u256,
+    beast_id: u32,
+    beast_type: BeastType,
+    gold_earned: u16,
+    xp_earned: u32,
+    items_dropped: Array<Item>,
+}
+
+#[event]
+struct FleeAttemptEvent {
+    adventurer_id: u256,
+    beast_id: u32,
+    success: bool,
+    damage_taken: u16,
+}
+```
+
+### Progression Events
+
+```cairo
+#[event]
+struct LevelUpEvent {
+    adventurer_id: u256,
+    new_level: u8,
+    stat_points_gained: u8,
+}
+
+#[event]
+struct ItemLevelUpEvent {
+    adventurer_id: u256,
+    item_id: u32,
+    new_level: u8,
+    suffix_unlocked: Option<ItemSuffix>,
+    prefix_unlocked: Option<ItemPrefix>,
+}
+```
+
+### Market Events
+
+```cairo
+#[event]
+struct ItemPurchasedEvent {
+    adventurer_id: u256,
+    item_id: u32,
+    price: u16,
+}
+
+#[event]
+struct MarketRefreshedEvent {
+    adventurer_id: u256,
+    seed: felt252,
+    items_available: u8,
+}
+```
+
+## Integration Examples
+
+### Starting a Game
+
+```typescript
+// TypeScript/JavaScript
+const startGame = async () => {
+    const tx = await gameContract.start_game(
+        rewardAddress,     // Address for rewards
+        WeaponType.Blade,  // Starting weapon
+        "Adventurer",      // Name
+        0,                 // Golden token ID (0 if none)
+        false              // Interface camel case
+    );
+    
+    const receipt = await tx.wait();
+    const adventurerId = receipt.events[0].adventurer_id;
+    return adventurerId;
+};
+```
+
+### Combat Loop
+
+```typescript
+const combatLoop = async (adventurerId: bigint) => {
+    // Attack until victory or death
+    const tx = await gameContract.attack(
+        adventurerId,
+        true  // to_the_death
+    );
+    
+    await tx.wait();
+    
+    // Check if adventurer survived
+    const adventurer = await adventurerContract.get_adventurer(adventurerId);
+    if (adventurer.health === 0) {
+        console.log("Game Over!");
+    }
+};
+```
+
+### Upgrading After Level Up
+
+```typescript
+const upgrade = async (adventurerId: bigint) => {
+    const statUpgrades = {
+        strength: 1,
+        dexterity: 0,
+        vitality: 0,
+        intelligence: 0,
+        wisdom: 0,
+        charisma: 0,
+        luck: 0,
+    };
+    
+    const itemsToPurchase = [
+        { item_id: 123, equip: true },
+        { item_id: 456, equip: false },
+    ];
+    
+    await gameContract.upgrade(
+        adventurerId,
+        statUpgrades,
+        itemsToPurchase
+    );
+};
+```
+
+## Gas Optimization
+
+### Batch Operations
+
+```cairo
+// Efficient: Single transaction
+fn batch_actions(actions: Array<Action>) {
+    for action in actions {
+        process_action(action);
+    }
+}
+
+// Inefficient: Multiple transactions
+fn single_action(action: Action) {
+    process_action(action);
+}
+```
+
+### Storage Packing
+
+```cairo
+// Packed storage (efficient)
+struct PackedAdventurer {
+    // Multiple values in single felt252
+    packed_stats: felt252,
+    packed_equipment: felt252,
+}
+
+// Unpacked storage (less efficient)
+struct UnpackedAdventurer {
+    strength: u8,
+    dexterity: u8,
+    vitality: u8,
+    // ... each stat separate
+}
+```
+
+## Security Considerations
+
+### Access Control
+
+All contracts implement access control:
+
+```cairo
+#[external(v0)]
+fn admin_function() {
+    assert_caller_is_admin();
+    // Admin logic
+}
+
+fn assert_caller_is_admin() {
+    let caller = get_caller_address();
+    assert(caller == ADMIN_ADDRESS, 'Unauthorized');
+}
+```
+
+### Input Validation
+
+All user inputs are validated:
+
+```cairo
+fn validate_stat_upgrade(stats: Stats) {
+    let total = stats.strength + stats.dexterity + // ...
+    assert(total <= available_points, 'Invalid points');
+    assert(stats.strength <= MAX_STAT, 'Stat too high');
+}
+```
+
+### Reentrancy Protection
+
+Critical functions use reentrancy guards:
+
+```cairo
+fn critical_function() {
+    assert(!is_locked(), 'Reentrant');
+    set_locked(true);
+    
+    // Function logic
+    
+    set_locked(false);
+}
+```
+
+## Testing Contracts
+
+### Unit Tests
+
+```cairo
+#[test]
+fn test_combat_damage() {
+    let damage = calculate_damage(
+        strength: 10,
+        weapon_type: WeaponType::Blade,
+        beast_type: BeastType::Goblin,
+        is_critical: false
+    );
+    assert(damage > 0, 'Damage should be positive');
+}
+```
+
+### Integration Tests
+
+```cairo
+#[test]
+fn test_full_game_flow() {
+    let adventurer_id = start_game(...);
+    explore(adventurer_id, false);
+    attack(adventurer_id, false);
+    upgrade(adventurer_id, ...);
+    // Assert final state
+}
+```
+
+## Contract Addresses
+
+### Mainnet Contracts
+
+| Contract   | Address                                                             |
+| ---------- | ------------------------------------------------------------------- |
+| Game       | `0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3`  |
+| Adventurer | `0x3befa9c969bf82bbfa0a96374da9f7aab172101298c0ff2611ec8c2fd02692`  |
+| Beast      | `0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038` |
+| Loot       | `0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038` |
+| Market     | `0x1e1c477f2ef896fd638b50caa31e3aa8f504d5c6cb3c09c99cd0b72523f07f7` |
+
+### Testnet Contracts (Sepolia)
+
+| Contract   | Address                          |
+| ---------- | -------------------------------- |
+| Game       | `0x[TESTNET_GAME_ADDRESS]`       |
+| Adventurer | `0x[TESTNET_ADVENTURER_ADDRESS]` |
+| Beast      | `0x[TESTNET_BEAST_ADDRESS]`      |
+| Loot       | `0x[TESTNET_LOOT_ADDRESS]`       |
+| Market     | `0x[TESTNET_MARKET_ADDRESS]`     |
+
+## ABI Documentation
+
+Full ABI specifications are available in the generated files:
+
+* `/contracts/target/dev/[contract_name].contract_class.json`
+
+## Upgradeability
+
+Contracts use the Dojo framework's upgrade system:
+
+```cairo
+#[starknet::contract]
+mod UpgradeableContract {
+    #[external(v0)]
+    fn upgrade(new_class_hash: ClassHash) {
+        assert_caller_is_admin();
+        replace_class_syscall(new_class_hash);
+    }
+}
+```
+
+## Best Practices
+
+### Reading Contract State
+
+```typescript
+// Always use view functions for reading
+const adventurer = await contract.get_adventurer(id);
+// These are free (no gas)
+```
+
+### Writing to Contracts
+
+```typescript
+// Batch operations when possible
+const tx = await contract.batch_actions([
+    action1,
+    action2,
+    action3,
+]);
+// Single transaction = less gas
+```
+
+### Error Handling
+
+```typescript
+try {
+    const tx = await contract.attack(adventurerId, true);
+    await tx.wait();
+} catch (error) {
+    if (error.message.includes('Dead adventurer')) {
+        // Handle game over
+    }
+}
+```
+
+## Conclusion
+
+The Loot Survivor smart contracts provide a robust, gas-efficient foundation for fully onchain gaming. The modular architecture allows for easy extension while maintaining security and performance.
+
+
+
+---
+
+file: docs/lootsurvivor/technical/integration.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Integration Guide
+
+This guide explains how to integrate with Loot Survivor, whether you're building a frontend client, creating tools, or extending the game with additional features.
+
+## Quick Start
+
+### Prerequisites
+
+* Node.js 18+ or your preferred runtime
+* StarkNet wallet or programmatic account
+* Basic understanding of StarkNet and Cairo
+
+### Installation
+
+#### JavaScript/TypeScript
+
+```bash
+# Using npm
+npm install starknet @dojoengine/core
+
+# Using pnpm
+pnpm add starknet @dojoengine/core
+
+# Using yarn
+yarn add starknet @dojoengine/core
+```
+
+#### Python
+
+```bash
+pip install starknet-py
+```
+
+## Setting Up Connection
+
+### Initialize Provider
+
+```typescript
+import { Provider, constants } from 'starknet';
+
+// Mainnet
+const provider = new Provider({
+    sequencer: {
+        network: constants.NetworkName.SN_MAIN,
+    },
+});
+
+// Testnet (Sepolia)
+const provider = new Provider({
+    sequencer: {
+        network: constants.NetworkName.SN_SEPOLIA,
+    },
+});
+```
+
+### Contract Instances
+
+```typescript
+import { Contract } from 'starknet';
+import GameABI from './abis/Game.json';
+import AdventurerABI from './abis/Adventurer.json';
+
+const GAME_ADDRESS = "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3";
+const ADVENTURER_ADDRESS = "0x3befa9c969bf82bbfa0a96374da9f7aab172101298c0ff2611ec8c2fd02692";
+
+const gameContract = new Contract(GameABI, GAME_ADDRESS, provider);
+const adventurerContract = new Contract(AdventurerABI, ADVENTURER_ADDRESS, provider);
+```
+
+## Wallet Integration
+
+### Using StarknetKit
+
+```typescript
+import { connect, disconnect } from '@starknet-io/get-starknet';
+
+const connectWallet = async () => {
+    const starknet = await connect({
+        modalMode: "alwaysAsk",
+        modalTheme: "dark",
+    });
+    
+    if (!starknet?.isConnected) {
+        throw new Error("Failed to connect wallet");
+    }
+    
+    return starknet;
+};
+```
+
+### Using Cartridge Controller
+
+```typescript
+import Controller from '@cartridge/controller';
+
+const controller = new Controller({
+    policies: [
+        {
+            target: GAME_ADDRESS,
+            method: 'attack',
+        },
+        {
+            target: GAME_ADDRESS,
+            method: 'explore',
+        },
+    ],
+    rpc: "https://api.cartridge.gg/x/starknet/mainnet",
+});
+
+await controller.connect();
+```
+
+## Reading Game State
+
+### Get Adventurer Data
+
+```typescript
+interface Adventurer {
+    id: bigint;
+    owner: string;
+    name: string;
+    level: number;
+    health: number;
+    gold: number;
+    experience: number;
+    stats: Stats;
+    equipment: Equipment;
+}
+
+const getAdventurer = async (adventurerId: bigint): Promise<Adventurer> => {
+    const result = await adventurerContract.get_adventurer(adventurerId);
+    
+    return {
+        id: result.id,
+        owner: result.owner,
+        name: result.name,
+        level: Number(result.level),
+        health: Number(result.health),
+        gold: Number(result.gold),
+        experience: Number(result.experience),
+        stats: parseStats(result.stats),
+        equipment: parseEquipment(result.equipment),
+    };
+};
+```
+
+### Get Current Beast
+
+```typescript
+const getCurrentBeast = async (adventurerId: bigint) => {
+    const beast = await gameContract.get_current_beast(adventurerId);
+    
+    if (!beast) return null;
+    
+    return {
+        id: beast.id,
+        type: beast.beast_type,
+        level: Number(beast.level),
+        health: Number(beast.health),
+        maxHealth: Number(beast.starting_health),
+    };
+};
+```
+
+### Get Market Items
+
+```typescript
+const getMarketItems = async (adventurerId: bigint) => {
+    const market = await gameContract.get_market(adventurerId);
+    
+    return market.items.map(item => ({
+        id: item.id,
+        name: item.name,
+        type: item.item_type,
+        tier: item.tier,
+        price: Number(item.price),
+        slot: item.slot,
+    }));
+};
+```
+
+## Writing Transactions
+
+### Starting a Game
+
+```typescript
+const startAdventure = async (
+    account: Account,
+    weaponType: number,
+    name: string
+) => {
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'start_game',
+        calldata: [
+            account.address,  // reward address
+            weaponType,       // 0: Blade, 1: Bludgeon, 2: Magic
+            name,            // adventurer name
+            0,               // golden token (0 if none)
+            0,               // interface camel case (0 for snake)
+        ],
+    });
+    
+    const receipt = await provider.waitForTransaction(tx.transaction_hash);
+    
+    // Extract adventurer ID from events
+    const adventurerId = extractAdventurerIdFromEvents(receipt.events);
+    return adventurerId;
+};
+```
+
+### Combat Actions
+
+```typescript
+// Attack beast
+const attack = async (
+    account: Account,
+    adventurerId: bigint,
+    tillDeath: boolean = false
+) => {
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'attack',
+        calldata: [
+            adventurerId.toString(),
+            tillDeath ? 1 : 0,
+        ],
+    });
+    
+    return await provider.waitForTransaction(tx.transaction_hash);
+};
+
+// Flee from combat
+const flee = async (
+    account: Account,
+    adventurerId: bigint
+) => {
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'flee',
+        calldata: [
+            adventurerId.toString(),
+            0, // to_the_death
+        ],
+    });
+    
+    return await provider.waitForTransaction(tx.transaction_hash);
+};
+```
+
+### Exploration
+
+```typescript
+const explore = async (
+    account: Account,
+    adventurerId: bigint,
+    tillBeast: boolean = false
+) => {
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'explore',
+        calldata: [
+            adventurerId.toString(),
+            tillBeast ? 1 : 0,
+        ],
+    });
+    
+    return await provider.waitForTransaction(tx.transaction_hash);
+};
+```
+
+### Upgrading
+
+```typescript
+interface StatUpgrade {
+    strength: number;
+    dexterity: number;
+    vitality: number;
+    intelligence: number;
+    wisdom: number;
+    charisma: number;
+    luck: number;
+}
+
+interface ItemPurchase {
+    item_id: number;
+    equip: boolean;
+}
+
+const upgrade = async (
+    account: Account,
+    adventurerId: bigint,
+    stats: StatUpgrade,
+    items: ItemPurchase[]
+) => {
+    const calldata = [
+        adventurerId.toString(),
+        // Stats (must sum to available points)
+        stats.strength,
+        stats.dexterity,
+        stats.vitality,
+        stats.intelligence,
+        stats.wisdom,
+        stats.charisma,
+        stats.luck,
+        // Items array
+        items.length,
+        ...items.flatMap(i => [i.item_id, i.equip ? 1 : 0]),
+    ];
+    
+    const tx = await account.execute({
+        contractAddress: GAME_ADDRESS,
+        entrypoint: 'upgrade',
+        calldata,
+    });
+    
+    return await provider.waitForTransaction(tx.transaction_hash);
+};
+```
+
+## Event Listening
+
+### Setting Up Event Listeners
+
+```typescript
+import { events } from 'starknet';
+
+const subscribeToEvents = (adventurerId: bigint) => {
+    // Listen for combat events
+    gameContract.on('AttackEvent', (event) => {
+        if (event.adventurer_id === adventurerId) {
+            console.log('Attack:', {
+                damage_dealt: event.damage_dealt,
+                damage_taken: event.damage_taken,
+                is_critical: event.is_critical,
+            });
+        }
+    });
+    
+    // Listen for level up
+    gameContract.on('LevelUpEvent', (event) => {
+        if (event.adventurer_id === adventurerId) {
+            console.log('Level Up! New level:', event.new_level);
+        }
+    });
+    
+    // Listen for death
+    gameContract.on('AdventurerDiedEvent', (event) => {
+        if (event.adventurer_id === adventurerId) {
+            console.log('Game Over! Final level:', event.level);
+        }
+    });
+};
+```
+
+### Processing Historical Events
+
+```typescript
+const getAdventurerHistory = async (adventurerId: bigint) => {
+    const events = await provider.getEvents({
+        address: GAME_ADDRESS,
+        from_block: { block_number: 0 },
+        to_block: 'latest',
+        keys: [[adventurerId.toString()]],
+        chunk_size: 100,
+    });
+    
+    return events.events.map(parseEvent);
+};
+```
+
+## Using Torii Indexer
+
+### GraphQL Queries
+
+```typescript
+const TORII_URL = "https://api.cartridge.gg/x/lootsurvivor/torii/graphql";
+
+const query = `
+    query GetAdventurer($id: String!) {
+        adventurer(id: $id) {
+            id
+            owner
+            level
+            health
+            gold
+            experience
+            stats {
+                strength
+                dexterity
+                vitality
+                intelligence
+                wisdom
+                charisma
+                luck
+            }
+        }
+    }
+`;
+
+const fetchAdventurerData = async (adventurerId: string) => {
+    const response = await fetch(TORII_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query,
+            variables: { id: adventurerId },
+        }),
+    });
+    
+    const data = await response.json();
+    return data.data.adventurer;
+};
+```
+
+### WebSocket Subscriptions
+
+```typescript
+import { createClient } from 'graphql-ws';
+
+const client = createClient({
+    url: 'wss://api.cartridge.gg/x/lootsurvivor/torii/ws',
+});
+
+const subscription = `
+    subscription OnAdventurerUpdate($id: String!) {
+        adventurerUpdated(id: $id) {
+            id
+            level
+            health
+            gold
+        }
+    }
+`;
+
+client.subscribe(
+    {
+        query: subscription,
+        variables: { id: adventurerId },
+    },
+    {
+        next: (data) => console.log('Update:', data),
+        error: (err) => console.error('Error:', err),
+        complete: () => console.log('Subscription complete'),
+    }
+);
+```
+
+## Building Custom Frontends
+
+### React Hook Example
+
+```typescript
+import { useState, useEffect } from 'react';
+
+const useAdventurer = (adventurerId: bigint) => {
+    const [adventurer, setAdventurer] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const data = await getAdventurer(adventurerId);
+                setAdventurer(data);
+            } catch (err) {
+                setError(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchData();
+        
+        // Set up event listeners
+        const unsubscribe = subscribeToAdventurerUpdates(
+            adventurerId,
+            setAdventurer
+        );
+        
+        return unsubscribe;
+    }, [adventurerId]);
+    
+    return { adventurer, loading, error };
+};
+```
+
+### State Management
+
+```typescript
+import { create } from 'zustand';
+
+interface GameStore {
+    adventurer: Adventurer | null;
+    beast: Beast | null;
+    market: MarketItem[];
+    
+    setAdventurer: (adventurer: Adventurer) => void;
+    setBeast: (beast: Beast) => void;
+    setMarket: (items: MarketItem[]) => void;
+    
+    attack: () => Promise<void>;
+    flee: () => Promise<void>;
+    explore: () => Promise<void>;
+}
+
+const useGameStore = create<GameStore>((set, get) => ({
+    adventurer: null,
+    beast: null,
+    market: [],
+    
+    setAdventurer: (adventurer) => set({ adventurer }),
+    setBeast: (beast) => set({ beast }),
+    setMarket: (market) => set({ market }),
+    
+    attack: async () => {
+        const { adventurer } = get();
+        if (!adventurer) return;
+        
+        const result = await attackBeast(adventurer.id);
+        // Update state based on result
+    },
+    
+    // ... other actions
+}));
+```
+
+## Building Game Tools
+
+### Leaderboard API
+
+```typescript
+const getLeaderboard = async (limit = 100) => {
+    const query = `
+        query GetLeaderboard($limit: Int!) {
+            adventurers(
+                orderBy: "level",
+                orderDirection: "desc",
+                limit: $limit
+            ) {
+                id
+                owner
+                name
+                level
+                gold
+                timestamp
+            }
+        }
+    `;
+    
+    const response = await fetch(TORII_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query,
+            variables: { limit },
+        }),
+    });
+    
+    const data = await response.json();
+    return data.data.adventurers;
+};
+```
+
+### Statistics Tracker
+
+```typescript
+const getPlayerStats = async (playerAddress: string) => {
+    const query = `
+        query GetPlayerStats($owner: String!) {
+            adventurers(where: { owner: $owner }) {
+                id
+                level
+                gold
+                experience
+                timestamp
+                died_at
+            }
+        }
+    `;
+    
+    const response = await fetch(TORII_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query,
+            variables: { owner: playerAddress },
+        }),
+    });
+    
+    const data = await response.json();
+    
+    // Calculate statistics
+    const adventures = data.data.adventurers;
+    return {
+        totalAdventures: adventures.length,
+        highestLevel: Math.max(...adventures.map(a => a.level)),
+        totalGold: adventures.reduce((sum, a) => sum + a.gold, 0),
+        averageLevel: adventures.reduce((sum, a) => sum + a.level, 0) / adventures.length,
+    };
+};
+```
+
+## Error Handling
+
+### Common Errors
+
+```typescript
+const handleGameAction = async (action: () => Promise<any>) => {
+    try {
+        const result = await action();
+        return { success: true, data: result };
+    } catch (error) {
+        // Handle specific errors
+        if (error.message.includes('Adventurer is dead')) {
+            return { success: false, error: 'GAME_OVER' };
+        }
+        if (error.message.includes('Insufficient gold')) {
+            return { success: false, error: 'INSUFFICIENT_FUNDS' };
+        }
+        if (error.message.includes('Invalid stat allocation')) {
+            return { success: false, error: 'INVALID_STATS' };
+        }
+        
+        // Generic error
+        return { success: false, error: error.message };
+    }
+};
+```
+
+### Retry Logic
+
+```typescript
+const retryWithBackoff = async (
+    fn: () => Promise<any>,
+    maxRetries = 3,
+    delay = 1000
+) => {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (i === maxRetries - 1) throw error;
+            await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+        }
+    }
+};
+```
+
+## Testing Integration
+
+### Unit Tests
+
+```typescript
+import { describe, it, expect } from 'vitest';
+
+describe('Game Integration', () => {
+    it('should start a new game', async () => {
+        const adventurerId = await startAdventure(
+            mockAccount,
+            WeaponType.Blade,
+            'Test Hero'
+        );
+        
+        expect(adventurerId).toBeGreaterThan(0n);
+    });
+    
+    it('should handle combat', async () => {
+        const result = await attack(mockAccount, adventurerId);
+        expect(result.status).toBe('ACCEPTED');
+    });
+});
+```
+
+### Integration Tests
+
+```typescript
+describe('Full Game Flow', () => {
+    it('should complete a full game cycle', async () => {
+        // Start game
+        const id = await startAdventure(account, 0, 'Hero');
+        
+        // Explore
+        await explore(account, id, false);
+        
+        // Combat
+        const beast = await getCurrentBeast(id);
+        if (beast) {
+            await attack(account, id, false);
+        }
+        
+        // Check state
+        const adventurer = await getAdventurer(id);
+        expect(adventurer.experience).toBeGreaterThan(0);
+    });
+});
+```
+
+## Performance Optimization
+
+### Caching Strategy
+
+```typescript
+class GameCache {
+    private cache = new Map();
+    private ttl = 5000; // 5 seconds
+    
+    async get(key: string, fetcher: () => Promise<any>) {
+        const cached = this.cache.get(key);
+        
+        if (cached && Date.now() - cached.timestamp < this.ttl) {
+            return cached.data;
+        }
+        
+        const data = await fetcher();
+        this.cache.set(key, { data, timestamp: Date.now() });
+        return data;
+    }
+}
+
+const cache = new GameCache();
+
+const getCachedAdventurer = (id: bigint) =>
+    cache.get(`adventurer:${id}`, () => getAdventurer(id));
+```
+
+### Batch Requests
+
+```typescript
+const batchGetAdventurers = async (ids: bigint[]) => {
+    const promises = ids.map(id => getAdventurer(id));
+    return await Promise.all(promises);
+};
+```
+
+## Security Best Practices
+
+### Input Validation
+
+```typescript
+const validateAdventurerId = (id: any): bigint => {
+    if (typeof id !== 'bigint' && typeof id !== 'string') {
+        throw new Error('Invalid adventurer ID type');
+    }
+    
+    const bigIntId = BigInt(id);
+    
+    if (bigIntId <= 0n) {
+        throw new Error('Adventurer ID must be positive');
+    }
+    
+    return bigIntId;
+};
+```
+
+### Rate Limiting
+
+```typescript
+class RateLimiter {
+    private requests = new Map();
+    private limit = 10; // requests per second
+    
+    canMakeRequest(key: string): boolean {
+        const now = Date.now();
+        const requests = this.requests.get(key) || [];
+        
+        // Remove old requests
+        const recent = requests.filter(t => now - t < 1000);
+        
+        if (recent.length >= this.limit) {
+            return false;
+        }
+        
+        recent.push(now);
+        this.requests.set(key, recent);
+        return true;
+    }
+}
+```
+
+## Conclusion
+
+This integration guide provides the foundation for building applications that interact with Loot Survivor. Whether you're creating a custom frontend, building tools, or extending the game, these patterns and examples will help you get started quickly and build robust integrations.
 
 
 
