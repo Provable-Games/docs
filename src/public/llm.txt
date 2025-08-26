@@ -3388,6 +3388,399 @@ If you have questions or want to see more examples, check the rest of the EGS do
 
 ---
 
+file: docs/lootsurvivor/beasts/collectibles.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Beast Collectibles
+
+In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint an NFT to your wallet.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', margin: '2rem 0', textAlign: 'center' }}>
+  <div>
+    <img
+      src="/docs/lootsurvivor/pixel-warlock.svg"
+      alt="Warlock - Magical Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #a855f7",
+  }}
+    />
+
+    <h4 style={{ color: "#a855f7", margin: "0.75rem 0 0.25rem" }}>🪄 Magical</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Warlock - T1 Legendary
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/pixel-dragon.svg"
+      alt="Dragon - Hunter Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #10b981",
+  }}
+    />
+
+    <h4 style={{ color: "#10b981", margin: "0.75rem 0 0.25rem" }}>🏹 Hunter</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Dragon - T1 Legendary
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/pixel-kraken.svg"
+      alt="Kraken - Brute Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #dc2626",
+  }}
+    />
+
+    <h4 style={{ color: "#dc2626", margin: "0.75rem 0 0.25rem" }}>🔨 Brute</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Kraken - T1 Legendary
+    </p>
+  </div>
+</div>
+
+## Beast Mode NFT System
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.6' }}>
+  **NFT Minting:** Defeating uncollected named beasts automatically mints collectible NFTs to your wallet
+
+  **Beast Mode Features:**
+
+  * **Named Beast Focus**: Only special named beasts (Level 19+) mint NFTs
+  * **First Victory Bonus**: NFTs only mint on first defeat of each named beast
+  * **Automatic Collection**: No manual claiming - NFTs appear directly in your wallet
+  * **Permanent Ownership**: Each NFT represents a unique named beast victory
+
+  > **Collect Them All:** Build your personal gallery of defeated legendary named beasts!
+</div>
+
+### 🎨 NFT Visual Rarity & Properties
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1.5rem' }}>
+    **NFT Visual Rarities:**
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    | Visual Type          | Rarity Chance | Description                | Collection Value |
+    | -------------------- | ------------- | -------------------------- | ---------------- |
+    | **Standard**         | 92.16%        | Regular static beast image | Base             |
+    | **Animated Only**    | 3.84%         | Moving/animated beast NFT  | Rare             |
+    | **Shiny Only**       | 3.84%         | Shimmering visual effects  | Rare             |
+    | **Animated + Shiny** | 0.16%         | Both animated AND shiny    | Ultra Rare       |
+  </div>
+
+  <div style={{ marginBottom: '1.5rem' }}>
+    **NFT Metadata (All Beasts Include):**
+  </div>
+
+  <div style={{ marginBottom: '0' }}>
+    * **Health**: Beast's health when first discovered
+    * **Tier Level**: T1 (Legendary) through T5 (Common)
+    * **Beast Name**: Base creature name (e.g., "Warlock", "Dragon")
+    * **Prefix**: Special name prefix if applicable (e.g., "Doom", "Blood")
+    * **Victory Timestamp**: Onchain record of when defeated
+  </div>
+</div>
+
+## NFT Minting Requirements
+
+<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eab308', margin: '1rem 0', lineHeight: '1.6' }}>
+  ### Named Beast NFT Mechanics
+
+  **Level Requirement:** Only beasts level 19+ can gain special names and mint NFTs\
+  **Name Structure:** \[Prefix] + \[Beast Name] = Unique NFT\
+  **Example:** "Doom Phoenix" or "Blood Kraken" mint as separate collectibles
+
+  ### NFT Minting Rules
+
+  **First Victory Only:** Each named beast can only mint one NFT per wallet\
+  **Automatic Process:** No manual claiming - NFT appears immediately after victory\
+  **Unique Metadata:** Each NFT contains beast stats, prefix, and victory timestamp\
+  **Permanent Record:** NFTs serve as proof of your legendary victories
+
+  ### Available Prefixes (69 Total NFT Variants)
+
+  Named beasts use the same prefix system as high-greatness items. For the complete list of all 69 prefixes organized by theme, see: **[Prefixes Guide](/lootsurvivor/loot/prefixes)**
+
+  **Notable Ultra Rare Prefixes:**
+
+  * **Shimmering** (#69) - The rarest and most valuable prefix
+  * **Lights** (#68) - Extremely uncommon and highly sought after
+
+  > **Complete Reference:** Visit the loot section for the full categorized list of all 69 prefixes!
+</div>
+
+## NFT Ownership Benefits
+
+### Digital Asset Value
+
+* **True Ownership**: NFTs belong to you, not the game
+* **Transferable Assets**: Trade or sell your named beast NFTs
+* **Provable Rarity**: Onchain verification of NFT scarcity
+* **Permanent Record**: Victory achievements stored forever on StarkNet
+
+### Collection Advantages
+
+* **Portfolio Building**: Curate valuable named beast collections
+* **Community Status**: Display rare NFTs as proof of skill
+* **Market Participation**: Engage in NFT trading and collecting
+* **Cross-Game Recognition**: Potential utility in future Realms ecosystem games
+
+### Future Utility
+
+* **Summit Game Access**: Beast NFT holders get exclusive access to compete in Summit, a new upcoming game
+* **Enhanced Gameplay**: NFTs may unlock special features across the ecosystem
+* **Community Events**: Exclusive tournaments for NFT holders
+* **Ecosystem Integration**: Use named beast NFTs across multiple Realms games
+* **Social Features**: Show off your legendary victories and exclusive access
+
+## Community & Competition
+
+### Leaderboards
+
+* **First Completionist**: Race to complete full beast collection
+* **Named Beast Masters**: Specialists in rare named variants
+* **Speed Collections**: Fastest time to collection milestones
+* **Type Champions**: Masters of specific beast type collections
+
+### Social Sharing
+
+* **Discord Showcases**: Share rare beast victories with community
+* **Collection Galleries**: Display complete collections as achievements
+* **Strategy Guides**: Share successful beast hunting approaches
+
+***
+
+*Beast collections represent the ultimate test of adventurer skill, patience, and strategic thinking. Every encounter contributes to your permanent legacy in the Loot Survivor universe.*
+
+## See Also
+
+* [Beast Overview](/lootsurvivor/beasts) - Complete beast guide and combat types
+* [Combat Mechanics](/lootsurvivor/combat) - Damage calculations and combat system
+* [Battle Guide](/lootsurvivor/guide/battle) - Tactical combat strategies
+
+
+
+---
+
+file: docs/lootsurvivor/beasts/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Beasts
+
+Beasts are the creatures you'll encounter and battle throughout your adventures in Loot Survivor. Understanding beast types, tiers, and combat advantages is crucial for survival and progression.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', margin: '2rem 0', textAlign: 'center' }}>
+  <div>
+    <img
+      src="/docs/lootsurvivor/warlock.png"
+      alt="Warlock - Magical Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #a855f7",
+  }}
+    />
+
+    <h4 style={{ color: "#a855f7", margin: "0.75rem 0 0.25rem" }}>🪄 Magical</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Warlock - T1 Legendary
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/dragon.png"
+      alt="Dragon - Hunter Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #10b981",
+  }}
+    />
+
+    <h4 style={{ color: "#10b981", margin: "0.75rem 0 0.25rem" }}>🏹 Hunter</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Dragon - T1 Legendary
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/kraken.png"
+      alt="Kraken - Brute Beast"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+    borderRadius: "12px",
+    border: "3px solid #dc2626",
+  }}
+    />
+
+    <h4 style={{ color: "#dc2626", margin: "0.75rem 0 0.25rem" }}>🔨 Brute</h4>
+
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Kraken - T1 Legendary
+    </p>
+  </div>
+</div>
+
+## Beast Overview
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **75 unique beasts** populate Loot Survivor, each with distinct characteristics:
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    * **3 Combat Types**: Magical, Hunter, and Brute
+    * **5 Tiers**: T1 (Legendary) to T5 (Common)
+    * **Special Names**: High-level beasts gain name prefixes at level 19+
+    * **Dynamic Generation**: Each encounter uses VRF seeds for true randomness
+  </div>
+
+  > **Combat Focus:** Every beast follows the rock-paper-scissors combat system - choose your equipment wisely!
+</div>
+
+## Beast Tier System
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  | Tier   | Rarity      | Power Level | Gold Reward | XP Reward | Examples                 |
+  | ------ | ----------- | ----------- | ----------- | --------- | ------------------------ |
+  | **T1** | Legendary   | Highest     | 5× level    | Maximum   | Warlock, Griffin, Kraken |
+  | **T2** | Rare        | High        | 4× level    | High      | Gorgon, Qilin, Titan     |
+  | **T3** | Uncommon    | Medium      | 3× level    | Medium    | Werewolf, Wyvern, Oni    |
+  | **T4** | Common      | Low         | 2× level    | Low       | Goblin, Fenrir, Yeti     |
+  | **T5** | Very Common | Lowest      | 1× level    | Minimum   | Fairy, Bear, Troll       |
+
+  **Reward Formula:** Gold = (Tier Multiplier × Beast Level) ÷ 2
+</div>
+
+## Beast Categories
+
+### 🪄 Magical Beasts (25 Total)
+
+<div style={{ background: '#2a1a3e', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  **T1 Legendary (5):** Warlock, Typhon, Jiangshi, Anansi, Basilisk\
+  **T2 Rare (5):** Gorgon, Kitsune, Lich, Chimera, Wendigo\
+  **T3 Uncommon (5):** Rakshasa, Werewolf, Banshee, Draugr, Vampire\
+  **T4 Common (5):** Goblin, Ghoul, Wraith, Sprite, Kappa\
+  **T5 Very Common (5):** Fairy, Leprechaun, Kelpie, Pixie, Gnome
+</div>
+
+### 🏹 Hunter Beasts (25 Total)
+
+<div style={{ background: '#2a3e1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  **T1 Legendary (5):** Griffin, Manticore, Phoenix, Dragon, Minotaur\
+  **T2 Rare (5):** Qilin, Ammit, Nue, Skinwalker, Chupacabra\
+  **T3 Uncommon (5):** Weretiger, Wyvern, Roc, Harpy, Pegasus\
+  **T4 Common (5):** Hippogriff, Fenrir, Jaguar, Satori, Direwolf\
+  **T5 Very Common (5):** Bear, Wolf, Mantis, Spider, Rat
+</div>
+
+### 🔨 Brute Beasts (25 Total)
+
+<div style={{ background: '#3e1a1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  **T1 Legendary (5):** Kraken, Colossus, Balrog, Leviathan, Tarrasque\
+  **T2 Rare (5):** Titan, Nephilim, Behemoth, Hydra, Juggernaut\
+  **T3 Uncommon (5):** Oni, Jotunn, Ettin, Cyclops, Giant\
+  **T4 Common (5):** Nemeanlion, Berserker, Yeti, Golem, Ent\
+  **T5 Very Common (5):** Troll, Bigfoot, Ogre, Orc, Skeleton
+</div>
+
+## Special Beast Names
+
+<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eab308', margin: '1rem 0', lineHeight: '1.8' }}>
+  ### Naming System
+
+  <div style={{ marginBottom: '1rem' }}>
+    High-level beasts (Level 19+) can gain **special name prefixes** that provide:
+  </div>
+
+  <div style={{ marginBottom: '1.5rem' }}>
+    * **Enhanced Combat Power**: Named beasts are significantly stronger
+    * **Bonus Rewards**: Higher gold and XP rewards
+    * **Collectible Value**: Named beast encounters become permanent achievements
+  </div>
+
+  ### Example Names
+
+  <div style={{ marginBottom: '1rem' }}>
+    **Prefix Examples:** Agony, Apocalypse, Armageddon, Beast, Behemoth, Blood, Death, Demon, Doom, Dragon
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    **Full Named Beast:** "**Doom** **Phoenix**" or "**Blood** **Kraken**"
+  </div>
+
+  > **Pro Tip:** Named beasts are dangerous but offer the best rewards and collectible potential!
+</div>
+
+## Beast Encounter Mechanics
+
+<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.6' }}>
+  ### Generation System
+
+  * **VRF Seeds**: True randomness for beast selection (configurable in settings)
+  * **Level Scaling**: Beast power increases with your adventurer level
+  * **Tier Distribution**: Higher tiers become more common at lower levels
+  * **Special Names**: 19+ level beasts can gain name prefixes randomly
+
+  ### Combat Rewards
+
+  ```
+  Gold Reward = (Tier Multiplier × Beast Level) ÷ 2
+  XP Reward = Minimum 4 + beast tier bonuses
+  ```
+
+  **Bonus Multipliers:**
+
+  * Critical hits from LUCK stat
+  * Name match bonuses (weapon/armor names matching beast names)
+  * Type advantage damage (+50%)
+</div>
+
+## See Also
+
+* [Combat Mechanics](/lootsurvivor/combat) - Detailed damage calculations
+* [Battle Guide](/lootsurvivor/guide/battle) - Combat tactics and interface
+* [Loot System](/lootsurvivor/loot) - Equipment and weapons
+* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Achievement system
+
+
+
+---
+
 file: docs/lootsurvivor/guide/battle.mdx
 meta: {
   "layout": "docs"
@@ -4268,399 +4661,6 @@ The market dramatically expands with multi-levelling:
 * **Strategic Choices:** More options for optimizing your build
 
 > **⚡ Power Spike Alert:** Multi-levelling creates the most significant power increases in the game. The combination of multiple stat points plus an expanded market can transform a struggling adventurer into a dominant force!
-
-
-
----
-
-file: docs/lootsurvivor/beasts/collectibles.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Beast Collectibles
-
-In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint an NFT to your wallet.
-
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', margin: '2rem 0', textAlign: 'center' }}>
-  <div>
-    <img
-      src="/docs/lootsurvivor/pixel-warlock.svg"
-      alt="Warlock - Magical Beast"
-      style={{
-    width: "200px",
-    height: "200px",
-    margin: "0 auto",
-    borderRadius: "12px",
-    border: "3px solid #a855f7",
-  }}
-    />
-
-    <h4 style={{ color: "#a855f7", margin: "0.75rem 0 0.25rem" }}>🪄 Magical</h4>
-
-    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-      Warlock - T1 Legendary
-    </p>
-  </div>
-
-  <div>
-    <img
-      src="/docs/lootsurvivor/pixel-dragon.svg"
-      alt="Dragon - Hunter Beast"
-      style={{
-    width: "200px",
-    height: "200px",
-    margin: "0 auto",
-    borderRadius: "12px",
-    border: "3px solid #10b981",
-  }}
-    />
-
-    <h4 style={{ color: "#10b981", margin: "0.75rem 0 0.25rem" }}>🏹 Hunter</h4>
-
-    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-      Dragon - T1 Legendary
-    </p>
-  </div>
-
-  <div>
-    <img
-      src="/docs/lootsurvivor/pixel-kraken.svg"
-      alt="Kraken - Brute Beast"
-      style={{
-    width: "200px",
-    height: "200px",
-    margin: "0 auto",
-    borderRadius: "12px",
-    border: "3px solid #dc2626",
-  }}
-    />
-
-    <h4 style={{ color: "#dc2626", margin: "0.75rem 0 0.25rem" }}>🔨 Brute</h4>
-
-    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-      Kraken - T1 Legendary
-    </p>
-  </div>
-</div>
-
-## Beast Mode NFT System
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.6' }}>
-  **NFT Minting:** Defeating uncollected named beasts automatically mints collectible NFTs to your wallet
-
-  **Beast Mode Features:**
-
-  * **Named Beast Focus**: Only special named beasts (Level 19+) mint NFTs
-  * **First Victory Bonus**: NFTs only mint on first defeat of each named beast
-  * **Automatic Collection**: No manual claiming - NFTs appear directly in your wallet
-  * **Permanent Ownership**: Each NFT represents a unique named beast victory
-
-  > **Collect Them All:** Build your personal gallery of defeated legendary named beasts!
-</div>
-
-### 🎨 NFT Visual Rarity & Properties
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1.5rem' }}>
-    **NFT Visual Rarities:**
-  </div>
-
-  <div style={{ marginBottom: '1rem' }}>
-    | Visual Type          | Rarity Chance | Description                | Collection Value |
-    | -------------------- | ------------- | -------------------------- | ---------------- |
-    | **Standard**         | 92.16%        | Regular static beast image | Base             |
-    | **Animated Only**    | 3.84%         | Moving/animated beast NFT  | Rare             |
-    | **Shiny Only**       | 3.84%         | Shimmering visual effects  | Rare             |
-    | **Animated + Shiny** | 0.16%         | Both animated AND shiny    | Ultra Rare       |
-  </div>
-
-  <div style={{ marginBottom: '1.5rem' }}>
-    **NFT Metadata (All Beasts Include):**
-  </div>
-
-  <div style={{ marginBottom: '0' }}>
-    * **Health**: Beast's health when first discovered
-    * **Tier Level**: T1 (Legendary) through T5 (Common)
-    * **Beast Name**: Base creature name (e.g., "Warlock", "Dragon")
-    * **Prefix**: Special name prefix if applicable (e.g., "Doom", "Blood")
-    * **Victory Timestamp**: Onchain record of when defeated
-  </div>
-</div>
-
-## NFT Minting Requirements
-
-<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eab308', margin: '1rem 0', lineHeight: '1.6' }}>
-  ### Named Beast NFT Mechanics
-
-  **Level Requirement:** Only beasts level 19+ can gain special names and mint NFTs\
-  **Name Structure:** \[Prefix] + \[Beast Name] = Unique NFT\
-  **Example:** "Doom Phoenix" or "Blood Kraken" mint as separate collectibles
-
-  ### NFT Minting Rules
-
-  **First Victory Only:** Each named beast can only mint one NFT per wallet\
-  **Automatic Process:** No manual claiming - NFT appears immediately after victory\
-  **Unique Metadata:** Each NFT contains beast stats, prefix, and victory timestamp\
-  **Permanent Record:** NFTs serve as proof of your legendary victories
-
-  ### Available Prefixes (69 Total NFT Variants)
-
-  Named beasts use the same prefix system as high-greatness items. For the complete list of all 69 prefixes organized by theme, see: **[Prefixes Guide](/lootsurvivor/loot/prefixes)**
-
-  **Notable Ultra Rare Prefixes:**
-
-  * **Shimmering** (#69) - The rarest and most valuable prefix
-  * **Lights** (#68) - Extremely uncommon and highly sought after
-
-  > **Complete Reference:** Visit the loot section for the full categorized list of all 69 prefixes!
-</div>
-
-## NFT Ownership Benefits
-
-### Digital Asset Value
-
-* **True Ownership**: NFTs belong to you, not the game
-* **Transferable Assets**: Trade or sell your named beast NFTs
-* **Provable Rarity**: Onchain verification of NFT scarcity
-* **Permanent Record**: Victory achievements stored forever on StarkNet
-
-### Collection Advantages
-
-* **Portfolio Building**: Curate valuable named beast collections
-* **Community Status**: Display rare NFTs as proof of skill
-* **Market Participation**: Engage in NFT trading and collecting
-* **Cross-Game Recognition**: Potential utility in future Realms ecosystem games
-
-### Future Utility
-
-* **Summit Game Access**: Beast NFT holders get exclusive access to compete in Summit, a new upcoming game
-* **Enhanced Gameplay**: NFTs may unlock special features across the ecosystem
-* **Community Events**: Exclusive tournaments for NFT holders
-* **Ecosystem Integration**: Use named beast NFTs across multiple Realms games
-* **Social Features**: Show off your legendary victories and exclusive access
-
-## Community & Competition
-
-### Leaderboards
-
-* **First Completionist**: Race to complete full beast collection
-* **Named Beast Masters**: Specialists in rare named variants
-* **Speed Collections**: Fastest time to collection milestones
-* **Type Champions**: Masters of specific beast type collections
-
-### Social Sharing
-
-* **Discord Showcases**: Share rare beast victories with community
-* **Collection Galleries**: Display complete collections as achievements
-* **Strategy Guides**: Share successful beast hunting approaches
-
-***
-
-*Beast collections represent the ultimate test of adventurer skill, patience, and strategic thinking. Every encounter contributes to your permanent legacy in the Loot Survivor universe.*
-
-## See Also
-
-* [Beast Overview](/lootsurvivor/beasts) - Complete beast guide and combat types
-* [Combat Mechanics](/lootsurvivor/combat) - Damage calculations and combat system
-* [Battle Guide](/lootsurvivor/guide/battle) - Tactical combat strategies
-
-
-
----
-
-file: docs/lootsurvivor/beasts/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Beasts
-
-Beasts are the creatures you'll encounter and battle throughout your adventures in Loot Survivor. Understanding beast types, tiers, and combat advantages is crucial for survival and progression.
-
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', margin: '2rem 0', textAlign: 'center' }}>
-  <div>
-    <img
-      src="/docs/lootsurvivor/warlock.png"
-      alt="Warlock - Magical Beast"
-      style={{
-    width: "200px",
-    height: "200px",
-    margin: "0 auto",
-    borderRadius: "12px",
-    border: "3px solid #a855f7",
-  }}
-    />
-
-    <h4 style={{ color: "#a855f7", margin: "0.75rem 0 0.25rem" }}>🪄 Magical</h4>
-
-    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-      Warlock - T1 Legendary
-    </p>
-  </div>
-
-  <div>
-    <img
-      src="/docs/lootsurvivor/dragon.png"
-      alt="Dragon - Hunter Beast"
-      style={{
-    width: "200px",
-    height: "200px",
-    margin: "0 auto",
-    borderRadius: "12px",
-    border: "3px solid #10b981",
-  }}
-    />
-
-    <h4 style={{ color: "#10b981", margin: "0.75rem 0 0.25rem" }}>🏹 Hunter</h4>
-
-    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-      Dragon - T1 Legendary
-    </p>
-  </div>
-
-  <div>
-    <img
-      src="/docs/lootsurvivor/kraken.png"
-      alt="Kraken - Brute Beast"
-      style={{
-    width: "200px",
-    height: "200px",
-    margin: "0 auto",
-    borderRadius: "12px",
-    border: "3px solid #dc2626",
-  }}
-    />
-
-    <h4 style={{ color: "#dc2626", margin: "0.75rem 0 0.25rem" }}>🔨 Brute</h4>
-
-    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-      Kraken - T1 Legendary
-    </p>
-  </div>
-</div>
-
-## Beast Overview
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **75 unique beasts** populate Loot Survivor, each with distinct characteristics:
-  </div>
-
-  <div style={{ marginBottom: '1rem' }}>
-    * **3 Combat Types**: Magical, Hunter, and Brute
-    * **5 Tiers**: T1 (Legendary) to T5 (Common)
-    * **Special Names**: High-level beasts gain name prefixes at level 19+
-    * **Dynamic Generation**: Each encounter uses VRF seeds for true randomness
-  </div>
-
-  > **Combat Focus:** Every beast follows the rock-paper-scissors combat system - choose your equipment wisely!
-</div>
-
-## Beast Tier System
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  | Tier   | Rarity      | Power Level | Gold Reward | XP Reward | Examples                 |
-  | ------ | ----------- | ----------- | ----------- | --------- | ------------------------ |
-  | **T1** | Legendary   | Highest     | 5× level    | Maximum   | Warlock, Griffin, Kraken |
-  | **T2** | Rare        | High        | 4× level    | High      | Gorgon, Qilin, Titan     |
-  | **T3** | Uncommon    | Medium      | 3× level    | Medium    | Werewolf, Wyvern, Oni    |
-  | **T4** | Common      | Low         | 2× level    | Low       | Goblin, Fenrir, Yeti     |
-  | **T5** | Very Common | Lowest      | 1× level    | Minimum   | Fairy, Bear, Troll       |
-
-  **Reward Formula:** Gold = (Tier Multiplier × Beast Level) ÷ 2
-</div>
-
-## Beast Categories
-
-### 🪄 Magical Beasts (25 Total)
-
-<div style={{ background: '#2a1a3e', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  **T1 Legendary (5):** Warlock, Typhon, Jiangshi, Anansi, Basilisk\
-  **T2 Rare (5):** Gorgon, Kitsune, Lich, Chimera, Wendigo\
-  **T3 Uncommon (5):** Rakshasa, Werewolf, Banshee, Draugr, Vampire\
-  **T4 Common (5):** Goblin, Ghoul, Wraith, Sprite, Kappa\
-  **T5 Very Common (5):** Fairy, Leprechaun, Kelpie, Pixie, Gnome
-</div>
-
-### 🏹 Hunter Beasts (25 Total)
-
-<div style={{ background: '#2a3e1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  **T1 Legendary (5):** Griffin, Manticore, Phoenix, Dragon, Minotaur\
-  **T2 Rare (5):** Qilin, Ammit, Nue, Skinwalker, Chupacabra\
-  **T3 Uncommon (5):** Weretiger, Wyvern, Roc, Harpy, Pegasus\
-  **T4 Common (5):** Hippogriff, Fenrir, Jaguar, Satori, Direwolf\
-  **T5 Very Common (5):** Bear, Wolf, Mantis, Spider, Rat
-</div>
-
-### 🔨 Brute Beasts (25 Total)
-
-<div style={{ background: '#3e1a1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  **T1 Legendary (5):** Kraken, Colossus, Balrog, Leviathan, Tarrasque\
-  **T2 Rare (5):** Titan, Nephilim, Behemoth, Hydra, Juggernaut\
-  **T3 Uncommon (5):** Oni, Jotunn, Ettin, Cyclops, Giant\
-  **T4 Common (5):** Nemeanlion, Berserker, Yeti, Golem, Ent\
-  **T5 Very Common (5):** Troll, Bigfoot, Ogre, Orc, Skeleton
-</div>
-
-## Special Beast Names
-
-<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eab308', margin: '1rem 0', lineHeight: '1.8' }}>
-  ### Naming System
-
-  <div style={{ marginBottom: '1rem' }}>
-    High-level beasts (Level 19+) can gain **special name prefixes** that provide:
-  </div>
-
-  <div style={{ marginBottom: '1.5rem' }}>
-    * **Enhanced Combat Power**: Named beasts are significantly stronger
-    * **Bonus Rewards**: Higher gold and XP rewards
-    * **Collectible Value**: Named beast encounters become permanent achievements
-  </div>
-
-  ### Example Names
-
-  <div style={{ marginBottom: '1rem' }}>
-    **Prefix Examples:** Agony, Apocalypse, Armageddon, Beast, Behemoth, Blood, Death, Demon, Doom, Dragon
-  </div>
-
-  <div style={{ marginBottom: '1rem' }}>
-    **Full Named Beast:** "**Doom** **Phoenix**" or "**Blood** **Kraken**"
-  </div>
-
-  > **Pro Tip:** Named beasts are dangerous but offer the best rewards and collectible potential!
-</div>
-
-## Beast Encounter Mechanics
-
-<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.6' }}>
-  ### Generation System
-
-  * **VRF Seeds**: True randomness for beast selection (configurable in settings)
-  * **Level Scaling**: Beast power increases with your adventurer level
-  * **Tier Distribution**: Higher tiers become more common at lower levels
-  * **Special Names**: 19+ level beasts can gain name prefixes randomly
-
-  ### Combat Rewards
-
-  ```
-  Gold Reward = (Tier Multiplier × Beast Level) ÷ 2
-  XP Reward = Minimum 4 + beast tier bonuses
-  ```
-
-  **Bonus Multipliers:**
-
-  * Critical hits from LUCK stat
-  * Name match bonuses (weapon/armor names matching beast names)
-  * Type advantage damage (+50%)
-</div>
-
-## See Also
-
-* [Combat Mechanics](/lootsurvivor/combat) - Detailed damage calculations
-* [Battle Guide](/lootsurvivor/guide/battle) - Combat tactics and interface
-* [Loot System](/lootsurvivor/loot) - Equipment and weapons
-* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Achievement system
 
 
 
