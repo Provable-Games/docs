@@ -1,0 +1,238 @@
+---
+layout: docs
+---
+
+import { ContractTable } from "../../components/ContractTable";
+import { Button } from "vocs/components";
+
+![Overview](docs/ls2-banner.png)
+
+# Loot Survivor
+
+Loot Survivor is a fully onchain dungeon crawler RPG built on Starknet using the Dojo engine. Navigate through procedurally generated dungeons, battle fierce beasts, overcome deadly obstacles, and collect legendary loot in your quest for survival and glory. The items in the game are dervied from the <a href="https://docs.loot.foundation/" style={{ color: "#3b82f6" }}>Loot</a>  project.
+
+<Button
+  href="https://lootsurvivor.io"
+  target="_blank"
+  className="bg-white text-black"
+  size="lg"
+>
+  Play Now
+</Button>
+
+## Overview
+
+Death Mountain powers Loot Survivor - a token-agnostic, no-code onchain dungeon creator that provides a complete RPG experience. Every action, from combat to loot generation, is verifiable and deterministic on the blockchain.
+
+### Key Features
+
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "1rem",
+    margin: "2rem 0",
+  }}
+>
+  <div
+    style={{
+      background: "#1a1a1a",
+      padding: "1rem",
+      borderRadius: "8px",
+      border: "1px solid #333",
+    }}
+  >
+    <h4>🗡️ Deep RPG Mechanics</h4>
+    <p>7 core stats, 8 equipment slots, and level-based progression</p>
+  </div>
+  <div
+    style={{
+      background: "#1a1a1a",
+      padding: "1rem",
+      borderRadius: "8px",
+      border: "1px solid #333",
+    }}
+  >
+    <h4>👾 75 Unique Beasts</h4>
+    <p>From lowly gnomes to mighty dragons, each with distinct behaviors</p>
+  </div>
+  <div
+    style={{
+      background: "#1a1a1a",
+      padding: "1rem",
+      borderRadius: "8px",
+      border: "1px solid #333",
+    }}
+  >
+    <h4>⚡ 75 Deadly Obstacles</h4>
+    <p>Magical, sharp, and crushing hazards to overcome</p>
+  </div>
+  <div
+    style={{
+      background: "#1a1a1a",
+      padding: "1rem",
+      borderRadius: "8px",
+      border: "1px solid #333",
+    }}
+  >
+    <h4>💎 101 Unique Items</h4>
+    <p>Tier-based loot system with evolving item powers</p>
+  </div>
+  <div
+    style={{
+      background: "#1a1a1a",
+      padding: "1rem",
+      borderRadius: "8px",
+      border: "1px solid #333",
+    }}
+  >
+    <h4>🏪 Dynamic Market</h4>
+    <p>Charisma-based pricing and level rotating shop items</p>
+  </div>
+  <div
+    style={{
+      background: "#1a1a1a",
+      padding: "1rem",
+      borderRadius: "8px",
+      border: "1px solid #333",
+    }}
+  >
+    <h4>🎲 Verifiable Randomness</h4>
+    <p>VRF integration for true randomness</p>
+  </div>
+  <div
+    style={{
+      background: "#1a1a1a",
+      padding: "1rem",
+      borderRadius: "8px",
+      border: "1px solid #333",
+    }}
+  >
+    <h4>⛓️ Fully Onchain</h4>
+    <p>All game logic executed on Starknet</p>
+  </div>
+</div>
+
+## Game Systems
+
+### Adventurer System
+
+Create and develop your character with comprehensive RPG mechanics:
+
+- **Stats**: Strength, Dexterity, Vitality, Intelligence, Wisdom, Charisma, Luck
+- **Equipment**: Weapon, Chest, Head, Waist, Foot, Hand, Neck, Ring slots
+- **Progression**: XP-based leveling with stat point allocation
+- **Health**: Starting HP of 100, scalable with Vitality and replenished with potions.
+
+### Combat System
+
+Engage in strategic turn-based combat against beasts:
+
+- **Combat Types**: Weapon triangle system (Magic > Hide > Metal > Magic)
+- **Critical Hits**: Luck based strikes, grows with better Jewelry
+- **Flee Mechanics**: Dexterity-based escape chances
+
+### Exploration
+
+Navigate through dangerous dungeons:
+
+- **Beasts**: Fight 75 different beast types with scaling difficulty
+- **Obstacles**: 75 unique environmental hazards
+- **Loot**: Find items, gold, and XP through exploration
+- **Strategic Choices**: Decide when to fight, flee, or explore
+
+### Item System
+
+Collect and upgrade powerful equipment:
+
+- **Tier System**: T1 (Legendary) - T5 (Common) items with inverse pricing
+- **Item Evolution**: Items gain "greatness" unlocking suffixes and prefixes
+- **Special Powers**: 16 unique suffixes providing stat bonuses
+- **Type Advantages**: Strategic equipment choices based on enemy types
+
+## Documentation
+
+### 🎮 Getting Started
+
+- [Game Modes](/lootsurvivor/game-modes) - Free vs. Full game modes
+- [Getting Started Guide](/lootsurvivor/guide/getting-started) - Your first adventure
+- [Settings](/lootsurvivor/settings) - Game configuration and VRF options
+- [FAQ](/lootsurvivor/faq) - Frequently asked questions
+
+### ⚔️ Game Mechanics
+
+- [Stats System](/lootsurvivor/stats) - Character attributes and progression
+- [Combat Mechanics](/lootsurvivor/combat) - Damage calculations and formulas
+- [Battle Guide](/lootsurvivor/guide/battle) - Combat tactics and interface
+- [Exploration](/lootsurvivor/guide/explore) - Discovery and obstacles
+- [Character Upgrade](/lootsurvivor/guide/upgrade) - Leveling and stat allocation
+
+### 🎒 Items & Creatures
+
+- [Loot System](/lootsurvivor/loot) - Equipment, tiers, and bonuses
+  - [Jewelry](/lootsurvivor/loot/jewelry) - Rings, amulets, and accessories
+  - [Suffix Boosts](/lootsurvivor/loot/suffix-boost) - Item enhancement system
+  - [Prefixes](/lootsurvivor/loot/prefixes) - Complete prefix and suffix reference
+- [Beasts](/lootsurvivor/beasts) - Combat types, tiers, and strategies
+  - [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Achievement system
+
+## Smart Contracts
+
+<ContractTable
+  contracts={[
+    [
+      {
+        name: "Game",
+        address:
+          "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3",
+      },
+      {
+        name: "Game",
+        address:
+          "0x1e1c477f2ef896fd638b50caa31e3aa8f504d5c6cb3c09c99cd0b72523f07f7",
+      },
+    ],
+    [
+      {
+        name: "Adventurer",
+        address:
+          "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3",
+      },
+      {
+        name: "Adventurer",
+        address:
+          "0x3befa9c969bf82bbfa0a96374da9f7aab172101298c0ff2611ec8c2fd02692",
+      },
+    ],
+    [
+      {
+        name: "Beast",
+        address:
+          "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3",
+      },
+      {
+        name: "Beast",
+        address:
+          "0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038",
+      },
+    ],
+    [
+      {
+        name: "Loot",
+        address:
+          "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3",
+      },
+      {
+        name: "Loot",
+        address:
+          "0x66744a5847c4459e019511f390ba8a8da53c5d25de8cd4e24e5f3e450c5d038",
+      },
+    ],
+  ]}
+/>
+
+## Quick Links
+
+- [GitHub Repository](https://github.com/Provable-Games/death-mountain)
+- [Discord Community](https://discord.gg/Q36rUxS66c)
+- [Twitter](https://twitter.com/lootsurvivor)

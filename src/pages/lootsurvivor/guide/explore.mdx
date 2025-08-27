@@ -1,0 +1,218 @@
+---
+layout: docs
+---
+
+# Exploration Guide
+
+Exploration is the heart of Loot Survivor's gameplay loop. Every step into the unknown brings potential rewards and deadly dangers. Understanding the exploration system is key to surviving Death Mountain's treacherous depths.
+
+> **🎲 Random Encounters:** Every exploration is a roll of the dice with equal chances for discovery, obstacles, or beasts!
+
+## Exploration Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/explore.png"
+    alt="Loot Survivor Exploration Screen"
+    style={{
+      width: "100%",
+      display: "block",
+      margin: "0 auto",
+      borderRadius: "8px",
+      border: "2px solid #333",
+    }}
+  />
+  <br />
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Exploration interface with adventure log and market
+  </em>
+</div>
+
+### Interface Elements
+
+| Element              | Location   | Function                       | Description                                  |
+| -------------------- | ---------- | ------------------------------ | -------------------------------------------- |
+| **Adventurer Panel** | Left       | Character status and equipment | Health, damage potential, equipped items     |
+| **Adventure Log**    | Center     | Exploration history            | Recent discoveries, damage taken, outcomes   |
+| **Market Panel**     | Right      | Purchase potions & equipment   | Spend gold on items for your adventurer      |
+| **Explore Button**   | Bottom     | Trigger exploration action     | Click to explore deeper into the dungeon     |
+| **Type Indicator**   | Top Center | Combat advantage display       | Shows damage multipliers for equipped weapon |
+
+---
+
+# How Exploration Works
+
+When you click "Explore", the game rolls for one of three equally likely outcomes:
+
+- **📦 Item Discovery (33.33%)** - Find gold, potions, or equipment
+- **🪨 Obstacle (33.33%)** - Environmental hazards to overcome
+- **👹 Beast Encounter (33.33%)** - Mandatory combat encounters
+
+## Item Discovery Breakdown
+
+When you hit the 33% item discovery chance, it subdivides into:
+
+- **💰 Gold (45% of discoveries)** - Currency for market purchases (~15% of all explores)
+- **🧪 Health Potion (45% of discoveries)** - Restores HP when used (~15% of all explores)
+- **⚔️ Equipment (10% of discoveries)** - Weapons, armor, jewelry (~3.3% of all explores)
+
+---
+
+# Discovery Types
+
+## 💰 Gold Discovery
+
+**Formula:** `Gold = Random(1 to Adventurer Level)`
+
+| Level | Gold Range | Average |
+| ----- | ---------- | ------- |
+| 5     | 1-5g       | 3g      |
+| 10    | 1-10g      | 5.5g    |
+| 20    | 1-20g      | 10.5g   |
+| 30    | 1-30g      | 15.5g   |
+| 50    | 1-50g      | 25.5g   |
+
+**Key Features:**
+
+- Amount scales with your level
+- Can be saved between explorations
+- CHA stat reduces market prices
+- Essential for equipment upgrades
+
+## ⚔️ Equipment Discovery
+
+Equipment drops are your primary source of gear upgrades. When you discover loot (3.3% of all explores), the tier distribution is:
+
+| Item Tier          | Drop Rate | Of All Explores | Description     |
+| ------------------ | --------- | --------------- | --------------- |
+| **T5 (Common)**    | 50%       | ~1.65%          | Basic gear      |
+| **T4 (Uncommon)**  | 30%       | ~1.0%           | Decent upgrades |
+| **T3 (Rare)**      | 12%       | ~0.4%           | Good equipment  |
+| **T2 (Epic)**      | 6%        | ~0.2%           | Powerful items  |
+| **T1 (Legendary)** | 2%        | ~0.066%         | Best in slot    |
+
+> **Item assigning:** Items are automatically equipped or added to bag if there are free slots. Otherwise, if items are already discovered or there is no space they are converted to gold.
+
+## 🧪 Health Discovery
+
+**Formula:** `HP = Random(2 to Level × 2)`
+
+| Level | HP Range | Average | % of 100 HP |
+| ----- | -------- | ------- | ----------- |
+| 5     | 2-10 HP  | 6 HP    | ~6%         |
+| 10    | 2-20 HP  | 11 HP   | ~11%        |
+| 20    | 2-40 HP  | 21 HP   | ~21%        |
+| 30    | 2-60 HP  | 31 HP   | ~31%        |
+| 50    | 2-100 HP | 51 HP   | ~51%        |
+
+**Potion Information:**
+
+- Found in 15% of all explores
+- Instantly restores HP when discovered
+
+## ⭐ Experience Gains
+
+Exploration provides consistent experience points for leveling up:
+
+| XP Source          | XP Gained                           | Scaling | Risk Level |
+| ------------------ | ----------------------------------- | ------- | ---------- |
+| **Item Discovery** | 1                                   | None    | Safe       |
+| **Beast Kills**    | Beast Level × (Tier Multiplier - 1) | Decayed | High       |
+| **Obstacles**      | Same as above                       | Decayed | Medium     |
+
+---
+
+# Environmental Challenges
+
+## 🪨 Obstacle System
+
+Obstacles are unavoidable environmental hazards with three distinct categories:
+
+### Obstacle Types
+
+**✨ Magical Obstacles (25 types)**
+
+- Examples: Demonic Altar, Vortex of Despair, Cursed Tomb
+- **Counter:** Hide armor
+
+**🗡️ Blade Obstacles (25 types)**
+
+- Examples: Pendulum Blades, Poison Darts, Hidden Arrows
+- **Counter:** Metal armor
+
+**🔨 Bludgeon Obstacles (25 types)**
+
+- Examples: Collapsing Ceiling, Rolling Boulder, Crushing Walls
+- **Counter:** Cloth armor
+
+### Damage Mitigation
+
+| Method            | Effect               | Requirement          |
+| ----------------- | -------------------- | -------------------- |
+| **Intelligence**  | Complete avoidance   | INT ≥ obstacle level |
+| **Armor Match**   | 50% damage reduction | Correct armor type   |
+| **No Protection** | Full damage          | No mitigation        |
+
+---
+
+# Beast Encounters
+
+<div style={{ background: '#2a1a2a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc2626', margin: '2rem 0' }}>
+
+## ⚠️ Mandatory Combat
+
+**IMPORTANT:** Discovering a beast during exploration **always locks you into combat**. There is no way to avoid the fight once a beast is encountered.
+
+**Combat is Unavoidable:**
+
+- Beast encounters force immediate battle
+- No option to flee before combat begins
+- You must fight until victory, defeat, or successful flee attempt
+- See the [Battle Guide](/lootsurvivor/guide/battle) for detailed combat mechanics
+
+</div>
+
+## Ambush Disadvantages
+
+Beast encounters during exploration catch you off-guard with several penalties:
+
+- **⚡ Initiative Loss** - Beast attacks first in combat
+- **🛡️ No Preparation** - Cannot switch gear before combat begins
+
+## Ambush Avoidance
+
+**Ambush Avoidance Formula:**
+
+```
+Avoidance Chance = (WIS / Level) × 100%
+```
+
+| WIS/Level | Avoidance | Level 10 Example | Level 20 Example |
+| --------- | --------- | ---------------- | ---------------- |
+| 0.5       | 50%       | WIS 5            | WIS 10           |
+| 0.75      | 75%       | WIS 7-8          | WIS 15           |
+| 1.0       | 100%      | WIS 10           | WIS 20           |
+| 1.5       | 100%      | WIS 15           | WIS 30           |
+
+**Key Points:**
+
+- WIS equal to level = 100% avoidance
+- Success rate caps at 100%
+- Only applies to beast encounters
+- Does not prevent the encounter entirely
+
+> **👁️ Important:** Wisdom helps avoid the ambush penalties, but you will still be locked into combat when a beast is encountered.
+
+---
+
+# Summary
+
+Exploration provides the foundation for your Death Mountain adventure through consistent rewards and progression opportunities. Understanding the 33/33/33 split between discoveries, obstacles, and beasts helps you make informed decisions about when and how to explore.
+
+**Key Takeaways:**
+
+- Equal chances for all three outcome types
+- Higher levels = better gold and health discoveries
+- LUCK influences equipment tier drops
+- INT helps avoid obstacles, WIS helps avoid ambushes
+- Choose exploration modes based on your current needs

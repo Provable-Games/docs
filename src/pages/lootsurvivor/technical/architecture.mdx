@@ -1,0 +1,653 @@
+---
+layout: docs
+---
+
+# Technical Architecture
+
+Loot Survivor is built on Starknet using the Dojo engine, implementing a fully onchain game architecture where all game logic, state management, and randomness are handled by smart contracts.
+
+## Technology Stack
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6' }}>
+
+### ⛓️ Blockchain Layer
+
+| Component     | Technology     | Version |
+| ------------- | -------------- | ------- |
+| **Network**   | Starknet L2    | Mainnet |
+| **Language**  | Cairo          | 2.10.1  |
+| **Framework** | Dojo           | 1.6.2   |
+| **Standards** | ERC20/721/1155 | Latest  |
+
+</div>
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #10b981' }}>
+
+### 🌐 Frontend Stack
+
+| Component     | Technology     | Purpose           |
+| ------------- | -------------- | ----------------- |
+| **Framework** | React 18       | UI rendering      |
+| **Language**  | TypeScript     | Type safety       |
+| **Build**     | Vite           | Fast bundling     |
+| **State**     | Zustand        | State management  |
+| **Styling**   | Tailwind + MUI | Responsive design |
+
+</div>
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
+
+### 🏭 Infrastructure
+
+| Service     | Provider   | Purpose           |
+| ----------- | ---------- | ----------------- |
+| **Indexer** | Torii      | Event indexing    |
+| **RPC**     | Starknet   | Blockchain access |
+| **Storage** | IPFS       | Asset storage     |
+| **CDN**     | Cloudflare | Global delivery   |
+
+</div>
+
+</div>
+
+### Frontend Stack
+
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **State Management**: Zustand
+- **Styling**: Tailwind CSS + Material-UI
+- **Wallet Integration**: StarknetKit + Cartridge Controller
+
+### Infrastructure
+
+- **Indexer**: Torii (Dojo's indexer)
+- **RPC**: Starknet full nodes
+- **Storage**: IPFS for assets
+- **CDN**: Cloudflare for static assets
+
+## System Architecture
+
+### High-Level Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         Frontend (React)                      │
+├─────────────────────────────────────────────────────────────┤
+│                     StarknetKit / Cartridge                   │
+├─────────────────────────────────────────────────────────────┤
+│                          Torii Indexer                        │
+├─────────────────────────────────────────────────────────────┤
+│                      Dojo Framework (ECS)                     │
+├─────────────────────────────────────────────────────────────┤
+│                    Cairo Smart Contracts                      │
+├─────────────────────────────────────────────────────────────┤
+│                         Starknet L2                           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Component Architecture
+
+#### Smart Contract Layer
+
+The contract architecture follows a modular system design:
+
+```
+contracts/
+├── systems/
+│   ├── adventurer/     # Player character logic
+│   ├── beast/          # Enemy AI and combat
+│   ├── game/           # Core game loop
+│   ├── loot/           # Item generation
+│   ├── market/         # Trading system
+│   └── settings/       # Configuration
+├── models/
+│   ├── adventurer/     # Character data structures
+│   ├── beast.cairo     # Beast entities
+│   ├── combat.cairo    # Combat state
+│   ├── loot.cairo      # Item models
+│   └── market.cairo    # Market state
+└── libs/
+    ├── game.cairo      # Game utilities
+    └── settings.cairo  # Config helpers
+```
+
+#### Frontend Architecture
+
+```
+client/src/
+├── desktop/           # Desktop-optimized UI
+│   ├── components/   # Reusable components
+│   ├── overlays/     # Screen overlays
+│   └── pages/        # Route pages
+├── mobile/           # Mobile-optimized UI
+│   ├── components/   # Mobile components
+│   ├── containers/   # Screen containers
+│   └── pages/        # Mobile routes
+├── dojo/             # Blockchain integration
+│   ├── useSystemCalls.ts    # Contract interactions
+│   ├── useGameSettings.ts   # Settings hooks
+│   └── useQuests.ts         # Quest system
+├── stores/           # Zustand state management
+│   ├── gameStore.ts # Game state
+│   ├── marketStore.ts # Market state
+│   └── uiStore.ts    # UI state
+└── generated/        # Auto-generated bindings
+```
+
+## Data Models
+
+### Entity-Component System (ECS)
+
+Dojo uses an ECS architecture where:
+
+- **Entities**: Unique identifiers (adventurer ID, beast ID)
+- **Components**: Data containers (stats, equipment, position)
+- **Systems**: Logic processors (combat, movement, trading)
+
+### Core Entities
+
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0' }}>
+
+#### 🧿 Adventurer Entity
+
+```cairo
+pub struct Adventurer {
+    pub health: u16, // 10 bits
+    pub xp: u16, // 15 bits
+    pub gold: u16, // 9 bits
+    pub beast_health: u16, // 10 bits
+    pub stat_upgrades_available: u8, // 4 bits
+    pub stats: Stats, // 30 bits - 7 core attributes
+    pub equipment: Equipment, // 128 bits - 8 gear slots
+    pub item_specials_seed: u16, // 16 bits
+    pub action_count: u16,
+}
+```
+
+> **💡 Storage Optimization:** Entire adventurer state packed into a single storage slot!
+
+</div>
+
+#### Beast Entity
+
+```cairo
+struct Beast {
+    id: u32,
+    beast_type: BeastType,
+    level: u8,
+    health: u16,
+    damage: u16,
+    special_abilities: Array<Ability>,
+}
+```
+
+#### Item Entity
+
+```cairo
+struct Item {
+    id: u32,
+    item_type: ItemType,
+    tier: Tier,
+    level: u8,
+    prefix: Option<Prefix>,
+    suffix: Option<Suffix>,
+    greatness: u8,
+}
+```
+
+### State Management
+
+#### Onchain State
+
+- **Persistent**: Adventurer data, items, achievements
+- **Session**: Current combat, market seed, active quests
+- **Global**: Leaderboards, statistics, events
+
+#### Client State
+
+```typescript
+interface GameState {
+  adventurer: Adventurer | null;
+  currentBeast: Beast | null;
+  market: MarketItem[];
+  combatLog: CombatEvent[];
+  isLoading: boolean;
+}
+```
+
+## Smart Contract Systems
+
+### Game System
+
+Central orchestrator managing game flow:
+
+- Action validation
+- State transitions
+- Event emission
+- Gas optimization
+
+### Adventurer System
+
+Handles player character logic:
+
+- Stat management
+- Equipment handling
+- Level progression
+- Health/death mechanics
+
+### Combat System
+
+Manages battle mechanics:
+
+- Damage calculation
+- Type advantages
+- Critical hits
+- Flee mechanics
+
+### Loot System
+
+Generates and manages items:
+
+- Deterministic generation
+- Tier distribution
+- Prefix/suffix assignment
+- Item evolution
+
+### Market System
+
+Handles trading mechanics:
+
+- Seed-based generation
+- Price calculation
+- Inventory rotation
+- Transaction processing
+
+## Network Architecture
+
+### Transaction Flow
+
+1. **User Action**: Player initiates action in UI
+2. **Wallet Signing**: Transaction signed via wallet
+3. **Contract Execution**: Cairo contract processes logic
+4. **State Update**: Dojo updates entity state
+5. **Event Emission**: Events logged onchain
+6. **Indexer Update**: Torii indexes new state
+7. **UI Update**: Frontend reflects changes
+
+### Gas Optimization
+
+#### Packed Storage
+
+```cairo
+// Efficient packing of multiple values
+struct PackedStats {
+    // All stats in single felt252
+    packed: felt252,
+}
+```
+
+#### Batch Operations
+
+```cairo
+// Multiple actions in single transaction
+fn batch_actions(actions: Array<Action>) {
+    // Process all actions together
+}
+```
+
+## Integration Points
+
+### Wallet Integration
+
+#### StarknetKit Connection
+
+```typescript
+const { connect, connectors } = useStarknet();
+
+// Available connectors
+const wallets = [argentX(), braavos(), cartridge()];
+```
+
+### RPC Integration
+
+#### Contract Calls
+
+```typescript
+// Read operations (free)
+const adventurer = await contract.get_adventurer(id);
+
+// Write operations (gas required)
+const tx = await contract.attack_beast();
+```
+
+### Event System
+
+#### Event Structure
+
+```cairo
+#[event]
+struct BeastSlain {
+    adventurer_id: u256,
+    beast_id: u32,
+    gold_earned: u16,
+    xp_earned: u32,
+}
+```
+
+#### Event Listening
+
+```typescript
+contract.on("BeastSlain", (event) => {
+  updateGameState(event);
+});
+```
+
+## Randomness Architecture
+
+### Deterministic Randomness
+
+Default mode using blockchain data:
+
+```cairo
+fn get_random_seed() -> felt252 {
+    let info = get_block_info().unbox();
+    pedersen(info.block_number, info.block_timestamp)
+}
+```
+
+### VRF Integration
+
+Optional true randomness:
+
+```cairo
+fn request_random() -> u256 {
+    let vrf = IVRFProvider::new();
+    vrf.request_random(callback)
+}
+```
+
+## Security Architecture
+
+<div style={{ background: '#2a1a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc2626', margin: '1rem 0' }}>
+
+### 🔐 Access Control
+
+```cairo
+#[external(v0)]
+fn admin_action() {
+    assert(get_caller_address() == ADMIN, 'Not authorized');
+    // Admin logic
+}
+```
+
+| Security Layer       | Protection             | Implementation        |
+| -------------------- | ---------------------- | --------------------- |
+| **Access Control**   | Role-based permissions | Owner/Admin checks    |
+| **Input Validation** | Parameter sanitization | Assert statements     |
+| **Reentrancy Guard** | Attack prevention      | Lock mechanisms       |
+| **Integer Overflow** | Math safety            | Cairo built-in checks |
+
+> **⚠️ Security Note:** All contracts audited by [Auditor Name] in [Date]
+
+</div>
+
+### Input Validation
+
+```cairo
+fn validate_action(action: Action) {
+    assert(action.is_valid(), 'Invalid action');
+    assert(has_resources(), 'Insufficient resources');
+}
+```
+
+### Reentrancy Protection
+
+```cairo
+mod ReentrancyGuard {
+    fn start() {
+        assert(!is_locked(), 'Reentrant call');
+        set_locked(true);
+    }
+
+    fn end() {
+        set_locked(false);
+    }
+}
+```
+
+## Performance Optimization
+
+### Frontend Optimization
+
+#### Code Splitting
+
+```typescript
+const GamePage = lazy(() => import("./pages/GamePage"));
+const MarketPage = lazy(() => import("./pages/MarketPage"));
+```
+
+#### State Management
+
+```typescript
+// Zustand with persistence
+const useGameStore = create(
+  persist(
+    (set) => ({
+      // Minimal state updates
+    }),
+    { name: "game-storage" }
+  )
+);
+```
+
+### Contract Optimization
+
+#### Storage Patterns
+
+```cairo
+// Use packed structs
+// Minimize storage writes
+// Batch operations
+```
+
+#### Computation Optimization
+
+```cairo
+// Precompute values
+// Use lookup tables
+// Minimize loops
+```
+
+## Deployment Architecture
+
+### Environment Configuration
+
+#### Development
+
+```toml
+[environment]
+rpc_url = "http://localhost:5050"
+account_address = "0xDEV"
+private_key = "0xDEV_KEY"
+```
+
+#### Production
+
+```toml
+[environment]
+rpc_url = "https://starknet-mainnet.public.blastapi.io"
+account_address = "0xPROD"
+private_key = "$PROD_KEY"
+```
+
+### Contract Deployment
+
+#### Using Dojo CLI
+
+```bash
+# Build contracts
+sozo build
+
+# Deploy to network
+sozo deploy --world 0xWORLD_ADDRESS
+
+# Verify deployment
+sozo inspect
+```
+
+### Frontend Deployment
+
+#### Build Process
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build for production
+pnpm build
+
+# Deploy to CDN
+pnpm deploy
+```
+
+## Monitoring and Analytics
+
+### Onchain Metrics
+
+- Transaction volume
+- Active players
+- Gas usage
+- Error rates
+
+### Application Metrics
+
+- Page load times
+- API latencies
+- User engagement
+- Error tracking
+
+### Performance Monitoring
+
+```typescript
+// Performance tracking
+performance.mark("action-start");
+await performAction();
+performance.mark("action-end");
+performance.measure("action", "action-start", "action-end");
+```
+
+## Scaling Considerations
+
+### Horizontal Scaling
+
+- Multiple RPC endpoints
+- Load balancing
+- CDN distribution
+- Regional deployments
+
+### Vertical Scaling
+
+- Optimized contracts
+- Efficient indexing
+- Caching strategies
+- Database optimization
+
+## Future Architecture
+
+### Planned Enhancements
+
+#### Multi-chain Support
+
+- Ethereum L1 integration
+- Cross-chain bridges
+- Multi-network deployment
+
+#### Advanced Features
+
+- Multiplayer dungeons
+- Guild systems
+- Tournament infrastructure
+- Achievement system
+
+#### Technical Improvements
+
+- ZK proof integration
+- Advanced VRF
+- State channels
+- Optimistic updates
+
+## Development Workflow
+
+### Local Development
+
+1. Start local Starknet node
+2. Deploy contracts locally
+3. Run frontend dev server
+4. Connect to local network
+
+### Testing Pipeline
+
+1. Unit tests (Cairo)
+2. Integration tests
+3. Frontend tests
+4. E2E tests
+
+### Deployment Pipeline
+
+1. Code review
+2. Automated testing
+3. Staging deployment
+4. Production release
+
+## Best Practices
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
+
+<div style={{ background: '#1a2332', padding: '1rem', borderRadius: '8px', border: '1px solid #3b82f6' }}>
+
+### 📝 Contract Development
+
+| Practice             | Implementation          |
+| -------------------- | ----------------------- |
+| **Modular Design**   | Separate concerns       |
+| **Gas Optimization** | Pack storage, batch ops |
+| **Testing**          | 90%+ coverage           |
+| **Security**         | Regular audits          |
+
+</div>
+
+<div style={{ background: '#1a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #10b981' }}>
+
+### 🌐 Frontend Development
+
+| Practice        | Implementation            |
+| --------------- | ------------------------- |
+| **Components**  | Reusable, typed           |
+| **State**       | Minimal, efficient        |
+| **Performance** | Code splitting, lazy load |
+| **Design**      | Mobile-first, accessible  |
+
+</div>
+
+<div style={{ background: '#2a1a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
+
+### 🔗 Integration Guidelines
+
+| Practice      | Implementation         |
+| ------------- | ---------------------- |
+| **Errors**    | Graceful handling      |
+| **Retries**   | Exponential backoff    |
+| **Fallbacks** | Degradation paths      |
+| **Feedback**  | Loading states, toasts |
+
+</div>
+
+</div>
+
+> **🏆 Excellence Standard:** Follow these practices for production-ready code!
+
+## Conclusion
+
+The Loot Survivor architecture demonstrates how complex game mechanics can be implemented fully onchain while maintaining performance and user experience. The modular design allows for easy extension and modification, making it an ideal foundation for blockchain gaming.

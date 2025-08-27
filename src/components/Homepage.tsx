@@ -20,6 +20,13 @@ const cardContent = [
     description:
       "A feature-rich onchain tournament platform that lets anyone create and compete in onchain tournaments.",
   },
+  {
+    title: "Play",
+    icon: "/ls-logo.svg",
+    link: "/lootsurvivor",
+    description:
+      "A procedurally generated dungeon crawler. Explore the endless dungeon while fighting for your life against beasts and treacherous obstacles.",
+  },
 ];
 
 export function HomePage() {

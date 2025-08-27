@@ -19,7 +19,7 @@ export default defineConfig({
     },
     {
       icon: "discord",
-      link: "https://discord.com/channels/884211910222970891/1208181734030450709",
+      link: "https://discord.gg/Q36rUxS66c",
     },
     {
       icon: "x",
@@ -41,117 +41,201 @@ export default defineConfig({
       },
     },
   },
-  sidebar: [
-    {
-      text: "Budokan",
-      collapsed: false,
-      items: [
-        { text: "Overview", link: "/budokan" },
-        {
-          text: "Guide",
-          link: "/budokan/guide",
-          collapsed: true,
-          items: [
-            // { text: "Overview", link: "/budokan/guide" },
-            { text: "Onboarding", link: "/budokan/guide/onboarding" },
-            { text: "Enter Tournaments", link: "/budokan/guide/enter" },
-            { text: "Submission", link: "/budokan/guide/submission" },
-            {
-              text: "Prizes",
-              link: "/budokan/guide/prizes",
-            },
-            {
-              text: "Create",
-              link: "/budokan/guide/create",
-              collapsed: true,
-              items: [
-                {
-                  text: "Game Settings",
-                  link: "/budokan/guide/create/game-settings",
-                },
-                {
-                  text: "Entry Fees",
-                  link: "/budokan/guide/create/entry-fees",
-                },
-                {
-                  text: "Entry Requirements",
-                  link: "/budokan/guide/create/entry-requirements",
-                },
-              ],
-            },
-          ],
-        },
-        { text: "Key Functions", link: "/budokan/key-functions" },
-        { text: "FAQ", link: "/budokan/faq" },
-      ],
-    },
-    {
-      text: "Embeddable Game Standard",
-      collapsed: false,
-      items: [
-        {
-          text: "Overview",
-          link: "/embeddable-game-standard",
-        },
-        {
-          text: "Key Functions",
-          link: "/embeddable-game-standard/key-functions",
-        },
-        {
-          text: "Implementation",
-          link: "/embeddable-game-standard/implementation",
-          collapsed: true,
-          items: [
-            {
-              text: "Game Settings",
-              link: "/embeddable-game-standard/implementation/settings",
-            },
-            {
-              text: "Embedding Games",
-              link: "/embeddable-game-standard/implementation/embedding-games",
-            },
-          ],
-        },
-        {
-          text: "Games",
-          link: "/embeddable-game-standard/games",
-        },
-        {
-          text: "Applications",
-          link: "/embeddable-game-standard/applications",
-        },
-      ],
-    },
-    {
-      text: "Dark Shuffle",
-      collapsed: false,
-      items: [
-        {
-          text: "Overview",
-          link: "/darkshuffle",
-        },
-        {
-          text: "Guide",
-          link: "/darkshuffle/guide",
-          collapsed: true,
-          items: [
-            { text: "Onboarding", link: "/darkshuffle/guide/onboarding" },
-            { text: "Draft", link: "/darkshuffle/guide/draft" },
-            { text: "Cards", link: "/darkshuffle/guide/cards" },
-            { text: "Map", link: "/darkshuffle/guide/map" },
-            { text: "Battle", link: "/darkshuffle/guide/battle" },
-          ],
-        },
-        {
-          text: "Key Functions",
-          link: "/darkshuffle/key-functions",
-        },
-        {
-          text: "Settings",
-          link: "/darkshuffle/settings",
-        },
-        { text: "FAQ", link: "/darkshuffle/faq" },
-      ],
-    },
-  ],
+  // Seperate sidebars for different sections
+  sidebar: {
+    // Budokan sidebar
+    "/budokan": [
+      {
+        text: "Budokan",
+        items: [
+          { text: "Overview", link: "/budokan" },
+          {
+            text: "Guide",
+            link: "/budokan/guide",
+            collapsed: true,
+            items: [
+              // { text: "Overview", link: "/budokan/guide" },
+              { text: "Onboarding", link: "/budokan/guide/onboarding" },
+              { text: "Enter Tournaments", link: "/budokan/guide/enter" },
+              { text: "Submission", link: "/budokan/guide/submission" },
+              {
+                text: "Prizes",
+                link: "/budokan/guide/prizes",
+              },
+              {
+                text: "Create",
+                link: "/budokan/guide/create",
+                collapsed: true,
+                items: [
+                  {
+                    text: "Game Settings",
+                    link: "/budokan/guide/create/game-settings",
+                  },
+                  {
+                    text: "Entry Fees",
+                    link: "/budokan/guide/create/entry-fees",
+                  },
+                  {
+                    text: "Entry Requirements",
+                    link: "/budokan/guide/create/entry-requirements",
+                  },
+                ],
+              },
+            ],
+          },
+          { text: "Key Functions", link: "/budokan/key-functions" },
+          { text: "FAQ", link: "/budokan/faq" },
+        ],
+      },
+    ],
+    // Embeddable Game Standard sidebar
+    "/embeddable-game-standard": [
+      {
+        text: "Embeddable Game Standard",
+        items: [
+          {
+            text: "Overview",
+            link: "/embeddable-game-standard",
+          },
+          {
+            text: "Key Functions",
+            link: "/embeddable-game-standard/key-functions",
+          },
+          {
+            text: "Implementation",
+            link: "/embeddable-game-standard/implementation",
+            collapsed: true,
+            items: [
+              {
+                text: "Game Settings",
+                link: "/embeddable-game-standard/implementation/settings",
+              },
+              {
+                text: "Embedding Games",
+                link: "/embeddable-game-standard/implementation/embedding-games",
+              },
+            ],
+          },
+          {
+            text: "Games",
+            link: "/embeddable-game-standard/games",
+          },
+          {
+            text: "Applications",
+            link: "/embeddable-game-standard/applications",
+          },
+        ],
+      },
+    ],
+    // Dark Shuffle sidebar
+    "/darkshuffle": [
+      {
+        text: "Dark Shuffle",
+        items: [
+          {
+            text: "Overview",
+            link: "/darkshuffle",
+          },
+          {
+            text: "Guide",
+            link: "/darkshuffle/guide",
+            collapsed: true,
+            items: [
+              { text: "Onboarding", link: "/darkshuffle/guide/onboarding" },
+              { text: "Draft", link: "/darkshuffle/guide/draft" },
+              { text: "Cards", link: "/darkshuffle/guide/cards" },
+              { text: "Map", link: "/darkshuffle/guide/map" },
+              { text: "Battle", link: "/darkshuffle/guide/battle" },
+            ],
+          },
+          {
+            text: "Key Functions",
+            link: "/darkshuffle/key-functions",
+          },
+          {
+            text: "Settings",
+            link: "/darkshuffle/settings",
+          },
+          { text: "FAQ", link: "/darkshuffle/faq" },
+        ],
+      },
+    ],
+    // Loot Survivor sidebar
+    "/lootsurvivor": [
+      {
+        text: "Loot Survivor",
+        items: [
+          {
+            text: "Overview",
+            link: "/lootsurvivor",
+          },
+          {
+            text: "Guide",
+            link: "/lootsurvivor/guide",
+            collapsed: true,
+            items: [
+              {
+                text: "Getting Started",
+                link: "/lootsurvivor/guide/getting-started",
+              },
+              { text: "Explore", link: "/lootsurvivor/guide/explore" },
+              { text: "Battle", link: "/lootsurvivor/guide/battle" },
+              { text: "Upgrade", link: "/lootsurvivor/guide/upgrade" },
+            ],
+          },
+          {
+            text: "Stats",
+            link: "/lootsurvivor/stats",
+          },
+          {
+            text: "Loot",
+            link: "/lootsurvivor/loot",
+            collapsed: true,
+            items: [
+              {
+                text: "Suffix Boosts",
+                link: "/lootsurvivor/loot/suffix-boost",
+              },
+              { text: "Jewelry", link: "/lootsurvivor/loot/jewelry" },
+            ],
+          },
+          {
+            text: "Beasts",
+            link: "/lootsurvivor/beasts",
+            collapsed: true,
+            items: [
+              {
+                text: "Collectibles",
+                link: "/lootsurvivor/beasts/collectibles",
+              },
+            ],
+          },
+          {
+            text: "Combat",
+            link: "/lootsurvivor/combat",
+          },
+          // {
+          //   text: "Technical Documentation",
+          //   link: "/lootsurvivor/technical",
+          //   collapsed: true,
+          //   items: [
+          //     {
+          //       text: "Architecture",
+          //       link: "/lootsurvivor/technical/architecture",
+          //     },
+          //     {
+          //       text: "Smart Contracts",
+          //       link: "/lootsurvivor/technical/contracts",
+          //     },
+          //     {
+          //       text: "Integration",
+          //       link: "/lootsurvivor/technical/integration",
+          //     },
+          //   ],
+          // },
+          { text: "FAQ", link: "/lootsurvivor/faq" },
+        ],
+      },
+    ],
+  },
 });

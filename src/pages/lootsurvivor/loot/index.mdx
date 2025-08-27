@@ -1,0 +1,261 @@
+---
+layout: docs
+---
+
+# Loot System
+
+<div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start', margin: '2rem 0' }}>
+
+<div style={{ 
+  fontSize: '1.1rem', 
+  lineHeight: '1.8', 
+  paddingRight: '2rem',
+  color: '#e5e5e5'
+}}>
+
+<p style={{ marginBottom: "1.2rem", fontWeight: "400" }}>
+  The loot system in Loot Survivor is inspired by the original <a href="https://docs.loot.foundation/" style={{ color: "#3b82f6" }}>Loot collection</a> and forms the backbone of your adventurer's power progression.
+</p>
+
+<p style={{ marginBottom: "0", fontWeight: "400" }}>
+  Understanding how items work, their tiers, and special properties is essential
+  for survival in Death Mountain. Each piece of equipment can evolve and gain
+  powerful bonuses as you progress through the dangerous depths.
+</p>
+
+</div>
+
+<div>
+  <img
+    src="/docs/lootsurvivor/loot.png"
+    alt="Loot Survivor Items Display"
+    style={{
+      width: "100%",
+      display: "block",
+      borderRadius: "8px",
+      border: "2px solid #333",
+    }}
+  />
+  <em
+    style={{
+      display: "block",
+      textAlign: "center",
+      marginTop: "0.5rem",
+      fontSize: "0.9rem",
+      opacity: "0.8",
+    }}
+  >
+    Loot item display showing tier and special properties
+  </em>
+</div>
+
+</div>
+
+## Item Properties
+
+Each item has several key properties that determine its effectiveness:
+
+- **Tier** - Base power level (T1-T5)
+- **Greatness** - Special enhancement level (0-20)
+- **Suffix** - Name suffix at Greatness 15+
+- **Prefixes** - Additional bonuses at Greatness 19+
+- **+1 Modifier** - +1 modifier at Greatness 20
+
+## Item Tiers
+
+Items in Loot Survivor are categorized into 5 tiers, with T1 being the most powerful:
+
+| Tier   | Name      | Rarity    | Base Power    | Drop Rate | Description                                |
+| ------ | --------- | --------- | ------------- | --------- | ------------------------------------------ |
+| **T1** | Legendary | Highest   | 5× multiplier | ~0.066%   | Best-in-slot items with maximum base stats |
+| **T2** | Epic      | Very High | 4× multiplier | ~0.2%     | Powerful items with excellent stats        |
+| **T3** | Rare      | High      | 3× multiplier | ~0.4%     | Good equipment with solid performance      |
+| **T4** | Uncommon  | Medium    | 2× multiplier | ~1.0%     | Decent upgrades over starting gear         |
+| **T5** | Common    | Low       | 1× multiplier | ~1.65%    | Basic gear and starting equipment          |
+
+**Tier Effects:**
+
+- Higher tiers provide better base damage/protection
+- Tier multiplier affects combat calculations
+- Better tiers are more likely to have special properties
+- All tiers can potentially have suffixes and prefixes
+
+---
+
+<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7', margin: '2rem 0', lineHeight: '1.8' }}>
+
+<div style={{ marginBottom: '1rem' }}>
+
+**🎮 Loot Survivor Implementation Note:**
+
+</div>
+
+<div style={{ marginBottom: '0' }}>
+
+Everything below this point represents **Loot Survivor's unique interpretation** of the original Loot collection. The Greatness System, combat types, materials, and their gameplay mechanics are specific to this game's implementation and not part of the base Loot specification.
+
+</div>
+
+</div>
+
+# Greatness System
+
+Greatness is a special property that enhances items beyond their base tier:
+
+## Greatness Levels
+
+| Greatness | Enhancement     | Special Property           |
+| --------- | --------------- | -------------------------- |
+| **1-14**  | Base item       | Standard tier bonuses only |
+| **15**    | Suffix unlocked | +3 stat bonus from suffix  |
+| **16-18** | Enhanced suffix | Suffix bonuses continue    |
+| **19**    | Prefix unlocked | Additional stat bonuses    |
+| **20**    | Stat Bonus      | +1 assignable stat bonus   |
+
+## How Greatness Works
+
+- Items always start at greatness 1
+- Greatness increases the item's overall power
+- Greatness 15+ items gain [suffix bonuses](/lootsurvivor/loot/suffix-boost)
+- Greatness 19+ items gain additional prefix [prefixes](/lootsurvivor/loot/prefixes)
+- Greatness 20 items get a +1 stat modifier
+
+---
+
+# Equipment Types
+
+Loot Survivor features 8 equipment slots for different item types:
+
+  | Equipment Slot | Item Types                            | Function |
+  |----------------|---------------------------------------|----------|
+  | **Weapon**     | Katana, Wand, Club, Short Sword       | Weapon   |
+  | **Chest**      | Divine Robe, Shirt, Demon Husk        | Armor    |
+  | **Head**       | Crown, Cap, Helm                      | Armor    |
+  | **Waist**      | Ornate Belt, Sash, Heavy Belt         | Armor    |
+  | **Foot**       | Divine Slippers, Boots, Shoes         | Armor    |
+  | **Hand**       | Divine Gloves, Gloves, Gauntlets      | Armor    |
+  | **Neck**       | Amulet, Pendant, Necklace             | Jewelry  |
+  | **Ring**       | Platinum Ring, Gold Ring, Silver Ring | Jewelry  |
+
+---
+
+# Combat Types & Materials
+
+Items have dual classifications that affect combat performance:
+
+## Weapon Types
+
+**⚔️ Blade Weapons**
+
+- Strong vs Hide armor
+- Weak vs Metal armor
+- Examples: Katana, Short Sword, Scimitar
+
+**🔨 Bludgeon Weapons**
+
+- Strong vs Metal armor
+- Weak vs Cloth armor
+- Examples: Club, Mace, Warhammer
+
+**✨ Magic Weapons**
+
+- Strong vs Cloth armor
+- Weak vs Hide armor
+- Examples: Wand, Book, Ghost Wand
+
+## Armor Materials
+
+**🛡️ Hide Armor**
+
+- Resists Blade attacks
+- Weak to Magic attacks
+- Examples: Leather armor, Dragon skin
+
+**⚡ Metal Armor**
+
+- Resists Bludgeon attacks
+- Weak to Blade attacks
+- Examples: Chain mail, Plate armor
+
+**🧙 Cloth Armor**
+
+- Resists Magic attacks
+- Weak to Bludgeon attacks
+- Examples: Robes, Shirts
+
+---
+
+# Item Acquisition
+
+## Discovery Methods
+
+Items can be obtained through several methods:
+
+| Method                 | Rate                | Quality     | Notes                           |
+| ---------------------- | ------------------- | ----------- | ------------------------------- |
+| **Exploration**        | 3.3% of explores    | Random tier | Primary acquisition method      |
+| **Market Purchase**    | Level-dependent     | Variable    | Costs gold, refresh on level up |
+| **Starting Equipment** | 1 weapon guaranteed | T5 only     | Random weapon type              |
+
+## Market System
+
+- Market refreshes completely on each level up
+- Available items are randomly generated
+- Item count increases with adventurer level
+- CHA stat reduces purchase prices
+- Market items follow same tier distribution as drops
+
+---
+
+# Item Management
+
+## Inventory System
+
+- **8 Equipment Slots** - One for each equipment type
+- **11 Bag Slots** - Additional storage for backup items
+- **Auto-equip** - New items automatically equip if slots are empty
+- **Gold Conversion** - Duplicate items convert to gold if no space
+
+## Item Usage
+
+**Equipping Items:**
+
+- Drag from bag to equipment slot
+- Items provide immediate stat bonuses
+- Combat type/material affects battle performance
+- Can switch equipment during exploration (not in combat)
+
+**Item Stacking:**
+
+- Only one item per equipment slot
+- Identical items convert to gold
+- Higher tier items typically replace lower tier
+- Consider suffix/prefix bonuses when deciding
+
+---
+
+# Special Properties
+
+## Suffixes
+
+Items with Greatness 15+ gain powerful suffix bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for complete details.
+
+## Prefixes
+
+Items with Greatness 19+ gain additional prefix bonuses that stack with suffix effects. These same prefixes are also used for named beasts in Beast Mode NFTs.
+
+**Complete Prefix & Suffix Reference:** See [Prefixes Guide](/lootsurvivor/loot/prefixes) for the full library of all 69 prefixes and 18 suffixes.
+
+---
+
+# Summary
+
+The loot system provides deep character customization through equipment choices, tier progression, and special properties. Understanding how tiers, greatness, suffixes, and prefixes work together allows you to build powerful adventurers capable of surviving Death Mountain's greatest challenges.
+
+**Key Loot Principles:**
+
+- Higher tiers provide better base power
+- Greatness 15+ items gain significant suffix bonuses
+- Greatness 19+ items gain additional prefix bonuses
+- Combat type and material matter for battle effectiveness
+- Market refreshes provide new acquisition opportunities each level
