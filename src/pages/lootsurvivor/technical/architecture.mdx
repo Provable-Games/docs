@@ -4,7 +4,7 @@ layout: docs
 
 # Technical Architecture
 
-Loot Survivor is built on StarkNet using the Dojo engine, implementing a fully onchain game architecture where all game logic, state management, and randomness are handled by smart contracts.
+Loot Survivor is built on Starknet using the Dojo engine, implementing a fully onchain game architecture where all game logic, state management, and randomness are handled by smart contracts.
 
 ## Technology Stack
 
@@ -16,7 +16,7 @@ Loot Survivor is built on StarkNet using the Dojo engine, implementing a fully o
 
 | Component     | Technology     | Version |
 | ------------- | -------------- | ------- |
-| **Network**   | StarkNet L2    | Mainnet |
+| **Network**   | Starknet L2    | Mainnet |
 | **Language**  | Cairo          | 2.10.1  |
 | **Framework** | Dojo           | 1.6.2   |
 | **Standards** | ERC20/721/1155 | Latest  |
@@ -44,7 +44,7 @@ Loot Survivor is built on StarkNet using the Dojo engine, implementing a fully o
 | Service     | Provider   | Purpose           |
 | ----------- | ---------- | ----------------- |
 | **Indexer** | Torii      | Event indexing    |
-| **RPC**     | StarkNet   | Blockchain access |
+| **RPC**     | Starknet   | Blockchain access |
 | **Storage** | IPFS       | Asset storage     |
 | **CDN**     | Cloudflare | Global delivery   |
 
@@ -63,7 +63,7 @@ Loot Survivor is built on StarkNet using the Dojo engine, implementing a fully o
 ### Infrastructure
 
 - **Indexer**: Torii (Dojo's indexer)
-- **RPC**: StarkNet full nodes
+- **RPC**: Starknet full nodes
 - **Storage**: IPFS for assets
 - **CDN**: Cloudflare for static assets
 
@@ -83,7 +83,7 @@ Loot Survivor is built on StarkNet using the Dojo engine, implementing a fully o
 ├─────────────────────────────────────────────────────────────┤
 │                    Cairo Smart Contracts                      │
 ├─────────────────────────────────────────────────────────────┤
-│                         StarkNet L2                           │
+│                         Starknet L2                           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -582,7 +582,7 @@ performance.measure("action", "action-start", "action-end");
 
 ### Local Development
 
-1. Start local StarkNet node
+1. Start local Starknet node
 2. Deploy contracts locally
 3. Run frontend dev server
 4. Connect to local network
