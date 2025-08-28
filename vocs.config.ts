@@ -170,6 +170,10 @@ export default defineConfig({
             link: "/lootsurvivor",
           },
           {
+            text: "Platforms",
+            link: "/lootsurvivor/platforms",
+          },
+          {
             text: "Guide",
             link: "/lootsurvivor/guide",
             collapsed: true,
@@ -186,6 +190,14 @@ export default defineConfig({
           {
             text: "Stats",
             link: "/lootsurvivor/stats",
+          },
+          {
+            text: "Combat",
+            link: "/lootsurvivor/combat",
+          },
+          {
+            text: "Market",
+            link: "/lootsurvivor/market",
           },
           {
             text: "Loot",
@@ -209,10 +221,6 @@ export default defineConfig({
                 link: "/lootsurvivor/beasts/collectibles",
               },
             ],
-          },
-          {
-            text: "Combat",
-            link: "/lootsurvivor/combat",
           },
           // {
           //   text: "Technical Documentation",

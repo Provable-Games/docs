@@ -4,9 +4,9 @@ layout: docs
 
 # Combat Guide
 
-Combat in Loot Survivor is where preparation meets execution. Every encounter tests your understanding of type advantages, stat optimization, and tactical decision-making. Master the art of battle to survive Death Mountain's deadliest challenges.
+Combat in Loot Survivor is a turn-based system where preparation meets execution. Every encounter tests your understanding of type advantages, stat optimization, and tactical decision-making. Master the art of battle to survive Death Mountain's deadliest challenges.
 
-> **🎯 Combat Philosophy:** Every battle is a risk/reward calculation. Sometimes survival means avoiding the fight entirely.
+> **🎯 Combat Philosophy:** Turn-based combat means every action counts. Sometimes survival means avoiding the fight entirely.
 
 ## Battle Interface
 
@@ -28,34 +28,187 @@ Combat in Loot Survivor is where preparation meets execution. Every encounter te
   </em>
 </div>
 
-### Interface Elements
-
-| Element              | Location   | Function                 | Description                                       |
-| -------------------- | ---------- | ------------------------ | ------------------------------------------------- |
-| **Adventurer Panel** | Left       | Your stats and equipment | Health, damage potential, equipped items          |
-| **Combat Log**       | Center     | Action history           | Damage dealt/taken, critical hits, flee attempts |
-| **Beast Display**    | Right      | Enemy information        | Type, level, health, special abilities           |
-| **Action Bar**       | Bottom     | Combat controls          | Attack, Flee, Switch Gear options                |
-| **Type Indicator**   | Top Center | Advantage display        | Shows damage multipliers and effectiveness        |
-
 ---
 
 # Combat Mechanics
 
+## Turn-Based Combat Flow
+
+<div style={{
+  backgroundColor: "rgba(16, 185, 129, 0.1)",
+  border: "2px solid #10b981",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#10b981" }}>⏱️ Combat Turn Order</h3>
+  
+  <p style={{ marginBottom: "1rem" }}>
+    Combat follows a strict turn-based sequence where <strong>adventurers always act first</strong>:
+  </p>
+  
+  <ol style={{ marginBottom: 0 }}>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Adventurer Turn</strong> - Choose your action:
+      <ul style={{ marginTop: "0.5rem", marginLeft: "1rem" }}>
+        <li>⚔️ Attack the beast</li>
+        <li>🏃 Attempt to flee</li>
+        <li>🔄 Switch equipment (beast gets free attack)</li>
+      </ul>
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Beast Counterattack</strong> - If not defeated or fled:
+      <ul style={{ marginTop: "0.5rem", marginLeft: "1rem" }}>
+        <li>Beast automatically attacks back</li>
+        <li>Targets a <strong>random armor slot</strong> (1 of 5: Head, Chest, Waist, Foot, Hand)</li>
+        <li>Damage reduced by armor in that specific slot</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Repeat</strong> - Combat continues until victory, defeat, or successful escape
+    </li>
+  </ol>
+</div>
+
+> **💡 Key Insight:** Since beasts attack random armor slots, having balanced armor coverage is more important than stacking defense in one slot!
+
 ## Damage System
 
-Combat damage is calculated using several factors:
+<div style={{
+  backgroundColor: "rgba(251, 191, 36, 0.1)",
+  border: "2px solid #fbbf24",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#fbbf24" }}>⚡ Understanding Power</h3>
+  <p style={{ marginBottom: "0.75rem" }}>
+    <strong>Power</strong> is displayed in combat for the base damage before modifiers. 
+    It appears as a number on item and beast info showing the raw damage potential.
+  </p>
+  <p style={{ fontFamily: "monospace", fontSize: "1.1rem", marginBottom: 0 }}>
+    <strong>Power = Weapon Level × (6 - Weapon Tier)</strong>
+  </p>
+</div>
 
-- **⚔️ Base Damage** - Weapon tier × level (T1=5×, T2=4×, T3=3×, T4=2×, T5=1×)
+### Combat Damage Modifiers
+
+The full damage amount includes several factors during combat:
+
+- **⚔️ Base Damage** - Your Power value (Weapon tier × level formula above)
 - **🎯 Type Advantage** - +50% when strong, -50% when weak
 - **💪 Strength Bonus** - +10% damage per STR point
 - **✨ Critical Hits** - LUCK/100% chance for 100% bonus damage (see [Combat Mechanics](/lootsurvivor/combat) for details)
 
 ## Type Advantage System
 
-The combat system follows a rock-paper-scissors pattern:
+<div style={{
+  display: "flex",
+  justifyContent: "center",
+  marginBottom: "2rem",
+  marginTop: "2rem"
+}}>
+  <div style={{
+    position: "relative",
+    width: "350px",
+    height: "300px"
+  }}>
+    {/* Brute - Top */}
+    <div style={{
+      position: "absolute",
+      top: "0",
+      left: "50%",
+      transform: "translateX(-50%)",
+      textAlign: "center",
+      backgroundColor: "#dc2626",
+      padding: "1rem 1.5rem",
+      borderRadius: "12px",
+      border: "3px solid #991b1b",
+      minWidth: "140px",
+      boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)"
+    }}>
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>🔨</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Brute</div>
+      <div style={{ fontSize: "0.75rem", color: "#fca5a5", marginTop: "0.25rem" }}>Bludgeon + Metal</div>
+    </div>
+    
+    {/* Hunter - Bottom Left */}
+    <div style={{
+      position: "absolute",
+      bottom: "0",
+      left: "0",
+      textAlign: "center",
+      backgroundColor: "#059669",
+      padding: "1rem 1.5rem",
+      borderRadius: "12px",
+      border: "3px solid #047857",
+      minWidth: "140px",
+      boxShadow: "0 4px 12px rgba(5, 150, 105, 0.3)"
+    }}>
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>⚔️</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Hunter</div>
+      <div style={{ fontSize: "0.75rem", color: "#86efac", marginTop: "0.25rem" }}>Blade + Hide</div>
+    </div>
+    
+    {/* Magical - Bottom Right */}
+    <div style={{
+      position: "absolute",
+      bottom: "0",
+      right: "0",
+      textAlign: "center",
+      backgroundColor: "#7c3aed",
+      padding: "1rem 1.5rem",
+      borderRadius: "12px",
+      border: "3px solid #6d28d9",
+      minWidth: "140px",
+      boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)"
+    }}>
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>✨</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Magical</div>
+      <div style={{ fontSize: "0.75rem", color: "#ddd6fe", marginTop: "0.25rem" }}>Magic + Cloth</div>
+    </div>
+    
+    {/* Center circular arrows */}
+    <svg style={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "100px",
+      height: "100px",
+      pointerEvents: "none"
+    }}>
+      {/* Three arrows showing advantage flow */}
+      {/* Brute to Hunter (pointing bottom left) */}
+      <path d="M 50 15 L 15 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+      
+      {/* Hunter to Magical (pointing right) */}
+      <path d="M 15 75 L 85 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+      
+      {/* Magical to Brute (pointing top left) */}
+      <path d="M 85 75 L 50 15" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+      
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" 
+         refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="white" />
+        </marker>
+      </defs>
+    </svg>
+  </div>
+</div>
 
-**🔨 Brute** (Bludgeon + Metal) → beats **🏹 Hunter** (Blade + Hide) → beats **✨ Magical** (Magic + Cloth) → beats **🔨 Brute**
+<div style={{
+  textAlign: "center",
+  marginBottom: "1rem",
+  fontSize: "0.95rem",
+  color: "#999"
+}}>
+  <span style={{ color: "#fca5a5" }}>Bludgeon + Metal</span> beats 
+  <span style={{ color: "#86efac" }}> Blade + Hide</span> beats 
+  <span style={{ color: "#ddd6fe" }}> Magic + Cloth</span> beats 
+  <span style={{ color: "#fca5a5" }}> Bludgeon + Metal</span>
+</div>
 
 ### Type Advantage Effects
 
@@ -68,6 +221,51 @@ The combat system follows a rock-paper-scissors pattern:
 - **Damage Multiplier:** -50%  
 - **Example:** 20 base damage → 10 damage output
 - **Visual Cue:** Red damage numbers in combat log
+
+### Strategic Equipment Sets
+
+<div style={{ 
+  background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+  border: '2px solid #6366f1',
+  borderRadius: '12px',
+  padding: '1.5rem',
+  marginTop: '1.5rem'
+}}>
+
+<div style={{ marginBottom: '1rem' }}>
+  <strong style={{ color: '#a78bfa', fontSize: '1.1rem' }}>🛡️ Full Armor Sets</strong>
+  <p style={{ marginTop: '0.5rem', marginBottom: 0, lineHeight: '1.6' }}>
+    Each armor type excels against specific attacks: <strong>Metal</strong> resists Blade, <strong>Hide</strong> resists Magic, 
+    <strong>Cloth</strong> resists Bludgeon. But beware - each has a weakness!
+  </p>
+</div>
+
+<div style={{ marginBottom: '1rem' }}>
+  <strong style={{ color: '#f59e0b', fontSize: '1.1rem' }}>⚔️ Offensive Priority</strong>
+  <p style={{ marginTop: '0.5rem', marginBottom: 0, lineHeight: '1.6' }}>
+    Your weapon choice matters more than armor. Remember: <strong>Bludgeon</strong> crushes Hide, 
+    <strong>Blade</strong> slices Cloth, <strong>Magic</strong> pierces Metal. +50% damage is huge!
+  </p>
+</div>
+
+<div style={{ marginBottom: '1rem' }}>
+  <strong style={{ color: '#10b981', fontSize: '1.1rem' }}>🎯 Beast Hunting</strong>
+  <p style={{ marginTop: '0.5rem', marginBottom: 0, lineHeight: '1.6' }}>
+    When hunting specific beasts, matching your full armor set to counter their attacks is powerful. 
+    Know your target and gear up accordingly for maximum survivability.
+  </p>
+</div>
+
+<div style={{ 
+  background: 'rgba(255, 255, 255, 0.05)',
+  borderRadius: '8px',
+  padding: '1rem',
+  marginTop: '1rem'
+}}>
+  <strong>💡 Pro Strategy:</strong> Early game, prioritize covering all armor slots with appropriate types over hunting for higher tiers!
+</div>
+
+</div>
 
 ---
 
@@ -121,26 +319,9 @@ Success Rate = (DEX / Level) × 100%
 
 ## 🛡️ Equipment Switching
 
-Strategic equipment swapping can turn the tide of battle:
+You can change your equipment mid-combat to gain type advantages, but the beast gets a free attack when you do. Strategic swapping can turn a losing fight into victory - switch to counter their type for +50% damage or -50% damage reduction.
 
-| Action                | Cost                   | Benefit                 |
-| --------------------- | ---------------------- | ----------------------- |
-| **Switch Weapon**     | Beast gets free attack | Match type advantage    |
-| **Switch Armor**      | Beast gets free attack | Reduce incoming damage  |
-| **Multiple Switches** | One free attack total  | Complete loadout change |
-
-> **💡 Important:** Bundle all gear changes into one action to minimize the number of free attacks the beast gets.
-
-### Switching Examples
-
-**Scenario 1:** Fighting Magic-type beast with Blade weapon  
-→ Switch to Bludgeon weapon for +50% damage advantage
-
-**Scenario 2:** Taking heavy damage from Bludgeon attacks  
-→ Switch to Cloth armor for 50% damage reduction
-
-**Scenario 3:** Completely mismatched against strong opponent  
-→ Full equipment swap for optimal type coverage
+> **💡 Important:** Bundle all gear changes into one action to minimize the number of free attacks the beast gets. Multiple switches still only give the beast one free attack!
 
 ---
 
@@ -152,6 +333,54 @@ When entering combat, consider these factors:
 - **🔄 Switch Gear** - When you have the wrong equipment type and need advantage
 - **⚔️ Attack** - When you have good matchup and are confident in victory
 - **💀 All-Out Attack** - When beast has very low HP and victory is guaranteed
+
+---
+
+# Combat Rewards
+
+## Experience Points (XP)
+
+<div style={{
+  backgroundColor: "rgba(34, 197, 94, 0.1)",
+  border: "2px solid #22c55e",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#22c55e" }}>💰 Victory Rewards</h3>
+  
+  <p style={{ marginBottom: "1rem" }}>
+    Defeating beasts grants XP and gold based on their power, with bonuses for finding items:
+  </p>
+  
+  <div style={{ marginBottom: "1rem" }}>
+    <strong>Base Reward Formulas:</strong>
+    <div style={{ fontFamily: "monospace", marginLeft: "1rem", marginTop: "0.5rem" }}>
+      Adventurer XP = Beast Power / 2<br/>
+      Item XP = 2 * Adventurer XP<br/>
+      Gold = Beast Power / 2 (same as XP)
+    </div>
+  </div>
+  
+  <div>
+    <strong>Level Decay:</strong>
+    <p style={{ marginLeft: "1rem", marginTop: "0.5rem", marginBottom: 0 }}>
+      XP rewards decrease as you level up (2% per level, max 95% reduction)<br/>
+      <span style={{ color: "#fbbf24" }}>Gold rewards do NOT decay - always full value!</span>
+    </p>
+  </div>
+</div>
+
+### Reward Calculation Examples
+
+| Your Level | Beast (T3, Lv10) | Base Rewards | XP After Decay | Gold (No Decay) | Item XP |
+|------------|------------------|--------------|----------------|-----------------|---------|
+| Level 1    | Power: 30        | 15          | 15 XP (0%)     | 15 🪙           | 30 XP   |
+| Level 10   | Power: 30        | 15          | 12 XP (-20%)   | 15 🪙           | 24 XP   |
+| Level 25   | Power: 30        | 15          | 7 XP (-50%)    | 15 🪙           | 15 XP   |
+| Level 50+  | Power: 30        | 15          | 1 XP (-95%)    | 15 🪙           | 2 XP    |
+
+> **💡 Tip:** The XP decay encourages fighting appropriate challenges, but gold rewards stay consistent - making every victory valuable!
 
 ---
 

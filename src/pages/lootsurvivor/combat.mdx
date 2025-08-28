@@ -10,15 +10,21 @@ Combat in Loot Survivor involves complex calculations that determine damage outp
 
 <div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0' }}>
 
+<div style={{ marginBottom: '1rem' }}>
+
 Combat damage is calculated through a series of steps:
+
+</div>
 
 1. **Base Damage Calculation** - Weapon tier and level determine base power
 2. **Elemental Adjustments** - Type advantages modify damage by ±50%
-3. **Strength Bonus** - STR stat adds 10% damage per point
-4. **Critical Hit Bonus** - LUCK determines critical chance and damage
-5. **Special Bonuses** - Name matches and special abilities
-6. **Armor Reduction** - Defender's armor reduces final damage
-7. **Minimum Damage** - Ensures attacks always deal some damage
+3. **Bonus Calculations** - All bonuses use elemental adjusted damage:
+   - **Strength Bonus** - +10% of elemental damage per STR point
+   - **Critical Hit Bonus** - +100% of elemental damage (if triggered)
+   - **Special Bonuses** - Name matches (2× or 8× elemental damage)
+4. **Total Attack** - Sum of elemental damage + all bonuses
+5. **Armor Reduction** - Base armor (tier × level) subtracted from total
+6. **Minimum Damage** - Adventurers deal min 4, beasts deal min 2
 
 </div>
 
@@ -53,19 +59,25 @@ Elemental Effect = Base Attack / 2
 - **Fair** (Neutral): `Base Attack` (no change)  
 - **Weak** (Type disadvantage): `Base Attack - Elemental Effect` (-50% damage)
 
-### Step 3: Add Bonuses
+### Step 3: Add Bonuses (All Based on Elemental Adjusted Damage)
 
 ```
-Total Attack = Elemental Adjusted Damage 
-             + Strength Bonus (10% per STR point)
-             + Critical Hit Bonus (if triggered)
-             + Special Bonuses (name matches, etc.)
+Strength Bonus = (Elemental Adjusted Damage × STR) / 10
+Critical Bonus = Elemental Adjusted Damage × 1.0 (if triggered)
+Special Bonus = Elemental Adjusted Damage × Multiplier (if name match)
+
+Total Attack = Elemental Adjusted Damage + Strength Bonus + Critical Bonus + Special Bonus
 ```
 
-### Step 4: Final Damage
+### Step 4: Apply Armor & Calculate Final Damage
 
 ```
-Final Damage = MAX(Minimum Damage, Total Attack - Base Defense)
+Base Armor = Armor Level × (6 - Tier)
+Final Damage = MAX(Minimum Damage, Total Attack - Base Armor)
+
+Minimum Damage:
+- Adventurer attacks: 4 damage
+- Beast attacks: 2 damage
 ```
 
 </div>
@@ -118,9 +130,8 @@ Crit Chance = LUCK / 100 (%)
 ### Critical Hit Damage
 When a critical hit occurs, bonus damage is added:
 
-- **Minimum bonus:** 20% of elemental-adjusted damage
-- **Maximum bonus:** 100% of elemental-adjusted damage
-- The actual bonus is randomly determined between these values
+- **Critical bonus:** +100% of elemental-adjusted damage
+- **Total damage:** 2× the normal damage when a critical hit is rolled
 
 </div>
 
@@ -131,7 +142,12 @@ When a critical hit occurs, bonus damage is added:
 High-level beasts (19+) and items (Greatness 19+) have special name prefixes that provide combat bonuses when matched.
 
 ### Name Structure
+
+<div style={{ marginBottom: '1rem' }}>
+
 Items and beasts can have names like "**Whisper** **Glow** Demon" where:
+
+</div>
 
 - **Prefix 1:** "Whisper" (primary name)
 - **Prefix 2:** "Glow" (secondary name)
@@ -140,9 +156,9 @@ Items and beasts can have names like "**Whisper** **Glow** Demon" where:
 
 | Match Type | Damage Multiplier |
 |------------|------------------|
-| **Prefix 2 Match** | 20-100% bonus |
-| **Prefix 1 Match** | 4-7× damage |
-| **Both Match** | Cumulative bonuses |
+| **Prefix 2 Match** | 2× elemental damage |
+| **Prefix 1 Match** | 8× elemental damage |
+| **Both Match** | Cumulative (16× total) |
 
 > **Pro Tip:** Collecting items with matching names to high-level beasts provides massive damage bonuses!
 
@@ -177,24 +193,46 @@ Strength Bonus = (Elemental Adjusted Damage × STR) / 10
 ```
 1. Base Attack = 10 (level) × (6 - 3) = 10 × 3 = 30
 2. Elemental: Blade vs Hide = Fair (no change) = 30
-3. Strength Bonus (STR=5): 30 × 0.5 = +15
-4. No critical hit
-5. Total Attack = 30 + 15 = 45
+3. Bonuses (all based on elemental damage of 30):
+   - Strength Bonus (STR=5): 30 × 0.5 = +15
+   - Critical Hit: None triggered
+   - Special Bonus: None
+4. Total Attack = 30 + 15 = 45
 
-Beast Defense = 10 (level) × (6 - 4) = 10 × 2 = 20
-
-Final Damage = 45 - 20 = 25 HP
+5. Base Armor = 10 (level) × (6 - 4) = 10 × 2 = 20
+6. Final Damage = MAX(4, 45 - 20) = 25 HP
 ```
 
-**Alternative with Type Advantage:**
+**Alternative with Type Advantage & Critical:**
 ```
-If using T3 Bludgeon vs Hide armor (Strong advantage):
-1. Base Attack = 30 (same as above)
-2. Elemental Effect = 30 / 2 = 15
-   Adjusted Attack = 30 + 15 = 45 (+50% damage)
-3. Strength Bonus (STR=5): 45 × 0.5 = +22
-5. Total Attack = 45 + 22 = 67
-Final Damage = 67 - 20 = 47 HP (nearly 2× damage!)
+If using T3 Bludgeon vs Hide (Strong) with critical hit:
+1. Base Attack = 30
+2. Elemental: 30 + (30/2) = 45 (+50% for type advantage)
+3. Bonuses (all based on elemental damage of 45):
+   - Strength (STR=5): 45 × 0.5 = +22
+   - Critical Hit: 45 × 1.0 = +45
+   - Special: None
+4. Total Attack = 45 + 22 + 45 = 112
+
+5. Base Armor = 20
+6. Final Damage = MAX(4, 112 - 20) = 92 HP!
+```
+
+**Ultimate Example with Name Match:**
+```
+T3 Bludgeon "Glow" vs Beast "Glow" (Prefix 2 match):
+1. Base Attack = 30
+2. Elemental: 30 (neutral)
+3. Bonuses (all based on elemental damage of 30):
+   - Strength (STR=5): 30 × 0.5 = +15
+   - Critical: None
+   - Name Match: 30 × 2 = +60 (Prefix 2 match)
+4. Total Attack = 30 + 15 + 60 = 105
+
+5. Base Armor = 20
+6. Final Damage = MAX(4, 105 - 20) = 85 HP!
+
+Note: If Prefix 1 matched instead, bonus would be 30 × 8 = +240!
 ```
 
 </div>
