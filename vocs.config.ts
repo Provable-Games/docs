@@ -241,6 +241,10 @@ export default defineConfig({
           //     },
           //   ],
           // },
+          {
+            text: "Contracts",
+            link: "/lootsurvivor/contracts",
+          },
           { text: "FAQ", link: "/lootsurvivor/faq" },
         ],
       },

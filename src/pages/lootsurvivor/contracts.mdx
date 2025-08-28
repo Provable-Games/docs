@@ -1,0 +1,128 @@
+---
+layout: docs
+---
+
+import { ContractTable } from "../../components/ContractTable";
+
+# Smart Contracts
+
+Loot Survivor is built on Starknet using the Dojo engine, with all game logic executed fully onchain. The game's smart contracts handle everything from adventurer creation to combat resolution, ensuring transparency and verifiability.
+
+## Contract Architecture
+
+The Loot Survivor smart contract system is organized into several core components:
+
+- **Game**: Main game logic and state management
+- **Adventurer**: Player character data and progression
+- **Beast**: Creature stats, behavior, and combat mechanics  
+- **Loot**: Item generation, properties, and bonuses
+- **Game Token**: Interfaces for Embeddable Game Standard compatibility
+- **Renderer**: Visual rendering and display logic
+- **Settings**: Game configuration and parameters
+
+## Contract Addresses
+
+<ContractTable
+  contracts={[
+    [
+      {
+        name: "Game",
+        address:
+          "0x553b436ed00409c1bc0cbb1dc765029acad1cdd1f7eb5c778a27bf55fe374c5",
+      },
+      {
+        name: "Game",
+        address:
+          "-",
+      },
+    ],
+    [
+      {
+        name: "Adventurer",
+        address:
+          "0x49d0f851a94eb1949ca7181855d71139ad438d546bb6c6bd92a8c67a0f7ae4f",
+      },
+      {
+        name: "Adventurer",
+        address:
+          "-",
+      },
+    ],
+    [
+      {
+        name: "Beast",
+        address:
+          "0x5f9371543af0b2b546ba273840e1943e81622105241b4498d1dde4de92e2c77",
+      },
+      {
+        name: "Beast",
+        address:
+          "-",
+      },
+    ],
+    [
+      {
+        name: "Loot",
+        address:
+          "0x78d7780371156c331f279dcd7b3372c88705ab178293ea9e612ea81bc478fd7",
+      },
+      {
+        name: "Loot",
+        address:
+          "-",
+      },
+    ],
+    [
+      {
+        name: "Game Token",
+        address:
+          "0xd9abf3d04eda96f93baf9873bda881a9580c475e551ff23e78c95ab561ea73",
+      },
+      {
+        name: "Game Token",
+        address:
+          "-",
+      },
+    ],
+    [
+      {
+        name: "Renderer",
+        address:
+          "0x73a15594fa18812965007ce02209975d6eb3646f0b4d67c218086eb88a9dc67",
+      },
+      {
+        name: "Renderer",
+        address:
+          "-",
+      },
+    ],
+    [
+      {
+        name: "Settings",
+        address:
+          "0x2757f6f5f3b7d2ec2eb6832e19d98cfaf4a01d0aa749bdf72375f16254f6eae",
+      },
+      {
+        name: "Settings",
+        address:
+          "-",
+      },
+    ],
+  ]}
+/>
+
+## Development Resources
+
+- [GitHub Repository](https://github.com/Provable-Games/death-mountain) - Source code and documentation
+- [Dojo Engine](https://dojoengine.org/) - Framework powering the game
+- [Starknet Documentation](https://docs.starknet.io/) - Layer 2 blockchain platform
+
+## Contract Interaction
+
+Players interact with the smart contracts through:
+
+- **Game Interface**: Main game client at lootsurvivor.io
+- **Direct Calls**: Advanced users can call contract functions directly
+- **Block Explorers**: View transactions and state on Starkscan or Voyager
+
+All game actions are recorded onchain, providing complete transparency and allowing for independent verification of gameplay mechanics.
