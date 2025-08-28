@@ -1,31 +1,31 @@
 const cardContent = [
   {
-    title: "Build",
-    icon: "/EGS.png",
-    link: "/embeddable-game-standard",
+    title: "Loot Survivor",
+    icon: "/ls-logo.svg",
+    link: "/lootsurvivor",
     description:
-      "Makes onchain game portable, composable, and compatible with an ever-expanding ecosystem of applications.",
+      "A procedurally generated dungeon crawler. Explore the endless dungeon while fighting for your life against beasts and treacherous obstacles.",
   },
   {
-    title: "Play",
+    title: "Darkshuffle",
     icon: "/DS - Horizontal Logo.svg",
     link: "/darkshuffle",
     description:
       "A build-your-own and bring-your-own-tokens onchain deck builder.",
   },
   {
-    title: "Compete",
+    title: "Budokan",
     icon: "/budokan-logo.svg",
     link: "/budokan",
     description:
       "A feature-rich onchain tournament platform that lets anyone create and compete in onchain tournaments.",
   },
   {
-    title: "Play",
-    icon: "/ls-logo.svg",
-    link: "/lootsurvivor",
+    title: "Embeddable Game Standard",
+    icon: "/embeddable-game-standard.png",
+    link: "/embeddable-game-standard",
     description:
-      "A procedurally generated dungeon crawler. Explore the endless dungeon while fighting for your life against beasts and treacherous obstacles.",
+      "Makes onchain game portable, composable, and compatible with an ever-expanding ecosystem of applications.",
   },
 ];
 
@@ -62,9 +62,6 @@ export function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-30"></div>
                 <div className="relative z-10">
                   <div className="items-center gap-4">
-                    <h2 className="text-lg sm:text-xl font-bold">
-                      {card.title}
-                    </h2>
                     <div className="flex justify-start mt-3 w-auto h-14">
                       <img src={card.icon} alt={card.title} />
                     </div>

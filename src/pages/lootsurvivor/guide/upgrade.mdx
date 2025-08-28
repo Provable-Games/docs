@@ -36,14 +36,6 @@ The upgrade system consists of three key components:
   </em>
 </div>
 
-### Interface Elements
-
-| Element           | Location | Description                     | Key Information                           |
-| ----------------- | -------- | ------------------------------- | ----------------------------------------- |
-| **Upgrades Menu** | Left     | Menu to choose stats to upgrade | Inventory, stats additions                |
-| **Explore Log**   | Center   | Explore history                 | Last explore/battle outcome               |
-| **Select Stats**  | Bottom   | Button to select                | Click to continue to explore & new market |
-
 ---
 
 # Stat Allocation
@@ -64,57 +56,58 @@ You receive **1 stat point per level** to allocate among:
 
 > **🎯 Allocation Note:** Consider focusing on 2-3 primary stats rather than spreading points evenly across all stats.
 
-## Multi-Levelling System
+---
 
-### What is Multi-Levelling?
+# Market System
 
-In Loot Survivor, it's possible to **level up multiple times in a single explore action**. This powerful mechanic can dramatically accelerate your adventurer's progression when you gain large amounts of experience at once.
+## How Markets Generate
 
-### How Multi-Levelling Works
-
-<div style={{ display: "flex", gap: "2rem", alignItems: "flex-start", margin: "1rem 0" }}>
-  <div style={{ flex: "1", minWidth: "300px" }}>
-    <strong>When multi-levelling occurs:</strong>
-    <ul style={{ paddingLeft: "1.5rem", marginTop: "0.5rem", listStyleType: "disc" }}>
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Defeating high-level beasts</li>
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Finding rare items with bonus XP</li>
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Successful obstacle navigation</li>
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Lucky exploration events</li>
-    </ul>
-  </div>
-  <div style={{ flex: "1", minWidth: "300px" }}>
-    <strong>Multi-level benefits:</strong>
-    <ul style={{ paddingLeft: "1.5rem", marginTop: "0.5rem", listStyleType: "disc" }}>
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Multiple stat points to allocate</li>
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Expanded market selection</li>
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Rapid power progression</li>
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>Enhanced item variety</li>
-    </ul>
-  </div>
+<div style={{
+  backgroundColor: "rgba(59, 130, 246, 0.1)",
+  border: "2px solid #3b82f6",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem",
+  marginTop: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#3b82f6" }}>🎲 Market Generation Mechanics</h3>
+  
+  <p style={{ marginBottom: "1rem" }}>
+    Each level up generates a unique market through random selection:
+  </p>
+  
+  <ul style={{ marginBottom: 0 }}>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>25 Rolls:</strong> The game rolls for 25 random items
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>No Duplicates:</strong> If the same item is rolled multiple times, it only appears once
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Variable Size:</strong> Markets can have 1-25 items depending on duplicate rolls
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Level Locked:</strong> The same market persists for your entire level
+    </li>
+    <li>
+      <strong>Fresh on Level Up:</strong> New random items appear when you reach the next level
+    </li>
+  </ul>
 </div>
 
-### Stat Point Allocation
+### Market Contents
 
-**🔢 Multiple Level Formula:**
-- **Stat Points = Number of Levels Gained**
-- Level up 3 times → Get 3 stat points to allocate
-- Level up 5 times → Get 5 stat points to allocate
+Markets can contain:
+- **⚔️ Weapons** - All tiers and types
+- **🛡️ Armor** - Head, chest, waist, foot, and hand pieces
+- **💍 Jewelry** - Rings and necklaces for stat boosts
+- **🧪 Potions** - Health and other consumables
 
-> **💡 Strategic Tip:** Multi-levelling allows you to make significant stat investments in a single upgrade session, enabling focused builds and powerful specialization.
+### Market Strategy
 
-### Market Size Expansion
+- **Check Everything:** With limited rolls, valuable items might be rare
+- **Plan Purchases:** The market won't refresh until next level
+- **CHA Benefits:** Higher Charisma reduces all market prices
+- **Gold Management:** Save for critical upgrades vs. immediate needs
 
-The market dramatically expands with multi-levelling:
-
-| Levels Gained | Market Size | Items Available |
-|---------------|-------------|-----------------|
-| **1 Level**   | 20 items    | Standard selection |
-| **2+ Levels** | Up to 101 items | Massive selection |
-
-**🛍️ Market Benefits:**
-- **Expanded Inventory:** More weapons, armor, and potions
-- **Better Odds:** Higher chance of finding specific item types
-- **Tier Variety:** Access to items across multiple tiers
-- **Strategic Choices:** More options for optimizing your build
-
-> **⚡ Power Spike Alert:** Multi-levelling creates the most significant power increases in the game. The combination of multiple stat points plus an expanded market can transform a struggling adventurer into a dominant force!
+> **💡 Pro Tip:** A small market (few items) means many duplicate rolls occurred. Don't expect it to have everything you need!

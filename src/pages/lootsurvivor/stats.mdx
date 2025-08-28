@@ -38,232 +38,109 @@ Each Adventurer starts with 12 random stat points.
 
 ### Physical Stats
 
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
-
-<div style={{ background: '#2a1a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc2626' }}>
-
 #### 💪 Strength (STR)
-
-**Primary Effect:** Boosts attack damage by 10%
-
-| Aspect            | Details                   |
-| ----------------- | ------------------------- |
-| **Damage Bonus**  | +10% attack damage        |
-| **Weapon Types**  | All physical weapons      |
-| **Scaling**       | Linear (2-3 damage/point) |
-| **Max Effective** | No cap                    |
-
-**Build Synergy:**
-
-- Pairs with VIT for tank builds
-- Combines with LUCK for crit builds
-- Essential for melee fighters
-
-> **⚔️ Pro Tip:** 10 STR doubles your attack damage output!
-
-</div>
-
-<div style={{ background: '#1a2a2a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #10b981' }}>
+- **Effect:** +10% attack damage per point
+- **Formula:** `Damage = Base × (1 + STR/10)`
+- Each point increases damage output by 10% with linear scaling and no cap
+- Works with all weapon types
+- **⚔️ Tip:** 10 STR = double damage!
 
 #### 🏃 Dexterity (DEX)
-
-**Primary Effect:** Improves chances of successfully fleeing
-
-| Aspect           | Details                |
-| ---------------- | ---------------------- |
-| **Flee Success** | DEX/Level ratio        |
-| **Base Formula** | Success% = DEX/Level   |
-| **Scaling**      | Linear with ratio      |
-| **Future**       | Will affect initiative |
-
-**Flee Success Formula:**
-
-```
-Success% = (DEX / Level) × 100
-```
-
-> **🏃 Escape Artist:** DEX equal to your level = guaranteed escape!
-
-</div>
-
-<div style={{ background: '#1a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7' }}>
+- **Effect:** Improves flee success rate  
+- **Formula:** `Success% = (DEX / Level) × 100`
+- Flee success depends on DEX/Level ratio
+- Keep DEX equal to level for guaranteed escapes
+- **🏃 Tip:** DEX = Level = 100% escape!
 
 #### ❤️ Vitality (VIT)
-
-**Primary Effect:** Increases max health and current by +15HP
-
-| Aspect       | Details                  |
-| ------------ | ------------------------ |
-| **HP Bonus** | +15 HP per point         |
-| **Base HP**  | 100 at level 1           |
-| **Healing**  | Also heals when upgraded |
-| **Scaling**  | Unlimited                |
-
-**Health Calculation:**
-
-```
-Max HP = 100 + (VIT × 15)
-```
-
-| VIT | Total HP | Survivability |
-| --- | -------- | ------------- |
-| 0   | 100      | Fragile       |
-| 10  | 250      | Sturdy        |
-| 20  | 400      | Tanky         |
-| 30  | 550      | Unkillable    |
-
-> **🛡️ Tank Secret:** VIT upgrades heal you instantly - use strategically!
-
-</div>
-
-</div>
+- **Effect:** +15 HP per point (instant heal)
+- **Formula:** `Max HP = 100 + (VIT × 15)`
+- Increases maximum and current health
+- Base health is 100 HP
+- **🛡️ Tip:** VIT upgrades heal instantly!
 
 ### Mental Stats
 
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', margin: '2rem 0' }}>
-
-<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7' }}>
-
 #### 🧠 Intelligence (INT)
+- **Effect:** Avoids obstacle damage
+- **Formula:** `Avoidance% = (INT / Level) × 100`
+- Obstacle avoidance based on INT/Level ratio
+- Keep INT equal to level for full immunity
+- **🧠 Tip:** INT = Level = No obstacle damage!
 
-**Primary Effect:** Aids in avoiding obstacles
-
-| Aspect                 | Details                             |
-| ---------------------- | ----------------------------------- |
-| **Obstacle Avoidance** | INT/Level ratio                     |
-| **Base Formula**       | Success% = INT/Level                |
-| **Application**        | Environmental hazards               |
-| **Special**            | Complete obstacle immunity possible |
-
-**Obstacle Avoidance Formula:**
-
-```
-Avoidance% = (INT / Level) × 100
-```
-
-| INT/Level Ratio | Avoidance Rate |
-| --------------- | -------------- |
-| 0.5             | 50%            |
-| 1.0             | 100%           |
-| 1.5             | 100% (capped)  |
-| 2.0+            | 100% (capped)  |
-
-> **🧠 Intelligence Power:** High INT builds can completely avoid obstacle damage!
-
-</div>
-
-<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #eab308' }}>
-
-#### 📚 Wisdom (WIS)
-
-**Primary Effect:** Helps evade beast ambushes and improves exploration
-
-| Aspect             | Details                  |
-| ------------------ | ------------------------ |
-| **Ambush Evasion** | Level-based formula      |
-| **Exploration**    | Better discovery rates   |
-| **Future**         | Spell cooldowns, secrets |
-| **Scaling**        | Percentage-based         |
-
-**Ambush Avoidance Formula:**
-
-```
-Evasion% = (WIS / Level) × 100
-```
-
-| WIS | At Level 10 | At Level 20 |
-| --- | ----------- | ----------- |
-| 5   | 50%         | 25%         |
-| 10  | 100%        | 50%         |
-| 15  | 150% (cap)  | 75%         |
-
-> **👁️ Foresight:** High WIS can guarantee avoiding ambush penalties, but you will still be locked into combat when a beast is encountered.
-
-</div>
-
-<div style={{ background: '#3e2a1a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #f59e0b' }}>
+#### 📚 Wisdom (WIS)  
+- **Effect:** Prevents ambush penalties
+- **Formula:** `Evasion% = (WIS / Level) × 100`
+- Avoids surprise attack penalties
+- Also improves exploration rewards
+- **👁️ Tip:** Avoids penalties, not the fight!
 
 #### 😎 Charisma (CHA)
-
-**Primary Effect:** Gives gold discount on items and health potions
-
-| Aspect           | Details          |
-| ---------------- | ---------------- |
-| **Discount**     | -1% per point    |
-| **Max Discount** | ~50% practical   |
-| **Applies To**   | All market items |
-| **Future**       | NPC interactions |
-
-**Price Calculation:**
-
-```
-Final Price = Base Price × (1 - CHA/100)
-```
-
-| CHA | Discount | 100g Item | 50g Potion |
-| --- | -------- | --------- | ---------- |
-| 0   | 0%       | 100g      | 50g        |
-| 10  | 10%      | 90g       | 45g        |
-| 20  | 20%      | 80g       | 40g        |
-| 30  | 30%      | 70g       | 35g        |
-
-> **💰 Economy Master:** 30 CHA saves 30% on everything!
-
-</div>
-
-</div>
+- **Effect:** Market discounts
+- **Prices:** -1 gold/point for items, -2 gold/point for potions (min 1 gold)
+- **Example:** 10 CHA = 10g off items, 20g off potions
+- Makes late-game shopping nearly free
+- **💰 Tip:** High CHA = nearly free shopping!
 
 ### Metaphysical Stat
 
-<div style={{ background: '#2a1a2a', padding: '2rem', borderRadius: '8px', border: '2px solid #10b981', margin: '2rem 0' }}>
-
 #### 🍀 Luck (LUCK)
+- **The Special Stat** - Cannot be upgraded with points, only through equipment!
+- **Effect:** Critical hit chance & better loot
+- **Formula:** `Crit Chance = LUCK%` (caps at 100)
+- **Critical Damage:** 2× base damage when triggered
+- Determines critical hit probability and improves item discovery
+- Get LUCK from jewelry items
+- **🎰 Tip:** Stack jewelry for guaranteed crits!
 
-**The Special Stat** - Raises chances of critical damage and cannot be upgraded directly!
-
-| Aspect              | Details           |
-| ------------------- | ----------------- |
-| **Critical Chance** | LUCK / 100        |
-| **Base Crit**       | 0% at 0 LUCK      |
-| **Max Crit**        | 100% at 100 LUCK  |
-| **Loot Quality**    | Better drop rates |
-| **How to Increase** | Equipment only    |
-
-**Critical Hit Mechanics:**
-
-```
-Crit Chance = LUCK / 100
-Crit Damage = Base Damage × 2
-Max LUCK = 100 (100% crit chance)
-```
-
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', margin: '1rem 0' }}>
-
-<div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px' }}>
-
-**Luck Sources:**
-
-- Jewelry items (Rings, Amulets)
-
+<div style={{
+  backgroundColor: "rgba(239, 68, 68, 0.1)",
+  border: "1px solid #ef4444",
+  borderRadius: "6px",
+  padding: "1rem",
+  marginTop: "1rem",
+  fontSize: "0.9rem"
+}}>
+  <strong style={{ color: "#ef4444" }}>⚠️ Warning:</strong> Dropping jewelry will remove LUCK stats equal to the greatness level of the item dropped!
 </div>
 
-<div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px' }}>
+---
 
-**Crit Chance Examples:**
-| LUCK | Crit Chance | Combat Impact |
-|------|-------------|---------------|
-| 0    | 0%          | No crits      |
-| 25   | 25%         | 1 in 4 hits   |
-| 50   | 50%         | Half your hits|
-| 75   | 75%         | 3 in 4 hits   |
-| 100  | 100%        | Every hit!    |
+## Suffix Boosts & Item Management
 
-</div>
-
-</div>
-
-> **🎰 RNG Master:** Stack LUCK items for massive critical damage and legendary drops!
-
+<div style={{
+  backgroundColor: "rgba(168, 85, 247, 0.1)",
+  border: "2px solid #a855f7",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#a855f7" }}>🏆 Enhanced Items</h3>
+  
+  <p style={{ marginBottom: "1rem" }}>
+    Items with Greatness 15+ gain powerful <strong>suffix boosts</strong> that provide additional stat bonuses beyond base equipment stats. See the <a href="/lootsurvivor/loot/suffix-boost" style={{ color: "#a855f7" }}>Suffix Boost Guide</a> for complete details on all available bonuses.
+  </p>
+  
+  <div style={{
+    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    border: "1px solid #ef4444",
+    borderRadius: "6px",
+    padding: "1rem",
+    marginTop: "1rem"
+  }}>
+    <h4 style={{ marginTop: 0, marginBottom: "0.75rem", color: "#ef4444" }}>⚠️ Unequipping Items with Suffix Boosts</h4>
+    <p style={{ marginBottom: "0.75rem" }}>
+      When you unequip items with suffix boosts, <strong>most stat bonuses are immediately removed</strong> from your adventurer. However, there are two important exceptions:
+    </p>
+    <ul style={{ marginBottom: 0 }}>
+      <li style={{ marginBottom: "0.5rem" }}>
+        <strong>Vitality (VIT):</strong> Remains active even when the item is in your bag
+      </li>
+      <li>
+        <strong>Charisma (CHA):</strong> Remains active even when the item is in your bag
+      </li>
+    </ul>
+  </div>
 </div>
 
 ## Conclusion

@@ -1,0 +1,246 @@
+---
+layout: docs
+---
+
+# Market System
+
+The market is your lifeline in Loot Survivor, offering equipment upgrades and life-saving potions. Understanding pricing mechanics and market generation helps you make strategic purchasing decisions that can mean the difference between victory and defeat.
+
+> **🛍️ Market Philosophy:** Every gold piece spent should advance your survival strategy!
+
+## Market Overview
+
+<div style={{
+  backgroundColor: "rgba(251, 191, 36, 0.1)",
+  border: "2px solid #fbbf24",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#fbbf24" }}>🏪 Market Mechanics</h3>
+  
+  <ul style={{ marginBottom: 0 }}>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Duration:</strong> Same market persists for your entire level
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Refresh:</strong> New randomly generated market on next level up
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Purchases:</strong> Buy as many items as you can afford
+    </li>
+    <li>
+      <strong>Inventory:</strong> Limited to 15 bag slots + 8 equipped items
+    </li>
+  </ul>
+</div>
+
+---
+
+# Item Pricing
+
+## Base Pricing System
+
+<div style={{
+  backgroundColor: "rgba(59, 130, 246, 0.1)",
+  border: "2px solid #3b82f6",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#3b82f6" }}>💰 Equipment Pricing Formula</h3>
+  
+  <div style={{ marginBottom: "1rem" }}>
+    <strong>Base Price = Item Tier × 4</strong>
+  </div>
+  
+  <table style={{ width: "100%", marginBottom: "1rem" }}>
+    <thead>
+      <tr>
+        <th>Tier</th>
+        <th>Base Price</th>
+        <th>With 10 CHA</th>
+        <th>With 20 CHA</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T5 (Common)</td>
+        <td>20 gold</td>
+        <td>10 gold</td>
+        <td>1 gold (min)</td>
+      </tr>
+      <tr>
+        <td>T4</td>
+        <td>16 gold</td>
+        <td>6 gold</td>
+        <td>1 gold (min)</td>
+      </tr>
+      <tr>
+        <td>T3</td>
+        <td>12 gold</td>
+        <td>2 gold</td>
+        <td>1 gold (min)</td>
+      </tr>
+      <tr>
+        <td>T2</td>
+        <td>8 gold</td>
+        <td>1 gold (min)</td>
+        <td>1 gold (min)</td>
+      </tr>
+      <tr>
+        <td>T1 (Legendary)</td>
+        <td>4 gold</td>
+        <td>1 gold (min)</td>
+        <td>1 gold (min)</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div style={{ marginBottom: "1rem" }}>
+    <strong>Charisma Discount:</strong> -1 gold per CHA point (minimum 1 gold)
+  </div>
+  
+  <div style={{ 
+    backgroundColor: "rgba(251, 191, 36, 0.2)", 
+    padding: "1rem", 
+    borderRadius: "6px",
+    border: "1px solid #fbbf24"
+  }}>
+    <strong>💡 Important:</strong> All purchased items start at Greatness 1. A T1 item may initially be weaker than your leveled T5 equipment - you need to gain experience and level the item to unlock its full potential!
+  </div>
+</div>
+
+---
+
+# Potion System
+
+## Health Potions
+
+<div style={{
+  backgroundColor: "rgba(34, 197, 94, 0.1)",
+  border: "2px solid #22c55e",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#22c55e" }}>🧪 Potion Mechanics</h3>
+  
+  <div style={{ marginBottom: "1rem" }}>
+    <strong>Health Restored:</strong> +10 HP per potion
+  </div>
+  
+  <div style={{ marginBottom: "1rem" }}>
+    <strong>Purchase Limit:</strong> Unlimited (buy as many as you can afford)
+  </div>
+  
+  <div style={{ marginBottom: "1rem" }}>
+    <strong>Price Formula:</strong>
+    <div style={{ fontFamily: "monospace", marginLeft: "1rem", marginTop: "0.5rem" }}>
+      Base Price = 1 gold × Adventurer Level<br/>
+      CHA Discount = 2 gold per CHA point<br/>
+      Final Price = Base - Discount (minimum 1 gold)
+    </div>
+  </div>
+</div>
+
+### Potion Pricing Table
+
+| Level | Base Price | 1 CHA | 5 CHA | 10 CHA | 15 CHA |
+|-------|------------|--------|--------|---------|---------|
+| 1 | 1g | 1g | 1g | 1g | 1g |
+| 5 | 5g | 3g | 1g | 1g | 1g |
+| 10 | 10g | 8g | 1g | 1g | 1g |
+| 20 | 20g | 18g | 10g | 1g | 1g |
+| 50 | 50g | 48g | 40g | 30g | 20g |
+
+> **💡 Strategy:** High CHA makes potions extremely cheap, allowing bulk healing purchases!
+
+---
+
+# Market Generation
+
+<div style={{
+  backgroundColor: "rgba(147, 51, 234, 0.1)",
+  border: "2px solid #9333ea",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#9333ea" }}>🎲 How Markets Generate</h3>
+  
+  <p style={{ marginBottom: "1rem" }}>
+    Each level generates a unique market through RNG:
+  </p>
+  
+  <ol style={{ marginBottom: 0 }}>
+    <li style={{ marginBottom: "0.75rem" }}>
+      Game rolls for <strong>25 random items</strong>
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      Duplicate items are <strong>removed</strong> (only one instance appears)
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      Market size varies from <strong>1-25 items</strong>
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      Small markets = many duplicate rolls occurred
+    </li>
+    <li>
+      Market remains <strong>constant until next level</strong>
+    </li>
+  </ol>
+</div>
+
+### Market Size Probabilities
+
+- **20-25 items:** Common (most markets)
+- **15-19 items:** Occasional
+- **10-14 items:** Uncommon
+- **5-9 items:** Rare
+- **1-4 items:** Very rare (extreme bad luck)
+
+---
+
+# Market Tips & Tricks
+
+<div style={{
+  backgroundColor: "rgba(26, 26, 26, 0.8)",
+  border: "2px solid #666",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginBottom: "2rem"
+}}>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>🎯 Pro Market Strategies</h3>
+  
+  <ul style={{ marginBottom: 0 }}>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Check Everything:</strong> Scroll through entire market - gems might be at the bottom
+    </li>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Type Coverage:</strong> Prioritize items that give you type advantages
+    </li>
+    <li>
+      <strong>Empty Slots:</strong> Any armor is better than no armor
+    </li>
+  </ul>
+</div>
+
+## Common Mistakes to Avoid
+
+- **Overspending Early:** Don't buy everything just because you can
+- **Ignoring CHA:** Even 3 CHA dramatically reduces T5 prices
+- **Potion Neglect:** Always keep HP topped up between fights
+
+---
+
+# Summary
+
+The market system rewards strategic planning and smart stat allocation. High Charisma turns the market into your personal armory, while understanding pricing helps you maximize every gold piece. Remember: the best deal is the item that keeps you alive!
+
+**Key Market Principles:**
+- Markets refresh on level up only
+- CHA dramatically reduces all prices
+- Potions scale with level but CHA discount is powerful
+- Small markets mean bad RNG - work with what you get
+- Every purchase should advance your survival strategy
