@@ -1,23 +1,27 @@
 const cardContent = [
   {
+    title: "Loot Survivor",
     icon: "/ls-logo.svg",
     link: "/lootsurvivor",
     description:
       "A procedurally generated dungeon crawler. Explore the endless dungeon while fighting for your life against beasts and treacherous obstacles.",
   },
   {
+    title: "Darkshuffle",
     icon: "/DS - Horizontal Logo.svg",
     link: "/darkshuffle",
     description:
       "A build-your-own and bring-your-own-tokens onchain deck builder.",
   },
   {
+    title: "Budokan",
     icon: "/budokan-logo.svg",
     link: "/budokan",
     description:
       "A feature-rich onchain tournament platform that lets anyone create and compete in onchain tournaments.",
   },
   {
+    title: "Embeddable Game Standard",
     icon: "/embeddable-game-standard.png",
     link: "/embeddable-game-standard",
     description:
