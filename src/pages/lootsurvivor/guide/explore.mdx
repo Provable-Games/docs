@@ -68,6 +68,9 @@ When you hit the 33% item discovery chance, it subdivides into:
 - Can be saved between explorations
 - CHA stat reduces market prices
 - Essential for equipment upgrades
+- **Maximum capacity: 511 gold**
+
+> **💰 Gold Cap:** You can only carry up to 511 gold. Any excess is lost, so spend wisely!
 
 ## ⚔️ Equipment Discovery
 
@@ -87,18 +90,21 @@ Equipment drops are your primary source of gear upgrades. When you discover loot
 
 **Formula:** `HP = Random(2 to Level × 2)`
 
-| Level | HP Range | Average | % of 100 HP |
+| Level | HP Range | Average | % of Max HP |
 | ----- | -------- | ------- | ----------- |
-| 5     | 2-10 HP  | 6 HP    | ~6%         |
-| 10    | 2-20 HP  | 11 HP   | ~11%        |
-| 20    | 2-40 HP  | 21 HP   | ~21%        |
-| 30    | 2-60 HP  | 31 HP   | ~31%        |
-| 50    | 2-100 HP | 51 HP   | ~51%        |
+| 5     | 2-10 HP  | 6 HP    | ~0.6%       |
+| 10    | 2-20 HP  | 11 HP   | ~1.1%       |
+| 20    | 2-40 HP  | 21 HP   | ~2.1%       |
+| 30    | 2-60 HP  | 31 HP   | ~3.0%       |
+| 50    | 2-100 HP | 51 HP   | ~5.0%       |
 
 **Potion Information:**
 
 - Found in 15% of all explores
 - Instantly restores HP when discovered
+- **Maximum health: 1023 HP** (adventurer cap)
+
+> **❤️ Health Cap:** Adventurers have a maximum health of 1023 HP. Health potions cannot exceed this limit.
 
 ## ⭐ Experience Gains
 
@@ -109,39 +115,6 @@ Exploration provides consistent experience points for leveling up:
 | **Item Discovery** | 1                                   | None    | Safe       |
 | **Beast Kills**    | Beast Level × (Tier Multiplier - 1) | Decayed | High       |
 | **Obstacles**      | Same as above                       | Decayed | Medium     |
-
----
-
-# Environmental Challenges
-
-## 🪨 Obstacle System
-
-Obstacles are unavoidable environmental hazards with three distinct categories:
-
-### Obstacle Types
-
-**✨ Magical Obstacles (25 types)**
-
-- Examples: Demonic Altar, Vortex of Despair, Cursed Tomb
-- **Counter:** Hide armor
-
-**🗡️ Blade Obstacles (25 types)**
-
-- Examples: Pendulum Blades, Poison Darts, Hidden Arrows
-- **Counter:** Metal armor
-
-**🔨 Bludgeon Obstacles (25 types)**
-
-- Examples: Collapsing Ceiling, Rolling Boulder, Crushing Walls
-- **Counter:** Cloth armor
-
-### Damage Mitigation
-
-| Method            | Effect               | Requirement          |
-| ----------------- | -------------------- | -------------------- |
-| **Intelligence**  | Complete avoidance   | INT ≥ obstacle level |
-| **Armor Match**   | 50% damage reduction | Correct armor type   |
-| **No Protection** | Full damage          | No mitigation        |
 
 ---
 
@@ -161,6 +134,50 @@ Obstacles are unavoidable environmental hazards with three distinct categories:
 - See the [Battle Guide](/lootsurvivor/guide/battle) for detailed combat mechanics
 
 </div>
+
+## Beast Strength Calculation
+
+When a beast is discovered, its level and health are determined by your adventurer level:
+
+### Beast Level Formula
+
+```
+Base Level = 1 + Random(0 to Adventurer Level × 3 - 1)
+Final Level = Base Level + Difficulty Bonus
+```
+
+**Difficulty Bonuses by Adventurer Level:**
+
+| Adventurer Level | Difficulty Bonus | Level Range | Average Level |
+| ---------------- | ---------------- | ----------- | ------------- |
+| **1-19**         | +0               | 1-57        | ~29           |
+| **20-29**        | +10              | 11-97       | ~54           |
+| **30-39**        | +20              | 21-137      | ~79           |
+| **40-49**        | +40              | 41-187      | ~114          |
+| **50+**          | +80              | 81-230+     | ~155+         |
+
+### Beast Health Formula
+
+```
+Base Health = 1 + Random(0 to Adventurer Level × 20 - 1)
+Final Health = Base Health + Health Bonus
+```
+
+**Health Bonuses by Adventurer Level:**
+
+| Adventurer Level | Health Bonus | Health Range | Average Health |
+| ---------------- | ------------ | ------------ | -------------- |
+| **1-19**         | +10          | 11-390       | ~200           |
+| **20-29**        | +100         | 101-680      | ~390           |
+| **30-39**        | +200         | 201-980      | ~590           |
+| **40-49**        | +400         | 401-1023*     | ~712           |
+| **50+**          | +500         | 501-1023*     | ~762           |
+
+*Capped at maximum health of 1023 HP
+
+> **⚠️ Power Spikes:** Beasts get significantly stronger at levels 20, 30, 40, and 50. Plan your upgrades accordingly!
+> 
+> **❤️ Beast Health Cap:** Like adventurers, beasts have a maximum health of 1023 HP.
 
 ## Ambush Disadvantages
 
@@ -192,6 +209,60 @@ Avoidance Chance = (WIS / Level) × 100%
 - Does not prevent the encounter entirely
 
 > **👁️ Important:** Wisdom helps avoid the ambush penalties, but you will still be locked into combat when a beast is encountered.
+
+---
+
+# Environmental Challenges
+
+## 🪨 Obstacle System
+
+Obstacles are unavoidable environmental hazards with three distinct categories:
+
+### Obstacle Types
+
+**✨ Magical Obstacles (25 types)**
+
+- Examples: Demonic Altar, Vortex of Despair, Cursed Tomb
+- **Counter:** Hide armor
+
+**🗡️ Blade Obstacles (25 types)**
+
+- Examples: Pendulum Blades, Poison Darts, Hidden Arrows
+- **Counter:** Metal armor
+
+**🔨 Bludgeon Obstacles (25 types)**
+
+- Examples: Collapsing Ceiling, Rolling Boulder, Crushing Walls
+- **Counter:** Cloth armor
+
+### Obstacle Level Calculation
+
+When an obstacle is encountered, its level is determined using the same formula as beast levels:
+
+```
+Base Level = 1 + Random(0 to Adventurer Level × 3 - 1)
+Final Level = Base Level + Difficulty Bonus
+```
+
+**Difficulty Bonuses by Adventurer Level:**
+
+| Adventurer Level | Difficulty Bonus | Obstacle Level Range | Average Level |
+| ---------------- | ---------------- | -------------------- | ------------- |
+| **1-19**         | +0               | 1-57                 | ~29           |
+| **20-29**        | +10              | 11-97                | ~54           |
+| **30-39**        | +20              | 21-137               | ~79           |
+| **40-49**        | +40              | 41-187               | ~114          |
+| **50+**          | +80              | 81-230+              | ~155+         |
+
+> **📊 Note:** Unlike beasts, obstacles don't have health - they deal damage based on their level if not avoided.
+
+### Damage Mitigation
+
+| Method            | Effect               | Requirement          |
+| ----------------- | -------------------- | -------------------- |
+| **Intelligence**  | Complete avoidance   | INT ≥ obstacle level |
+| **Armor Match**   | 50% damage reduction | Correct armor type   |
+| **No Protection** | Full damage          | No mitigation        |
 
 ---
 
