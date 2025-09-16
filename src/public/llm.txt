@@ -1502,10 +1502,11 @@ Loot Survivor is built on Starknet using the Dojo engine, with all game logic ex
 The Loot Survivor smart contract system is organized into several core components:
 
 * **Game**: Main game logic and state management
-* **Adventurer**: Player character data and progression
-* **Beast**: Creature stats, behavior, and combat mechanics
-* **Loot**: Item generation, properties, and bonuses
 * **Game Token**: Interfaces for Embeddable Game Standard compatibility
+* **Beast**: Creature stats, behavior, and combat mechanics
+* **Adventurer**: Player character data and progression
+* **Loot**: Item generation, properties, and bonuses
+* **Objectives**: Quest and achievement system
 * **Renderer**: Visual rendering and display logic
 * **Settings**: Game configuration and parameters
 
@@ -1522,43 +1523,7 @@ The Loot Survivor smart contract system is organized into several core component
     {
       name: "Game",
       address:
-        "-",
-    },
-  ],
-  [
-    {
-      name: "Adventurer",
-      address:
-        "0x49d0f851a94eb1949ca7181855d71139ad438d546bb6c6bd92a8c67a0f7ae4f",
-    },
-    {
-      name: "Adventurer",
-      address:
-        "-",
-    },
-  ],
-  [
-    {
-      name: "Beast",
-      address:
-        "0x5f9371543af0b2b546ba273840e1943e81622105241b4498d1dde4de92e2c77",
-    },
-    {
-      name: "Beast",
-      address:
-        "-",
-    },
-  ],
-  [
-    {
-      name: "Loot",
-      address:
-        "0x78d7780371156c331f279dcd7b3372c88705ab178293ea9e612ea81bc478fd7",
-    },
-    {
-      name: "Loot",
-      address:
-        "-",
+        "0x6f7c4350d6d5ee926b3ac4fa0c9c351055456e75c92227468d84232fc493a9c",
     },
   ],
   [
@@ -1570,7 +1535,55 @@ The Loot Survivor smart contract system is organized into several core component
     {
       name: "Game Token",
       address:
+        "0x5e2dfbdc3c193de629e5beb116083b06bd944c1608c9c793351d5792ba29863",
+    },
+  ],
+  [
+    {
+      name: "Beast",
+      address:
+        "0x5f9371543af0b2b546ba273840e1943e81622105241b4498d1dde4de92e2c77",
+    },
+    {
+      name: "Beast",
+      address:
+        "0x74abc15c0ddef39bdf1ede2a643c07968d3ed5bacb0123db2d5b7154fbb35c7",
+    },
+  ],
+  [
+    {
+      name: "Adventurer",
+      address:
+        "0x49d0f851a94eb1949ca7181855d71139ad438d546bb6c6bd92a8c67a0f7ae4f",
+    },
+    {
+      name: "Adventurer",
+      address:
+        "0x3fc7ecd6d577daa1ee855a9fa13a914d01acda06715c9fc74f1ee1a5e346a01",
+    },
+  ],
+  [
+    {
+      name: "Loot",
+      address:
+        "0x78d7780371156c331f279dcd7b3372c88705ab178293ea9e612ea81bc478fd7",
+    },
+    {
+      name: "Loot",
+      address:
+        "0x4c386505ce1cc0be91e7ae8727c9feec66692a92c851b01e7f764ea0143dbe4",
+    },
+  ],
+  [
+    {
+      name: "Objectives",
+      address:
         "-",
+    },
+    {
+      name: "Objectives",
+      address:
+        "0x403224d3586a402bf3d9a7553493ba0d931e306e6aae8472503afdf90083e32",
     },
   ],
   [
@@ -1582,7 +1595,7 @@ The Loot Survivor smart contract system is organized into several core component
     {
       name: "Renderer",
       address:
-        "-",
+        "0x6135cd4ee82eb5e7652a636a952c893315914f0655a3cc834ce8b6b1e5ff1cb",
     },
   ],
   [
@@ -1594,7 +1607,7 @@ The Loot Survivor smart contract system is organized into several core component
     {
       name: "Settings",
       address:
-        "-",
+        "0x3caf941b916a83550d8f6325802e0cb686c9a0c8b30a23fb9df531ae24d12d0",
     },
   ],
 ]}
@@ -4252,6 +4265,634 @@ Beasts are the creatures you'll encounter and battle throughout your adventures 
 
 ---
 
+file: docs/lootsurvivor/loot/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Loot System
+
+<div style={{ display: 'flex', gap: '2rem', alignItems: 'start', margin: '2rem 0', flexWrap: 'wrap' }}>
+  <div
+    style={{ 
+fontSize: '1.1rem', 
+lineHeight: '1.8', 
+paddingRight: '2rem',
+color: '#e5e5e5',
+flex: '2',
+minWidth: '300px'
+}}
+  >
+    <p style={{ marginBottom: "1.2rem", fontWeight: "400" }}>
+      The loot system in Loot Survivor is inspired by the original <a href="https://docs.loot.foundation/" style={{ color: "#3b82f6" }}>Loot collection</a> and forms the backbone of your adventurer's power progression.
+    </p>
+
+    <p style={{ marginBottom: "0", fontWeight: "400" }}>
+      Understanding how items work, their tiers, and special properties is essential
+      for survival in Death Mountain. Each piece of equipment can evolve and gain
+      powerful bonuses as you progress through the dangerous depths.
+    </p>
+  </div>
+
+  <div style={{ flex: '1', minWidth: '250px' }}>
+    <img
+      src="/docs/lootsurvivor/loot.png"
+      alt="Loot Survivor Items Display"
+      style={{
+    width: "100%",
+    display: "block",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+    />
+
+    <em
+      style={{
+    display: "block",
+    textAlign: "center",
+    marginTop: "0.5rem",
+    fontSize: "0.9rem",
+    opacity: "0.8",
+  }}
+    >
+      Loot item display showing tier and special properties
+    </em>
+  </div>
+</div>
+
+## Item Properties
+
+Each item has several key properties that determine its effectiveness:
+
+* **Tier** - Base power level (T1-T5)
+* **Greatness** - Special enhancement level (0-20)
+* **Suffix** - Name suffix at Greatness 15+
+* **Prefixes** - Additional bonuses at Greatness 19+
+* **+1 Modifier** - +1 modifier at Greatness 20
+
+## Item Tiers
+
+Items in Loot Survivor are categorized into 5 tiers, with T1 being the most powerful:
+
+| Tier   | Name      | Rarity    | Base Power    | Drop Rate | Description                                |
+| ------ | --------- | --------- | ------------- | --------- | ------------------------------------------ |
+| **T1** | Legendary | Highest   | 5× multiplier | \~0.066%  | Best-in-slot items with maximum base stats |
+| **T2** | Epic      | Very High | 4× multiplier | \~0.2%    | Powerful items with excellent stats        |
+| **T3** | Rare      | High      | 3× multiplier | \~0.4%    | Good equipment with solid performance      |
+| **T4** | Uncommon  | Medium    | 2× multiplier | \~1.0%    | Decent upgrades over starting gear         |
+| **T5** | Common    | Low       | 1× multiplier | \~1.65%   | Basic gear and starting equipment          |
+
+**Tier Effects:**
+
+* Higher tiers provide better base damage/protection
+* Tier multiplier affects combat calculations
+* Better tiers are more likely to have special properties
+* All tiers can potentially have suffixes and prefixes
+
+***
+
+<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **🎮 Loot Survivor Implementation Note:**
+  </div>
+
+  <div style={{ marginBottom: '0' }}>
+    Everything below this point represents **Loot Survivor's unique interpretation** of the original Loot collection. The Greatness System, combat types, materials, and their gameplay mechanics are specific to this game's implementation and not part of the base Loot specification.
+  </div>
+</div>
+
+# Greatness System
+
+Greatness is a special property that enhances items beyond their base tier:
+
+## Greatness Levels
+
+| Greatness | Enhancement     | Special Property           |
+| --------- | --------------- | -------------------------- |
+| **1-14**  | Base item       | Standard tier bonuses only |
+| **15**    | Suffix unlocked | +3 stat bonus from suffix  |
+| **16-18** | Enhanced suffix | Suffix bonuses continue    |
+| **19**    | Prefix unlocked | Additional stat bonuses    |
+| **20**    | Stat Bonus      | +1 assignable stat bonus   |
+
+## How Greatness Works
+
+* Items always start at greatness 1
+* Greatness increases the item's overall power
+* Greatness 15+ items gain [suffix bonuses](/lootsurvivor/loot/suffix-boost)
+* Greatness 19+ items gain additional prefix [prefixes](/lootsurvivor/loot/prefixes)
+* Greatness 20 items get a +1 stat modifier
+
+***
+
+# Equipment Types
+
+Loot Survivor features 8 equipment slots for different item types:
+
+| Equipment Slot | Item Types                            | Function |
+| -------------- | ------------------------------------- | -------- |
+| **Weapon**     | Katana, Wand, Club, Short Sword       | Weapon   |
+| **Chest**      | Divine Robe, Shirt, Demon Husk        | Armor    |
+| **Head**       | Crown, Cap, Helm                      | Armor    |
+| **Waist**      | Ornate Belt, Sash, Heavy Belt         | Armor    |
+| **Foot**       | Divine Slippers, Boots, Shoes         | Armor    |
+| **Hand**       | Divine Gloves, Gloves, Gauntlets      | Armor    |
+| **Neck**       | Amulet, Pendant, Necklace             | Jewelry  |
+| **Ring**       | Platinum Ring, Gold Ring, Silver Ring | Jewelry  |
+
+***
+
+# Combat Types & Materials
+
+Items have dual classifications that affect combat performance:
+
+## Weapon Types
+
+**⚔️ Blade Weapons**
+
+* Strong vs Hide armor
+* Weak vs Metal armor
+* Examples: Katana, Short Sword, Scimitar
+
+**🔨 Bludgeon Weapons**
+
+* Strong vs Metal armor
+* Weak vs Cloth armor
+* Examples: Club, Mace, Warhammer
+
+**✨ Magic Weapons**
+
+* Strong vs Cloth armor
+* Weak vs Hide armor
+* Examples: Wand, Book, Ghost Wand
+
+## Armor Materials
+
+**🛡️ Hide Armor**
+
+* Resists Blade attacks
+* Weak to Magic attacks
+* Examples: Leather armor, Dragon skin
+
+**⚡ Metal Armor**
+
+* Resists Bludgeon attacks
+* Weak to Blade attacks
+* Examples: Chain mail, Plate armor
+
+**🧙 Cloth Armor**
+
+* Resists Magic attacks
+* Weak to Bludgeon attacks
+* Examples: Robes, Shirts
+
+***
+
+# Item Acquisition
+
+## Discovery Methods
+
+Items can be obtained through several methods:
+
+| Method                 | Rate                | Quality     | Notes                           |
+| ---------------------- | ------------------- | ----------- | ------------------------------- |
+| **Exploration**        | 3.3% of explores    | Random tier | Primary acquisition method      |
+| **Market Purchase**    | Level-dependent     | Variable    | Costs gold, refresh on level up |
+| **Starting Equipment** | 1 weapon guaranteed | T5 only     | Random weapon type              |
+
+## Market System
+
+* Market refreshes completely on each level up
+* Available items are randomly generated
+* Item count increases with adventurer level
+* CHA stat reduces purchase prices
+* Market items follow same tier distribution as drops
+
+***
+
+# Item Management
+
+## Inventory System
+
+* **8 Equipment Slots** - One for each equipment type
+* **15 Bag Slots** - Additional storage for backup items
+* **Auto-equip** - New items automatically equip if slots are empty
+* **Gold Conversion** - Duplicate items convert to gold if no space
+
+## Item Usage
+
+**Equipping Items:**
+
+* Drag from bag to equipment slot
+* Items provide immediate stat bonuses
+* Combat type/material affects battle performance
+* Can switch equipment during exploration (not in combat)
+
+**Item Stacking:**
+
+* Only one item per equipment slot
+* Identical items convert to gold
+* Higher tier items typically replace lower tier
+* Consider suffix/prefix bonuses when deciding
+
+***
+
+# Special Properties
+
+## Suffixes
+
+Items with Greatness 15+ gain powerful suffix bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for complete details.
+
+## Prefixes
+
+Items with Greatness 19+ gain additional prefix bonuses that stack with suffix effects. These same prefixes are also used for named beasts in Beast Mode NFTs.
+
+**Complete Prefix & Suffix Reference:** See [Prefixes Guide](/lootsurvivor/loot/prefixes) for the full library of all 69 prefixes and 18 suffixes.
+
+***
+
+# Summary
+
+The loot system provides deep character customization through equipment choices, tier progression, and special properties. Understanding how tiers, greatness, suffixes, and prefixes work together allows you to build powerful adventurers capable of surviving Death Mountain's greatest challenges.
+
+**Key Loot Principles:**
+
+* Higher tiers provide better base power
+* Greatness 15+ items gain significant suffix bonuses
+* Greatness 19+ items gain additional prefix bonuses
+* Combat type and material matter for battle effectiveness
+* Market refreshes provide new acquisition opportunities each level
+
+
+
+---
+
+file: docs/lootsurvivor/loot/jewelry.mdx
+meta: {}
+
+# Jewelry Items
+
+Jewelry items can be used to increase Luck and unlock special abilities. Luck gives an increased chance of achieving critical hits. Jewelry items will contribute to Luck even when bagged.
+
+| Item          | Boost                                                                              |
+| ------------- | ---------------------------------------------------------------------------------- |
+| Pendant       | 3% increase per greatness hide armor defence.                                      |
+| Necklace      | 3% increase per greatness metal armor defence.                                     |
+| Amulet        | 3% increase per greatness cloth armor defence.                                     |
+| Bronze Ring   | No special ability (economy option).                                               |
+| Silver Ring   | +20 Luck boost when equipped at G20 and +1 bonus luck per greatness when equipped. |
+| Gold Ring     | 3% per greatness increase in gold rewards from beasts.                             |
+| Platinum Ring | 3% per greatness increase in name match damage bonus.                              |
+| Titanium Ring | 3% per greatness increase in critical hit damage bonus.                            |
+
+
+
+---
+
+file: docs/lootsurvivor/loot/prefixes.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Item & Beast Prefixes
+
+Prefixes are special name modifiers that appear on high-greatness items (Level 19+) and named beasts. This comprehensive reference covers all 69 prefixes and 18 suffixes used throughout Loot Survivor.
+
+## Prefix System Overview
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **Dual Usage:** Prefixes serve two important functions in the game:
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    * **Item Enhancement**: High-greatness items (19+) gain prefix bonuses for additional stats
+    * **Beast Names**: Named beasts (Level 19+) use these same prefixes for unique identities
+    * **NFT Collection**: Beast Mode NFTs mint with prefix names for collectible variety
+  </div>
+
+  > **Cross-System Integration:** The same 69 prefixes create both powerful equipment and collectible named beasts!
+</div>
+
+## Complete Prefix Library (69 Total)
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+    <div style={{ background: '#2a1a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #dc2626' }}>
+      ### 🌑 Dark Themes (17)
+
+      1. Agony
+      2. Apocalypse
+      3. Armageddon
+      4. Blight
+      5. Blood
+      6. Corruption
+      7. Damnation
+      8. Death
+      9. Demon
+      10. Dire
+      11. Doom
+      12. Dread
+      13. Ghoul
+      14. Gloom
+      15. Grim
+      16. Hate
+      17. Horror
+    </div>
+
+    <div style={{ background: '#2a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #eab308' }}>
+      ### 🏆 Power & Creatures (17)
+
+      18. Beast
+      19. Behemoth
+      20. Dragon
+      21. Empyrean
+      22. Fate
+      23. Golem
+      24. Honour
+      25. Kraken
+      26. Miracle
+      27. Phoenix
+      28. Skull
+      29. Soul
+      30. Spirit
+      31. Victory
+      32. Viper
+      33. Brood
+      34. Chimeric
+    </div>
+
+    <div style={{ background: '#1a2a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #10b981' }}>
+      ### 🌊 Elemental & Nature (17)
+
+      35. Bramble
+      36. Brimstone
+      37. Carrion
+      38. Corpse
+      39. Dusk
+      40. Eagle
+      41. Gale
+      42. Maelstrom
+      43. Sol
+      44. Storm
+      45. Tempest
+      46. Vortex
+      47. Cataclysm
+      48. Foe
+      49. Havoc
+      50. Onslaught
+      51. Plague
+    </div>
+
+    <div style={{ background: '#2a1a3a', padding: '1rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
+      ### ✨ Mystical & Abstract (18)
+
+      52. Glyph
+      53. Hypnotic
+      54. Loath
+      55. Mind
+      56. Morbid
+      57. Oblivion
+      58. Pain
+      59. Pandemonium
+      60. Rage
+      61. Rapture
+      62. Rune
+      63. Sorrow
+      64. Torment
+      65. Vengeance
+      66. Woe
+      67. Wrath
+      68. **Lights** ⭐
+      69. **Shimmering** ⭐
+    </div>
+  </div>
+
+  ### Ultra Rare Prefixes
+
+  **Lights (#68)** and **Shimmering (#69)** are considered the most valuable and rare prefixes in the entire system, making items or beast NFTs with these names extremely sought after by collectors.
+</div>
+
+## Complete Suffix Library (18 Total)
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+    <div>
+      | ID | Suffix     |
+      | -- | ---------- |
+      | 1. | Bane       |
+      | 2. | Root       |
+      | 3. | Bite       |
+      | 4. | Song       |
+      | 5. | Roar       |
+      | 6. | Grasp      |
+      | 7. | Instrument |
+      | 8. | Glow       |
+      | 9. | Bender     |
+    </div>
+
+    <div>
+      | ID  | Suffix  |
+      | --- | ------- |
+      | 10. | Shadow  |
+      | 11. | Whisper |
+      | 12. | Shout   |
+      | 13. | Growl   |
+      | 14. | Tear    |
+      | 15. | Peak    |
+      | 16. | Form    |
+      | 17. | Sun     |
+      | 18. | Moon    |
+    </div>
+  </div>
+
+  **Suffix Usage:** Only applies to items with Greatness 15+ for stat bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for detailed stat effects.
+</div>
+
+## Usage Examples
+
+### Item Naming Examples
+
+<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **High-Greatness Item Examples:**
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    * **"Doom Katana of Power"** - Prefix: Doom, Base: Katana, Suffix: of Power
+    * **"Shimmering Divine Robe of Giants"** - Prefix: Shimmering, Base: Divine Robe, Suffix: of Giants
+    * **"Blood Wand of Skill"** - Prefix: Blood, Base: Wand, Suffix: of Skill
+  </div>
+
+  **Beast Naming Examples:**
+
+  <div style={{ marginBottom: '0' }}>
+    * **"Apocalypse Dragon"** - Prefix: Apocalypse, Beast: Dragon
+    * **"Lights Kraken"** - Prefix: Lights, Beast: Kraken
+    * **"Storm Phoenix"** - Prefix: Storm, Beast: Phoenix
+  </div>
+</div>
+
+## Cross-Reference Usage
+
+### When to Use This Page
+
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0', lineHeight: '1.6' }}>
+  **Reference Scenarios:**
+
+  1. **Item Identification**: Understanding what prefix names mean on your equipment
+  2. **Beast NFT Hunting**: Identifying valuable prefix combinations for collection
+  3. **Market Evaluation**: Determining item value based on prefix rarity
+  4. **Collection Planning**: Targeting specific prefixes for complete sets
+  5. **Cross-Game Integration**: Understanding naming for Summit game access
+
+  **Documentation Links:**
+
+  * Items with prefixes: Reference this page from item evaluation
+  * Named beasts: Reference this page from beast documentation
+  * NFT collecting: Use for understanding collectible variety
+</div>
+
+## See Also
+
+* [Loot System](/lootsurvivor/loot) - Main equipment and tier information
+* [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) - Detailed suffix stat effects
+* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Named beast NFT system
+* [Beast Overview](/lootsurvivor/beasts) - Combat types and beast information
+
+
+
+---
+
+file: docs/lootsurvivor/loot/suffix-boost.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Suffix Boosts
+
+When an item reaches Greatness 15, it gains a powerful suffix that provides significant stat bonuses. These suffixes are based on the [16 Orders of Divinity](https://docs.loot.foundation/canonical-principles/loot/the-16-orders) from the original Loot collection and follow canonical loot lore.
+
+> **⚡ Power Boost:** Suffix bonuses can make a T3 item with the right suffix more powerful than a base T1 item!
+
+## How Suffixes Work
+
+* **Greatness Requirement:** Items must reach Greatness 15 to unlock suffix bonuses
+* **Random Assignment:** Suffixes are randomly assigned based on the Orders of Divinity
+* **Permanent Bonuses:** Suffix bonuses are permanent and stack with base item stats
+* **Lore Integration:** Each suffix follows canonical Loot Foundation principles
+
+***
+
+# Complete Suffix List
+
+## Suffix Bonuses by Order
+
+| Item Suffix          | Stat Bonuses                              | Total Bonus | Order Association                 |
+| -------------------- | ----------------------------------------- | ----------- | --------------------------------- |
+| **Of Power**         | Strength +3                               | +3          | Power-focused enhancement         |
+| **Of Giant**         | Vitality +3                               | +3          | Health and endurance boost        |
+| **Of Titans**        | Strength +2, Charisma +1                  | +3          | Balanced physical prowess         |
+| **Of Skill**         | Dexterity +3                              | +3          | Agility and precision enhancement |
+| **Of Perfection**    | Strength +1, Dexterity +1, Vitality +1    | +3          | Balanced all-around improvement   |
+| **Of Brilliance**    | Intelligence +3                           | +3          | Mental acuity enhancement         |
+| **Of Enlightenment** | Wisdom +3                                 | +3          | Spiritual awareness boost         |
+| **Of Protection**    | Vitality +2, Dexterity +1                 | +3          | Defensive-focused bonuses         |
+| **Of Anger**         | Strength +2, Dexterity +1                 | +3          | Aggressive combat enhancement     |
+| **Of Rage**          | Wisdom +1, Strength +1, Charisma +1       | +3          | Controlled fury bonuses           |
+| **Of Fury**          | Vitality +1, Charisma +1, Intelligence +1 | +3          | Passionate intensity boost        |
+| **Of Vitriol**       | Intelligence +2, Wisdom +1                | +3          | Sharp mental enhancement          |
+| **Of the Fox**       | Dexterity +2, Charisma +1                 | +3          | Cunning and agility boost         |
+| **Of Detection**     | Wisdom +2, Dexterity +1                   | +3          | Awareness and reflexes            |
+| **Of Reflection**    | Wisdom +2, Intelligence +1                | +3          | Contemplative wisdom boost        |
+| **Of the Twins**     | Charisma +3                               | +3          | Social influence enhancement      |
+
+***
+
+# Suffix Categories
+
+## Single Stat Focus
+
+These suffixes provide maximum bonuses to one primary stat:
+
+* **Of Power** - Pure Strength focus for maximum damage
+* **Of Giant** - Pure Vitality focus for maximum health
+* **Of Skill** - Pure Dexterity focus for escape mastery
+* **Of Brilliance** - Pure Intelligence focus for obstacle avoidance
+* **Of Enlightenment** - Pure Wisdom focus for ambush prevention
+* **Of the Twins** - Pure Charisma focus for market optimization
+
+## Balanced Combinations
+
+These suffixes provide balanced stat distributions:
+
+* **Of Perfection** - Equal bonuses across STR/DEX/VIT
+* **Of Rage** - Equal bonuses across WIS/STR/CHA
+* **Of Fury** - Equal bonuses across VIT/CHA/INT
+
+## Specialized Builds
+
+These suffixes target specific build archetypes:
+
+* **Of Titans** - Combat-focused (STR+CHA)
+* **Of Protection** - Defense-focused (VIT+DEX)
+* **Of Anger** - Aggressive melee (STR+DEX)
+* **Of Vitriol** - Mental mastery (INT+WIS)
+* **Of the Fox** - Agile trader (DEX+CHA)
+* **Of Detection** - Alert explorer (WIS+DEX)
+* **Of Reflection** - Wise scholar (WIS+INT)
+
+***
+
+# Suffix Strategy
+
+## Evaluating Suffix Value
+
+When comparing items with suffixes, consider:
+
+1. **Your Build Focus** - Does the suffix support your stat priorities?
+2. **Current Weaknesses** - Does the suffix shore up weak areas?
+3. **Base Tier vs Suffix** - A T3+suffix might beat a base T1
+4. **Total Stat Impact** - All +3 bonuses are equally valuable mathematically
+
+## Suffix Synergies
+
+**Combat Builds:**
+
+* **Of Power** - Maximum damage output
+* **Of Titans** - Damage + market efficiency
+* **Of Anger** - Damage + escape capability
+
+**Survival Builds:**
+
+* **Of Giant** - Maximum health pool
+* **Of Protection** - Health + escape ability
+* **Of Perfection** - Balanced survivability
+
+**Utility Builds:**
+
+* **Of the Fox** - Escape + market efficiency
+* **Of Detection** - Awareness + agility
+* **Of Reflection** - Mental mastery
+
+***
+
+# Summary
+
+Suffix bonuses transform the loot system from simple tier progression to complex item evaluation. A well-rolled suffix can make any item tier competitive, while the wrong suffix might make you overlook a potentially powerful piece of equipment.
+
+**Key Suffix Principles:**
+
+* All suffixes provide exactly +3 total stat points
+* Suffixes unlock at Greatness 15
+* Suffix distribution matters more than individual bonuses
+* Consider your build when evaluating suffix value
+* Don't automatically dismiss lower tiers with good suffixes
+
+
+
+---
+
 file: docs/lootsurvivor/guide/battle.mdx
 meta: {
   "layout": "docs"
@@ -5649,629 +6290,690 @@ Markets can contain:
 
 ---
 
-file: docs/lootsurvivor/loot/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Loot System
-
-<div style={{ display: 'flex', gap: '2rem', alignItems: 'start', margin: '2rem 0', flexWrap: 'wrap' }}>
-  <div
-    style={{ 
-fontSize: '1.1rem', 
-lineHeight: '1.8', 
-paddingRight: '2rem',
-color: '#e5e5e5',
-flex: '2',
-minWidth: '300px'
-}}
-  >
-    <p style={{ marginBottom: "1.2rem", fontWeight: "400" }}>
-      The loot system in Loot Survivor is inspired by the original <a href="https://docs.loot.foundation/" style={{ color: "#3b82f6" }}>Loot collection</a> and forms the backbone of your adventurer's power progression.
-    </p>
-
-    <p style={{ marginBottom: "0", fontWeight: "400" }}>
-      Understanding how items work, their tiers, and special properties is essential
-      for survival in Death Mountain. Each piece of equipment can evolve and gain
-      powerful bonuses as you progress through the dangerous depths.
-    </p>
-  </div>
-
-  <div style={{ flex: '1', minWidth: '250px' }}>
-    <img
-      src="/docs/lootsurvivor/loot.png"
-      alt="Loot Survivor Items Display"
-      style={{
-    width: "100%",
-    display: "block",
-    borderRadius: "8px",
-    border: "2px solid #333",
-  }}
-    />
-
-    <em
-      style={{
-    display: "block",
-    textAlign: "center",
-    marginTop: "0.5rem",
-    fontSize: "0.9rem",
-    opacity: "0.8",
-  }}
-    >
-      Loot item display showing tier and special properties
-    </em>
-  </div>
-</div>
-
-## Item Properties
-
-Each item has several key properties that determine its effectiveness:
-
-* **Tier** - Base power level (T1-T5)
-* **Greatness** - Special enhancement level (0-20)
-* **Suffix** - Name suffix at Greatness 15+
-* **Prefixes** - Additional bonuses at Greatness 19+
-* **+1 Modifier** - +1 modifier at Greatness 20
-
-## Item Tiers
-
-Items in Loot Survivor are categorized into 5 tiers, with T1 being the most powerful:
-
-| Tier   | Name      | Rarity    | Base Power    | Drop Rate | Description                                |
-| ------ | --------- | --------- | ------------- | --------- | ------------------------------------------ |
-| **T1** | Legendary | Highest   | 5× multiplier | \~0.066%  | Best-in-slot items with maximum base stats |
-| **T2** | Epic      | Very High | 4× multiplier | \~0.2%    | Powerful items with excellent stats        |
-| **T3** | Rare      | High      | 3× multiplier | \~0.4%    | Good equipment with solid performance      |
-| **T4** | Uncommon  | Medium    | 2× multiplier | \~1.0%    | Decent upgrades over starting gear         |
-| **T5** | Common    | Low       | 1× multiplier | \~1.65%   | Basic gear and starting equipment          |
-
-**Tier Effects:**
-
-* Higher tiers provide better base damage/protection
-* Tier multiplier affects combat calculations
-* Better tiers are more likely to have special properties
-* All tiers can potentially have suffixes and prefixes
-
-***
-
-<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7', margin: '2rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **🎮 Loot Survivor Implementation Note:**
-  </div>
-
-  <div style={{ marginBottom: '0' }}>
-    Everything below this point represents **Loot Survivor's unique interpretation** of the original Loot collection. The Greatness System, combat types, materials, and their gameplay mechanics are specific to this game's implementation and not part of the base Loot specification.
-  </div>
-</div>
-
-# Greatness System
-
-Greatness is a special property that enhances items beyond their base tier:
-
-## Greatness Levels
-
-| Greatness | Enhancement     | Special Property           |
-| --------- | --------------- | -------------------------- |
-| **1-14**  | Base item       | Standard tier bonuses only |
-| **15**    | Suffix unlocked | +3 stat bonus from suffix  |
-| **16-18** | Enhanced suffix | Suffix bonuses continue    |
-| **19**    | Prefix unlocked | Additional stat bonuses    |
-| **20**    | Stat Bonus      | +1 assignable stat bonus   |
-
-## How Greatness Works
-
-* Items always start at greatness 1
-* Greatness increases the item's overall power
-* Greatness 15+ items gain [suffix bonuses](/lootsurvivor/loot/suffix-boost)
-* Greatness 19+ items gain additional prefix [prefixes](/lootsurvivor/loot/prefixes)
-* Greatness 20 items get a +1 stat modifier
-
-***
-
-# Equipment Types
-
-Loot Survivor features 8 equipment slots for different item types:
-
-| Equipment Slot | Item Types                            | Function |
-| -------------- | ------------------------------------- | -------- |
-| **Weapon**     | Katana, Wand, Club, Short Sword       | Weapon   |
-| **Chest**      | Divine Robe, Shirt, Demon Husk        | Armor    |
-| **Head**       | Crown, Cap, Helm                      | Armor    |
-| **Waist**      | Ornate Belt, Sash, Heavy Belt         | Armor    |
-| **Foot**       | Divine Slippers, Boots, Shoes         | Armor    |
-| **Hand**       | Divine Gloves, Gloves, Gauntlets      | Armor    |
-| **Neck**       | Amulet, Pendant, Necklace             | Jewelry  |
-| **Ring**       | Platinum Ring, Gold Ring, Silver Ring | Jewelry  |
-
-***
-
-# Combat Types & Materials
-
-Items have dual classifications that affect combat performance:
-
-## Weapon Types
-
-**⚔️ Blade Weapons**
-
-* Strong vs Hide armor
-* Weak vs Metal armor
-* Examples: Katana, Short Sword, Scimitar
-
-**🔨 Bludgeon Weapons**
-
-* Strong vs Metal armor
-* Weak vs Cloth armor
-* Examples: Club, Mace, Warhammer
-
-**✨ Magic Weapons**
-
-* Strong vs Cloth armor
-* Weak vs Hide armor
-* Examples: Wand, Book, Ghost Wand
-
-## Armor Materials
-
-**🛡️ Hide Armor**
-
-* Resists Blade attacks
-* Weak to Magic attacks
-* Examples: Leather armor, Dragon skin
-
-**⚡ Metal Armor**
-
-* Resists Bludgeon attacks
-* Weak to Blade attacks
-* Examples: Chain mail, Plate armor
-
-**🧙 Cloth Armor**
-
-* Resists Magic attacks
-* Weak to Bludgeon attacks
-* Examples: Robes, Shirts
-
-***
-
-# Item Acquisition
-
-## Discovery Methods
-
-Items can be obtained through several methods:
-
-| Method                 | Rate                | Quality     | Notes                           |
-| ---------------------- | ------------------- | ----------- | ------------------------------- |
-| **Exploration**        | 3.3% of explores    | Random tier | Primary acquisition method      |
-| **Market Purchase**    | Level-dependent     | Variable    | Costs gold, refresh on level up |
-| **Starting Equipment** | 1 weapon guaranteed | T5 only     | Random weapon type              |
-
-## Market System
-
-* Market refreshes completely on each level up
-* Available items are randomly generated
-* Item count increases with adventurer level
-* CHA stat reduces purchase prices
-* Market items follow same tier distribution as drops
-
-***
-
-# Item Management
-
-## Inventory System
-
-* **8 Equipment Slots** - One for each equipment type
-* **15 Bag Slots** - Additional storage for backup items
-* **Auto-equip** - New items automatically equip if slots are empty
-* **Gold Conversion** - Duplicate items convert to gold if no space
-
-## Item Usage
-
-**Equipping Items:**
-
-* Drag from bag to equipment slot
-* Items provide immediate stat bonuses
-* Combat type/material affects battle performance
-* Can switch equipment during exploration (not in combat)
-
-**Item Stacking:**
-
-* Only one item per equipment slot
-* Identical items convert to gold
-* Higher tier items typically replace lower tier
-* Consider suffix/prefix bonuses when deciding
-
-***
-
-# Special Properties
-
-## Suffixes
-
-Items with Greatness 15+ gain powerful suffix bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for complete details.
-
-## Prefixes
-
-Items with Greatness 19+ gain additional prefix bonuses that stack with suffix effects. These same prefixes are also used for named beasts in Beast Mode NFTs.
-
-**Complete Prefix & Suffix Reference:** See [Prefixes Guide](/lootsurvivor/loot/prefixes) for the full library of all 69 prefixes and 18 suffixes.
-
-***
-
-# Summary
-
-The loot system provides deep character customization through equipment choices, tier progression, and special properties. Understanding how tiers, greatness, suffixes, and prefixes work together allows you to build powerful adventurers capable of surviving Death Mountain's greatest challenges.
-
-**Key Loot Principles:**
-
-* Higher tiers provide better base power
-* Greatness 15+ items gain significant suffix bonuses
-* Greatness 19+ items gain additional prefix bonuses
-* Combat type and material matter for battle effectiveness
-* Market refreshes provide new acquisition opportunities each level
-
-
-
----
-
-file: docs/lootsurvivor/loot/jewelry.mdx
+file: docs/lootsurvivor/survivor-token/airdrop.mdx
 meta: {}
 
-# Jewelry Items
+# Free Games Airdrop
 
-Jewelry items can be used to increase Luck and unlock special abilities. Luck gives an increased chance of achieving critical hits. Jewelry items will contribute to Luck even when bagged.
+## Overview
 
-| Item          | Boost                                                                              |
-| ------------- | ---------------------------------------------------------------------------------- |
-| Pendant       | 3% increase per greatness hide armor defence.                                      |
-| Necklace      | 3% increase per greatness metal armor defence.                                     |
-| Amulet        | 3% increase per greatness cloth armor defence.                                     |
-| Bronze Ring   | No special ability (economy option).                                               |
-| Silver Ring   | +20 Luck boost when equipped at G20 and +1 bonus luck per greatness when equipped. |
-| Gold Ring     | 3% per greatness increase in gold rewards from beasts.                             |
-| Platinum Ring | 3% per greatness increase in name match damage bonus.                              |
-| Titanium Ring | 3% per greatness increase in critical hit damage bonus.                            |
+The Loot Survivor airdrop provides **free game entries** to eligible NFT holders and community members. These free games give players access to the LS2 Dungeon, which contains **2,258,100 SURVIVOR tokens** distributed as rewards based on gameplay performance.
 
+## How It Works
 
+### Game-Based Distribution
 
----
+Instead of receiving SURVIVOR tokens directly, eligible participants receive free game entries to play Loot Survivor. The LS2 Dungeon holds 2,258,100 SURVIVOR tokens that are distributed to players based on their performance:
 
-file: docs/lootsurvivor/loot/prefixes.mdx
-meta: {
-  "layout": "docs"
-}
+* **Minimum Level 3**: Must reach at least level 3 to earn tokens
+* **Tokens = Level Reached**: Starting at level 3, tokens equal to the level reached
+* **Promotion Periods**: 4X tokens during weeks 2-4, 2X tokens after week 4
+* **Performance-based rewards**: Higher levels mean more tokens
+* **Multiple attempts**: Each free game entry is a new opportunity to earn tokens
 
-# Item & Beast Prefixes
+### Example Rewards
 
-Prefixes are special name modifiers that appear on high-greatness items (Level 19+) and named beasts. This comprehensive reference covers all 69 prefixes and 18 suffixes used throughout Loot Survivor.
+**Standard Rate (Week 1):**
 
-## Prefix System Overview
+* Level 3: 3 tokens
+* Level 10: 10 tokens
+* Level 25: 25 tokens
 
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **Dual Usage:** Prefixes serve two important functions in the game:
-  </div>
+**4X Promotion (Weeks 2-4):**
 
-  <div style={{ marginBottom: '1rem' }}>
-    * **Item Enhancement**: High-greatness items (19+) gain prefix bonuses for additional stats
-    * **Beast Names**: Named beasts (Level 19+) use these same prefixes for unique identities
-    * **NFT Collection**: Beast Mode NFTs mint with prefix names for collectible variety
-  </div>
+* Level 10: 40 tokens
+* Level 25: 100 tokens
 
-  > **Cross-System Integration:** The same 69 prefixes create both powerful equipment and collectible named beasts!
-</div>
+**2X Promotion (After Week 4):**
 
-## Complete Prefix Library (69 Total)
+* Level 10: 20 tokens
+* Level 25: 50 tokens
 
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
-    <div style={{ background: '#2a1a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #dc2626' }}>
-      ### 🌑 Dark Themes (17)
+## Eligibility Categories
 
-      1. Agony
-      2. Apocalypse
-      3. Armageddon
-      4. Blight
-      5. Blood
-      6. Corruption
-      7. Damnation
-      8. Death
-      9. Demon
-      10. Dire
-      11. Doom
-      12. Dread
-      13. Ghoul
-      14. Gloom
-      15. Grim
-      16. Hate
-      17. Horror
-    </div>
+### NFT Collection Holders
 
-    <div style={{ background: '#2a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #eab308' }}>
-      ### 🏆 Power & Creatures (17)
+Holders of eligible NFT collections receive free game entries based on their holdings at the snapshot date (August 18th, 2025 at 00:00 UTC). The number of free games is determined by:
 
-      18. Beast
-      19. Behemoth
-      20. Dragon
-      21. Empyrean
-      22. Fate
-      23. Golem
-      24. Honour
-      25. Kraken
-      26. Miracle
-      27. Phoenix
-      28. Skull
-      29. Soul
-      30. Spirit
-      31. Victory
-      32. Viper
-      33. Brood
-      34. Chimeric
-    </div>
+* Collection
+* Number of NFTs held
+* Games Amount multiplier for each collection
 
-    <div style={{ background: '#1a2a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #10b981' }}>
-      ### 🌊 Elemental & Nature (17)
+[View all eligible collections →](/lootsurvivor/survivor-token/eligible-collections)
 
-      35. Bramble
-      36. Brimstone
-      37. Carrion
-      38. Corpse
-      39. Dusk
-      40. Eagle
-      41. Gale
-      42. Maelstrom
-      43. Sol
-      44. Storm
-      45. Tempest
-      46. Vortex
-      47. Cataclysm
-      48. Foe
-      49. Havoc
-      50. Onslaught
-      51. Plague
-    </div>
+### Community Contributors
 
-    <div style={{ background: '#2a1a3a', padding: '1rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
-      ### ✨ Mystical & Abstract (18)
+Active community members earn free games through:
 
-      52. Glyph
-      53. Hypnotic
-      54. Loath
-      55. Mind
-      56. Morbid
-      57. Oblivion
-      58. Pain
-      59. Pandemonium
-      60. Rage
-      61. Rapture
-      62. Rune
-      63. Sorrow
-      64. Torment
-      65. Vengeance
-      66. Woe
-      67. Wrath
-      68. **Lights** ⭐
-      69. **Shimmering** ⭐
-    </div>
-  </div>
+* Early participation in Loot Survivor v1
+* Community building and content creation
+* Bug reporting and testing
+* Protocol development contributions
 
-  ### Ultra Rare Prefixes
+## Claiming Your Free Games
 
-  **Lights (#68)** and **Shimmering (#69)** are considered the most valuable and rare prefixes in the entire system, making items or beast NFTs with these names extremely sought after by collectors.
-</div>
+To claim your free game entries and start earning SURVIVOR tokens:
 
-## Complete Suffix Library (18 Total)
+### Visit the Claims Portal
 
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-    <div>
-      | ID | Suffix     |
-      | -- | ---------- |
-      | 1. | Bane       |
-      | 2. | Root       |
-      | 3. | Bite       |
-      | 4. | Song       |
-      | 5. | Roar       |
-      | 6. | Grasp      |
-      | 7. | Instrument |
-      | 8. | Glow       |
-      | 9. | Bender     |
-    </div>
+Navigate to [claims.lootsurvivor.io](https://claims.lootsurvivor.io) to begin the claim process.
 
-    <div>
-      | ID  | Suffix  |
-      | --- | ------- |
-      | 10. | Shadow  |
-      | 11. | Whisper |
-      | 12. | Shout   |
-      | 13. | Growl   |
-      | 14. | Tear    |
-      | 15. | Peak    |
-      | 16. | Form    |
-      | 17. | Sun     |
-      | 18. | Moon    |
-    </div>
-  </div>
+![Eligibility Checker Interface](/docs/lootsurvivor/eligibility-checker.png)
+*Enter your wallet address to check your free games allocation*
 
-  **Suffix Usage:** Only applies to items with Greatness 15+ for stat bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for detailed stat effects.
-</div>
+### What to Expect
 
-## Usage Examples
+1. **Enter Your Wallet Address** - Input your EVM or Starknet wallet address
+2. **View Your Allocation** - See your total free games based on NFT holdings
+3. **Connect/Create Controller** - Set up a controller for smooth claims process (can claim for multiple wallets)
+4. **Claim Your Games** - Complete the claim for all eligible free games
+5. **Start Playing** - Begin your adventure and earn SURVIVOR tokens (within 2 weeks)
 
-### Item Naming Examples
+![Eligibility Results](/docs/lootsurvivor/eligibility-results.png)
+*View your allocation and claim your free games*
 
-<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **High-Greatness Item Examples:**
-  </div>
+### Wallet Ownership Verification
 
-  <div style={{ marginBottom: '1rem' }}>
-    * **"Doom Katana of Power"** - Prefix: Doom, Base: Katana, Suffix: of Power
-    * **"Shimmering Divine Robe of Giants"** - Prefix: Shimmering, Base: Divine Robe, Suffix: of Giants
-    * **"Blood Wand of Skill"** - Prefix: Blood, Base: Wand, Suffix: of Skill
-  </div>
+For wallets that are not controllers (such as hardware wallets or EOA wallets):
 
-  **Beast Naming Examples:**
+1. **Sign a Message** - You'll be prompted to sign a message to prove ownership of your wallet
+2. **Verification** - The signature verifies you own the NFTs from the snapshot
+3. **Games Sent to Controller** - Once verified, your free games are sent to your controller wallet
+4. **Play on Controller** - Use your controller wallet to play and earn SURVIVOR tokens
 
-  <div style={{ marginBottom: '0' }}>
-    * **"Apocalypse Dragon"** - Prefix: Apocalypse, Beast: Dragon
-    * **"Lights Kraken"** - Prefix: Lights, Beast: Kraken
-    * **"Storm Phoenix"** - Prefix: Storm, Beast: Phoenix
-  </div>
-</div>
+![Wallet Verification](/docs/lootsurvivor/argent-claim.png)
+*Sign a message to verify ownership and claim games to your controller*
 
-## Cross-Reference Usage
+The claims portal automatically:
 
-### When to Use This Page
+* Verifies your eligibility based on the August 18th, 2025 snapshot
+* Calculates your total free games across all eligible collections
+* Handles the entire claim process securely
+* Provides access to start playing immediately
 
-<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0', lineHeight: '1.6' }}>
-  **Reference Scenarios:**
+## Free Games Allocation
 
-  1. **Item Identification**: Understanding what prefix names mean on your equipment
-  2. **Beast NFT Hunting**: Identifying valuable prefix combinations for collection
-  3. **Market Evaluation**: Determining item value based on prefix rarity
-  4. **Collection Planning**: Targeting specific prefixes for complete sets
-  5. **Cross-Game Integration**: Understanding naming for Summit game access
+### Calculation Method
 
-  **Documentation Links:**
+Free games are allocated based on:
 
-  * Items with prefixes: Reference this page from item evaluation
-  * Named beasts: Reference this page from beast documentation
-  * NFT collecting: Use for understanding collectible variety
-</div>
+* **NFT Holdings**: Each eligible NFT grants games based on its collection's multiplier
+* **Games Amount**: Collections have different game allocations
+* **Total Cap**: Maximum 50 free games per eligible address
 
-## See Also
+### Distribution Examples
 
-* [Loot System](/lootsurvivor/loot) - Main equipment and tier information
-* [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) - Detailed suffix stat effects
-* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Named beast NFT system
-* [Beast Overview](/lootsurvivor/beasts) - Combat types and beast information
+* **Loot Holder**: 5 free games per Loot NFT (capped at 50 total)
+* **Pudgy Penguin Holder**: 10 free games per Penguin (capped at 50 total)
+* **OGS Discord Role**: 10 free games for verified members
+* **Multiple Collections**: Games stack across all eligible holdings (up to 50 max)
+
+## Playing Your Free Games
+
+### Getting Started
+
+1. Claim your free games at [claims.lootsurvivor.io](https://claims.lootsurvivor.io)
+2. Access Loot Survivor gameplay interface
+3. Start a new game using a free entry
+4. Progress through levels to earn SURVIVOR tokens
+
+### Earning Tokens
+
+* **Level 1-2**: No token rewards
+* **Level 3+**: Earn tokens equal to the level reached (e.g., Level 3 = 3 tokens, Level 20 = 20 tokens)
+* **Death**: Game ends, tokens earned are credited based on highest level reached
+* **Strategy**: Plan your builds to maximize level progression for more tokens
+
+### Token Distribution
+
+* When a game ends, a claim button appears
+* Click the claim button to receive your earned tokens
+* Track your total earnings across all games played
+
+## Important Notes
+
+### 2-Week Expiration Period
+
+* **Free games expire 2 weeks after the claim window opens**
+* Plan your gameplay strategy within this timeframe
+* Expired games cannot be recovered or extended
+* All eligible addresses have the same expiration deadline
+
+### Gas Fees
+
+* **All gas fees are covered** through our paymaster
+* No ETH required for claiming free games
+* No transaction fees for playing games
+* Completely free experience from claim to gameplay
+
+### Fair Play
+
+* Protected by onchain VRF (Verifiable Random Function)
+* Anti-bot measures built into the smart contract
+* Fully transparent and verifiable gameplay
+
+## Strategy Tips
+
+### Maximize Your Earnings
+
+* Study optimal builds before playing
+* Join community discussions for strategies
+* Use your free games before the 2-week window expires
+
+### Resource Management
+
+* Free games are valuable opportunities
+* Each game is a chance at significant token earnings
+* Token rewards scale directly with level reached
+* Community guides available for gameplay optimization
+
+## Support
+
+For assistance with free games:
+
+* Visit the official documentation
+* Join Discord for community strategies
+* Check FAQs for common questions
+* Submit support tickets for technical issues
+
+## Disclaimer
+
+Free game entries are distributed to reward early supporters and community members. The 2,258,100 SURVIVOR tokens in the LS2 Dungeon are distributed solely based on gameplay performance. Token earnings depend on individual skill and game progression.
 
 
 
 ---
 
-file: docs/lootsurvivor/loot/suffix-boost.mdx
-meta: {
-  "layout": "docs"
-}
+file: docs/lootsurvivor/survivor-token/eligible-collections.mdx
+meta: {}
 
-# Suffix Boosts
+# Eligible Collections for Free Games
 
-When an item reaches Greatness 15, it gains a powerful suffix that provides significant stat bonuses. These suffixes are based on the [16 Orders of Divinity](https://docs.loot.foundation/canonical-principles/loot/the-16-orders) from the original Loot collection and follow canonical loot lore.
+The following NFT collections are eligible for **free game entries** to Loot Survivor, where players can earn SURVIVOR tokens through gameplay.
 
-> **⚡ Power Boost:** Suffix bonuses can make a T3 item with the right suffix more powerful than a base T1 item!
+## Free Games Distribution
 
-## How Suffixes Work
+Eligible NFT holders receive free game entries based on their collection holdings at the snapshot date. These free games provide access to the LS2 Dungeon containing 2,000,000 SURVIVOR tokens. Players earn tokens equal to the level they reach (minimum level 3 required).
 
-* **Greatness Requirement:** Items must reach Greatness 15 to unlock suffix bonuses
-* **Random Assignment:** Suffixes are randomly assigned based on the Orders of Divinity
-* **Permanent Bonuses:** Suffix bonuses are permanent and stack with base item stats
-* **Lore Integration:** Each suffix follows canonical Loot Foundation principles
+## Eligible Collections List
 
-***
+| Collection              | Network  | Collection Size | Free Games per NFT | View Contract                                                                                                 |
+| ----------------------- | -------- | --------------- | ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| 1337 Skulls             | Ethereum | 7,331           | 5                  | [Etherscan](https://etherscan.io/address/0x9251dec8df720c2adf3b6f46d968107cbbadf4d4)                          |
+| Loot                    | Ethereum | 7,779           | 5                  | [Etherscan](https://etherscan.io/address/0xff9c1b15b16263c61d017ee9f65c50e4ae0113d7)                          |
+| Loot Explorers          | Ethereum | 7,998           | 2                  | [Etherscan](https://etherscan.io/address/0x508d06b8f3a4b0fd363239ce61e0c4b0b82f3626)                          |
+| The Wild Bunch          | Ethereum | 3,997           | 2                  | [Etherscan](https://etherscan.io/address/0xe9a1a323b4c8fd5ce6842edaa0cd8af943cbdf22)                          |
+| BAYC                    | Ethereum | 9,998           | 5                  | [Etherscan](https://etherscan.io/address/0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d)                          |
+| Dizzy Dragons           | Ethereum | 9,401           | 2                  | [Etherscan](https://etherscan.io/address/0x882A47e6070acA3f38Ce6929501F4787803A072b)                          |
+| Hyperloot               | Ethereum | 8,585           | 2                  | [Etherscan](https://etherscan.io/address/0x0290d49f53a8d186973b82faafdafe696b29acbb)                          |
+| LobsterDAO              | Ethereum | 3,546           | 4                  | [Etherscan](https://etherscan.io/address/0x026224a2940bfe258d0dbe947919b62fe321f042)                          |
+| Moonbirds               | Ethereum | 9,999           | 4                  | [Etherscan](https://etherscan.io/address/0x23581767a106ae21c074b2276d25e5c3e136a68b)                          |
+| Foxy PFP                | Linea    | 10,000          | 2                  | [Lineascan](https://lineascan.build/address/0xe46c02315c4a991d061a06f165028f8c9167249b)                       |
+| The Birth Lottery       | Linea    | 666             | 2                  | [Lineascan](https://lineascan.build/address/0xc7e1c28dc11e43ebe93f2664a53ae3775eba68cc)                       |
+| Genesis Mana            | Ethereum | 11,535          | 2                  | [Etherscan](https://etherscan.io/address/0xf4b6040a4b1b30f1d1691699a8f3bf957b03e463)                          |
+| The Eye for Adventurers | Ethereum | 1,614           | 3                  | [Etherscan](https://etherscan.io/address/0xb8a51862964f77025abb65e2c6a39ee8070c8ed4)                          |
+| Genesis Adventurers     | Ethereum | 633             | 5                  | [Etherscan](https://etherscan.io/address/0x8db687aceb92c66f013e1d614137238cc698fedb)                          |
+| Terraforms              | Ethereum | 9,911           | 5                  | [Etherscan](https://etherscan.io/address/0x4e1f41613c9084fdb9e34e11fae9412427480e56)                          |
+| The Dudes               | Ethereum | 512             | 3                  | [Etherscan](https://etherscan.io/address/0xb0cf7da8dc482997525be8488b9cad4f44315422)                          |
+| Crypts and Caverns      | Ethereum | 8,785           | 2                  | [Etherscan](https://etherscan.io/address/0x86f7692569914B5060Ef39aAb99e62eC96A6Ed45)                          |
+| Trusta OG Dragons       | Ethereum | 3,707           | 2                  | [Etherscan](https://etherscan.io/address/0xe0e126ce63becbecd72bee4f7673b4e50d5a9965)                          |
+| Wandernauts             | Ethereum | 8,887           | 2                  | [Etherscan](https://etherscan.io/address/0x793daf78b74aadf1eda5cc07a558fed932360a60)                          |
+| Based Ghouls            | Ethereum | 6,667           | 2                  | [Etherscan](https://etherscan.io/address/0xef1a89cbfabe59397ffda11fc5df293e9bc5db90)                          |
+| Pirate Nation           | Ethereum | 9,999           | 3                  | [Etherscan](https://etherscan.io/address/0x1b41d54b3f8de13d58102c50d7431fd6aa1a2c48)                          |
+| Grugs Lair              | Ethereum | 1,000           | 1                  | [Etherscan](https://etherscan.io/address/0xfa9ed22ca5d329ecaee9347f72e18c1fc291471b)                          |
+| Dope Wars               | Ethereum | 7,999           | 3                  | [Etherscan](https://etherscan.io/address/0x8707276df042e89669d69a177d3da7dc78bd8723)                          |
+| Blobert                 | Starknet | 4,844           | 2                  | [Voyager](https://voyager.online/contract/0x00539f522b29ae9251dbf7443c7a950cf260372e69efab3710a11bf17a9599f1) |
+| Schizoid                | Starknet | 999             | 3                  | [Voyager](https://voyager.online/contract/0x077485a949c130cf0d98819d2b0749f5860b0734ea28cb678dd3f39379131bfa) |
+| FOCG Boi Hands          | Starknet | 39              | 2                  | [Voyager](https://voyager.online/contract/0x02ef78f4031b4250e4ae8c4f0b18af4ef0cbbb405cdb20f80d1041b53aa2f1a1) |
+| Brother ID              | Starknet | 2,265           | 2                  | [Voyager](https://voyager.online/contract/0x0212f1c57700f5a3913dd11efba540196aad4cf67772f7090c62709dd804fa74) |
+| Realms                  | Starknet | 5,099           | 3                  | [Voyager](https://voyager.online/contract/0x07ae27a31bb6526e3de9cf02f081f6ce0615ac12a6d7b85ee58b8ad7947a2809) |
+| Banners (Ethereum)      | Ethereum | 1,785           | 3                  | [Etherscan](https://etherscan.io/address/0x527a4206ac04c2017295cf32f1fc2f9e034a7c40)                          |
+| Banners (Starknet)      | Starknet | 9,170           | 2                  | [Voyager](https://voyager.online/contract/0x02d66679de61a5c6d57afd21e005a8c96118bd60315fd79a4521d68f5e5430d1) |
+| Wolf Nation             | Starknet | 333             | 3                  | [Voyager](https://voyager.online/contract/0x0413485dbeccec6320d35dcba14375e7ca973f021486496a61286edb958fd861) |
+| zKube                   | Starknet | 11,326          | 1                  | [Voyager](https://voyager.online/contract/0x04fd5df500e6c6615e4423258639f189455672bc841ba58f1c781ac7c5ff4bd8) |
+| Karats                  | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x07d8ea58612a5de25f29281199a4fc1f2ce42f0f207f93c3a35280605f3b8e68) |
+| Karats 2                | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x030f694df2a04e04cf3e1d3e79dd5aadfdaa77295bb007696222fc60a5e8730d) |
+| Ducks Everywhere        | Starknet | 300             | 10                 | [Voyager](https://voyager.online/contract/0x04fa864a706e3403fd17ac8df307f22eafa21b778b73353abf69a622e47a2003) |
+| Pistols                 | Starknet | 126             | 5                  | [Voyager](https://voyager.online/contract/0x014aa76e6c6f11e3f657ee2c213a62006c78ff2c6f8ed40b92c42fd554c246f2) |
+| Influence Asteroids     | Starknet | 11,726          | 1                  | [Voyager](https://voyager.online/contract/0x0603cf837055c64d026a3c5a9e3a83036cea6c4a3f68a9e19f7a687d726fe817) |
+| Starkurabu              | Starknet | 10,000          | 1                  | [Voyager](https://voyager.online/contract/0x03ab1124ef9ec3a2f2b1d9838f9066f9a894483d40b33390dda8d85c01a315a3) |
+| Jokers Of Neon Beasts   | Starknet | 104             | 5                  | [Voyager](https://voyager.online/contract/0x07268fcf96383f8691b91ba758cc8fefe0844146f0557909345b841fb1de042f) |
+| Based Punks             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xcB28749c24AF4797808364D71d71539bc01E76d4)                           |
+| OK Computer             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xCE2830932889C7fB5e5206287C43554E673dCc88)                           |
+| Blackmirror Experience  | Base     | 7,078           | 2                  | [Basescan](https://basescan.org/address/0x108dB2038C6e8Bc1A0b058c70e752b14d08648BF)                           |
+| re:generates            | Base     | 6,665           | 2                  | [Basescan](https://basescan.org/address/0x56dFE6ae26bf3043DC8Fdf33bF739B4fF4B3BC4A)                           |
+| Writ of Passage         | Arbitrum | 10,000          | 2                  | [Arbiscan](https://arbiscan.io/address/0x5d541B55763A9277f61a739f40B6021A16C2d3d8)                            |
+| Liberty Cats            | Polygon  | 7,777           | 2                  | [Polygonscan](https://polygonscan.com/address/0x0030F47D6a73Bc518CF18fE027Ea91DD6B2b6003)                     |
+| Billions Genesis        | Polygon  | 2,999           | 2                  | [Polygonscan](https://polygonscan.com/address/0xeCb63be05886749De33709835e824AEFcFd74f8F)                     |
+| Pudgy Penguins          | Ethereum | 8,888           | 10                 | [Etherscan](https://etherscan.io/address/0xBd3531dA5CF5857e7CfAA92426877b022e612cf8)                          |
+| The Larp Collective     | Arbitrum | 420             | 2                  | [Arbiscan](https://arbiscan.io/address/0x48D2c1716DFDF8aDd5a5EA658c460e7257448660)                            |
+| ZTX Genesis Homes       | Arbitrum | 3,999           | 2                  | [Arbiscan](https://arbiscan.io/address/0x35373efc2FD7D852729cae869Cc32acc979100bD)                            |
+| Forgotten Runes         | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42)                          |
+| Cool Cats               | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x1a92f7381b9f03921564a437210bb9396471050c)                          |
+| Bankr                   | Base     | 1,000           | 10                 | [Basescan](https://basescan.org/address/0x9fab8c51f911f0ba6dab64fd6e979bcf6424ce82)                           |
+| Mee6 Genesis Pass       | Ethereum | 4,444           | 3                  | [Etherscan](https://etherscan.io/address/0xe9ab13482aeab3727e976257d8e1f026e12e9ecd)                          |
+| Adventurers             | Starknet | 10,638          | 1                  | [Voyager](https://voyager.online/contract/0x018108b32cea514a78ef1b0e4a0753e855cdf620bc0565202c02456f618c4dc4) |
+| OGS Discord Role        | Starknet | -               | 10                 | Discord Verified                                                                                              |
 
-# Complete Suffix List
+## Understanding Free Games
 
-## Suffix Bonuses by Order
+### How Free Games Work
 
-| Item Suffix          | Stat Bonuses                              | Total Bonus | Order Association                 |
-| -------------------- | ----------------------------------------- | ----------- | --------------------------------- |
-| **Of Power**         | Strength +3                               | +3          | Power-focused enhancement         |
-| **Of Giant**         | Vitality +3                               | +3          | Health and endurance boost        |
-| **Of Titans**        | Strength +2, Charisma +1                  | +3          | Balanced physical prowess         |
-| **Of Skill**         | Dexterity +3                              | +3          | Agility and precision enhancement |
-| **Of Perfection**    | Strength +1, Dexterity +1, Vitality +1    | +3          | Balanced all-around improvement   |
-| **Of Brilliance**    | Intelligence +3                           | +3          | Mental acuity enhancement         |
-| **Of Enlightenment** | Wisdom +3                                 | +3          | Spiritual awareness boost         |
-| **Of Protection**    | Vitality +2, Dexterity +1                 | +3          | Defensive-focused bonuses         |
-| **Of Anger**         | Strength +2, Dexterity +1                 | +3          | Aggressive combat enhancement     |
-| **Of Rage**          | Wisdom +1, Strength +1, Charisma +1       | +3          | Controlled fury bonuses           |
-| **Of Fury**          | Vitality +1, Charisma +1, Intelligence +1 | +3          | Passionate intensity boost        |
-| **Of Vitriol**       | Intelligence +2, Wisdom +1                | +3          | Sharp mental enhancement          |
-| **Of the Fox**       | Dexterity +2, Charisma +1                 | +3          | Cunning and agility boost         |
-| **Of Detection**     | Wisdom +2, Dexterity +1                   | +3          | Awareness and reflexes            |
-| **Of Reflection**    | Wisdom +2, Intelligence +1                | +3          | Contemplative wisdom boost        |
-| **Of the Twins**     | Charisma +3                               | +3          | Social influence enhancement      |
+The "Free Games per NFT" column shows how many free game entries each NFT from that collection grants. For example:
 
-***
+* Owning 1 Loot NFT = 5 free games
+* Owning 2 Pudgy Penguins = 20 free games (10 per NFT)
+* Holding multiple eligible NFTs = Games stack across all collections
+* **Maximum 50 free games per address** regardless of total holdings
 
-# Suffix Categories
+### Token Earning Potential
 
-## Single Stat Focus
+Each free game is an opportunity to earn SURVIVOR tokens through gameplay:
 
-These suffixes provide maximum bonuses to one primary stat:
+* **Level 1-2**: No rewards (warm-up levels)
+* **Level 3+**: Earn tokens equal to the level reached
+* **Example**: Reaching level 3 earns 3 tokens, level 25 earns 25 tokens, level 50 earns 50 tokens
 
-* **Of Power** - Pure Strength focus for maximum damage
-* **Of Giant** - Pure Vitality focus for maximum health
-* **Of Skill** - Pure Dexterity focus for escape mastery
-* **Of Brilliance** - Pure Intelligence focus for obstacle avoidance
-* **Of Enlightenment** - Pure Wisdom focus for ambush prevention
-* **Of the Twins** - Pure Charisma focus for market optimization
+### Multi-Chain Support
 
-## Balanced Combinations
+Eligible collections span multiple networks:
 
-These suffixes provide balanced stat distributions:
+* **Ethereum** - The majority of legacy collections
+* **Starknet** - Native Loot Survivor ecosystem collections
+* **Base** - Emerging gaming communities
+* **Arbitrum** - L2 gaming collections
+* **Polygon** - Alternative L2 collections
+* **Linea** - Next-generation gaming projects
 
-* **Of Perfection** - Equal bonuses across STR/DEX/VIT
-* **Of Rage** - Equal bonuses across WIS/STR/CHA
-* **Of Fury** - Equal bonuses across VIT/CHA/INT
+## Collection Categories
 
-## Specialized Builds
+### Premium Allocations (10+ games)
 
-These suffixes target specific build archetypes:
+Collections receiving the highest free game allocations:
 
-* **Of Titans** - Combat-focused (STR+CHA)
-* **Of Protection** - Defense-focused (VIT+DEX)
-* **Of Anger** - Aggressive melee (STR+DEX)
-* **Of Vitriol** - Mental mastery (INT+WIS)
-* **Of the Fox** - Agile trader (DEX+CHA)
-* **Of Detection** - Alert explorer (WIS+DEX)
-* **Of Reflection** - Wise scholar (WIS+INT)
+* **Pudgy Penguins**: 10 games per NFT
+* **Ducks Everywhere**: 10 games per NFT
+* **Bankr**: 10 games per NFT
+* **OGS Discord Role**: 10 games for verified members
 
-***
+### Loot Ecosystem (5 games)
 
-# Suffix Strategy
+Original Loot-related collections with enhanced allocations:
 
-## Evaluating Suffix Value
+* **Loot**: 5 games per NFT
+* **Genesis Adventurers**: 5 games per NFT
+* **1337 Skulls**: 5 games per NFT
+* **BAYC**: 5 games per NFT
+* **Terraforms**: 5 games per NFT
 
-When comparing items with suffixes, consider:
+### Standard Gaming Collections (2-4 games)
 
-1. **Your Build Focus** - Does the suffix support your stat priorities?
-2. **Current Weaknesses** - Does the suffix shore up weak areas?
-3. **Base Tier vs Suffix** - A T3+suffix might beat a base T1
-4. **Total Stat Impact** - All +3 bonuses are equally valuable mathematically
+Most collections receive standard allocations:
 
-## Suffix Synergies
+* **2 games**: Common allocation for gaming NFTs
+* **3 games**: Enhanced allocation for active communities
+* **4 games**: Premium allocation for key partners
 
-**Combat Builds:**
+### Entry Level (1 game)
 
-* **Of Power** - Maximum damage output
-* **Of Titans** - Damage + market efficiency
-* **Of Anger** - Damage + escape capability
+Collections with base-level allocations:
 
-**Survival Builds:**
+* **Grugs Lair**: 1 game per NFT
+* **Influence Asteroids**: 1 game per NFT
+* **Starkurabu**: 1 game per NFT
+* **Adventurers**: 1 game per NFT
+* **zKube**: 1 game per NFT
 
-* **Of Giant** - Maximum health pool
-* **Of Protection** - Health + escape ability
-* **Of Perfection** - Balanced survivability
+## Snapshot Details
 
-**Utility Builds:**
+The eligibility snapshot was taken on **August 18th, 2025 at 00:00 UTC**. All NFT holdings and free game allocations are based on ownership at this specific point in time.
 
-* **Of the Fox** - Escape + market efficiency
-* **Of Detection** - Awareness + agility
-* **Of Reflection** - Mental mastery
+## Verification Process
 
-***
+To verify your free games allocation:
 
-# Summary
+1. Check your NFT holdings as of August 18th, 2025 at 00:00 UTC
+2. Calculate total free games: (NFTs held × Free Games per NFT)
+3. Sum across all eligible collections you held
+4. Apply the 50 free games per address maximum cap
+5. Connect wallet to claim interface for automatic calculation
 
-Suffix bonuses transform the loot system from simple tier progression to complex item evaluation. A well-rolled suffix can make any item tier competitive, while the wrong suffix might make you overlook a potentially powerful piece of equipment.
+## Important Notes
 
-**Key Suffix Principles:**
+* **Maximum 50 free games per eligible address**
+* **Free games expire 2 weeks after the claim window opens** - Same deadline for all players
+* Multiple NFTs from the same collection grant cumulative games (up to the 50 game cap)
+* Transfers after the snapshot do not affect eligibility
+* The OGS Discord Role requires Discord verification, not on-chain holdings
+* Strategic gameplay can maximize token earnings from free games
 
-* All suffixes provide exactly +3 total stat points
-* Suffixes unlock at Greatness 15
-* Suffix distribution matters more than individual bonuses
-* Consider your build when evaluating suffix value
-* Don't automatically dismiss lower tiers with good suffixes
+
+
+---
+
+file: docs/lootsurvivor/survivor-token/index.mdx
+meta: {}
+
+# SURVIVOR Token
+
+The SURVIVOR token is the native governance and economic coordination token for Loot Survivor, designed to decentralize the ownership role of the game contracts and promote the growth of the Loot Survivor ecosystem.
+
+## Overview
+
+* Total Supply: 10,000,000
+* Distribution: 75% Community; 25% Team
+* Lockups: None
+
+## Purpose
+
+SURVIVOR is the governance and economic coordination token for Loot Survivor 2.
+
+Governance: SURVIVOR lets holders propose and vote on specific onchain parameters (e.g., which Dungeon the Beasts inhabit, royalty settings for the Beast NFT collection, Beast Mode settings, which ERC‑20s the Dungeon accepts, and the Dungeon’s payment token).
+
+Autonomous treasury growth: When a player buys a Dungeon Ticket, immutable code automatically uses 80% of that payment to purchase SURVIVOR on a decentralized exchange and deposits the purchased tokens into the Survivor Treasury, which is governed by SURVIVOR holders.
+
+No promises / no rights to payouts: SURVIVOR does not grant rights to profits, revenue, dividends, or distributions. The automated purchases are a mechanical feature of the contracts, not a commitment to support price or provide returns.
+
+## Key Features
+
+### Decentralized Ownership Role
+
+The SURVIVOR token ships with a fully onchain governance system, built on top of [OpenZeppelin’s audited governance components](https://docs.openzeppelin.com/contracts-cairo/2.0.0/governance). The governance system enables SURVIVOR token holders to express their will onchain and for their shared will to execute as an onchain transaction. This allows sensitive, configurable game settings,such as which Dungeon the Beasts are in, to be truly owned and controllable by the community instead of the developers.
+
+The Survivor Governance Contract will control the following settings:
+
+* [Beast NFT](https://voyager.online/nft-contract/0x0280ace0b2171106eaebef91ca9b097a566108e9452c45b94a7924a9f794ae80):
+  * Move Beasts to a new Dungeon
+  * Change royalty information (default: 5% distributed to the Survivor Treasury)
+* [LS2 Beast Mode](https://voyager.online/contract/0x02fb722c25768e4a9994258754e7103895fd2f33cbcc1edc8711807950830cb5):
+  * Change Beast Mode settings
+  * Add and remove ERC‑20s from the Dungeon
+  * Change the payment token for the Dungeon
+
+### Economic Coordination
+
+To support the sustainable growth of the Loot Survivor ecosystem, Loot Survivor 2 ships with an autonomous and immutable SURVIVOR buy‑back mechanism. 80% of the proceeds from the sale of Dungeon Tickets, which are required to enter the Dungeon and collect Beasts, are used to purchase SURVIVOR tokens using Ekubo’s TWAMM and to deposit them into the Survivor Treasury. The remaining 20% is distributed to $veLORDS holders for the benefit of Bibliotheca DAO, the original incubator of Loot Survivor.
+
+### Treasury Bootstrap
+
+The treasury is initially seeded with 1M SURVIVOR and approximately 3M LORDS at genesis.
+
+### SURVIVOR Sale (Programmatic DCA via TWAMM):
+
+* Supply: 15% of total supply.
+* Method: A 3‑month programmatic DCA order via TWAMM (Sept 30–Dec 30).
+* Proceeds: 100% contributed to the community treasury for ecosystem growth as governed onchain.
+
+DISCLAIMERS: This sale is programmatic, there are no allocations, discounts, or price/return statements.
+
+### Community Allocation
+
+75% of the total supply is allocated to the community through various distribution mechanisms, ensuring broad ownership and aligned incentives. Allocations include:
+
+* 22.5% LS2 Dungeon claim allocations (FCFS)
+  * 1 Token per level starting at level 3
+  * 4X Promotion for games played during weeks 2-4
+  * 2X Promotion after week 4 till all tokens are claimed.
+* 15% treasury bootstrap DCA
+* 10% Survivor Treasury
+* 9.3% Beast Entitlements (claim at mint)
+* 6.6% LS1/LS1.5 Players
+* 5% Loot Realms; 2.5% Loot; 1.5% 1337 Skulls; 1% Genesis Project; 1% Tournaments; 1% Beast Games
+
+Note: NFT royalties, if any, are not guaranteed across marketplaces.
+
+### Free Games Airdrop
+
+Loot Survivor 2 launches with a two‑week launch promotion that makes \~500k free games available to \~80k addresses across Ethereum, Arbitrum, Base, Starknet, Abstract, Linea, and Polygon. Those holding select NFTs on these platforms will be able to claim free games (including gas), allowing them to play Loot Survivor 2 and collect Beasts and SURVIVOR tokens.
+
+## Quick Links
+
+* [Tokenomics](/lootsurvivor/survivor-token/tokenomics) - Detailed breakdown of token distribution and allocations
+* [Airdrop](/lootsurvivor/survivor-token/airdrop) - How to claim your SURVIVOR tokens and eligibility criteria
+
+## Security
+
+Governance contracts use well‑known OpenZeppelin components. This is not a security audit; no system is risk‑free.
+Game contracts are cutting‑edge and unaudited; use at your own risk.
+
+## Disclaimers
+
+The SURVIVOR token is designed to decentralize ownership and governance of the Loot Survivor protocol. It represents participation rights in the ecosystem and should not be considered a financial investment.
+
+What SURVIVOR is not: SURVIVOR is not equity or debt. Automated purchases into the treasury are mechanical contract behavior, not price support or an offer of returns. Participation involves smart‑contract risk, market volatility, and governance outcomes that may not align with your preferences. Users should understand these risks before participating. Nothing here is investment advice.
+
+
+
+---
+
+file: docs/lootsurvivor/survivor-token/promotions.mdx
+meta: {}
+
+# Promotions
+
+## Starkware & Cartridge Partnership
+
+Loot Survivor has partnered with Starkware and Cartridge to bring an exclusive promotion featuring 100,000 STRK tokens distributed across three legendary Beasts. This collaboration celebrates the launch of SURVIVOR and rewards the most skilled adventurers who can defeat these special creatures.
+
+### Prize Distribution
+
+The 100,000 STRK prize pool is split between three unique Beasts, each offering substantial rewards to the adventurer who claims victory:
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
+  <img src="/docs/lootsurvivor/jackpot_balrog.png" alt="Torment Bane Balrog" style={{width: "200px", marginRight: "2rem"}} />
+
+  <div>
+    <h4>"Torment Bane" Balrog</h4>
+
+    <ul>
+      <li><strong>STRK Reward</strong>: 33,333 STRK</li>
+      <li><strong>Location</strong>: The Molten Depths</li>
+      <li><strong>Special Traits</strong>: Ancient demon of fire and shadow, Wielder of eternal flames</li>
+    </ul>
+  </div>
+</div>
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
+  <img src="/docs/lootsurvivor/jackpot_warlock.png" alt="Pain Whisper Warlock" style={{width: "200px", marginRight: "2rem"}} />
+
+  <div>
+    <h4>"Pain Whisper" Warlock</h4>
+
+    <ul>
+      <li><strong>STRK Reward</strong>: 33,333 STRK</li>
+      <li><strong>Location</strong>: The Shadow Sanctum</li>
+      <li><strong>Special Traits</strong>: Master of dark arts, Collector of tormented souls</li>
+    </ul>
+  </div>
+</div>
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
+  <img src="/docs/lootsurvivor/jackpot_dragon.png" alt="Demon Grasp Dragon" style={{width: "200px", marginRight: "2rem"}} />
+
+  <div>
+    <h4>"Demon Grasp" Dragon</h4>
+
+    <ul>
+      <li><strong>STRK Reward</strong>: 33,334 STRK</li>
+      <li><strong>Location</strong>: The Dragon's Lair</li>
+      <li><strong>Special Traits</strong>: Guardian of ancient treasures, Corrupted by demonic influence</li>
+    </ul>
+  </div>
+</div>
+
+### How It Works
+
+1. **Find the Beast**: These special Beasts spawn randomly in the dungeon
+2. **Defeat to Claim**: The first adventurer to defeat each Beast claims the STRK reward
+3. **Automatic Distribution**: STRK tokens are automatically sent to the winning adventurer's wallet
+4. **One Winner per Beast**: Each Beast can only be defeated once for the reward
+
+### Promotion Period
+
+This promotion runs indefinitely. These special Beasts will continue to spawn in the dungeon, offering adventurers ongoing opportunities to claim the STRK rewards. The promotion remains active until all three unique Beasts have been defeated and the full 100,000 STRK has been distributed.
+
+### About Our Partners
+
+**Starkware** - The technology company behind Starknet, providing the scalable infrastructure that powers Loot Survivor's fully onchain gameplay.
+
+**Cartridge** - The gaming infrastructure platform enabling seamless wallet experiences and player onboarding for Starknet games.
+
+This partnership demonstrates the strong ecosystem support for Loot Survivor and commitment to rewarding skilled players with meaningful prizes.
+
+
+
+---
+
+file: docs/lootsurvivor/survivor-token/tokenomics.mdx
+meta: {}
+
+# Tokenomics
+
+## Total Supply
+
+The total supply of the SURVIVOR token is **10,000,000** tokens, distributed between community and team allocations to ensure sustainable growth and development of the Loot Survivor ecosystem.
+
+## Distribution Overview
+
+| Category             | Tokens         | Percentage | Description                                        |
+| -------------------- | -------------- | ---------- | -------------------------------------------------- |
+| **Community**        | **7,500,000**  | **75%**    |                                                    |
+| LS2 Dungeon          | 2,258,100      | 22.58%     | Gameplay rewards (tokens = level reached, from L3) |
+| Treasury DCA         | 1,500,000      | 15%        | 3-month programmatic sale via TWAMM                |
+| Survivor Treasury    | 1,002,222      | 10.02%     | DAO-controlled treasury                            |
+| Beast Entitlements   | 931,500        | 9.32%      | Claim at Beast mint                                |
+| Biblio (Loot Realms) | 500,000        | 5%         | Realms ecosystem                                   |
+| Legacy Beast Bonus   | 332,028        | 3.32%      | LS1 Beast holder rewards                           |
+| Top 1k LS1.5 Players | 326,150        | 3.26%      | Top player rewards                                 |
+| Loot                 | 250,000        | 2.5%       | Original Loot holders                              |
+| 1337 Skulls          | 150,000        | 1.5%       | Skulls holders                                     |
+| Genesis Project      | 100,000        | 1%         | Genesis Adventurers                                |
+| Budokan              | 100,000        | 1%         | Game-agnostic tournament platform                  |
+| Summit               | 100,000        | 1%         | Future Beast battler from LS collections           |
+| **Team**             | **2,500,000**  | **25%**    | No lockups                                         |
+| **Total**            | **10,000,000** | **100%**   |                                                    |
+
+## Distribution Breakdown
+
+### Community Allocation: 7,500,000 (75%)
+
+The majority of SURVIVOR tokens are allocated to the community through various mechanisms designed to reward participation, contribution, and loyalty to the ecosystem.
+
+#### LS2 Dungeon Rewards: 2,258,100 (22.58%)
+
+* First-come, first-served distribution through gameplay
+* Tokens equal to the level reached (starting at level 3)
+* **4X Promotion**: Weeks 2-4 (multiply token rewards by 4)
+* **2X Promotion**: After week 4 until all tokens claimed (multiply token rewards by 2)
+
+#### Treasury Bootstrap DCA: 1,500,000 (15%)
+
+* 3-month programmatic DCA order via TWAMM (Sept 30 - Dec 30)
+* 100% of proceeds contributed to community treasury
+* Ensures fair price discovery and broad distribution
+
+#### Survivor Treasury: 1,002,222 (10.02%)
+
+* DAO-controlled treasury for ecosystem development
+* Initial seed funding at genesis
+* Governed by SURVIVOR token holders
+
+#### Beast Entitlements: 931,500 (9.32%)
+
+* Auto-claimed with each Beast mint (average 10 tokens per Beast)
+* Tier-based distribution:
+  * T1 Beasts: 14 tokens per mint
+  * T2 Beasts: 12 tokens per mint
+  * T3 Beasts: 10 tokens per mint
+  * T4 Beasts: 8 tokens per mint
+  * T5 Beasts: 6 tokens per mint
+
+#### Legacy Players: 658,178 (6.58%)
+
+* **Legacy Beast Bonus**: 332,028 (3.32%)
+  * LS1 Beasts (2,306 total): 249,048 tokens (108 per Beast)
+  * LS1.5 Beasts: 82,980 tokens (36 per Beast)
+* **Top 1k LS1.5 Players**: 326,150 (3.26%) - Top player rewards
+
+#### Ecosystem Allocations: 1,150,000 (11.5%)
+
+* **Biblio (Loot Realms)**: 500,000 (5%) - Realms ecosystem development
+* **Loot**: 250,000 (2.5%) - Distributed to multisig of trusted Loot ecosystem entities
+* **1337 Skulls**: 150,000 (1.5%) - Distributed to multisig of trusted Skulls ecosystem entities
+* **Genesis Project**: 100,000 (1%) - Distributed to multisig of trusted Genesis ecosystem entities
+* **Budokan**: 100,000 (1%) - Player incentives for game-agnostic tournament platform
+* **Summit**: 100,000 (1%) - Player incentives and utility for Beasts collected in Loot Survivor
+
+### Team Allocation: 2,500,000 (25%)
+
+Reserved for the Loot Survivor team. This allocation aligns long-term incentives between the team and the ecosystem's success.
+
+## Value Accrual Mechanisms
+
+### Governance Treasury
+
+SURVIVOR token holders control the governance treasury, which consists of:
+
+* Proceeds from the Treasury Bootstrap DCA (1.5M tokens sold over 3 months)
+* 80% of proceeds from dungeon ticket purchases
+* 1,002,222 SURVIVOR tokens from the Survivor Treasury allocation
+* Initial seed of \~3M LORDS at genesis
+
+These funds can be directed towards:
+
+* Buyback and burns to distribute game revenue to token holders
+* Development funding for new features
+* Liquidity provision incentives
+* Ecosystem partnerships and growth initiatives
+
+### Governance Rights
+
+SURVIVOR token holders control:
+
+* **Beast NFT Settings**:
+  * Move Beasts to new Dungeons
+  * Royalty settings (default 5% to Survivor Treasury)
+* **LS2 Beast Mode**:
+  * Beast Mode configuration
+  * ERC-20 acceptance in Dungeons
+  * Dungeon payment token selection
+* **Treasury Management**:
+  * Allocation of treasury funds
+  * Partnership approvals and funding
+  * Community initiative funding
+
+## Distribution Schedule
+
+### Launch Distributions
+
+* **Free Games Airdrop**: \~500k games to \~80k addresses (2-week claim window)
+* **Beast Entitlements**: Claimable at Beast mint
+* **LS1/LS1.5 Players**: Based on historical participation
+
+### Ongoing Distributions
+
+* **LS2 Dungeon**: First-come, first-served through gameplay
+  * Week 1: Standard rate (tokens = level reached, starting at L3)
+  * Weeks 2-4: 4X promotion (standard rate × 4)
+  * After Week 4: 2X promotion until exhausted (standard rate × 2)
+* **Treasury Bootstrap DCA**: 3-month programmatic sale (Sept 30 - Dec 30)
+
+### No Lockups
+
+* All allocations are immediately liquid upon receipt
+* No vesting schedules or lockup periods
+* Team tokens have no restrictions
+
+## Economic Sustainability
+
+The tokenomics model is designed to create a self-sustaining ecosystem where:
+
+* Players are rewarded for skill and participation
+* Developers are incentivized to build on the platform
+* Token holders benefit from ecosystem growth
+* Protocol revenue supports ongoing development
+
+This balanced approach ensures long-term viability while maintaining decentralization and community ownership.
 
 
 
