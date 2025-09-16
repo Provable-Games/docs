@@ -1,29 +1,73 @@
 # SURVIVOR Token
 
-Information about the SURVIVOR token
-
-The SURVIVOR token is the native governance and utility token for Loot Survivor, designed to decentralize ownership and incentivize participation in the Loot Survivor ecosystem.
+The SURVIVOR token is the native governance and economic coordination token for Loot Survivor, designed to decentralize the ownership role of the game contracts and promote the growth of the Loot Survivor ecosystem.
 
 ## Overview
 
-The SURVIVOR token serves as the cornerstone of the Loot Survivor ecosystem, providing governance rights, in-game utility, and value accrual mechanisms for participants. With a total supply of 10 million tokens, the distribution is carefully structured to reward the community while ensuring sustainable long-term development.
+Total Supply: 10,000,000
+
+Distribution: 75% Community; 25% Team
+
+## Purpose
+
+SURVIVOR is the governance and economic coordination token for Loot Survivor 2.
+
+Governance: SURVIVOR lets holders propose and vote on specific on‑chain parameters (e.g., which Dungeon the Beasts inhabit, royalty settings for the Beast NFT collection, Beast Mode settings, which ERC‑20s the Dungeon accepts, and the Dungeon’s payment token).
+
+Autonomous treasury growth: When a player buys a Dungeon Ticket, immutable code automatically uses 80% of that payment to purchase SURVIVOR on a decentralized exchange and deposits the purchased tokens into the Survivor Treasury, which is governed by SURVIVOR holders.
+
+No promises / no rights to payouts: SURVIVOR does not grant rights to profits, revenue, dividends, or distributions. The automated purchases are a mechanical feature of the contracts, not a commitment to support price or provide returns.
 
 ## Key Features
 
-### Decentralized Governance
-SURVIVOR token holders control the governance treasury, which includes proceeds from the DCA token sale and the treasury reserve allocation. Token holders determine how these funds are utilized for ecosystem development, partnerships, and community initiatives.
+### Decentralized Ownership Role
 
+The SURVIVOR token ships with a fully on‑chain governance system, built on top of [OpenZeppelin’s audited governance components](https://docs.openzeppelin.com/contracts-cairo/2.0.0/governance). The governance system enables SURVIVOR token holders to express their will on‑chain and for their shared will to execute as an on‑chain transaction. This allows sensitive, configurable game settings—such as which Dungeon the Beasts are in—to be truly owned and controllable by the community instead of the developers.
 
-### Value Accrual
-The token captures value through the governance treasury, which receives:
-- Proceeds from the DCA token sale
-- 80% of proceeds from dungeon ticket purchases
-- The 500,000 treasury reserve tokens
+The Survivor Governance Contract will control the following settings:
 
-These funds can be directed towards buybacks, player rewards, and ecosystem development as determined by SURVIVOR token holders.
+- [Beast NFT](https://voyager.online/nft-contract/0x0280ace0b2171106eaebef91ca9b097a566108e9452c45b94a7924a9f794ae80):
+- Move Beasts to a new Dungeon
+- Change royalty information (default: 5% distributed to the Survivor Treasury)
+- [LS2 Beast Mode](https://voyager.online/contract/0x02fb722c25768e4a9994258754e7103895fd2f33cbcc1edc8711807950830cb5):
+- Change Beast Mode settings
+- Add and remove ERC‑20s from the Dungeon
+- Change the payment token for the Dungeon
 
-### Community First
-75% of the total supply is allocated to the community through various distribution mechanisms, ensuring broad ownership and aligned incentives.
+### Economic Coordination
+
+To support the sustainable growth of the Loot Survivor ecosystem, Loot Survivor 2 ships with an autonomous and immutable SURVIVOR buy‑back mechanism. 80% of the proceeds from the sale of Dungeon Tickets, which are required to enter the Dungeon and collect Beasts, are used to purchase SURVIVOR tokens using Ekubo’s TWAMM and to deposit them into the Survivor Treasury. The remaining 20% is distributed to $veLORDS holders for the benefit of Bibliotheca DAO, the original incubator of Loot Survivor.
+
+### Treasury Bootstrap
+
+The treasury is initially seeded with 1M SURVIVOR and approximately 3M LORDS at genesis.
+
+### SURVIVOR Sale (Programmatic DCA via TWAMM):
+
+Supply: 15% of total supply.
+
+Method: A 3‑month programmatic DCA order via TWAMM (Sept 30–Dec 30).
+
+Proceeds: 100% contributed to the community treasury for ecosystem growth as governed on‑chain.
+
+DISCLAIMERS: This sale is programmatic—there are no allocations, discounts, or price/return statements.
+
+### Community Allocation
+
+75% of the total supply is allocated to the community through various distribution mechanisms, ensuring broad ownership and aligned incentives. Allocations include:
+
+– 22.5% LS2 Dungeon claim allocations (FCFS)
+– 15% treasury bootstrap DCA
+– 10% Survivor Treasury
+– 9.3% Beast Entitlements (claim at mint)
+– 6.6% LS1/LS1.5 Players
+– 5% Loot Realms; 2.5% Loot; 1.5% 1337 Skulls; 1% Genesis Project; 1% Tournaments; 1% Beast Games
+
+Note: NFT royalties, if any, are not guaranteed across marketplaces.
+
+### Free Games Airdrop
+
+Loot Survivor 2 launches with a two‑week launch promotion that makes ~500k free games available to ~80k addresses across Ethereum, Arbitrum, Base, Starknet, Abstract, Linea, and Polygon. Those holding select NFTs on these platforms will be able to claim free games (including gas), allowing them to play Loot Survivor 2 and collect Beasts and SURVIVOR tokens.
 
 ## Quick Links
 
@@ -32,10 +76,11 @@ These funds can be directed towards buybacks, player rewards, and ecosystem deve
 
 ## Security
 
-The SURVIVOR token contracts are built using the latest stable OpenZeppelin components, which have undergone extensive security audits and are battle-tested across thousands of projects. This foundation ensures the reliability and security of the governance system through proven, industry-standard implementations.
+Governance contracts use well‑known OpenZeppelin components. This is not a security audit; no system is risk‑free.
+Game contracts are cutting‑edge and unaudited; use at your own risk.
 
-## Disclaimer
+## Disclaimers
 
-The SURVIVOR token is designed to decentralize ownership and governance of the Loot Survivor protocol. It represents participation rights in the ecosystem and should not be considered as a financial investment.
+The SURVIVOR token is designed to decentralize ownership and governance of the Loot Survivor protocol. It represents participation rights in the ecosystem and should not be considered a financial investment.
 
-Participation in Loot Survivor and holding SURVIVOR tokens involves risks including smart contract vulnerabilities, market volatility, and game balance changes. Users should understand these risks before participating.
+What SURVIVOR is not: SURVIVOR is not equity or debt. Automated purchases into the treasury are mechanical contract behavior, not price support or an offer of returns. Participation involves smart‑contract risk, market volatility, and governance outcomes that may not align with your preferences. Users should understand these risks before participating. Nothing here is investment advice.
