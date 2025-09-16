@@ -366,6 +366,311 @@ fn get_leaderboard(
 
 ---
 
+file: docs/embeddable-game-standard/applications.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Applications
+
+The Embeddable Game Standard (EGS) unlocks powerful new possibilities for both game developers and platforms. By making games permissionlessly embeddable, EGS enables a growing ecosystem of apps to integrate, distribute, and build on top of games in novel ways. This page highlights some of the leading apps leveraging EGS today.
+
+## Budokan: Permissionless Tournaments
+
+Budokan uses the EGS to provide a fully permissionless tournament protocol. With EGS, games no longer need to implement their own leaderboard or revenue logic—instead, they can plug into Budokan's aggregated platform, which:
+
+* Accepts any supported token for entry fees and prizes
+* Offers extensive customization for tournament formats, entry requirements, and prize structures
+* Handles all leaderboard, prize, and entry logic on behalf of the game
+
+This makes it easy for game developers to reach new audiences and for players to discover and compete in a wide variety of tournaments.
+
+![Budokan Overview](/docs/overview.png)
+*Figure 1: Budokan overview page.*
+
+> **Tip:** By integrating with Budokan, game developers can focus on gameplay while the platform handles tournaments, rewards, and community engagement.
+
+## Eternum: Expanding Gameplay with Embedded Mini-Games
+
+Eternum, a next-generation MMO, leverages EGS to embed mini-games directly into its core experience. In Season 1, Eternum introduced a new quest system powered by EGS, allowing:
+
+* Seamless integration of third-party mini-games as quests
+* Emergence of new strategies and gameplay loops
+* A more dynamic, deconstructed MMO experience
+
+![Eternum Quest](/docs/eternum-quest.png)
+*Figure 2: Eternum Quest.*
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      Embedding games within Eternum allows mini-games to reach a much wider audience, maximizing their distribution and exposure. For Eternum, this approach brings significant value by introducing a diverse range of gameplay experiences to their core player base, keeping the platform fresh and engaging. By integrating a variety of mini-games, Eternum can continually offer new challenges and entertainment, enhancing player retention and satisfaction.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/eternum-quest-post.png" alt="Eternum Quest Post" width="400" height="300" />
+
+    <br />
+
+    <em>Figure 3: Eternum Quest Post.</em>
+  </div>
+</div>
+
+> **Note:** EGS makes it easy for any platform to embed, remix, or build on top of games, opening up new opportunities for both developers and communities.
+
+## Why Build Applications with EGS?
+
+* Offer a diverse library of games and experiences
+* Easily add new content and features without building from scratch
+* Foster engagement and retention by providing variety to your users
+
+> **Tip:** The EGS ecosystem is growing—consider how your app or game could benefit from permissionless embedding and integration.
+
+## Related Guides
+
+* [Embeddable Game Standard Overview](/embeddable-game-standard)
+* [Budokan Tournaments](/budokan)
+* [Game Integration Guide](/embeddable-game-standard/implementation)
+
+If you have questions or want to feature your app here, contact the Budokan team or join the community!
+
+
+
+---
+
+file: docs/embeddable-game-standard/games.mdx
+meta: {
+  "layout": "docs"
+}
+
+import { GameCard } from '../../components/GameCard'
+
+# Embeddable Game Standard: Games
+
+Here is a list of games that have implemented the emeddable game standard and are benefitting from the tools provided:
+
+<GameCard icon="https://darkshuffle.io/favicon.svg" name="Dark Shuffle" url="https://darkshuffle.io" description="Dark Shuffle is a turn-based, collectible card game. Build your deck, battle monsters, and explore a procedurally generated world." developer="Provable Games" />
+
+<GameCard icon="https://app.zkube.xyz/assets/pwa-512x512.png" name="zKube" url="https://app.zkube.xyz/" description="zKube is an engaging puzzle game that puts players' strategic thinking to the test. Set within a dynamic grid, the objective is simple: manipulate blocks to form solid lines and earn points.	" developer="zKorp" />
+
+## Why Build Games with EGS?
+
+* Instantly reach new audiences by making your game embeddable in multiple apps and platforms
+* Focus on gameplay and innovation, not infrastructure
+* Extend the way your game is played through permissionless settings creation
+* Benefit from community-driven tournaments, quests, and rewards
+
+
+
+---
+
+file: docs/embeddable-game-standard/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard
+
+The Embeddable Game Standard (EGS) is a foundational blueprint for Starknet games, designed to ensure interoperability and unlock access to an ever-growing ecosystem of powerful onchain applications, including the [Budokan](/budokan) tournament platform and the Tanken Quest platform (coming soon). It standardizes essential game contract functionalities such as ERC721 token minting for unique game instances, comprehensive metadata management, and robust score or progress tracking, which are vital for both competitive play and objective-based questing. By adhering to EGS, games can be seamlessly integrated into systems that distribute game instances as NFTs, associate them with diverse rewards (for victory, completion, or participation), and support varied engagement models. From high-stakes tournaments to narrative-driven campaigns, onboarding tutorials, and community-tailored challenges.
+
+## Table of Contents
+
+* [Overview](#overview)
+* [Architecture](#architecture)
+* [Key Functions](#key-functions)
+* [Implementation Guide](#implementation-guide)
+
+## Overview
+
+The standard provides a blueprint for game contracts to:
+
+* Mint game tokens (ERC721) for tournament entries
+* Store and expose game and player metadata
+* Track scores and settings in a standardized way
+* Emit events for metadata updates and lifecycle changes
+
+By adhering to this standard, games can:
+
+* Be listed and used in Budokan tournaments
+* Enable automated leaderboard and prize logic
+* Support composable, upgradable tournament experiences
+
+## Architecture
+
+* **Game Component:** Implements the core logic for minting, metadata management, and score tracking. See `contracts/src/components/game.cairo`.
+* **Models & Interfaces:** Define the data structures for game metadata, token metadata, settings, and lifecycle events.
+* **Integration Points:** Games must expose the required interfaces and implement the necessary storage and event logic.
+
+## Key Functions
+
+* `mint`: Mint a new game token for a player, with associated metadata and settings.
+* `game_metadata`: Retrieve metadata for the game contract.
+* `token_metadata`: Retrieve metadata for a specific game token.
+* `game_count`: Get the total number of games/tokens minted.
+* `emit_metadata_update`: Emit an event when token metadata is updated.
+* `initializer`: Initialize the game contract with metadata, settings, and storage configuration.
+
+## Implementation Guide
+
+1. **Implement the Game Component:**
+   * Use the provided `game_component` module as a base.
+   * Implement the required storage, events, and interface functions.
+2. **Define Metadata and Settings:**
+   * Use the standard models for game and token metadata.
+   * Store settings and score models as required by your game logic.
+3. **Integrate with Budokan:**
+   * Ensure your contract exposes the required interfaces (ERC721, metadata, settings).
+   * Test minting, metadata retrieval, and event emission with Budokan tournament flows.
+4. **Deploy and Register:**
+   * Deploy your game contract to Starknet.
+   * Register the game with Budokan for tournament use.
+
+## Games
+
+The current games that have implemented the standard:
+
+* Dark Shuffle
+* Zkube
+* Loot Survivor (coming soon)
+
+By following this standard, your game will be compatible with Budokan and other systems that adopt the Embeddable Game Standard.
+
+
+
+---
+
+file: docs/embeddable-game-standard/key-functions.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Key Functions
+
+This section details the primary functions that a game contract must implement to comply with the Embeddable Game Standard and be compatible with Budokan tournaments.
+
+## `mint`
+
+```cairo
+fn mint(
+    ref self: ComponentState<TContractState>,
+    player_name: felt252,
+    settings_id: u32,
+    start: Option<u64>,
+    end: Option<u64>,
+    to: ContractAddress,
+) -> u64;
+```
+
+**Purpose:** Mint a new game token (ERC721) for a player, with associated metadata and settings.
+
+**Parameters:**
+
+* `player_name`: Name of the player (felt252).
+* `settings_id`: ID of the game settings to use.
+* `start`, `end`: Optional start and end timestamps for the game session.
+* `to`: Address to mint the token to.
+
+**Returns:** Token ID of the newly minted game token.
+
+***
+
+## `game_metadata`
+
+```cairo
+fn game_metadata(self: @ComponentState<TContractState>) -> GameMetadata;
+```
+
+**Purpose:** Retrieve metadata for the game contract (name, description, developer, etc.).
+
+**Returns:** GameMetadata struct.
+
+***
+
+## `token_metadata`
+
+```cairo
+fn token_metadata(self: @ComponentState<TContractState>, token_id: u64) -> TokenMetadata;
+```
+
+**Purpose:** Retrieve metadata for a specific game token (player, settings, lifecycle, etc.).
+
+**Parameters:**
+
+* `token_id`: ID of the game token.
+
+**Returns:** TokenMetadata struct.
+
+***
+
+## `game_count`
+
+```cairo
+fn game_count(self: @ComponentState<TContractState>) -> u64;
+```
+
+**Purpose:** Get the total number of games/tokens minted by the contract.
+
+**Returns:** Total count (u64).
+
+***
+
+## `emit_metadata_update`
+
+```cairo
+fn emit_metadata_update(ref self: ComponentState<TContractState>, game_id: u64);
+```
+
+**Purpose:** Emit an event when token metadata is updated, for offchain indexing and UI updates.
+
+**Parameters:**
+
+* `game_id`: ID of the game token whose metadata was updated.
+
+***
+
+## `initializer`
+
+```cairo
+fn initializer(
+    ref self: ComponentState<TContractState>,
+    creator_address: ContractAddress,
+    name: felt252,
+    description: ByteArray,
+    developer: felt252,
+    publisher: felt252,
+    genre: felt252,
+    image: ByteArray,
+    namespace: ByteArray,
+    score_model: ByteArray,
+    score_attribute: ByteArray,
+    settings_model: ByteArray,
+);
+```
+
+**Purpose:** Initialize the game contract with metadata, settings, and storage configuration. Mints a creator token and registers interfaces.
+
+**Parameters:**
+
+* `creator_address`: Address of the game creator.
+* `name`, `description`, `developer`, `publisher`, `genre`, `image`: Metadata fields.
+* `namespace`, `score_model`, `score_attribute`, `settings_model`: Storage and configuration fields.
+
+***
+
+## Additional Functions
+
+* `namespace`: Returns the namespace used for storage.
+* `score_model`: Returns the score model identifier.
+* `score_attribute`: Returns the score attribute identifier.
+* `settings_model`: Returns the settings model identifier.
+* `set_settings`: Set or update game settings details.
+* `assert_setting_exists`: Ensure a settings ID exists before minting.
+
+
+
+---
+
 file: docs/darkshuffle/faq.mdx
 meta: {
   "layout": "docs"
@@ -921,311 +1226,6 @@ Settings are managed by smart contracts, making them transparent and tamper-proo
 * [Budokan Tournaments](/budokan/guide/submission): Using settings for competitive play
 
 If you have questions or want to share your custom settings, join the community or reach out via the app's support channels!
-
-
-
----
-
-file: docs/embeddable-game-standard/applications.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Applications
-
-The Embeddable Game Standard (EGS) unlocks powerful new possibilities for both game developers and platforms. By making games permissionlessly embeddable, EGS enables a growing ecosystem of apps to integrate, distribute, and build on top of games in novel ways. This page highlights some of the leading apps leveraging EGS today.
-
-## Budokan: Permissionless Tournaments
-
-Budokan uses the EGS to provide a fully permissionless tournament protocol. With EGS, games no longer need to implement their own leaderboard or revenue logic—instead, they can plug into Budokan's aggregated platform, which:
-
-* Accepts any supported token for entry fees and prizes
-* Offers extensive customization for tournament formats, entry requirements, and prize structures
-* Handles all leaderboard, prize, and entry logic on behalf of the game
-
-This makes it easy for game developers to reach new audiences and for players to discover and compete in a wide variety of tournaments.
-
-![Budokan Overview](/docs/overview.png)
-*Figure 1: Budokan overview page.*
-
-> **Tip:** By integrating with Budokan, game developers can focus on gameplay while the platform handles tournaments, rewards, and community engagement.
-
-## Eternum: Expanding Gameplay with Embedded Mini-Games
-
-Eternum, a next-generation MMO, leverages EGS to embed mini-games directly into its core experience. In Season 1, Eternum introduced a new quest system powered by EGS, allowing:
-
-* Seamless integration of third-party mini-games as quests
-* Emergence of new strategies and gameplay loops
-* A more dynamic, deconstructed MMO experience
-
-![Eternum Quest](/docs/eternum-quest.png)
-*Figure 2: Eternum Quest.*
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      Embedding games within Eternum allows mini-games to reach a much wider audience, maximizing their distribution and exposure. For Eternum, this approach brings significant value by introducing a diverse range of gameplay experiences to their core player base, keeping the platform fresh and engaging. By integrating a variety of mini-games, Eternum can continually offer new challenges and entertainment, enhancing player retention and satisfaction.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/eternum-quest-post.png" alt="Eternum Quest Post" width="400" height="300" />
-
-    <br />
-
-    <em>Figure 3: Eternum Quest Post.</em>
-  </div>
-</div>
-
-> **Note:** EGS makes it easy for any platform to embed, remix, or build on top of games, opening up new opportunities for both developers and communities.
-
-## Why Build Applications with EGS?
-
-* Offer a diverse library of games and experiences
-* Easily add new content and features without building from scratch
-* Foster engagement and retention by providing variety to your users
-
-> **Tip:** The EGS ecosystem is growing—consider how your app or game could benefit from permissionless embedding and integration.
-
-## Related Guides
-
-* [Embeddable Game Standard Overview](/embeddable-game-standard)
-* [Budokan Tournaments](/budokan)
-* [Game Integration Guide](/embeddable-game-standard/implementation)
-
-If you have questions or want to feature your app here, contact the Budokan team or join the community!
-
-
-
----
-
-file: docs/embeddable-game-standard/games.mdx
-meta: {
-  "layout": "docs"
-}
-
-import { GameCard } from '../../components/GameCard'
-
-# Embeddable Game Standard: Games
-
-Here is a list of games that have implemented the emeddable game standard and are benefitting from the tools provided:
-
-<GameCard icon="https://darkshuffle.io/favicon.svg" name="Dark Shuffle" url="https://darkshuffle.io" description="Dark Shuffle is a turn-based, collectible card game. Build your deck, battle monsters, and explore a procedurally generated world." developer="Provable Games" />
-
-<GameCard icon="https://app.zkube.xyz/assets/pwa-512x512.png" name="zKube" url="https://app.zkube.xyz/" description="zKube is an engaging puzzle game that puts players' strategic thinking to the test. Set within a dynamic grid, the objective is simple: manipulate blocks to form solid lines and earn points.	" developer="zKorp" />
-
-## Why Build Games with EGS?
-
-* Instantly reach new audiences by making your game embeddable in multiple apps and platforms
-* Focus on gameplay and innovation, not infrastructure
-* Extend the way your game is played through permissionless settings creation
-* Benefit from community-driven tournaments, quests, and rewards
-
-
-
----
-
-file: docs/embeddable-game-standard/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard
-
-The Embeddable Game Standard (EGS) is a foundational blueprint for Starknet games, designed to ensure interoperability and unlock access to an ever-growing ecosystem of powerful onchain applications, including the [Budokan](/budokan) tournament platform and the Tanken Quest platform (coming soon). It standardizes essential game contract functionalities such as ERC721 token minting for unique game instances, comprehensive metadata management, and robust score or progress tracking, which are vital for both competitive play and objective-based questing. By adhering to EGS, games can be seamlessly integrated into systems that distribute game instances as NFTs, associate them with diverse rewards (for victory, completion, or participation), and support varied engagement models. From high-stakes tournaments to narrative-driven campaigns, onboarding tutorials, and community-tailored challenges.
-
-## Table of Contents
-
-* [Overview](#overview)
-* [Architecture](#architecture)
-* [Key Functions](#key-functions)
-* [Implementation Guide](#implementation-guide)
-
-## Overview
-
-The standard provides a blueprint for game contracts to:
-
-* Mint game tokens (ERC721) for tournament entries
-* Store and expose game and player metadata
-* Track scores and settings in a standardized way
-* Emit events for metadata updates and lifecycle changes
-
-By adhering to this standard, games can:
-
-* Be listed and used in Budokan tournaments
-* Enable automated leaderboard and prize logic
-* Support composable, upgradable tournament experiences
-
-## Architecture
-
-* **Game Component:** Implements the core logic for minting, metadata management, and score tracking. See `contracts/src/components/game.cairo`.
-* **Models & Interfaces:** Define the data structures for game metadata, token metadata, settings, and lifecycle events.
-* **Integration Points:** Games must expose the required interfaces and implement the necessary storage and event logic.
-
-## Key Functions
-
-* `mint`: Mint a new game token for a player, with associated metadata and settings.
-* `game_metadata`: Retrieve metadata for the game contract.
-* `token_metadata`: Retrieve metadata for a specific game token.
-* `game_count`: Get the total number of games/tokens minted.
-* `emit_metadata_update`: Emit an event when token metadata is updated.
-* `initializer`: Initialize the game contract with metadata, settings, and storage configuration.
-
-## Implementation Guide
-
-1. **Implement the Game Component:**
-   * Use the provided `game_component` module as a base.
-   * Implement the required storage, events, and interface functions.
-2. **Define Metadata and Settings:**
-   * Use the standard models for game and token metadata.
-   * Store settings and score models as required by your game logic.
-3. **Integrate with Budokan:**
-   * Ensure your contract exposes the required interfaces (ERC721, metadata, settings).
-   * Test minting, metadata retrieval, and event emission with Budokan tournament flows.
-4. **Deploy and Register:**
-   * Deploy your game contract to Starknet.
-   * Register the game with Budokan for tournament use.
-
-## Games
-
-The current games that have implemented the standard:
-
-* Dark Shuffle
-* Zkube
-* Loot Survivor (coming soon)
-
-By following this standard, your game will be compatible with Budokan and other systems that adopt the Embeddable Game Standard.
-
-
-
----
-
-file: docs/embeddable-game-standard/key-functions.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Key Functions
-
-This section details the primary functions that a game contract must implement to comply with the Embeddable Game Standard and be compatible with Budokan tournaments.
-
-## `mint`
-
-```cairo
-fn mint(
-    ref self: ComponentState<TContractState>,
-    player_name: felt252,
-    settings_id: u32,
-    start: Option<u64>,
-    end: Option<u64>,
-    to: ContractAddress,
-) -> u64;
-```
-
-**Purpose:** Mint a new game token (ERC721) for a player, with associated metadata and settings.
-
-**Parameters:**
-
-* `player_name`: Name of the player (felt252).
-* `settings_id`: ID of the game settings to use.
-* `start`, `end`: Optional start and end timestamps for the game session.
-* `to`: Address to mint the token to.
-
-**Returns:** Token ID of the newly minted game token.
-
-***
-
-## `game_metadata`
-
-```cairo
-fn game_metadata(self: @ComponentState<TContractState>) -> GameMetadata;
-```
-
-**Purpose:** Retrieve metadata for the game contract (name, description, developer, etc.).
-
-**Returns:** GameMetadata struct.
-
-***
-
-## `token_metadata`
-
-```cairo
-fn token_metadata(self: @ComponentState<TContractState>, token_id: u64) -> TokenMetadata;
-```
-
-**Purpose:** Retrieve metadata for a specific game token (player, settings, lifecycle, etc.).
-
-**Parameters:**
-
-* `token_id`: ID of the game token.
-
-**Returns:** TokenMetadata struct.
-
-***
-
-## `game_count`
-
-```cairo
-fn game_count(self: @ComponentState<TContractState>) -> u64;
-```
-
-**Purpose:** Get the total number of games/tokens minted by the contract.
-
-**Returns:** Total count (u64).
-
-***
-
-## `emit_metadata_update`
-
-```cairo
-fn emit_metadata_update(ref self: ComponentState<TContractState>, game_id: u64);
-```
-
-**Purpose:** Emit an event when token metadata is updated, for offchain indexing and UI updates.
-
-**Parameters:**
-
-* `game_id`: ID of the game token whose metadata was updated.
-
-***
-
-## `initializer`
-
-```cairo
-fn initializer(
-    ref self: ComponentState<TContractState>,
-    creator_address: ContractAddress,
-    name: felt252,
-    description: ByteArray,
-    developer: felt252,
-    publisher: felt252,
-    genre: felt252,
-    image: ByteArray,
-    namespace: ByteArray,
-    score_model: ByteArray,
-    score_attribute: ByteArray,
-    settings_model: ByteArray,
-);
-```
-
-**Purpose:** Initialize the game contract with metadata, settings, and storage configuration. Mints a creator token and registers interfaces.
-
-**Parameters:**
-
-* `creator_address`: Address of the game creator.
-* `name`, `description`, `developer`, `publisher`, `genre`, `image`: Metadata fields.
-* `namespace`, `score_model`, `score_attribute`, `settings_model`: Storage and configuration fields.
-
-***
-
-## Additional Functions
-
-* `namespace`: Returns the namespace used for storage.
-* `score_model`: Returns the score model identifier.
-* `score_attribute`: Returns the score attribute identifier.
-* `settings_model`: Returns the settings model identifier.
-* `set_settings`: Set or update game settings details.
-* `assert_setting_exists`: Ensure a settings ID exists before minting.
 
 
 
@@ -3162,6 +3162,290 @@ If you have questions or need help, check the FAQ or contact support through the
 
 ---
 
+file: docs/embeddable-game-standard/implementation/embedding-games.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Embedding Games
+
+Easily integrate onchain games into your own application or platform using the Embeddable Game Standard (EGS). This guide walks you through the process of minting a game instance for a player and validating their results, with code examples and best practices.
+
+## What Does "Embedding" Mean?
+
+Embedding a game means allowing your users to launch, play, and track progress in a provable onchain game—directly from your app. You can mint new game instances, monitor scores, and even run tournaments or quests using these standards.
+
+## 1. Mint a Game Instance
+
+To let a user start a new game, call the mint function on the game's contract. This creates a unique game token (NFT) for the player, with the desired settings and timing.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameTokenDispatcher, IGameTokenDispatcherTrait,
+};
+
+let game_dispatcher = IGameTokenDispatcher { contract_address: quest_tile.game_address };
+let game_token_id: u64 = game_dispatcher
+    .mint(player_name, config.settings_id, game_start_delay, game_expiration, to_address);
+```
+
+* `player_name`: The player's display name or identifier.
+* `settings_id`: The ID of the game settings profile to use (see [Settings](/embeddable-game-standard/implementation/settings)).
+* `game_start_delay`: Optional delay before the game can be started.
+* `game_expiration`: When the game expires (for time-limited quests or tournaments).
+* `to_address`: The wallet address to receive the game token.
+
+> **Tip:** Each minted game is a unique NFT, making it easy to track, transfer, or verify ownership and results.
+
+## 2. Validate Game Results
+
+To check a player's score or progress, use the `score` view function. This is enforced by the EGS and available on all compliant games.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameDetailsDispatcher, IGameDetailsDispatcherTrait
+};
+
+let game_dispatcher = IGameDetailsDispatcher { contract_address: quest_tile.game_address };
+let score: u32 = game_dispatcher.score(quest.game_token_id);
+```
+
+* `quest.game_token_id`: The unique token ID for the player's game instance.
+* Returns the player's score or result, which you can use for leaderboards, rewards, or validation.
+
+> **Info:** You can also query other view functions (like player stats, completion status, etc.) depending on the game's implementation. See the [View Functions](/embeddable-game-standard/implementation#6-add-view-functions) section for more.
+
+## Best Practices & Next Steps
+
+* Use the [Settings](/embeddable-game-standard/implementation/settings) standard to offer custom game modes or difficulty levels.
+* Integrate with [Budokan](/budokan) for tournament management, prize distribution, and more.
+* For advanced integrations, see the [Key Functions](/embeddable-game-standard/key-functions) and [Implementation Guide](/embeddable-game-standard/implementation).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
+
+
+
+---
+
+file: docs/embeddable-game-standard/implementation/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Implementation
+
+This guide walks through the steps required for a game developer to implement the
+Embeddable Game Standard and integrate with Budokan tournaments as well as any other meta apps.
+
+## 1. Add EGS library
+
+Start by adding the EGS library in your `Scarb.toml`. You will also need to build the external models to be included
+
+```cairo
+tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }
+```
+
+```cairo
+build-external-contracts = [
+    "tournaments::components::models::game::m_GameMetadata",
+    "tournaments::components::models::game::m_TokenMetadata",
+    "tournaments::components::models::game::m_GameCounter",
+    "tournaments::components::models::game::m_Score",
+    "tournaments::components::models::game::m_Settings",
+    "tournaments::components::models::game::m_SettingsDetails",
+    "tournaments::components::models::game::m_SettingsCounter",
+]
+```
+
+## 2. Import Component
+
+Import and use the `game_component` module from EGS.
+
+```cairo
+use tournaments::components::game::game_component;
+
+#[dojo::contract]
+pub mod MyGame {
+    component!(path: game_component, storage: game, event: GameEvent);
+    #[abi(embed_v0)]
+    impl GameComponentImpl = game_component::GameImpl<ContractState>;
+    impl GameComponentInternalImpl = game_component::InternalImpl<ContractState>;
+    // ... additional game logic ...
+}
+```
+
+## 3. Implement Required Storage and Events
+
+Define the required storage fields and events as specified in the standard.
+
+```cairo
+#[storage]
+struct Storage {
+    #[substorage(v0)]
+    game: game_component::Storage,
+    #[substorage(v0)]
+    erc721: ERC721Component::Storage,
+    #[substorage(v0)]
+    src5: SRC5Component::Storage,
+}
+
+#[event]
+#[derive(Drop, starknet::Event)]
+enum Event {
+    #[flat]
+    GameEvent: game_component::Event,
+    #[flat]
+    ERC721Event: ERC721Component::Event,
+    #[flat]
+    SRC5Event: SRC5Component::Event,
+}
+```
+
+## 4. Expose Required Interfaces
+
+Ensure your contract exposes the following:
+
+* ERC721 interface for game tokens
+* Metadata and settings interfaces
+* Functions for minting, metadata retrieval, and event emission
+
+## 5. Implement Initialization Logic
+
+Implement the `initializer` function to set up game metadata, settings, and storage configuration.
+
+```cairo
+fn initializer(
+    ref self: ComponentState<TContractState>,
+    creator_address: ContractAddress,
+    name: felt252,
+    description: ByteArray,
+    developer: felt252,
+    publisher: felt252,
+    genre: felt252,
+    image: ByteArray,
+    namespace: ByteArray,
+    score_model: ByteArray,
+    score_attribute: ByteArray,
+    settings_model: ByteArray,
+) {
+    // ... initialization logic ...
+}
+```
+
+## 6. Add View Functions
+
+Add Contract view function to return the following:
+
+* The score of a game id
+* Whether a particular settings id exists
+
+```cairo
+use tournaments::components::interfaces::{IGameDetails, ISettings};
+
+#[abi(embed_v0)]
+impl GameDetailsImpl of IGameDetails<ContractState> {
+    fn score(self: @ContractState, game_id: u64) -> u32 {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let game: Game = world.read_model(game_id);
+        game.score.into()
+    }
+}
+
+#[abi(embed_v0)]
+impl SettingsImpl of ISettings<ContractState> {
+    fn setting_exists(self: @ContractState, settings_id: u32) -> bool {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let settings: GameSettings = world.read_model(settings_id);
+        settings.exists()
+    }
+}
+```
+
+## 7. Check Lifecycle
+
+In each game interaction ensure that the following lifecycle check is made
+
+```cairo
+use tournaments::components::libs::lifecycle::{
+    LifecycleAssertionsImpl, LifecycleAssertionsTrait
+};
+
+let token_metadata: TokenMetadata = world.read_model(game_id);
+token_metadata.lifecycle.assert_is_playable(game_id, get_block_timestamp());
+```
+
+By following these steps, your game will be fully compatible with [Budokan](/budokan) and any other application using the Embeddable Game Standard.
+
+
+
+---
+
+file: docs/embeddable-game-standard/implementation/settings.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Settings
+
+Settings are a core feature of the Embeddable Game Standard (EGS), enabling games to be highly customizable and composable. By associating a game instance with a specific set of settings, you can create unique game modes, difficulty levels, or event rules—all onchain and provable.
+
+## Why Use Settings?
+
+* **Custom Game Modes:** Offer players or tournament organizers the ability to define special rules, deck sizes, or win conditions.
+* **Composability:** Settings can be reused across games, quests, or tournaments, making it easy to launch new experiences.
+* **Transparency:** All settings are stored onchain, so anyone can verify the rules for a given game instance.
+
+> **Tip:** Use settings to power seasonal events, speedruns, or community challenges—just stamp a new settings profile and share the ID!
+
+## How Settings Work in EGS
+
+Each game instance can be linked to a settings profile via a unique `settings_id`. The settings metadata is stored onchain and can be queried or updated as needed.
+
+### Storing Settings Metadata
+
+Within the EGS component, the `SettingsDetails` model is used to store metadata for each settings profile. Here's how you can set or update a settings profile:
+
+```cairo
+fn set_settings(
+    ref self: ComponentState<TContractState>,
+    settings_id: u32,
+    name: felt252,
+    description: ByteArray,
+) {
+    let mut world = WorldTrait::storage(
+        self.get_contract().world_dispatcher(), @self.namespace.read(),
+    );
+    let mut store: Store = StoreTrait::new(world);
+    store
+        .set_settings_details(
+            @SettingsDetails { id: settings_id, name, description, exists: true },
+        );
+}
+```
+
+* `settings_id`: Unique identifier for the settings profile.
+* `name`: Human-readable name for the settings.
+* `description`: Description or metadata for the settings profile.
+
+> **Info:** The `SettingsDetails` model can be extended to include more fields (e.g., difficulty, allowed cards, etc.) depending on your game's needs.
+
+## Creating Settings in Your Game
+
+Within the Game contract, you will store the settings for a particular id in the model you defined as `settings_model` on [initialization](/embeddable-game-standard/implementation#5-implement-initialization-logic). Here's how you can set or update a settings profile:
+
+## Best Practices & Next Steps
+
+* Use clear names and descriptions for each settings profile.
+* Store all relevant game rules in the settings metadata for transparency.
+* Encourage your community to create and share custom settings for new challenges.
+* For more on minting and using settings, see [Embedding Games](/embeddable-game-standard/implementation/embedding-games) and [Key Functions](/embeddable-game-standard/key-functions).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
+
+
+
+---
+
 file: docs/darkshuffle/guide/battle.mdx
 meta: {
   "layout": "docs"
@@ -3588,290 +3872,6 @@ If you have questions or need help, check the FAQ or contact support through the
 
 ---
 
-file: docs/embeddable-game-standard/implementation/embedding-games.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Embedding Games
-
-Easily integrate onchain games into your own application or platform using the Embeddable Game Standard (EGS). This guide walks you through the process of minting a game instance for a player and validating their results, with code examples and best practices.
-
-## What Does "Embedding" Mean?
-
-Embedding a game means allowing your users to launch, play, and track progress in a provable onchain game—directly from your app. You can mint new game instances, monitor scores, and even run tournaments or quests using these standards.
-
-## 1. Mint a Game Instance
-
-To let a user start a new game, call the mint function on the game's contract. This creates a unique game token (NFT) for the player, with the desired settings and timing.
-
-```cairo
-use tournaments::components::interfaces::{
-    IGameTokenDispatcher, IGameTokenDispatcherTrait,
-};
-
-let game_dispatcher = IGameTokenDispatcher { contract_address: quest_tile.game_address };
-let game_token_id: u64 = game_dispatcher
-    .mint(player_name, config.settings_id, game_start_delay, game_expiration, to_address);
-```
-
-* `player_name`: The player's display name or identifier.
-* `settings_id`: The ID of the game settings profile to use (see [Settings](/embeddable-game-standard/implementation/settings)).
-* `game_start_delay`: Optional delay before the game can be started.
-* `game_expiration`: When the game expires (for time-limited quests or tournaments).
-* `to_address`: The wallet address to receive the game token.
-
-> **Tip:** Each minted game is a unique NFT, making it easy to track, transfer, or verify ownership and results.
-
-## 2. Validate Game Results
-
-To check a player's score or progress, use the `score` view function. This is enforced by the EGS and available on all compliant games.
-
-```cairo
-use tournaments::components::interfaces::{
-    IGameDetailsDispatcher, IGameDetailsDispatcherTrait
-};
-
-let game_dispatcher = IGameDetailsDispatcher { contract_address: quest_tile.game_address };
-let score: u32 = game_dispatcher.score(quest.game_token_id);
-```
-
-* `quest.game_token_id`: The unique token ID for the player's game instance.
-* Returns the player's score or result, which you can use for leaderboards, rewards, or validation.
-
-> **Info:** You can also query other view functions (like player stats, completion status, etc.) depending on the game's implementation. See the [View Functions](/embeddable-game-standard/implementation#6-add-view-functions) section for more.
-
-## Best Practices & Next Steps
-
-* Use the [Settings](/embeddable-game-standard/implementation/settings) standard to offer custom game modes or difficulty levels.
-* Integrate with [Budokan](/budokan) for tournament management, prize distribution, and more.
-* For advanced integrations, see the [Key Functions](/embeddable-game-standard/key-functions) and [Implementation Guide](/embeddable-game-standard/implementation).
-
-If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Implementation
-
-This guide walks through the steps required for a game developer to implement the
-Embeddable Game Standard and integrate with Budokan tournaments as well as any other meta apps.
-
-## 1. Add EGS library
-
-Start by adding the EGS library in your `Scarb.toml`. You will also need to build the external models to be included
-
-```cairo
-tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }
-```
-
-```cairo
-build-external-contracts = [
-    "tournaments::components::models::game::m_GameMetadata",
-    "tournaments::components::models::game::m_TokenMetadata",
-    "tournaments::components::models::game::m_GameCounter",
-    "tournaments::components::models::game::m_Score",
-    "tournaments::components::models::game::m_Settings",
-    "tournaments::components::models::game::m_SettingsDetails",
-    "tournaments::components::models::game::m_SettingsCounter",
-]
-```
-
-## 2. Import Component
-
-Import and use the `game_component` module from EGS.
-
-```cairo
-use tournaments::components::game::game_component;
-
-#[dojo::contract]
-pub mod MyGame {
-    component!(path: game_component, storage: game, event: GameEvent);
-    #[abi(embed_v0)]
-    impl GameComponentImpl = game_component::GameImpl<ContractState>;
-    impl GameComponentInternalImpl = game_component::InternalImpl<ContractState>;
-    // ... additional game logic ...
-}
-```
-
-## 3. Implement Required Storage and Events
-
-Define the required storage fields and events as specified in the standard.
-
-```cairo
-#[storage]
-struct Storage {
-    #[substorage(v0)]
-    game: game_component::Storage,
-    #[substorage(v0)]
-    erc721: ERC721Component::Storage,
-    #[substorage(v0)]
-    src5: SRC5Component::Storage,
-}
-
-#[event]
-#[derive(Drop, starknet::Event)]
-enum Event {
-    #[flat]
-    GameEvent: game_component::Event,
-    #[flat]
-    ERC721Event: ERC721Component::Event,
-    #[flat]
-    SRC5Event: SRC5Component::Event,
-}
-```
-
-## 4. Expose Required Interfaces
-
-Ensure your contract exposes the following:
-
-* ERC721 interface for game tokens
-* Metadata and settings interfaces
-* Functions for minting, metadata retrieval, and event emission
-
-## 5. Implement Initialization Logic
-
-Implement the `initializer` function to set up game metadata, settings, and storage configuration.
-
-```cairo
-fn initializer(
-    ref self: ComponentState<TContractState>,
-    creator_address: ContractAddress,
-    name: felt252,
-    description: ByteArray,
-    developer: felt252,
-    publisher: felt252,
-    genre: felt252,
-    image: ByteArray,
-    namespace: ByteArray,
-    score_model: ByteArray,
-    score_attribute: ByteArray,
-    settings_model: ByteArray,
-) {
-    // ... initialization logic ...
-}
-```
-
-## 6. Add View Functions
-
-Add Contract view function to return the following:
-
-* The score of a game id
-* Whether a particular settings id exists
-
-```cairo
-use tournaments::components::interfaces::{IGameDetails, ISettings};
-
-#[abi(embed_v0)]
-impl GameDetailsImpl of IGameDetails<ContractState> {
-    fn score(self: @ContractState, game_id: u64) -> u32 {
-        let world: WorldStorage = self.world(@DEFAULT_NS());
-        let game: Game = world.read_model(game_id);
-        game.score.into()
-    }
-}
-
-#[abi(embed_v0)]
-impl SettingsImpl of ISettings<ContractState> {
-    fn setting_exists(self: @ContractState, settings_id: u32) -> bool {
-        let world: WorldStorage = self.world(@DEFAULT_NS());
-        let settings: GameSettings = world.read_model(settings_id);
-        settings.exists()
-    }
-}
-```
-
-## 7. Check Lifecycle
-
-In each game interaction ensure that the following lifecycle check is made
-
-```cairo
-use tournaments::components::libs::lifecycle::{
-    LifecycleAssertionsImpl, LifecycleAssertionsTrait
-};
-
-let token_metadata: TokenMetadata = world.read_model(game_id);
-token_metadata.lifecycle.assert_is_playable(game_id, get_block_timestamp());
-```
-
-By following these steps, your game will be fully compatible with [Budokan](/budokan) and any other application using the Embeddable Game Standard.
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/settings.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Settings
-
-Settings are a core feature of the Embeddable Game Standard (EGS), enabling games to be highly customizable and composable. By associating a game instance with a specific set of settings, you can create unique game modes, difficulty levels, or event rules—all onchain and provable.
-
-## Why Use Settings?
-
-* **Custom Game Modes:** Offer players or tournament organizers the ability to define special rules, deck sizes, or win conditions.
-* **Composability:** Settings can be reused across games, quests, or tournaments, making it easy to launch new experiences.
-* **Transparency:** All settings are stored onchain, so anyone can verify the rules for a given game instance.
-
-> **Tip:** Use settings to power seasonal events, speedruns, or community challenges—just stamp a new settings profile and share the ID!
-
-## How Settings Work in EGS
-
-Each game instance can be linked to a settings profile via a unique `settings_id`. The settings metadata is stored onchain and can be queried or updated as needed.
-
-### Storing Settings Metadata
-
-Within the EGS component, the `SettingsDetails` model is used to store metadata for each settings profile. Here's how you can set or update a settings profile:
-
-```cairo
-fn set_settings(
-    ref self: ComponentState<TContractState>,
-    settings_id: u32,
-    name: felt252,
-    description: ByteArray,
-) {
-    let mut world = WorldTrait::storage(
-        self.get_contract().world_dispatcher(), @self.namespace.read(),
-    );
-    let mut store: Store = StoreTrait::new(world);
-    store
-        .set_settings_details(
-            @SettingsDetails { id: settings_id, name, description, exists: true },
-        );
-}
-```
-
-* `settings_id`: Unique identifier for the settings profile.
-* `name`: Human-readable name for the settings.
-* `description`: Description or metadata for the settings profile.
-
-> **Info:** The `SettingsDetails` model can be extended to include more fields (e.g., difficulty, allowed cards, etc.) depending on your game's needs.
-
-## Creating Settings in Your Game
-
-Within the Game contract, you will store the settings for a particular id in the model you defined as `settings_model` on [initialization](/embeddable-game-standard/implementation#5-implement-initialization-logic). Here's how you can set or update a settings profile:
-
-## Best Practices & Next Steps
-
-* Use clear names and descriptions for each settings profile.
-* Store all relevant game rules in the settings metadata for transparency.
-* Encourage your community to create and share custom settings for new challenges.
-* For more on minting and using settings, see [Embedding Games](/embeddable-game-standard/implementation/embedding-games) and [Key Functions](/embeddable-game-standard/key-functions).
-
-If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
-
-
-
----
-
 file: docs/lootsurvivor/beasts/collectibles.mdx
 meta: {
   "layout": "docs"
@@ -4260,6 +4260,634 @@ Beasts are the creatures you'll encounter and battle throughout your adventures 
 * [Battle Guide](/lootsurvivor/guide/battle) - Combat tactics and interface
 * [Loot System](/lootsurvivor/loot) - Equipment and weapons
 * [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Achievement system
+
+
+
+---
+
+file: docs/lootsurvivor/loot/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Loot System
+
+<div style={{ display: 'flex', gap: '2rem', alignItems: 'start', margin: '2rem 0', flexWrap: 'wrap' }}>
+  <div
+    style={{ 
+fontSize: '1.1rem', 
+lineHeight: '1.8', 
+paddingRight: '2rem',
+color: '#e5e5e5',
+flex: '2',
+minWidth: '300px'
+}}
+  >
+    <p style={{ marginBottom: "1.2rem", fontWeight: "400" }}>
+      The loot system in Loot Survivor is inspired by the original <a href="https://docs.loot.foundation/" style={{ color: "#3b82f6" }}>Loot collection</a> and forms the backbone of your adventurer's power progression.
+    </p>
+
+    <p style={{ marginBottom: "0", fontWeight: "400" }}>
+      Understanding how items work, their tiers, and special properties is essential
+      for survival in Death Mountain. Each piece of equipment can evolve and gain
+      powerful bonuses as you progress through the dangerous depths.
+    </p>
+  </div>
+
+  <div style={{ flex: '1', minWidth: '250px' }}>
+    <img
+      src="/docs/lootsurvivor/loot.png"
+      alt="Loot Survivor Items Display"
+      style={{
+    width: "100%",
+    display: "block",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+    />
+
+    <em
+      style={{
+    display: "block",
+    textAlign: "center",
+    marginTop: "0.5rem",
+    fontSize: "0.9rem",
+    opacity: "0.8",
+  }}
+    >
+      Loot item display showing tier and special properties
+    </em>
+  </div>
+</div>
+
+## Item Properties
+
+Each item has several key properties that determine its effectiveness:
+
+* **Tier** - Base power level (T1-T5)
+* **Greatness** - Special enhancement level (0-20)
+* **Suffix** - Name suffix at Greatness 15+
+* **Prefixes** - Additional bonuses at Greatness 19+
+* **+1 Modifier** - +1 modifier at Greatness 20
+
+## Item Tiers
+
+Items in Loot Survivor are categorized into 5 tiers, with T1 being the most powerful:
+
+| Tier   | Name      | Rarity    | Base Power    | Drop Rate | Description                                |
+| ------ | --------- | --------- | ------------- | --------- | ------------------------------------------ |
+| **T1** | Legendary | Highest   | 5× multiplier | \~0.066%  | Best-in-slot items with maximum base stats |
+| **T2** | Epic      | Very High | 4× multiplier | \~0.2%    | Powerful items with excellent stats        |
+| **T3** | Rare      | High      | 3× multiplier | \~0.4%    | Good equipment with solid performance      |
+| **T4** | Uncommon  | Medium    | 2× multiplier | \~1.0%    | Decent upgrades over starting gear         |
+| **T5** | Common    | Low       | 1× multiplier | \~1.65%   | Basic gear and starting equipment          |
+
+**Tier Effects:**
+
+* Higher tiers provide better base damage/protection
+* Tier multiplier affects combat calculations
+* Better tiers are more likely to have special properties
+* All tiers can potentially have suffixes and prefixes
+
+***
+
+<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **🎮 Loot Survivor Implementation Note:**
+  </div>
+
+  <div style={{ marginBottom: '0' }}>
+    Everything below this point represents **Loot Survivor's unique interpretation** of the original Loot collection. The Greatness System, combat types, materials, and their gameplay mechanics are specific to this game's implementation and not part of the base Loot specification.
+  </div>
+</div>
+
+# Greatness System
+
+Greatness is a special property that enhances items beyond their base tier:
+
+## Greatness Levels
+
+| Greatness | Enhancement     | Special Property           |
+| --------- | --------------- | -------------------------- |
+| **1-14**  | Base item       | Standard tier bonuses only |
+| **15**    | Suffix unlocked | +3 stat bonus from suffix  |
+| **16-18** | Enhanced suffix | Suffix bonuses continue    |
+| **19**    | Prefix unlocked | Additional stat bonuses    |
+| **20**    | Stat Bonus      | +1 assignable stat bonus   |
+
+## How Greatness Works
+
+* Items always start at greatness 1
+* Greatness increases the item's overall power
+* Greatness 15+ items gain [suffix bonuses](/lootsurvivor/loot/suffix-boost)
+* Greatness 19+ items gain additional prefix [prefixes](/lootsurvivor/loot/prefixes)
+* Greatness 20 items get a +1 stat modifier
+
+***
+
+# Equipment Types
+
+Loot Survivor features 8 equipment slots for different item types:
+
+| Equipment Slot | Item Types                            | Function |
+| -------------- | ------------------------------------- | -------- |
+| **Weapon**     | Katana, Wand, Club, Short Sword       | Weapon   |
+| **Chest**      | Divine Robe, Shirt, Demon Husk        | Armor    |
+| **Head**       | Crown, Cap, Helm                      | Armor    |
+| **Waist**      | Ornate Belt, Sash, Heavy Belt         | Armor    |
+| **Foot**       | Divine Slippers, Boots, Shoes         | Armor    |
+| **Hand**       | Divine Gloves, Gloves, Gauntlets      | Armor    |
+| **Neck**       | Amulet, Pendant, Necklace             | Jewelry  |
+| **Ring**       | Platinum Ring, Gold Ring, Silver Ring | Jewelry  |
+
+***
+
+# Combat Types & Materials
+
+Items have dual classifications that affect combat performance:
+
+## Weapon Types
+
+**⚔️ Blade Weapons**
+
+* Strong vs Hide armor
+* Weak vs Metal armor
+* Examples: Katana, Short Sword, Scimitar
+
+**🔨 Bludgeon Weapons**
+
+* Strong vs Metal armor
+* Weak vs Cloth armor
+* Examples: Club, Mace, Warhammer
+
+**✨ Magic Weapons**
+
+* Strong vs Cloth armor
+* Weak vs Hide armor
+* Examples: Wand, Book, Ghost Wand
+
+## Armor Materials
+
+**🛡️ Hide Armor**
+
+* Resists Blade attacks
+* Weak to Magic attacks
+* Examples: Leather armor, Dragon skin
+
+**⚡ Metal Armor**
+
+* Resists Bludgeon attacks
+* Weak to Blade attacks
+* Examples: Chain mail, Plate armor
+
+**🧙 Cloth Armor**
+
+* Resists Magic attacks
+* Weak to Bludgeon attacks
+* Examples: Robes, Shirts
+
+***
+
+# Item Acquisition
+
+## Discovery Methods
+
+Items can be obtained through several methods:
+
+| Method                 | Rate                | Quality     | Notes                           |
+| ---------------------- | ------------------- | ----------- | ------------------------------- |
+| **Exploration**        | 3.3% of explores    | Random tier | Primary acquisition method      |
+| **Market Purchase**    | Level-dependent     | Variable    | Costs gold, refresh on level up |
+| **Starting Equipment** | 1 weapon guaranteed | T5 only     | Random weapon type              |
+
+## Market System
+
+* Market refreshes completely on each level up
+* Available items are randomly generated
+* Item count increases with adventurer level
+* CHA stat reduces purchase prices
+* Market items follow same tier distribution as drops
+
+***
+
+# Item Management
+
+## Inventory System
+
+* **8 Equipment Slots** - One for each equipment type
+* **15 Bag Slots** - Additional storage for backup items
+* **Auto-equip** - New items automatically equip if slots are empty
+* **Gold Conversion** - Duplicate items convert to gold if no space
+
+## Item Usage
+
+**Equipping Items:**
+
+* Drag from bag to equipment slot
+* Items provide immediate stat bonuses
+* Combat type/material affects battle performance
+* Can switch equipment during exploration (not in combat)
+
+**Item Stacking:**
+
+* Only one item per equipment slot
+* Identical items convert to gold
+* Higher tier items typically replace lower tier
+* Consider suffix/prefix bonuses when deciding
+
+***
+
+# Special Properties
+
+## Suffixes
+
+Items with Greatness 15+ gain powerful suffix bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for complete details.
+
+## Prefixes
+
+Items with Greatness 19+ gain additional prefix bonuses that stack with suffix effects. These same prefixes are also used for named beasts in Beast Mode NFTs.
+
+**Complete Prefix & Suffix Reference:** See [Prefixes Guide](/lootsurvivor/loot/prefixes) for the full library of all 69 prefixes and 18 suffixes.
+
+***
+
+# Summary
+
+The loot system provides deep character customization through equipment choices, tier progression, and special properties. Understanding how tiers, greatness, suffixes, and prefixes work together allows you to build powerful adventurers capable of surviving Death Mountain's greatest challenges.
+
+**Key Loot Principles:**
+
+* Higher tiers provide better base power
+* Greatness 15+ items gain significant suffix bonuses
+* Greatness 19+ items gain additional prefix bonuses
+* Combat type and material matter for battle effectiveness
+* Market refreshes provide new acquisition opportunities each level
+
+
+
+---
+
+file: docs/lootsurvivor/loot/jewelry.mdx
+meta: {}
+
+# Jewelry Items
+
+Jewelry items can be used to increase Luck and unlock special abilities. Luck gives an increased chance of achieving critical hits. Jewelry items will contribute to Luck even when bagged.
+
+| Item          | Boost                                                                              |
+| ------------- | ---------------------------------------------------------------------------------- |
+| Pendant       | 3% increase per greatness hide armor defence.                                      |
+| Necklace      | 3% increase per greatness metal armor defence.                                     |
+| Amulet        | 3% increase per greatness cloth armor defence.                                     |
+| Bronze Ring   | No special ability (economy option).                                               |
+| Silver Ring   | +20 Luck boost when equipped at G20 and +1 bonus luck per greatness when equipped. |
+| Gold Ring     | 3% per greatness increase in gold rewards from beasts.                             |
+| Platinum Ring | 3% per greatness increase in name match damage bonus.                              |
+| Titanium Ring | 3% per greatness increase in critical hit damage bonus.                            |
+
+
+
+---
+
+file: docs/lootsurvivor/loot/prefixes.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Item & Beast Prefixes
+
+Prefixes are special name modifiers that appear on high-greatness items (Level 19+) and named beasts. This comprehensive reference covers all 69 prefixes and 18 suffixes used throughout Loot Survivor.
+
+## Prefix System Overview
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **Dual Usage:** Prefixes serve two important functions in the game:
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    * **Item Enhancement**: High-greatness items (19+) gain prefix bonuses for additional stats
+    * **Beast Names**: Named beasts (Level 19+) use these same prefixes for unique identities
+    * **NFT Collection**: Beast Mode NFTs mint with prefix names for collectible variety
+  </div>
+
+  > **Cross-System Integration:** The same 69 prefixes create both powerful equipment and collectible named beasts!
+</div>
+
+## Complete Prefix Library (69 Total)
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+    <div style={{ background: '#2a1a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #dc2626' }}>
+      ### 🌑 Dark Themes (17)
+
+      1. Agony
+      2. Apocalypse
+      3. Armageddon
+      4. Blight
+      5. Blood
+      6. Corruption
+      7. Damnation
+      8. Death
+      9. Demon
+      10. Dire
+      11. Doom
+      12. Dread
+      13. Ghoul
+      14. Gloom
+      15. Grim
+      16. Hate
+      17. Horror
+    </div>
+
+    <div style={{ background: '#2a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #eab308' }}>
+      ### 🏆 Power & Creatures (17)
+
+      18. Beast
+      19. Behemoth
+      20. Dragon
+      21. Empyrean
+      22. Fate
+      23. Golem
+      24. Honour
+      25. Kraken
+      26. Miracle
+      27. Phoenix
+      28. Skull
+      29. Soul
+      30. Spirit
+      31. Victory
+      32. Viper
+      33. Brood
+      34. Chimeric
+    </div>
+
+    <div style={{ background: '#1a2a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #10b981' }}>
+      ### 🌊 Elemental & Nature (17)
+
+      35. Bramble
+      36. Brimstone
+      37. Carrion
+      38. Corpse
+      39. Dusk
+      40. Eagle
+      41. Gale
+      42. Maelstrom
+      43. Sol
+      44. Storm
+      45. Tempest
+      46. Vortex
+      47. Cataclysm
+      48. Foe
+      49. Havoc
+      50. Onslaught
+      51. Plague
+    </div>
+
+    <div style={{ background: '#2a1a3a', padding: '1rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
+      ### ✨ Mystical & Abstract (18)
+
+      52. Glyph
+      53. Hypnotic
+      54. Loath
+      55. Mind
+      56. Morbid
+      57. Oblivion
+      58. Pain
+      59. Pandemonium
+      60. Rage
+      61. Rapture
+      62. Rune
+      63. Sorrow
+      64. Torment
+      65. Vengeance
+      66. Woe
+      67. Wrath
+      68. **Lights** ⭐
+      69. **Shimmering** ⭐
+    </div>
+  </div>
+
+  ### Ultra Rare Prefixes
+
+  **Lights (#68)** and **Shimmering (#69)** are considered the most valuable and rare prefixes in the entire system, making items or beast NFTs with these names extremely sought after by collectors.
+</div>
+
+## Complete Suffix Library (18 Total)
+
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+    <div>
+      | ID | Suffix     |
+      | -- | ---------- |
+      | 1. | Bane       |
+      | 2. | Root       |
+      | 3. | Bite       |
+      | 4. | Song       |
+      | 5. | Roar       |
+      | 6. | Grasp      |
+      | 7. | Instrument |
+      | 8. | Glow       |
+      | 9. | Bender     |
+    </div>
+
+    <div>
+      | ID  | Suffix  |
+      | --- | ------- |
+      | 10. | Shadow  |
+      | 11. | Whisper |
+      | 12. | Shout   |
+      | 13. | Growl   |
+      | 14. | Tear    |
+      | 15. | Peak    |
+      | 16. | Form    |
+      | 17. | Sun     |
+      | 18. | Moon    |
+    </div>
+  </div>
+
+  **Suffix Usage:** Only applies to items with Greatness 15+ for stat bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for detailed stat effects.
+</div>
+
+## Usage Examples
+
+### Item Naming Examples
+
+<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **High-Greatness Item Examples:**
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    * **"Doom Katana of Power"** - Prefix: Doom, Base: Katana, Suffix: of Power
+    * **"Shimmering Divine Robe of Giants"** - Prefix: Shimmering, Base: Divine Robe, Suffix: of Giants
+    * **"Blood Wand of Skill"** - Prefix: Blood, Base: Wand, Suffix: of Skill
+  </div>
+
+  **Beast Naming Examples:**
+
+  <div style={{ marginBottom: '0' }}>
+    * **"Apocalypse Dragon"** - Prefix: Apocalypse, Beast: Dragon
+    * **"Lights Kraken"** - Prefix: Lights, Beast: Kraken
+    * **"Storm Phoenix"** - Prefix: Storm, Beast: Phoenix
+  </div>
+</div>
+
+## Cross-Reference Usage
+
+### When to Use This Page
+
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0', lineHeight: '1.6' }}>
+  **Reference Scenarios:**
+
+  1. **Item Identification**: Understanding what prefix names mean on your equipment
+  2. **Beast NFT Hunting**: Identifying valuable prefix combinations for collection
+  3. **Market Evaluation**: Determining item value based on prefix rarity
+  4. **Collection Planning**: Targeting specific prefixes for complete sets
+  5. **Cross-Game Integration**: Understanding naming for Summit game access
+
+  **Documentation Links:**
+
+  * Items with prefixes: Reference this page from item evaluation
+  * Named beasts: Reference this page from beast documentation
+  * NFT collecting: Use for understanding collectible variety
+</div>
+
+## See Also
+
+* [Loot System](/lootsurvivor/loot) - Main equipment and tier information
+* [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) - Detailed suffix stat effects
+* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Named beast NFT system
+* [Beast Overview](/lootsurvivor/beasts) - Combat types and beast information
+
+
+
+---
+
+file: docs/lootsurvivor/loot/suffix-boost.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Suffix Boosts
+
+When an item reaches Greatness 15, it gains a powerful suffix that provides significant stat bonuses. These suffixes are based on the [16 Orders of Divinity](https://docs.loot.foundation/canonical-principles/loot/the-16-orders) from the original Loot collection and follow canonical loot lore.
+
+> **⚡ Power Boost:** Suffix bonuses can make a T3 item with the right suffix more powerful than a base T1 item!
+
+## How Suffixes Work
+
+* **Greatness Requirement:** Items must reach Greatness 15 to unlock suffix bonuses
+* **Random Assignment:** Suffixes are randomly assigned based on the Orders of Divinity
+* **Permanent Bonuses:** Suffix bonuses are permanent and stack with base item stats
+* **Lore Integration:** Each suffix follows canonical Loot Foundation principles
+
+***
+
+# Complete Suffix List
+
+## Suffix Bonuses by Order
+
+| Item Suffix          | Stat Bonuses                              | Total Bonus | Order Association                 |
+| -------------------- | ----------------------------------------- | ----------- | --------------------------------- |
+| **Of Power**         | Strength +3                               | +3          | Power-focused enhancement         |
+| **Of Giant**         | Vitality +3                               | +3          | Health and endurance boost        |
+| **Of Titans**        | Strength +2, Charisma +1                  | +3          | Balanced physical prowess         |
+| **Of Skill**         | Dexterity +3                              | +3          | Agility and precision enhancement |
+| **Of Perfection**    | Strength +1, Dexterity +1, Vitality +1    | +3          | Balanced all-around improvement   |
+| **Of Brilliance**    | Intelligence +3                           | +3          | Mental acuity enhancement         |
+| **Of Enlightenment** | Wisdom +3                                 | +3          | Spiritual awareness boost         |
+| **Of Protection**    | Vitality +2, Dexterity +1                 | +3          | Defensive-focused bonuses         |
+| **Of Anger**         | Strength +2, Dexterity +1                 | +3          | Aggressive combat enhancement     |
+| **Of Rage**          | Wisdom +1, Strength +1, Charisma +1       | +3          | Controlled fury bonuses           |
+| **Of Fury**          | Vitality +1, Charisma +1, Intelligence +1 | +3          | Passionate intensity boost        |
+| **Of Vitriol**       | Intelligence +2, Wisdom +1                | +3          | Sharp mental enhancement          |
+| **Of the Fox**       | Dexterity +2, Charisma +1                 | +3          | Cunning and agility boost         |
+| **Of Detection**     | Wisdom +2, Dexterity +1                   | +3          | Awareness and reflexes            |
+| **Of Reflection**    | Wisdom +2, Intelligence +1                | +3          | Contemplative wisdom boost        |
+| **Of the Twins**     | Charisma +3                               | +3          | Social influence enhancement      |
+
+***
+
+# Suffix Categories
+
+## Single Stat Focus
+
+These suffixes provide maximum bonuses to one primary stat:
+
+* **Of Power** - Pure Strength focus for maximum damage
+* **Of Giant** - Pure Vitality focus for maximum health
+* **Of Skill** - Pure Dexterity focus for escape mastery
+* **Of Brilliance** - Pure Intelligence focus for obstacle avoidance
+* **Of Enlightenment** - Pure Wisdom focus for ambush prevention
+* **Of the Twins** - Pure Charisma focus for market optimization
+
+## Balanced Combinations
+
+These suffixes provide balanced stat distributions:
+
+* **Of Perfection** - Equal bonuses across STR/DEX/VIT
+* **Of Rage** - Equal bonuses across WIS/STR/CHA
+* **Of Fury** - Equal bonuses across VIT/CHA/INT
+
+## Specialized Builds
+
+These suffixes target specific build archetypes:
+
+* **Of Titans** - Combat-focused (STR+CHA)
+* **Of Protection** - Defense-focused (VIT+DEX)
+* **Of Anger** - Aggressive melee (STR+DEX)
+* **Of Vitriol** - Mental mastery (INT+WIS)
+* **Of the Fox** - Agile trader (DEX+CHA)
+* **Of Detection** - Alert explorer (WIS+DEX)
+* **Of Reflection** - Wise scholar (WIS+INT)
+
+***
+
+# Suffix Strategy
+
+## Evaluating Suffix Value
+
+When comparing items with suffixes, consider:
+
+1. **Your Build Focus** - Does the suffix support your stat priorities?
+2. **Current Weaknesses** - Does the suffix shore up weak areas?
+3. **Base Tier vs Suffix** - A T3+suffix might beat a base T1
+4. **Total Stat Impact** - All +3 bonuses are equally valuable mathematically
+
+## Suffix Synergies
+
+**Combat Builds:**
+
+* **Of Power** - Maximum damage output
+* **Of Titans** - Damage + market efficiency
+* **Of Anger** - Damage + escape capability
+
+**Survival Builds:**
+
+* **Of Giant** - Maximum health pool
+* **Of Protection** - Health + escape ability
+* **Of Perfection** - Balanced survivability
+
+**Utility Builds:**
+
+* **Of the Fox** - Escape + market efficiency
+* **Of Detection** - Awareness + agility
+* **Of Reflection** - Mental mastery
+
+***
+
+# Summary
+
+Suffix bonuses transform the loot system from simple tier progression to complex item evaluation. A well-rolled suffix can make any item tier competitive, while the wrong suffix might make you overlook a potentially powerful piece of equipment.
+
+**Key Suffix Principles:**
+
+* All suffixes provide exactly +3 total stat points
+* Suffixes unlock at Greatness 15
+* Suffix distribution matters more than individual bonuses
+* Consider your build when evaluating suffix value
+* Don't automatically dismiss lower tiers with good suffixes
 
 
 
@@ -5662,634 +6290,6 @@ Markets can contain:
 
 ---
 
-file: docs/lootsurvivor/loot/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Loot System
-
-<div style={{ display: 'flex', gap: '2rem', alignItems: 'start', margin: '2rem 0', flexWrap: 'wrap' }}>
-  <div
-    style={{ 
-fontSize: '1.1rem', 
-lineHeight: '1.8', 
-paddingRight: '2rem',
-color: '#e5e5e5',
-flex: '2',
-minWidth: '300px'
-}}
-  >
-    <p style={{ marginBottom: "1.2rem", fontWeight: "400" }}>
-      The loot system in Loot Survivor is inspired by the original <a href="https://docs.loot.foundation/" style={{ color: "#3b82f6" }}>Loot collection</a> and forms the backbone of your adventurer's power progression.
-    </p>
-
-    <p style={{ marginBottom: "0", fontWeight: "400" }}>
-      Understanding how items work, their tiers, and special properties is essential
-      for survival in Death Mountain. Each piece of equipment can evolve and gain
-      powerful bonuses as you progress through the dangerous depths.
-    </p>
-  </div>
-
-  <div style={{ flex: '1', minWidth: '250px' }}>
-    <img
-      src="/docs/lootsurvivor/loot.png"
-      alt="Loot Survivor Items Display"
-      style={{
-    width: "100%",
-    display: "block",
-    borderRadius: "8px",
-    border: "2px solid #333",
-  }}
-    />
-
-    <em
-      style={{
-    display: "block",
-    textAlign: "center",
-    marginTop: "0.5rem",
-    fontSize: "0.9rem",
-    opacity: "0.8",
-  }}
-    >
-      Loot item display showing tier and special properties
-    </em>
-  </div>
-</div>
-
-## Item Properties
-
-Each item has several key properties that determine its effectiveness:
-
-* **Tier** - Base power level (T1-T5)
-* **Greatness** - Special enhancement level (0-20)
-* **Suffix** - Name suffix at Greatness 15+
-* **Prefixes** - Additional bonuses at Greatness 19+
-* **+1 Modifier** - +1 modifier at Greatness 20
-
-## Item Tiers
-
-Items in Loot Survivor are categorized into 5 tiers, with T1 being the most powerful:
-
-| Tier   | Name      | Rarity    | Base Power    | Drop Rate | Description                                |
-| ------ | --------- | --------- | ------------- | --------- | ------------------------------------------ |
-| **T1** | Legendary | Highest   | 5× multiplier | \~0.066%  | Best-in-slot items with maximum base stats |
-| **T2** | Epic      | Very High | 4× multiplier | \~0.2%    | Powerful items with excellent stats        |
-| **T3** | Rare      | High      | 3× multiplier | \~0.4%    | Good equipment with solid performance      |
-| **T4** | Uncommon  | Medium    | 2× multiplier | \~1.0%    | Decent upgrades over starting gear         |
-| **T5** | Common    | Low       | 1× multiplier | \~1.65%   | Basic gear and starting equipment          |
-
-**Tier Effects:**
-
-* Higher tiers provide better base damage/protection
-* Tier multiplier affects combat calculations
-* Better tiers are more likely to have special properties
-* All tiers can potentially have suffixes and prefixes
-
-***
-
-<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7', margin: '2rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **🎮 Loot Survivor Implementation Note:**
-  </div>
-
-  <div style={{ marginBottom: '0' }}>
-    Everything below this point represents **Loot Survivor's unique interpretation** of the original Loot collection. The Greatness System, combat types, materials, and their gameplay mechanics are specific to this game's implementation and not part of the base Loot specification.
-  </div>
-</div>
-
-# Greatness System
-
-Greatness is a special property that enhances items beyond their base tier:
-
-## Greatness Levels
-
-| Greatness | Enhancement     | Special Property           |
-| --------- | --------------- | -------------------------- |
-| **1-14**  | Base item       | Standard tier bonuses only |
-| **15**    | Suffix unlocked | +3 stat bonus from suffix  |
-| **16-18** | Enhanced suffix | Suffix bonuses continue    |
-| **19**    | Prefix unlocked | Additional stat bonuses    |
-| **20**    | Stat Bonus      | +1 assignable stat bonus   |
-
-## How Greatness Works
-
-* Items always start at greatness 1
-* Greatness increases the item's overall power
-* Greatness 15+ items gain [suffix bonuses](/lootsurvivor/loot/suffix-boost)
-* Greatness 19+ items gain additional prefix [prefixes](/lootsurvivor/loot/prefixes)
-* Greatness 20 items get a +1 stat modifier
-
-***
-
-# Equipment Types
-
-Loot Survivor features 8 equipment slots for different item types:
-
-| Equipment Slot | Item Types                            | Function |
-| -------------- | ------------------------------------- | -------- |
-| **Weapon**     | Katana, Wand, Club, Short Sword       | Weapon   |
-| **Chest**      | Divine Robe, Shirt, Demon Husk        | Armor    |
-| **Head**       | Crown, Cap, Helm                      | Armor    |
-| **Waist**      | Ornate Belt, Sash, Heavy Belt         | Armor    |
-| **Foot**       | Divine Slippers, Boots, Shoes         | Armor    |
-| **Hand**       | Divine Gloves, Gloves, Gauntlets      | Armor    |
-| **Neck**       | Amulet, Pendant, Necklace             | Jewelry  |
-| **Ring**       | Platinum Ring, Gold Ring, Silver Ring | Jewelry  |
-
-***
-
-# Combat Types & Materials
-
-Items have dual classifications that affect combat performance:
-
-## Weapon Types
-
-**⚔️ Blade Weapons**
-
-* Strong vs Hide armor
-* Weak vs Metal armor
-* Examples: Katana, Short Sword, Scimitar
-
-**🔨 Bludgeon Weapons**
-
-* Strong vs Metal armor
-* Weak vs Cloth armor
-* Examples: Club, Mace, Warhammer
-
-**✨ Magic Weapons**
-
-* Strong vs Cloth armor
-* Weak vs Hide armor
-* Examples: Wand, Book, Ghost Wand
-
-## Armor Materials
-
-**🛡️ Hide Armor**
-
-* Resists Blade attacks
-* Weak to Magic attacks
-* Examples: Leather armor, Dragon skin
-
-**⚡ Metal Armor**
-
-* Resists Bludgeon attacks
-* Weak to Blade attacks
-* Examples: Chain mail, Plate armor
-
-**🧙 Cloth Armor**
-
-* Resists Magic attacks
-* Weak to Bludgeon attacks
-* Examples: Robes, Shirts
-
-***
-
-# Item Acquisition
-
-## Discovery Methods
-
-Items can be obtained through several methods:
-
-| Method                 | Rate                | Quality     | Notes                           |
-| ---------------------- | ------------------- | ----------- | ------------------------------- |
-| **Exploration**        | 3.3% of explores    | Random tier | Primary acquisition method      |
-| **Market Purchase**    | Level-dependent     | Variable    | Costs gold, refresh on level up |
-| **Starting Equipment** | 1 weapon guaranteed | T5 only     | Random weapon type              |
-
-## Market System
-
-* Market refreshes completely on each level up
-* Available items are randomly generated
-* Item count increases with adventurer level
-* CHA stat reduces purchase prices
-* Market items follow same tier distribution as drops
-
-***
-
-# Item Management
-
-## Inventory System
-
-* **8 Equipment Slots** - One for each equipment type
-* **15 Bag Slots** - Additional storage for backup items
-* **Auto-equip** - New items automatically equip if slots are empty
-* **Gold Conversion** - Duplicate items convert to gold if no space
-
-## Item Usage
-
-**Equipping Items:**
-
-* Drag from bag to equipment slot
-* Items provide immediate stat bonuses
-* Combat type/material affects battle performance
-* Can switch equipment during exploration (not in combat)
-
-**Item Stacking:**
-
-* Only one item per equipment slot
-* Identical items convert to gold
-* Higher tier items typically replace lower tier
-* Consider suffix/prefix bonuses when deciding
-
-***
-
-# Special Properties
-
-## Suffixes
-
-Items with Greatness 15+ gain powerful suffix bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for complete details.
-
-## Prefixes
-
-Items with Greatness 19+ gain additional prefix bonuses that stack with suffix effects. These same prefixes are also used for named beasts in Beast Mode NFTs.
-
-**Complete Prefix & Suffix Reference:** See [Prefixes Guide](/lootsurvivor/loot/prefixes) for the full library of all 69 prefixes and 18 suffixes.
-
-***
-
-# Summary
-
-The loot system provides deep character customization through equipment choices, tier progression, and special properties. Understanding how tiers, greatness, suffixes, and prefixes work together allows you to build powerful adventurers capable of surviving Death Mountain's greatest challenges.
-
-**Key Loot Principles:**
-
-* Higher tiers provide better base power
-* Greatness 15+ items gain significant suffix bonuses
-* Greatness 19+ items gain additional prefix bonuses
-* Combat type and material matter for battle effectiveness
-* Market refreshes provide new acquisition opportunities each level
-
-
-
----
-
-file: docs/lootsurvivor/loot/jewelry.mdx
-meta: {}
-
-# Jewelry Items
-
-Jewelry items can be used to increase Luck and unlock special abilities. Luck gives an increased chance of achieving critical hits. Jewelry items will contribute to Luck even when bagged.
-
-| Item          | Boost                                                                              |
-| ------------- | ---------------------------------------------------------------------------------- |
-| Pendant       | 3% increase per greatness hide armor defence.                                      |
-| Necklace      | 3% increase per greatness metal armor defence.                                     |
-| Amulet        | 3% increase per greatness cloth armor defence.                                     |
-| Bronze Ring   | No special ability (economy option).                                               |
-| Silver Ring   | +20 Luck boost when equipped at G20 and +1 bonus luck per greatness when equipped. |
-| Gold Ring     | 3% per greatness increase in gold rewards from beasts.                             |
-| Platinum Ring | 3% per greatness increase in name match damage bonus.                              |
-| Titanium Ring | 3% per greatness increase in critical hit damage bonus.                            |
-
-
-
----
-
-file: docs/lootsurvivor/loot/prefixes.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Item & Beast Prefixes
-
-Prefixes are special name modifiers that appear on high-greatness items (Level 19+) and named beasts. This comprehensive reference covers all 69 prefixes and 18 suffixes used throughout Loot Survivor.
-
-## Prefix System Overview
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **Dual Usage:** Prefixes serve two important functions in the game:
-  </div>
-
-  <div style={{ marginBottom: '1rem' }}>
-    * **Item Enhancement**: High-greatness items (19+) gain prefix bonuses for additional stats
-    * **Beast Names**: Named beasts (Level 19+) use these same prefixes for unique identities
-    * **NFT Collection**: Beast Mode NFTs mint with prefix names for collectible variety
-  </div>
-
-  > **Cross-System Integration:** The same 69 prefixes create both powerful equipment and collectible named beasts!
-</div>
-
-## Complete Prefix Library (69 Total)
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
-    <div style={{ background: '#2a1a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #dc2626' }}>
-      ### 🌑 Dark Themes (17)
-
-      1. Agony
-      2. Apocalypse
-      3. Armageddon
-      4. Blight
-      5. Blood
-      6. Corruption
-      7. Damnation
-      8. Death
-      9. Demon
-      10. Dire
-      11. Doom
-      12. Dread
-      13. Ghoul
-      14. Gloom
-      15. Grim
-      16. Hate
-      17. Horror
-    </div>
-
-    <div style={{ background: '#2a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #eab308' }}>
-      ### 🏆 Power & Creatures (17)
-
-      18. Beast
-      19. Behemoth
-      20. Dragon
-      21. Empyrean
-      22. Fate
-      23. Golem
-      24. Honour
-      25. Kraken
-      26. Miracle
-      27. Phoenix
-      28. Skull
-      29. Soul
-      30. Spirit
-      31. Victory
-      32. Viper
-      33. Brood
-      34. Chimeric
-    </div>
-
-    <div style={{ background: '#1a2a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #10b981' }}>
-      ### 🌊 Elemental & Nature (17)
-
-      35. Bramble
-      36. Brimstone
-      37. Carrion
-      38. Corpse
-      39. Dusk
-      40. Eagle
-      41. Gale
-      42. Maelstrom
-      43. Sol
-      44. Storm
-      45. Tempest
-      46. Vortex
-      47. Cataclysm
-      48. Foe
-      49. Havoc
-      50. Onslaught
-      51. Plague
-    </div>
-
-    <div style={{ background: '#2a1a3a', padding: '1rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
-      ### ✨ Mystical & Abstract (18)
-
-      52. Glyph
-      53. Hypnotic
-      54. Loath
-      55. Mind
-      56. Morbid
-      57. Oblivion
-      58. Pain
-      59. Pandemonium
-      60. Rage
-      61. Rapture
-      62. Rune
-      63. Sorrow
-      64. Torment
-      65. Vengeance
-      66. Woe
-      67. Wrath
-      68. **Lights** ⭐
-      69. **Shimmering** ⭐
-    </div>
-  </div>
-
-  ### Ultra Rare Prefixes
-
-  **Lights (#68)** and **Shimmering (#69)** are considered the most valuable and rare prefixes in the entire system, making items or beast NFTs with these names extremely sought after by collectors.
-</div>
-
-## Complete Suffix Library (18 Total)
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-    <div>
-      | ID | Suffix     |
-      | -- | ---------- |
-      | 1. | Bane       |
-      | 2. | Root       |
-      | 3. | Bite       |
-      | 4. | Song       |
-      | 5. | Roar       |
-      | 6. | Grasp      |
-      | 7. | Instrument |
-      | 8. | Glow       |
-      | 9. | Bender     |
-    </div>
-
-    <div>
-      | ID  | Suffix  |
-      | --- | ------- |
-      | 10. | Shadow  |
-      | 11. | Whisper |
-      | 12. | Shout   |
-      | 13. | Growl   |
-      | 14. | Tear    |
-      | 15. | Peak    |
-      | 16. | Form    |
-      | 17. | Sun     |
-      | 18. | Moon    |
-    </div>
-  </div>
-
-  **Suffix Usage:** Only applies to items with Greatness 15+ for stat bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for detailed stat effects.
-</div>
-
-## Usage Examples
-
-### Item Naming Examples
-
-<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **High-Greatness Item Examples:**
-  </div>
-
-  <div style={{ marginBottom: '1rem' }}>
-    * **"Doom Katana of Power"** - Prefix: Doom, Base: Katana, Suffix: of Power
-    * **"Shimmering Divine Robe of Giants"** - Prefix: Shimmering, Base: Divine Robe, Suffix: of Giants
-    * **"Blood Wand of Skill"** - Prefix: Blood, Base: Wand, Suffix: of Skill
-  </div>
-
-  **Beast Naming Examples:**
-
-  <div style={{ marginBottom: '0' }}>
-    * **"Apocalypse Dragon"** - Prefix: Apocalypse, Beast: Dragon
-    * **"Lights Kraken"** - Prefix: Lights, Beast: Kraken
-    * **"Storm Phoenix"** - Prefix: Storm, Beast: Phoenix
-  </div>
-</div>
-
-## Cross-Reference Usage
-
-### When to Use This Page
-
-<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0', lineHeight: '1.6' }}>
-  **Reference Scenarios:**
-
-  1. **Item Identification**: Understanding what prefix names mean on your equipment
-  2. **Beast NFT Hunting**: Identifying valuable prefix combinations for collection
-  3. **Market Evaluation**: Determining item value based on prefix rarity
-  4. **Collection Planning**: Targeting specific prefixes for complete sets
-  5. **Cross-Game Integration**: Understanding naming for Summit game access
-
-  **Documentation Links:**
-
-  * Items with prefixes: Reference this page from item evaluation
-  * Named beasts: Reference this page from beast documentation
-  * NFT collecting: Use for understanding collectible variety
-</div>
-
-## See Also
-
-* [Loot System](/lootsurvivor/loot) - Main equipment and tier information
-* [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) - Detailed suffix stat effects
-* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Named beast NFT system
-* [Beast Overview](/lootsurvivor/beasts) - Combat types and beast information
-
-
-
----
-
-file: docs/lootsurvivor/loot/suffix-boost.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Suffix Boosts
-
-When an item reaches Greatness 15, it gains a powerful suffix that provides significant stat bonuses. These suffixes are based on the [16 Orders of Divinity](https://docs.loot.foundation/canonical-principles/loot/the-16-orders) from the original Loot collection and follow canonical loot lore.
-
-> **⚡ Power Boost:** Suffix bonuses can make a T3 item with the right suffix more powerful than a base T1 item!
-
-## How Suffixes Work
-
-* **Greatness Requirement:** Items must reach Greatness 15 to unlock suffix bonuses
-* **Random Assignment:** Suffixes are randomly assigned based on the Orders of Divinity
-* **Permanent Bonuses:** Suffix bonuses are permanent and stack with base item stats
-* **Lore Integration:** Each suffix follows canonical Loot Foundation principles
-
-***
-
-# Complete Suffix List
-
-## Suffix Bonuses by Order
-
-| Item Suffix          | Stat Bonuses                              | Total Bonus | Order Association                 |
-| -------------------- | ----------------------------------------- | ----------- | --------------------------------- |
-| **Of Power**         | Strength +3                               | +3          | Power-focused enhancement         |
-| **Of Giant**         | Vitality +3                               | +3          | Health and endurance boost        |
-| **Of Titans**        | Strength +2, Charisma +1                  | +3          | Balanced physical prowess         |
-| **Of Skill**         | Dexterity +3                              | +3          | Agility and precision enhancement |
-| **Of Perfection**    | Strength +1, Dexterity +1, Vitality +1    | +3          | Balanced all-around improvement   |
-| **Of Brilliance**    | Intelligence +3                           | +3          | Mental acuity enhancement         |
-| **Of Enlightenment** | Wisdom +3                                 | +3          | Spiritual awareness boost         |
-| **Of Protection**    | Vitality +2, Dexterity +1                 | +3          | Defensive-focused bonuses         |
-| **Of Anger**         | Strength +2, Dexterity +1                 | +3          | Aggressive combat enhancement     |
-| **Of Rage**          | Wisdom +1, Strength +1, Charisma +1       | +3          | Controlled fury bonuses           |
-| **Of Fury**          | Vitality +1, Charisma +1, Intelligence +1 | +3          | Passionate intensity boost        |
-| **Of Vitriol**       | Intelligence +2, Wisdom +1                | +3          | Sharp mental enhancement          |
-| **Of the Fox**       | Dexterity +2, Charisma +1                 | +3          | Cunning and agility boost         |
-| **Of Detection**     | Wisdom +2, Dexterity +1                   | +3          | Awareness and reflexes            |
-| **Of Reflection**    | Wisdom +2, Intelligence +1                | +3          | Contemplative wisdom boost        |
-| **Of the Twins**     | Charisma +3                               | +3          | Social influence enhancement      |
-
-***
-
-# Suffix Categories
-
-## Single Stat Focus
-
-These suffixes provide maximum bonuses to one primary stat:
-
-* **Of Power** - Pure Strength focus for maximum damage
-* **Of Giant** - Pure Vitality focus for maximum health
-* **Of Skill** - Pure Dexterity focus for escape mastery
-* **Of Brilliance** - Pure Intelligence focus for obstacle avoidance
-* **Of Enlightenment** - Pure Wisdom focus for ambush prevention
-* **Of the Twins** - Pure Charisma focus for market optimization
-
-## Balanced Combinations
-
-These suffixes provide balanced stat distributions:
-
-* **Of Perfection** - Equal bonuses across STR/DEX/VIT
-* **Of Rage** - Equal bonuses across WIS/STR/CHA
-* **Of Fury** - Equal bonuses across VIT/CHA/INT
-
-## Specialized Builds
-
-These suffixes target specific build archetypes:
-
-* **Of Titans** - Combat-focused (STR+CHA)
-* **Of Protection** - Defense-focused (VIT+DEX)
-* **Of Anger** - Aggressive melee (STR+DEX)
-* **Of Vitriol** - Mental mastery (INT+WIS)
-* **Of the Fox** - Agile trader (DEX+CHA)
-* **Of Detection** - Alert explorer (WIS+DEX)
-* **Of Reflection** - Wise scholar (WIS+INT)
-
-***
-
-# Suffix Strategy
-
-## Evaluating Suffix Value
-
-When comparing items with suffixes, consider:
-
-1. **Your Build Focus** - Does the suffix support your stat priorities?
-2. **Current Weaknesses** - Does the suffix shore up weak areas?
-3. **Base Tier vs Suffix** - A T3+suffix might beat a base T1
-4. **Total Stat Impact** - All +3 bonuses are equally valuable mathematically
-
-## Suffix Synergies
-
-**Combat Builds:**
-
-* **Of Power** - Maximum damage output
-* **Of Titans** - Damage + market efficiency
-* **Of Anger** - Damage + escape capability
-
-**Survival Builds:**
-
-* **Of Giant** - Maximum health pool
-* **Of Protection** - Health + escape ability
-* **Of Perfection** - Balanced survivability
-
-**Utility Builds:**
-
-* **Of the Fox** - Escape + market efficiency
-* **Of Detection** - Awareness + agility
-* **Of Reflection** - Mental mastery
-
-***
-
-# Summary
-
-Suffix bonuses transform the loot system from simple tier progression to complex item evaluation. A well-rolled suffix can make any item tier competitive, while the wrong suffix might make you overlook a potentially powerful piece of equipment.
-
-**Key Suffix Principles:**
-
-* All suffixes provide exactly +3 total stat points
-* Suffixes unlock at Greatness 15
-* Suffix distribution matters more than individual bonuses
-* Consider your build when evaluating suffix value
-* Don't automatically dismiss lower tiers with good suffixes
-
-
-
----
-
 file: docs/lootsurvivor/survivor-token/airdrop.mdx
 meta: {}
 
@@ -6306,7 +6306,7 @@ The Loot Survivor airdrop provides **free game entries** to eligible NFT holders
 Instead of receiving SURVIVOR tokens directly, eligible participants receive free game entries to play Loot Survivor. The LS2 Dungeon holds 2,258,100 SURVIVOR tokens that are distributed to players based on their performance:
 
 * **Minimum Level 3**: Must reach at least level 3 to earn tokens
-* **1 Token per Level**: Starting at level 3, earn 1 token for each level
+* **Tokens = Level Reached**: Starting at level 3, tokens equal to the level reached
 * **Promotion Periods**: 4X tokens during weeks 2-4, 2X tokens after week 4
 * **Performance-based rewards**: Higher levels mean more tokens
 * **Multiple attempts**: Each free game entry is a new opportunity to earn tokens
@@ -6315,19 +6315,19 @@ Instead of receiving SURVIVOR tokens directly, eligible participants receive fre
 
 **Standard Rate (Week 1):**
 
-* Level 3: 1 token
-* Level 10: 8 tokens (levels 3-10)
-* Level 25: 23 tokens (levels 3-25)
+* Level 3: 3 tokens
+* Level 10: 10 tokens
+* Level 25: 25 tokens
 
 **4X Promotion (Weeks 2-4):**
 
-* Level 10: 32 tokens
-* Level 25: 92 tokens
+* Level 10: 40 tokens
+* Level 25: 100 tokens
 
 **2X Promotion (After Week 4):**
 
-* Level 10: 16 tokens
-* Level 25: 46 tokens
+* Level 10: 20 tokens
+* Level 25: 50 tokens
 
 ## Eligibility Categories
 
@@ -6420,14 +6420,14 @@ Free games are allocated based on:
 ### Earning Tokens
 
 * **Level 1-2**: No token rewards
-* **Level 3+**: Earn 1 token per level starting from level 3
+* **Level 3+**: Earn tokens equal to the level reached (e.g., Level 3 = 3 tokens, Level 20 = 20 tokens)
 * **Death**: Game ends, tokens earned are credited based on highest level reached
 * **Strategy**: Plan your builds to maximize level progression for more tokens
 
 ### Token Distribution
 
-* Tokens earned are automatically credited after each game
-* No additional claiming required for earned tokens
+* When a game ends, a claim button appears
+* Click the claim button to receive your earned tokens
 * Track your total earnings across all games played
 
 ## Important Notes
@@ -6448,9 +6448,9 @@ Free games are allocated based on:
 
 ### Fair Play
 
-* Anti-bot measures in place
-* Suspicious activity may result in disqualification
-* Games must be played legitimately to earn rewards
+* Protected by onchain VRF (Verifiable Random Function)
+* Anti-bot measures built into the smart contract
+* Fully transparent and verifiable gameplay
 
 ## Strategy Tips
 
@@ -6458,7 +6458,6 @@ Free games are allocated based on:
 
 * Study optimal builds before playing
 * Join community discussions for strategies
-* Practice with paid games if needed
 * Use your free games before the 2-week window expires
 
 ### Resource Management
@@ -6836,23 +6835,23 @@ The total supply of the SURVIVOR token is **10,000,000** tokens, distributed bet
 
 ## Distribution Overview
 
-| Category                | Tokens         | Percentage | Description                                  |
-| ----------------------- | -------------- | ---------- | -------------------------------------------- |
-| **Community**           | **7,500,000**  | **75%**    |                                              |
-| ├─ LS2 Dungeon          | 2,258,100      | 22.58%     | Gameplay rewards (1 token per level from L3) |
-| ├─ Treasury DCA         | 1,500,000      | 15%        | 3-month programmatic sale via TWAMM          |
-| ├─ Survivor Treasury    | 1,002,222      | 10.02%     | DAO-controlled treasury                      |
-| ├─ Beast Entitlements   | 931,500        | 9.32%      | Claim at Beast mint                          |
-| ├─ Biblio (Loot Realms) | 500,000        | 5%         | Realms ecosystem                             |
-| ├─ Legacy Beast Bonus   | 332,028        | 3.32%      | LS1 Beast holder rewards                     |
-| ├─ Top 1k LS1.5 Players | 326,150        | 3.26%      | Top player rewards                           |
-| ├─ Loot                 | 250,000        | 2.5%       | Original Loot holders                        |
-| ├─ 1337 Skulls          | 150,000        | 1.5%       | Skulls holders                               |
-| ├─ Genesis Project      | 100,000        | 1%         | Genesis Adventurers                          |
-| ├─ Budokan              | 100,000        | 1%         | Combat system development                    |
-| └─ Summit               | 100,000        | 1%         | Achievement systems                          |
-| **Team**                | **2,500,000**  | **25%**    | Development & maintenance                    |
-| **Total**               | **10,000,000** | **100%**   |                                              |
+| Category             | Tokens         | Percentage | Description                                        |
+| -------------------- | -------------- | ---------- | -------------------------------------------------- |
+| **Community**        | **7,500,000**  | **75%**    |                                                    |
+| LS2 Dungeon          | 2,258,100      | 22.58%     | Gameplay rewards (tokens = level reached, from L3) |
+| Treasury DCA         | 1,500,000      | 15%        | 3-month programmatic sale via TWAMM                |
+| Survivor Treasury    | 1,002,222      | 10.02%     | DAO-controlled treasury                            |
+| Beast Entitlements   | 931,500        | 9.32%      | Claim at Beast mint                                |
+| Biblio (Loot Realms) | 500,000        | 5%         | Realms ecosystem                                   |
+| Legacy Beast Bonus   | 332,028        | 3.32%      | LS1 Beast holder rewards                           |
+| Top 1k LS1.5 Players | 326,150        | 3.26%      | Top player rewards                                 |
+| Loot                 | 250,000        | 2.5%       | Original Loot holders                              |
+| 1337 Skulls          | 150,000        | 1.5%       | Skulls holders                                     |
+| Genesis Project      | 100,000        | 1%         | Genesis Adventurers                                |
+| Budokan              | 100,000        | 1%         | Game-agnostic tournament platform                  |
+| Summit               | 100,000        | 1%         | Future Beast battler from LS collections           |
+| **Team**             | **2,500,000**  | **25%**    | No lockups                                         |
+| **Total**            | **10,000,000** | **100%**   |                                                    |
 
 ## Distribution Breakdown
 
@@ -6863,9 +6862,9 @@ The majority of SURVIVOR tokens are allocated to the community through various m
 #### LS2 Dungeon Rewards: 2,258,100 (22.58%)
 
 * First-come, first-served distribution through gameplay
-* 1 SURVIVOR token per level starting at level 3
-* **4X Promotion**: Weeks 2-4 (4 tokens per level)
-* **2X Promotion**: After week 4 until all tokens claimed (2 tokens per level)
+* Tokens equal to the level reached (starting at level 3)
+* **4X Promotion**: Weeks 2-4 (multiply token rewards by 4)
+* **2X Promotion**: After week 4 until all tokens claimed (multiply token rewards by 2)
 
 #### Treasury Bootstrap DCA: 1,500,000 (15%)
 
@@ -6902,12 +6901,12 @@ The majority of SURVIVOR tokens are allocated to the community through various m
 * **Loot**: 250,000 (2.5%) - Distributed to multisig of trusted Loot ecosystem entities
 * **1337 Skulls**: 150,000 (1.5%) - Distributed to multisig of trusted Skulls ecosystem entities
 * **Genesis Project**: 100,000 (1%) - Distributed to multisig of trusted Genesis ecosystem entities
-* **Budokan**: 100,000 (1%) - Combat system development
-* **Summit**: 100,000 (1%) - Achievement systems
+* **Budokan**: 100,000 (1%) - Player incentives for game-agnostic tournament platform
+* **Summit**: 100,000 (1%) - Player incentives and utility for Beasts collected in Loot Survivor
 
 ### Team Allocation: 2,500,000 (25%)
 
-Reserved for the Loot Survivor development team to ensure continued protocol development, maintenance, and growth. This allocation aligns long-term incentives between the team and the ecosystem's success.
+Reserved for the Loot Survivor team. This allocation aligns long-term incentives between the team and the ecosystem's success.
 
 ## Value Accrual Mechanisms
 
@@ -6954,9 +6953,9 @@ SURVIVOR token holders control:
 ### Ongoing Distributions
 
 * **LS2 Dungeon**: First-come, first-served through gameplay
-  * Week 1: Standard rate (1 token per level from L3)
-  * Weeks 2-4: 4X promotion (4 tokens per level)
-  * After Week 4: 2X promotion until exhausted
+  * Week 1: Standard rate (tokens = level reached, starting at L3)
+  * Weeks 2-4: 4X promotion (standard rate × 4)
+  * After Week 4: 2X promotion until exhausted (standard rate × 2)
 * **Treasury Bootstrap DCA**: 3-month programmatic sale (Sept 30 - Dec 30)
 
 ### No Lockups
