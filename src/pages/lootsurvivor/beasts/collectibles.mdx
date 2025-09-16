@@ -4,7 +4,7 @@ layout: docs
 
 # Beast Collectibles
 
-In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint an NFT to your wallet. There are 93,150 uniquely named beasts to be collected!
+In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint an NFT to your wallet. There is a fixed supply of **93,225** uniquely generated Beasts across **75 species** (1,243 variants per species) to be collected.
 
 <div style={{ display: 'flex', gap: '1rem', margin: '2rem 0', textAlign: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
 
@@ -81,6 +81,18 @@ In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint 
 
 </div>
 
+## Collection Overview
+
+<div style={{ background: '#0f172a', padding: '1.25rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.7', border: '1px solid #334155' }}>
+
+- **Fully onchain artwork + metadata**: Images and JSON are generated and rendered directly from smart contracts
+- **Born onchain**: Beasts are earned in Loot Survivor using verifiable randomness; every step is recorded onchain
+- **Battle‑ready NFTs**: Each Beast mints with combat stats (level, health), type, and tier compatible with gameplay
+- **Live ranking within species**: Each species tracks ranks #1–#1,243 as they mint; when complete, a King Beast is crowned
+- **Credibly neutral traits**: Onchain state includes defeat timestamp and the last Adventurer to slay that Beast
+
+</div>
+
 ### 🎨 NFT Visual Rarity & Properties
 
 <div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.8' }}>
@@ -110,11 +122,11 @@ In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint 
 
 <div style={{ marginBottom: '0' }}>
 
-- **Health**: Beast's health when first discovered
-- **Tier Level**: T1 (Legendary) through T5 (Common)
-- **Beast Name**: Base creature name (e.g., "Warlock", "Dragon")
-- **Prefix**: Special name prefix if applicable (e.g., "Doom", "Blood")
-- **Victory Timestamp**: Onchain record of when defeated
+- **Level & Health**: Combat stats encoded at mint
+- **Tier & Type**: T1–T5 tier and one of Magical, Hunter, Brute
+- **Name & Prefix**: Base species name plus optional prefix (e.g., "Doom Kraken")
+- **Defeat Timestamp**: Onchain record of when the Beast was defeated
+- **Provenance Fields**: Credibly neutral traits like last slayer enable onchain leaderboards and history
 
 </div>
 
@@ -146,6 +158,33 @@ Named beasts use the same prefix system as high-greatness items. For the complet
 - **Lights** (#68) - Extremely uncommon and highly sought after
 
 > **Complete Reference:** Visit the loot section for the full categorized list of all 69 prefixes!
+
+</div>
+
+## Tier Border Colors
+
+<div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+
+- **Tier 1 (Legendary)**: Orange border — most powerful
+- **Tier 2 (Epic)**: Purple border
+- **Tier 3 (Rare)**: Blue border
+- **Tier 4 (Uncommon)**: Green border
+- **Tier 5 (Common)**: White border
+
+These borders are reflected in NFT visuals for instant rarity recognition.
+
+</div>
+
+## Contracts & Image Data
+
+<div style={{ background: '#111827', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.7', border: '1px solid #1f2937' }}>
+
+- Regular PNG Image Data: https://voyager.online/contract/0x07bcd91940f5a2640437c764815b6a8a173f09fff991420b691713bebd82f7bf
+- Shiny PNG Image Data: https://voyager.online/contract/0x03bdFdEeA997CA7C7b1d66590a541FC559cE5A742e0162fE98Fe371E70709444
+- Regular GIF Image Data: https://voyager.online/contract/0x012F11AD850839d27351Bbf49858A3180AdB1C30d9942423FD089F5740776293
+- Shiny GIF Image Data: https://voyager.online/contract/0x0700f224e6fcb344c27f29e62687333b589b3be39a2c026ede5968bf53b6bb2a
+
+> Tip: These contracts generate the onchain images that appear in marketplaces and galleries.
 
 </div>
 
