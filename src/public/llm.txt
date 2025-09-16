@@ -1502,10 +1502,11 @@ Loot Survivor is built on Starknet using the Dojo engine, with all game logic ex
 The Loot Survivor smart contract system is organized into several core components:
 
 * **Game**: Main game logic and state management
-* **Adventurer**: Player character data and progression
-* **Beast**: Creature stats, behavior, and combat mechanics
-* **Loot**: Item generation, properties, and bonuses
 * **Game Token**: Interfaces for Embeddable Game Standard compatibility
+* **Beast**: Creature stats, behavior, and combat mechanics
+* **Adventurer**: Player character data and progression
+* **Loot**: Item generation, properties, and bonuses
+* **Objectives**: Quest and achievement system
 * **Renderer**: Visual rendering and display logic
 * **Settings**: Game configuration and parameters
 
@@ -1522,43 +1523,7 @@ The Loot Survivor smart contract system is organized into several core component
     {
       name: "Game",
       address:
-        "-",
-    },
-  ],
-  [
-    {
-      name: "Adventurer",
-      address:
-        "0x49d0f851a94eb1949ca7181855d71139ad438d546bb6c6bd92a8c67a0f7ae4f",
-    },
-    {
-      name: "Adventurer",
-      address:
-        "-",
-    },
-  ],
-  [
-    {
-      name: "Beast",
-      address:
-        "0x5f9371543af0b2b546ba273840e1943e81622105241b4498d1dde4de92e2c77",
-    },
-    {
-      name: "Beast",
-      address:
-        "-",
-    },
-  ],
-  [
-    {
-      name: "Loot",
-      address:
-        "0x78d7780371156c331f279dcd7b3372c88705ab178293ea9e612ea81bc478fd7",
-    },
-    {
-      name: "Loot",
-      address:
-        "-",
+        "0x6f7c4350d6d5ee926b3ac4fa0c9c351055456e75c92227468d84232fc493a9c",
     },
   ],
   [
@@ -1570,7 +1535,55 @@ The Loot Survivor smart contract system is organized into several core component
     {
       name: "Game Token",
       address:
+        "0x5e2dfbdc3c193de629e5beb116083b06bd944c1608c9c793351d5792ba29863",
+    },
+  ],
+  [
+    {
+      name: "Beast",
+      address:
+        "0x5f9371543af0b2b546ba273840e1943e81622105241b4498d1dde4de92e2c77",
+    },
+    {
+      name: "Beast",
+      address:
+        "0x74abc15c0ddef39bdf1ede2a643c07968d3ed5bacb0123db2d5b7154fbb35c7",
+    },
+  ],
+  [
+    {
+      name: "Adventurer",
+      address:
+        "0x49d0f851a94eb1949ca7181855d71139ad438d546bb6c6bd92a8c67a0f7ae4f",
+    },
+    {
+      name: "Adventurer",
+      address:
+        "0x3fc7ecd6d577daa1ee855a9fa13a914d01acda06715c9fc74f1ee1a5e346a01",
+    },
+  ],
+  [
+    {
+      name: "Loot",
+      address:
+        "0x78d7780371156c331f279dcd7b3372c88705ab178293ea9e612ea81bc478fd7",
+    },
+    {
+      name: "Loot",
+      address:
+        "0x4c386505ce1cc0be91e7ae8727c9feec66692a92c851b01e7f764ea0143dbe4",
+    },
+  ],
+  [
+    {
+      name: "Objectives",
+      address:
         "-",
+    },
+    {
+      name: "Objectives",
+      address:
+        "0x403224d3586a402bf3d9a7553493ba0d931e306e6aae8472503afdf90083e32",
     },
   ],
   [
@@ -1582,7 +1595,7 @@ The Loot Survivor smart contract system is organized into several core component
     {
       name: "Renderer",
       address:
-        "-",
+        "0x6135cd4ee82eb5e7652a636a952c893315914f0655a3cc834ce8b6b1e5ff1cb",
     },
   ],
   [
@@ -1594,7 +1607,7 @@ The Loot Survivor smart contract system is organized into several core component
     {
       name: "Settings",
       address:
-        "-",
+        "0x3caf941b916a83550d8f6325802e0cb686c9a0c8b30a23fb9df531ae24d12d0",
     },
   ],
 ]}
@@ -6284,26 +6297,37 @@ meta: {}
 
 ## Overview
 
-The Loot Survivor airdrop provides **free game entries** to eligible NFT holders and community members. These free games give players access to the LS2 Dungeon, which contains **2,000,000 SURVIVOR tokens** distributed as rewards based on gameplay performance.
+The Loot Survivor airdrop provides **free game entries** to eligible NFT holders and community members. These free games give players access to the LS2 Dungeon, which contains **2,258,100 SURVIVOR tokens** distributed as rewards based on gameplay performance.
 
 ## How It Works
 
 ### Game-Based Distribution
 
-Instead of receiving SURVIVOR tokens directly, eligible participants receive free game entries to play Loot Survivor. The LS2 Dungeon holds 2,000,000 SURVIVOR tokens that are distributed to players based on their performance:
+Instead of receiving SURVIVOR tokens directly, eligible participants receive free game entries to play Loot Survivor. The LS2 Dungeon holds 2,258,100 SURVIVOR tokens that are distributed to players based on their performance:
 
 * **Minimum Level 3**: Must reach at least level 3 to earn tokens
-* **Tokens = Level Reached**: You earn tokens equal to the level you reach
+* **1 Token per Level**: Starting at level 3, earn 1 token for each level
+* **Promotion Periods**: 4X tokens during weeks 2-4, 2X tokens after week 4
 * **Performance-based rewards**: Higher levels mean more tokens
 * **Multiple attempts**: Each free game entry is a new opportunity to earn tokens
 
 ### Example Rewards
 
-* Reach Level 3: Earn 3 SURVIVOR tokens (minimum)
-* Reach Level 10: Earn 10 SURVIVOR tokens
-* Reach Level 25: Earn 25 SURVIVOR tokens
-* Reach Level 50: Earn 50 SURVIVOR tokens
-* Higher levels = More tokens earned
+**Standard Rate (Week 1):**
+
+* Level 3: 1 token
+* Level 10: 8 tokens (levels 3-10)
+* Level 25: 23 tokens (levels 3-25)
+
+**4X Promotion (Weeks 2-4):**
+
+* Level 10: 32 tokens
+* Level 25: 92 tokens
+
+**2X Promotion (After Week 4):**
+
+* Level 10: 16 tokens
+* Level 25: 46 tokens
 
 ## Eligibility Categories
 
@@ -6396,7 +6420,7 @@ Free games are allocated based on:
 ### Earning Tokens
 
 * **Level 1-2**: No token rewards
-* **Level 3+**: Earn tokens equal to the level reached (e.g., Level 3 = 3 tokens, Level 20 = 20 tokens)
+* **Level 3+**: Earn 1 token per level starting from level 3
 * **Death**: Game ends, tokens earned are credited based on highest level reached
 * **Strategy**: Plan your builds to maximize level progression for more tokens
 
@@ -6455,7 +6479,7 @@ For assistance with free games:
 
 ## Disclaimer
 
-Free game entries are distributed to reward early supporters and community members. The 2,000,000 SURVIVOR tokens in the LS2 Dungeon are distributed solely based on gameplay performance. Token earnings depend on individual skill and game progression.
+Free game entries are distributed to reward early supporters and community members. The 2,258,100 SURVIVOR tokens in the LS2 Dungeon are distributed solely based on gameplay performance. Token earnings depend on individual skill and game progression.
 
 
 
@@ -6633,33 +6657,75 @@ meta: {}
 
 # SURVIVOR Token
 
-Information about the SURVIVOR token
-
-The SURVIVOR token is the native governance and utility token for Loot Survivor, designed to decentralize ownership and incentivize participation in the Loot Survivor ecosystem.
+The SURVIVOR token is the native governance and economic coordination token for Loot Survivor, designed to decentralize the ownership role of the game contracts and promote the growth of the Loot Survivor ecosystem.
 
 ## Overview
 
-The SURVIVOR token serves as the cornerstone of the Loot Survivor ecosystem, providing governance rights, in-game utility, and value accrual mechanisms for participants. With a total supply of 10 million tokens, the distribution is carefully structured to reward the community while ensuring sustainable long-term development.
+* Total Supply: 10,000,000
+* Distribution: 75% Community; 25% Team
+* Lockups: None
+
+## Purpose
+
+SURVIVOR is the governance and economic coordination token for Loot Survivor 2.
+
+Governance: SURVIVOR lets holders propose and vote on specific onchain parameters (e.g., which Dungeon the Beasts inhabit, royalty settings for the Beast NFT collection, Beast Mode settings, which ERC‑20s the Dungeon accepts, and the Dungeon’s payment token).
+
+Autonomous treasury growth: When a player buys a Dungeon Ticket, immutable code automatically uses 80% of that payment to purchase SURVIVOR on a decentralized exchange and deposits the purchased tokens into the Survivor Treasury, which is governed by SURVIVOR holders.
+
+No promises / no rights to payouts: SURVIVOR does not grant rights to profits, revenue, dividends, or distributions. The automated purchases are a mechanical feature of the contracts, not a commitment to support price or provide returns.
 
 ## Key Features
 
-### Decentralized Governance
+### Decentralized Ownership Role
 
-SURVIVOR token holders control the governance treasury, which includes proceeds from the DCA token sale and the treasury reserve allocation. Token holders determine how these funds are utilized for ecosystem development, partnerships, and community initiatives.
+The SURVIVOR token ships with a fully onchain governance system, built on top of [OpenZeppelin’s audited governance components](https://docs.openzeppelin.com/contracts-cairo/2.0.0/governance). The governance system enables SURVIVOR token holders to express their will onchain and for their shared will to execute as an onchain transaction. This allows sensitive, configurable game settings,such as which Dungeon the Beasts are in, to be truly owned and controllable by the community instead of the developers.
 
-### Value Accrual
+The Survivor Governance Contract will control the following settings:
 
-The token captures value through the governance treasury, which receives:
+* [Beast NFT](https://voyager.online/nft-contract/0x0280ace0b2171106eaebef91ca9b097a566108e9452c45b94a7924a9f794ae80):
+  * Move Beasts to a new Dungeon
+  * Change royalty information (default: 5% distributed to the Survivor Treasury)
+* [LS2 Beast Mode](https://voyager.online/contract/0x02fb722c25768e4a9994258754e7103895fd2f33cbcc1edc8711807950830cb5):
+  * Change Beast Mode settings
+  * Add and remove ERC‑20s from the Dungeon
+  * Change the payment token for the Dungeon
 
-* Proceeds from the DCA token sale
-* 80% of proceeds from dungeon ticket purchases
-* The 500,000 treasury reserve tokens
+### Economic Coordination
 
-These funds can be directed towards buybacks, player rewards, and ecosystem development as determined by SURVIVOR token holders.
+To support the sustainable growth of the Loot Survivor ecosystem, Loot Survivor 2 ships with an autonomous and immutable SURVIVOR buy‑back mechanism. 80% of the proceeds from the sale of Dungeon Tickets, which are required to enter the Dungeon and collect Beasts, are used to purchase SURVIVOR tokens using Ekubo’s TWAMM and to deposit them into the Survivor Treasury. The remaining 20% is distributed to $veLORDS holders for the benefit of Bibliotheca DAO, the original incubator of Loot Survivor.
 
-### Community First
+### Treasury Bootstrap
 
-75% of the total supply is allocated to the community through various distribution mechanisms, ensuring broad ownership and aligned incentives.
+The treasury is initially seeded with 1M SURVIVOR and approximately 3M LORDS at genesis.
+
+### SURVIVOR Sale (Programmatic DCA via TWAMM):
+
+* Supply: 15% of total supply.
+* Method: A 3‑month programmatic DCA order via TWAMM (Sept 30–Dec 30).
+* Proceeds: 100% contributed to the community treasury for ecosystem growth as governed onchain.
+
+DISCLAIMERS: This sale is programmatic, there are no allocations, discounts, or price/return statements.
+
+### Community Allocation
+
+75% of the total supply is allocated to the community through various distribution mechanisms, ensuring broad ownership and aligned incentives. Allocations include:
+
+* 22.5% LS2 Dungeon claim allocations (FCFS)
+  * 1 Token per level starting at level 3
+  * 4X Promotion for games played during weeks 2-4
+  * 2X Promotion after week 4 till all tokens are claimed.
+* 15% treasury bootstrap DCA
+* 10% Survivor Treasury
+* 9.3% Beast Entitlements (claim at mint)
+* 6.6% LS1/LS1.5 Players
+* 5% Loot Realms; 2.5% Loot; 1.5% 1337 Skulls; 1% Genesis Project; 1% Tournaments; 1% Beast Games
+
+Note: NFT royalties, if any, are not guaranteed across marketplaces.
+
+### Free Games Airdrop
+
+Loot Survivor 2 launches with a two‑week launch promotion that makes \~500k free games available to \~80k addresses across Ethereum, Arbitrum, Base, Starknet, Abstract, Linea, and Polygon. Those holding select NFTs on these platforms will be able to claim free games (including gas), allowing them to play Loot Survivor 2 and collect Beasts and SURVIVOR tokens.
 
 ## Quick Links
 
@@ -6668,13 +6734,92 @@ These funds can be directed towards buybacks, player rewards, and ecosystem deve
 
 ## Security
 
-The SURVIVOR token contracts are built using the latest stable OpenZeppelin components, which have undergone extensive security audits and are battle-tested across thousands of projects. This foundation ensures the reliability and security of the governance system through proven, industry-standard implementations.
+Governance contracts use well‑known OpenZeppelin components. This is not a security audit; no system is risk‑free.
+Game contracts are cutting‑edge and unaudited; use at your own risk.
 
-## Disclaimer
+## Disclaimers
 
-The SURVIVOR token is designed to decentralize ownership and governance of the Loot Survivor protocol. It represents participation rights in the ecosystem and should not be considered as a financial investment.
+The SURVIVOR token is designed to decentralize ownership and governance of the Loot Survivor protocol. It represents participation rights in the ecosystem and should not be considered a financial investment.
 
-Participation in Loot Survivor and holding SURVIVOR tokens involves risks including smart contract vulnerabilities, market volatility, and game balance changes. Users should understand these risks before participating.
+What SURVIVOR is not: SURVIVOR is not equity or debt. Automated purchases into the treasury are mechanical contract behavior, not price support or an offer of returns. Participation involves smart‑contract risk, market volatility, and governance outcomes that may not align with your preferences. Users should understand these risks before participating. Nothing here is investment advice.
+
+
+
+---
+
+file: docs/lootsurvivor/survivor-token/promotions.mdx
+meta: {}
+
+# Promotions
+
+## Starkware & Cartridge Partnership
+
+Loot Survivor has partnered with Starkware and Cartridge to bring an exclusive promotion featuring 100,000 STRK tokens distributed across three legendary Beasts. This collaboration celebrates the launch of SURVIVOR and rewards the most skilled adventurers who can defeat these special creatures.
+
+### Prize Distribution
+
+The 100,000 STRK prize pool is split between three unique Beasts, each offering substantial rewards to the adventurer who claims victory:
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
+  <img src="/docs/lootsurvivor/jackpot_balrog.png" alt="Torment Bane Balrog" style={{width: "200px", marginRight: "2rem"}} />
+
+  <div>
+    <h4>"Torment Bane" Balrog</h4>
+
+    <ul>
+      <li><strong>STRK Reward</strong>: 33,333 STRK</li>
+      <li><strong>Location</strong>: The Molten Depths</li>
+      <li><strong>Special Traits</strong>: Ancient demon of fire and shadow, Wielder of eternal flames</li>
+    </ul>
+  </div>
+</div>
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
+  <img src="/docs/lootsurvivor/jackpot_warlock.png" alt="Pain Whisper Warlock" style={{width: "200px", marginRight: "2rem"}} />
+
+  <div>
+    <h4>"Pain Whisper" Warlock</h4>
+
+    <ul>
+      <li><strong>STRK Reward</strong>: 33,333 STRK</li>
+      <li><strong>Location</strong>: The Shadow Sanctum</li>
+      <li><strong>Special Traits</strong>: Master of dark arts, Collector of tormented souls</li>
+    </ul>
+  </div>
+</div>
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
+  <img src="/docs/lootsurvivor/jackpot_dragon.png" alt="Demon Grasp Dragon" style={{width: "200px", marginRight: "2rem"}} />
+
+  <div>
+    <h4>"Demon Grasp" Dragon</h4>
+
+    <ul>
+      <li><strong>STRK Reward</strong>: 33,334 STRK</li>
+      <li><strong>Location</strong>: The Dragon's Lair</li>
+      <li><strong>Special Traits</strong>: Guardian of ancient treasures, Corrupted by demonic influence</li>
+    </ul>
+  </div>
+</div>
+
+### How It Works
+
+1. **Find the Beast**: These special Beasts spawn randomly in the dungeon
+2. **Defeat to Claim**: The first adventurer to defeat each Beast claims the STRK reward
+3. **Automatic Distribution**: STRK tokens are automatically sent to the winning adventurer's wallet
+4. **One Winner per Beast**: Each Beast can only be defeated once for the reward
+
+### Promotion Period
+
+This promotion runs indefinitely. These special Beasts will continue to spawn in the dungeon, offering adventurers ongoing opportunities to claim the STRK rewards. The promotion remains active until all three unique Beasts have been defeated and the full 100,000 STRK has been distributed.
+
+### About Our Partners
+
+**Starkware** - The technology company behind Starknet, providing the scalable infrastructure that powers Loot Survivor's fully onchain gameplay.
+
+**Cartridge** - The gaming infrastructure platform enabling seamless wallet experiences and player onboarding for Starknet games.
+
+This partnership demonstrates the strong ecosystem support for Loot Survivor and commitment to rewarding skilled players with meaningful prizes.
 
 
 
@@ -6691,16 +6836,23 @@ The total supply of the SURVIVOR token is **10,000,000** tokens, distributed bet
 
 ## Distribution Overview
 
-| Category              | Tokens         | Percentage | Description                    |
-| --------------------- | -------------- | ---------- | ------------------------------ |
-| **Community**         | **7,500,000**  | **75%**    |                                |
-| ├─ DCA & Treasury     | 2,500,000      | 25%        | Market distribution & reserves |
-| ├─ Dungeon Rewards    | 2,500,000      | 25%        | Gameplay incentives            |
-| ├─ Ecosystem Partners | 1,047,070      | 10.47%     | Contributors & builders        |
-| ├─ Beast Ecosystem    | 1,002,930      | 10.03%     | Beast NFT rewards              |
-| └─ Collection Rewards | 450,000        | 4.5%       | Legacy NFT holders             |
-| **Team**              | **2,500,000**  | **25%**    | Development & maintenance      |
-| **Total**             | **10,000,000** | **100%**   |                                |
+| Category                | Tokens         | Percentage | Description                                  |
+| ----------------------- | -------------- | ---------- | -------------------------------------------- |
+| **Community**           | **7,500,000**  | **75%**    |                                              |
+| ├─ LS2 Dungeon          | 2,258,100      | 22.58%     | Gameplay rewards (1 token per level from L3) |
+| ├─ Treasury DCA         | 1,500,000      | 15%        | 3-month programmatic sale via TWAMM          |
+| ├─ Survivor Treasury    | 1,002,222      | 10.02%     | DAO-controlled treasury                      |
+| ├─ Beast Entitlements   | 931,500        | 9.32%      | Claim at Beast mint                          |
+| ├─ Biblio (Loot Realms) | 500,000        | 5%         | Realms ecosystem                             |
+| ├─ Legacy Beast Bonus   | 332,028        | 3.32%      | LS1 Beast holder rewards                     |
+| ├─ Top 1k LS1.5 Players | 326,150        | 3.26%      | Top player rewards                           |
+| ├─ Loot                 | 250,000        | 2.5%       | Original Loot holders                        |
+| ├─ 1337 Skulls          | 150,000        | 1.5%       | Skulls holders                               |
+| ├─ Genesis Project      | 100,000        | 1%         | Genesis Adventurers                          |
+| ├─ Budokan              | 100,000        | 1%         | Combat system development                    |
+| └─ Summit               | 100,000        | 1%         | Achievement systems                          |
+| **Team**                | **2,500,000**  | **25%**    | Development & maintenance                    |
+| **Total**               | **10,000,000** | **100%**   |                                              |
 
 ## Distribution Breakdown
 
@@ -6708,39 +6860,50 @@ The total supply of the SURVIVOR token is **10,000,000** tokens, distributed bet
 
 The majority of SURVIVOR tokens are allocated to the community through various mechanisms designed to reward participation, contribution, and loyalty to the ecosystem.
 
-#### DCA & Treasury: 2,500,000 (25%)
+#### LS2 Dungeon Rewards: 2,258,100 (22.58%)
 
-* **DCA Distribution**: 2,000,000 (20%) - Tokens distributed via Dollar Cost Averaging orders to ensure fair market distribution and price discovery. Proceeds from the DCA are allocated to the governance treasury
-* **Treasury Reserve**: 500,000 (5%) - SURVIVOR tokens reserved for future ecosystem development, strategic partnerships, and unforeseen opportunities. These tokens along with DCA proceeds are controlled by SURVIVOR token holders
+* First-come, first-served distribution through gameplay
+* 1 SURVIVOR token per level starting at level 3
+* **4X Promotion**: Weeks 2-4 (4 tokens per level)
+* **2X Promotion**: After week 4 until all tokens claimed (2 tokens per level)
 
-#### Dungeon Rewards: 2,500,000 (25%)
+#### Treasury Bootstrap DCA: 1,500,000 (15%)
 
-* **LS2 Dungeon**: 2,000,000 (20%) - Rewards for players participating in the main Loot Survivor 2 game mode
-* **Alt-Dungeons**: 500,000 (5%) - Incentives for alternative game modes, special events, and experimental features
+* 3-month programmatic DCA order via TWAMM (Sept 30 - Dec 30)
+* 100% of proceeds contributed to community treasury
+* Ensures fair price discovery and broad distribution
 
-#### Ecosystem Partners: 1,047,070 (10.47%)
+#### Survivor Treasury: 1,002,222 (10.02%)
 
-Strategic allocations to key contributors and ecosystem partners:
+* DAO-controlled treasury for ecosystem development
+* Initial seed funding at genesis
+* Governed by SURVIVOR token holders
 
-* **Biblio**: 500,000 (5%) - Knowledge base, lore, and documentation contributions
-* **Budokan**: 261,035 (2.61%) - Combat system development and balancing
-* **Summit**: 261,035 (2.61%) - Achievement systems and progression mechanics
-* **Casey**: 25,000 (0.25%) - Community initiatives and engagement
+#### Beast Entitlements: 931,500 (9.32%)
 
-#### Beast Ecosystem: 1,002,930 (10.03%)
+* Auto-claimed with each Beast mint (average 10 tokens per Beast)
+* Tier-based distribution:
+  * T1 Beasts: 14 tokens per mint
+  * T2 Beasts: 12 tokens per mint
+  * T3 Beasts: 10 tokens per mint
+  * T4 Beasts: 8 tokens per mint
+  * T5 Beasts: 6 tokens per mint
 
-Supporting the Beast NFT ecosystem within Loot Survivor:
+#### Legacy Players: 658,178 (6.58%)
 
-* **Beast Mints**: 931,500 (9.3%) - Incentives for new Beast NFT minting
-* **LS1 2381 Beasts**: 71,430 (0.71%) - Rewards for the 2,381 legacy Beast holders from Loot Survivor v1
+* **Legacy Beast Bonus**: 332,028 (3.32%)
+  * LS1 Beasts (2,306 total): 249,048 tokens (108 per Beast)
+  * LS1.5 Beasts: 82,980 tokens (36 per Beast)
+* **Top 1k LS1.5 Players**: 326,150 (3.26%) - Top player rewards
 
-#### Collection Rewards: 450,000 (4.5%)
+#### Ecosystem Allocations: 1,150,000 (11.5%)
 
-Recognition for early supporters and collectors:
-
-* **Loot**: 250,000 (2.5%) - Original Loot NFT holders
-* **GA (Genesis Adventurers)**: 100,000 (1%) - Genesis Adventurer holders
-* **Skulls**: 100,000 (1%) - Skull NFT holders
+* **Biblio (Loot Realms)**: 500,000 (5%) - Realms ecosystem development
+* **Loot**: 250,000 (2.5%) - Distributed to multisig of trusted Loot ecosystem entities
+* **1337 Skulls**: 150,000 (1.5%) - Distributed to multisig of trusted Skulls ecosystem entities
+* **Genesis Project**: 100,000 (1%) - Distributed to multisig of trusted Genesis ecosystem entities
+* **Budokan**: 100,000 (1%) - Combat system development
+* **Summit**: 100,000 (1%) - Achievement systems
 
 ### Team Allocation: 2,500,000 (25%)
 
@@ -6752,9 +6915,10 @@ Reserved for the Loot Survivor development team to ensure continued protocol dev
 
 SURVIVOR token holders control the governance treasury, which consists of:
 
-* Proceeds from the DCA token sale (ETH, STRK, USDC)
+* Proceeds from the Treasury Bootstrap DCA (1.5M tokens sold over 3 months)
 * 80% of proceeds from dungeon ticket purchases
-* 500,000 SURVIVOR tokens from the treasury reserve
+* 1,002,222 SURVIVOR tokens from the Survivor Treasury allocation
+* Initial seed of \~3M LORDS at genesis
 
 These funds can be directed towards:
 
@@ -6765,34 +6929,41 @@ These funds can be directed towards:
 
 ### Governance Rights
 
-Token holders control the governance treasury through:
+SURVIVOR token holders control:
 
-* Treasury allocation decisions
-* Partnership approvals and funding
-* Community initiative funding
-* Strategic use of DCA proceeds
-* Management of the 500,000 treasury reserve tokens
+* **Beast NFT Settings**:
+  * Move Beasts to new Dungeons
+  * Royalty settings (default 5% to Survivor Treasury)
+* **LS2 Beast Mode**:
+  * Beast Mode configuration
+  * ERC-20 acceptance in Dungeons
+  * Dungeon payment token selection
+* **Treasury Management**:
+  * Allocation of treasury funds
+  * Partnership approvals and funding
+  * Community initiative funding
 
 ## Distribution Schedule
 
-### Immediate Distribution
+### Launch Distributions
 
-* Airdrop allocations: Claimable immediately upon launch
-* Collection rewards: Available for eligible holders to claim
+* **Free Games Airdrop**: \~500k games to \~80k addresses (2-week claim window)
+* **Beast Entitlements**: Claimable at Beast mint
+* **LS1/LS1.5 Players**: Based on historical participation
 
-### Phased Distribution
+### Ongoing Distributions
 
-* DCA orders: Executed over predetermined periods for fair price discovery
-* Dungeon rewards: Distributed based on gameplay achievements and milestones
-* Beast mints: Released according to minting events and schedules
+* **LS2 Dungeon**: First-come, first-served through gameplay
+  * Week 1: Standard rate (1 token per level from L3)
+  * Weeks 2-4: 4X promotion (4 tokens per level)
+  * After Week 4: 2X promotion until exhausted
+* **Treasury Bootstrap DCA**: 3-month programmatic sale (Sept 30 - Dec 30)
 
-### Vesting Considerations
+### No Lockups
 
-Different allocations may have specific vesting or unlock schedules:
-
-* Community rewards may be immediate or activity-based
-* Team allocation subject to long-term alignment agreements
-* Treasury reserve tokens and DCA proceeds released through token holder governance proposals
+* All allocations are immediately liquid upon receipt
+* No vesting schedules or lockup periods
+* Team tokens have no restrictions
 
 ## Economic Sustainability
 

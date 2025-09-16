@@ -239,6 +239,10 @@ export default defineConfig({
                 text: "Eligible Collections",
                 link: "/lootsurvivor/survivor-token/eligible-collections",
               },
+              {
+                text: "Promotions",
+                link: "/lootsurvivor/survivor-token/promotions",
+              },
             ],
           },
           // {
