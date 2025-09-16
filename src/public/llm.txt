@@ -366,311 +366,6 @@ fn get_leaderboard(
 
 ---
 
-file: docs/embeddable-game-standard/applications.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Applications
-
-The Embeddable Game Standard (EGS) unlocks powerful new possibilities for both game developers and platforms. By making games permissionlessly embeddable, EGS enables a growing ecosystem of apps to integrate, distribute, and build on top of games in novel ways. This page highlights some of the leading apps leveraging EGS today.
-
-## Budokan: Permissionless Tournaments
-
-Budokan uses the EGS to provide a fully permissionless tournament protocol. With EGS, games no longer need to implement their own leaderboard or revenue logic—instead, they can plug into Budokan's aggregated platform, which:
-
-* Accepts any supported token for entry fees and prizes
-* Offers extensive customization for tournament formats, entry requirements, and prize structures
-* Handles all leaderboard, prize, and entry logic on behalf of the game
-
-This makes it easy for game developers to reach new audiences and for players to discover and compete in a wide variety of tournaments.
-
-![Budokan Overview](/docs/overview.png)
-*Figure 1: Budokan overview page.*
-
-> **Tip:** By integrating with Budokan, game developers can focus on gameplay while the platform handles tournaments, rewards, and community engagement.
-
-## Eternum: Expanding Gameplay with Embedded Mini-Games
-
-Eternum, a next-generation MMO, leverages EGS to embed mini-games directly into its core experience. In Season 1, Eternum introduced a new quest system powered by EGS, allowing:
-
-* Seamless integration of third-party mini-games as quests
-* Emergence of new strategies and gameplay loops
-* A more dynamic, deconstructed MMO experience
-
-![Eternum Quest](/docs/eternum-quest.png)
-*Figure 2: Eternum Quest.*
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      Embedding games within Eternum allows mini-games to reach a much wider audience, maximizing their distribution and exposure. For Eternum, this approach brings significant value by introducing a diverse range of gameplay experiences to their core player base, keeping the platform fresh and engaging. By integrating a variety of mini-games, Eternum can continually offer new challenges and entertainment, enhancing player retention and satisfaction.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/eternum-quest-post.png" alt="Eternum Quest Post" width="400" height="300" />
-
-    <br />
-
-    <em>Figure 3: Eternum Quest Post.</em>
-  </div>
-</div>
-
-> **Note:** EGS makes it easy for any platform to embed, remix, or build on top of games, opening up new opportunities for both developers and communities.
-
-## Why Build Applications with EGS?
-
-* Offer a diverse library of games and experiences
-* Easily add new content and features without building from scratch
-* Foster engagement and retention by providing variety to your users
-
-> **Tip:** The EGS ecosystem is growing—consider how your app or game could benefit from permissionless embedding and integration.
-
-## Related Guides
-
-* [Embeddable Game Standard Overview](/embeddable-game-standard)
-* [Budokan Tournaments](/budokan)
-* [Game Integration Guide](/embeddable-game-standard/implementation)
-
-If you have questions or want to feature your app here, contact the Budokan team or join the community!
-
-
-
----
-
-file: docs/embeddable-game-standard/games.mdx
-meta: {
-  "layout": "docs"
-}
-
-import { GameCard } from '../../components/GameCard'
-
-# Embeddable Game Standard: Games
-
-Here is a list of games that have implemented the emeddable game standard and are benefitting from the tools provided:
-
-<GameCard icon="https://darkshuffle.io/favicon.svg" name="Dark Shuffle" url="https://darkshuffle.io" description="Dark Shuffle is a turn-based, collectible card game. Build your deck, battle monsters, and explore a procedurally generated world." developer="Provable Games" />
-
-<GameCard icon="https://app.zkube.xyz/assets/pwa-512x512.png" name="zKube" url="https://app.zkube.xyz/" description="zKube is an engaging puzzle game that puts players' strategic thinking to the test. Set within a dynamic grid, the objective is simple: manipulate blocks to form solid lines and earn points.	" developer="zKorp" />
-
-## Why Build Games with EGS?
-
-* Instantly reach new audiences by making your game embeddable in multiple apps and platforms
-* Focus on gameplay and innovation, not infrastructure
-* Extend the way your game is played through permissionless settings creation
-* Benefit from community-driven tournaments, quests, and rewards
-
-
-
----
-
-file: docs/embeddable-game-standard/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard
-
-The Embeddable Game Standard (EGS) is a foundational blueprint for Starknet games, designed to ensure interoperability and unlock access to an ever-growing ecosystem of powerful onchain applications, including the [Budokan](/budokan) tournament platform and the Tanken Quest platform (coming soon). It standardizes essential game contract functionalities such as ERC721 token minting for unique game instances, comprehensive metadata management, and robust score or progress tracking, which are vital for both competitive play and objective-based questing. By adhering to EGS, games can be seamlessly integrated into systems that distribute game instances as NFTs, associate them with diverse rewards (for victory, completion, or participation), and support varied engagement models. From high-stakes tournaments to narrative-driven campaigns, onboarding tutorials, and community-tailored challenges.
-
-## Table of Contents
-
-* [Overview](#overview)
-* [Architecture](#architecture)
-* [Key Functions](#key-functions)
-* [Implementation Guide](#implementation-guide)
-
-## Overview
-
-The standard provides a blueprint for game contracts to:
-
-* Mint game tokens (ERC721) for tournament entries
-* Store and expose game and player metadata
-* Track scores and settings in a standardized way
-* Emit events for metadata updates and lifecycle changes
-
-By adhering to this standard, games can:
-
-* Be listed and used in Budokan tournaments
-* Enable automated leaderboard and prize logic
-* Support composable, upgradable tournament experiences
-
-## Architecture
-
-* **Game Component:** Implements the core logic for minting, metadata management, and score tracking. See `contracts/src/components/game.cairo`.
-* **Models & Interfaces:** Define the data structures for game metadata, token metadata, settings, and lifecycle events.
-* **Integration Points:** Games must expose the required interfaces and implement the necessary storage and event logic.
-
-## Key Functions
-
-* `mint`: Mint a new game token for a player, with associated metadata and settings.
-* `game_metadata`: Retrieve metadata for the game contract.
-* `token_metadata`: Retrieve metadata for a specific game token.
-* `game_count`: Get the total number of games/tokens minted.
-* `emit_metadata_update`: Emit an event when token metadata is updated.
-* `initializer`: Initialize the game contract with metadata, settings, and storage configuration.
-
-## Implementation Guide
-
-1. **Implement the Game Component:**
-   * Use the provided `game_component` module as a base.
-   * Implement the required storage, events, and interface functions.
-2. **Define Metadata and Settings:**
-   * Use the standard models for game and token metadata.
-   * Store settings and score models as required by your game logic.
-3. **Integrate with Budokan:**
-   * Ensure your contract exposes the required interfaces (ERC721, metadata, settings).
-   * Test minting, metadata retrieval, and event emission with Budokan tournament flows.
-4. **Deploy and Register:**
-   * Deploy your game contract to Starknet.
-   * Register the game with Budokan for tournament use.
-
-## Games
-
-The current games that have implemented the standard:
-
-* Dark Shuffle
-* Zkube
-* Loot Survivor (coming soon)
-
-By following this standard, your game will be compatible with Budokan and other systems that adopt the Embeddable Game Standard.
-
-
-
----
-
-file: docs/embeddable-game-standard/key-functions.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Key Functions
-
-This section details the primary functions that a game contract must implement to comply with the Embeddable Game Standard and be compatible with Budokan tournaments.
-
-## `mint`
-
-```cairo
-fn mint(
-    ref self: ComponentState<TContractState>,
-    player_name: felt252,
-    settings_id: u32,
-    start: Option<u64>,
-    end: Option<u64>,
-    to: ContractAddress,
-) -> u64;
-```
-
-**Purpose:** Mint a new game token (ERC721) for a player, with associated metadata and settings.
-
-**Parameters:**
-
-* `player_name`: Name of the player (felt252).
-* `settings_id`: ID of the game settings to use.
-* `start`, `end`: Optional start and end timestamps for the game session.
-* `to`: Address to mint the token to.
-
-**Returns:** Token ID of the newly minted game token.
-
-***
-
-## `game_metadata`
-
-```cairo
-fn game_metadata(self: @ComponentState<TContractState>) -> GameMetadata;
-```
-
-**Purpose:** Retrieve metadata for the game contract (name, description, developer, etc.).
-
-**Returns:** GameMetadata struct.
-
-***
-
-## `token_metadata`
-
-```cairo
-fn token_metadata(self: @ComponentState<TContractState>, token_id: u64) -> TokenMetadata;
-```
-
-**Purpose:** Retrieve metadata for a specific game token (player, settings, lifecycle, etc.).
-
-**Parameters:**
-
-* `token_id`: ID of the game token.
-
-**Returns:** TokenMetadata struct.
-
-***
-
-## `game_count`
-
-```cairo
-fn game_count(self: @ComponentState<TContractState>) -> u64;
-```
-
-**Purpose:** Get the total number of games/tokens minted by the contract.
-
-**Returns:** Total count (u64).
-
-***
-
-## `emit_metadata_update`
-
-```cairo
-fn emit_metadata_update(ref self: ComponentState<TContractState>, game_id: u64);
-```
-
-**Purpose:** Emit an event when token metadata is updated, for offchain indexing and UI updates.
-
-**Parameters:**
-
-* `game_id`: ID of the game token whose metadata was updated.
-
-***
-
-## `initializer`
-
-```cairo
-fn initializer(
-    ref self: ComponentState<TContractState>,
-    creator_address: ContractAddress,
-    name: felt252,
-    description: ByteArray,
-    developer: felt252,
-    publisher: felt252,
-    genre: felt252,
-    image: ByteArray,
-    namespace: ByteArray,
-    score_model: ByteArray,
-    score_attribute: ByteArray,
-    settings_model: ByteArray,
-);
-```
-
-**Purpose:** Initialize the game contract with metadata, settings, and storage configuration. Mints a creator token and registers interfaces.
-
-**Parameters:**
-
-* `creator_address`: Address of the game creator.
-* `name`, `description`, `developer`, `publisher`, `genre`, `image`: Metadata fields.
-* `namespace`, `score_model`, `score_attribute`, `settings_model`: Storage and configuration fields.
-
-***
-
-## Additional Functions
-
-* `namespace`: Returns the namespace used for storage.
-* `score_model`: Returns the score model identifier.
-* `score_attribute`: Returns the score attribute identifier.
-* `settings_model`: Returns the settings model identifier.
-* `set_settings`: Set or update game settings details.
-* `assert_setting_exists`: Ensure a settings ID exists before minting.
-
-
-
----
-
 file: docs/darkshuffle/faq.mdx
 meta: {
   "layout": "docs"
@@ -1231,6 +926,311 @@ If you have questions or want to share your custom settings, join the community 
 
 ---
 
+file: docs/embeddable-game-standard/applications.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Applications
+
+The Embeddable Game Standard (EGS) unlocks powerful new possibilities for both game developers and platforms. By making games permissionlessly embeddable, EGS enables a growing ecosystem of apps to integrate, distribute, and build on top of games in novel ways. This page highlights some of the leading apps leveraging EGS today.
+
+## Budokan: Permissionless Tournaments
+
+Budokan uses the EGS to provide a fully permissionless tournament protocol. With EGS, games no longer need to implement their own leaderboard or revenue logic—instead, they can plug into Budokan's aggregated platform, which:
+
+* Accepts any supported token for entry fees and prizes
+* Offers extensive customization for tournament formats, entry requirements, and prize structures
+* Handles all leaderboard, prize, and entry logic on behalf of the game
+
+This makes it easy for game developers to reach new audiences and for players to discover and compete in a wide variety of tournaments.
+
+![Budokan Overview](/docs/overview.png)
+*Figure 1: Budokan overview page.*
+
+> **Tip:** By integrating with Budokan, game developers can focus on gameplay while the platform handles tournaments, rewards, and community engagement.
+
+## Eternum: Expanding Gameplay with Embedded Mini-Games
+
+Eternum, a next-generation MMO, leverages EGS to embed mini-games directly into its core experience. In Season 1, Eternum introduced a new quest system powered by EGS, allowing:
+
+* Seamless integration of third-party mini-games as quests
+* Emergence of new strategies and gameplay loops
+* A more dynamic, deconstructed MMO experience
+
+![Eternum Quest](/docs/eternum-quest.png)
+*Figure 2: Eternum Quest.*
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      Embedding games within Eternum allows mini-games to reach a much wider audience, maximizing their distribution and exposure. For Eternum, this approach brings significant value by introducing a diverse range of gameplay experiences to their core player base, keeping the platform fresh and engaging. By integrating a variety of mini-games, Eternum can continually offer new challenges and entertainment, enhancing player retention and satisfaction.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/eternum-quest-post.png" alt="Eternum Quest Post" width="400" height="300" />
+
+    <br />
+
+    <em>Figure 3: Eternum Quest Post.</em>
+  </div>
+</div>
+
+> **Note:** EGS makes it easy for any platform to embed, remix, or build on top of games, opening up new opportunities for both developers and communities.
+
+## Why Build Applications with EGS?
+
+* Offer a diverse library of games and experiences
+* Easily add new content and features without building from scratch
+* Foster engagement and retention by providing variety to your users
+
+> **Tip:** The EGS ecosystem is growing—consider how your app or game could benefit from permissionless embedding and integration.
+
+## Related Guides
+
+* [Embeddable Game Standard Overview](/embeddable-game-standard)
+* [Budokan Tournaments](/budokan)
+* [Game Integration Guide](/embeddable-game-standard/implementation)
+
+If you have questions or want to feature your app here, contact the Budokan team or join the community!
+
+
+
+---
+
+file: docs/embeddable-game-standard/games.mdx
+meta: {
+  "layout": "docs"
+}
+
+import { GameCard } from '../../components/GameCard'
+
+# Embeddable Game Standard: Games
+
+Here is a list of games that have implemented the emeddable game standard and are benefitting from the tools provided:
+
+<GameCard icon="https://darkshuffle.io/favicon.svg" name="Dark Shuffle" url="https://darkshuffle.io" description="Dark Shuffle is a turn-based, collectible card game. Build your deck, battle monsters, and explore a procedurally generated world." developer="Provable Games" />
+
+<GameCard icon="https://app.zkube.xyz/assets/pwa-512x512.png" name="zKube" url="https://app.zkube.xyz/" description="zKube is an engaging puzzle game that puts players' strategic thinking to the test. Set within a dynamic grid, the objective is simple: manipulate blocks to form solid lines and earn points.	" developer="zKorp" />
+
+## Why Build Games with EGS?
+
+* Instantly reach new audiences by making your game embeddable in multiple apps and platforms
+* Focus on gameplay and innovation, not infrastructure
+* Extend the way your game is played through permissionless settings creation
+* Benefit from community-driven tournaments, quests, and rewards
+
+
+
+---
+
+file: docs/embeddable-game-standard/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard
+
+The Embeddable Game Standard (EGS) is a foundational blueprint for Starknet games, designed to ensure interoperability and unlock access to an ever-growing ecosystem of powerful onchain applications, including the [Budokan](/budokan) tournament platform and the Tanken Quest platform (coming soon). It standardizes essential game contract functionalities such as ERC721 token minting for unique game instances, comprehensive metadata management, and robust score or progress tracking, which are vital for both competitive play and objective-based questing. By adhering to EGS, games can be seamlessly integrated into systems that distribute game instances as NFTs, associate them with diverse rewards (for victory, completion, or participation), and support varied engagement models. From high-stakes tournaments to narrative-driven campaigns, onboarding tutorials, and community-tailored challenges.
+
+## Table of Contents
+
+* [Overview](#overview)
+* [Architecture](#architecture)
+* [Key Functions](#key-functions)
+* [Implementation Guide](#implementation-guide)
+
+## Overview
+
+The standard provides a blueprint for game contracts to:
+
+* Mint game tokens (ERC721) for tournament entries
+* Store and expose game and player metadata
+* Track scores and settings in a standardized way
+* Emit events for metadata updates and lifecycle changes
+
+By adhering to this standard, games can:
+
+* Be listed and used in Budokan tournaments
+* Enable automated leaderboard and prize logic
+* Support composable, upgradable tournament experiences
+
+## Architecture
+
+* **Game Component:** Implements the core logic for minting, metadata management, and score tracking. See `contracts/src/components/game.cairo`.
+* **Models & Interfaces:** Define the data structures for game metadata, token metadata, settings, and lifecycle events.
+* **Integration Points:** Games must expose the required interfaces and implement the necessary storage and event logic.
+
+## Key Functions
+
+* `mint`: Mint a new game token for a player, with associated metadata and settings.
+* `game_metadata`: Retrieve metadata for the game contract.
+* `token_metadata`: Retrieve metadata for a specific game token.
+* `game_count`: Get the total number of games/tokens minted.
+* `emit_metadata_update`: Emit an event when token metadata is updated.
+* `initializer`: Initialize the game contract with metadata, settings, and storage configuration.
+
+## Implementation Guide
+
+1. **Implement the Game Component:**
+   * Use the provided `game_component` module as a base.
+   * Implement the required storage, events, and interface functions.
+2. **Define Metadata and Settings:**
+   * Use the standard models for game and token metadata.
+   * Store settings and score models as required by your game logic.
+3. **Integrate with Budokan:**
+   * Ensure your contract exposes the required interfaces (ERC721, metadata, settings).
+   * Test minting, metadata retrieval, and event emission with Budokan tournament flows.
+4. **Deploy and Register:**
+   * Deploy your game contract to Starknet.
+   * Register the game with Budokan for tournament use.
+
+## Games
+
+The current games that have implemented the standard:
+
+* Dark Shuffle
+* Zkube
+* Loot Survivor (coming soon)
+
+By following this standard, your game will be compatible with Budokan and other systems that adopt the Embeddable Game Standard.
+
+
+
+---
+
+file: docs/embeddable-game-standard/key-functions.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Key Functions
+
+This section details the primary functions that a game contract must implement to comply with the Embeddable Game Standard and be compatible with Budokan tournaments.
+
+## `mint`
+
+```cairo
+fn mint(
+    ref self: ComponentState<TContractState>,
+    player_name: felt252,
+    settings_id: u32,
+    start: Option<u64>,
+    end: Option<u64>,
+    to: ContractAddress,
+) -> u64;
+```
+
+**Purpose:** Mint a new game token (ERC721) for a player, with associated metadata and settings.
+
+**Parameters:**
+
+* `player_name`: Name of the player (felt252).
+* `settings_id`: ID of the game settings to use.
+* `start`, `end`: Optional start and end timestamps for the game session.
+* `to`: Address to mint the token to.
+
+**Returns:** Token ID of the newly minted game token.
+
+***
+
+## `game_metadata`
+
+```cairo
+fn game_metadata(self: @ComponentState<TContractState>) -> GameMetadata;
+```
+
+**Purpose:** Retrieve metadata for the game contract (name, description, developer, etc.).
+
+**Returns:** GameMetadata struct.
+
+***
+
+## `token_metadata`
+
+```cairo
+fn token_metadata(self: @ComponentState<TContractState>, token_id: u64) -> TokenMetadata;
+```
+
+**Purpose:** Retrieve metadata for a specific game token (player, settings, lifecycle, etc.).
+
+**Parameters:**
+
+* `token_id`: ID of the game token.
+
+**Returns:** TokenMetadata struct.
+
+***
+
+## `game_count`
+
+```cairo
+fn game_count(self: @ComponentState<TContractState>) -> u64;
+```
+
+**Purpose:** Get the total number of games/tokens minted by the contract.
+
+**Returns:** Total count (u64).
+
+***
+
+## `emit_metadata_update`
+
+```cairo
+fn emit_metadata_update(ref self: ComponentState<TContractState>, game_id: u64);
+```
+
+**Purpose:** Emit an event when token metadata is updated, for offchain indexing and UI updates.
+
+**Parameters:**
+
+* `game_id`: ID of the game token whose metadata was updated.
+
+***
+
+## `initializer`
+
+```cairo
+fn initializer(
+    ref self: ComponentState<TContractState>,
+    creator_address: ContractAddress,
+    name: felt252,
+    description: ByteArray,
+    developer: felt252,
+    publisher: felt252,
+    genre: felt252,
+    image: ByteArray,
+    namespace: ByteArray,
+    score_model: ByteArray,
+    score_attribute: ByteArray,
+    settings_model: ByteArray,
+);
+```
+
+**Purpose:** Initialize the game contract with metadata, settings, and storage configuration. Mints a creator token and registers interfaces.
+
+**Parameters:**
+
+* `creator_address`: Address of the game creator.
+* `name`, `description`, `developer`, `publisher`, `genre`, `image`: Metadata fields.
+* `namespace`, `score_model`, `score_attribute`, `settings_model`: Storage and configuration fields.
+
+***
+
+## Additional Functions
+
+* `namespace`: Returns the namespace used for storage.
+* `score_model`: Returns the score model identifier.
+* `score_attribute`: Returns the score attribute identifier.
+* `settings_model`: Returns the settings model identifier.
+* `set_settings`: Set or update game settings details.
+* `assert_setting_exists`: Ensure a settings ID exists before minting.
+
+
+
+---
+
 file: docs/lootsurvivor/combat.mdx
 meta: {
   "layout": "docs"
@@ -1383,7 +1383,12 @@ Combat in Loot Survivor involves complex calculations that determine damage outp
   | **Prefix 1 Match** | 8× elemental damage    |
   | **Both Match**     | Cumulative (16× total) |
 
-  > **Pro Tip:** Collecting items with matching names to high-level beasts provides massive damage bonuses!
+  ### Important Note
+
+  * **Offense**: If your weapon shares a prefix with a beast, you deal bonus damage.
+  * **Defense**: If your **armor** shares a prefix with a beast, the beast deals bonus damage to you.
+
+  > **Pro Tip:** Name matches are a double-edged sword—gear that empowers you against some beasts might leave you vulnerable to others!
 </div>
 
 ## Strength Bonus
@@ -2103,7 +2108,7 @@ Create and develop your character with comprehensive RPG mechanics:
 
 Engage in strategic turn-based combat against beasts:
 
-* **Combat Types**: Weapon triangle system (Magic > Hide > Metal > Magic)
+* **Combat Types**: Weapon triangle system (Magical > Brute > Hunter > Magical)
 * **Critical Hits**: Luck based strikes, grows with better Jewelry
 * **Flee Mechanics**: Dexterity-based escape chances
 
@@ -3162,290 +3167,6 @@ If you have questions or need help, check the FAQ or contact support through the
 
 ---
 
-file: docs/embeddable-game-standard/implementation/embedding-games.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Embedding Games
-
-Easily integrate onchain games into your own application or platform using the Embeddable Game Standard (EGS). This guide walks you through the process of minting a game instance for a player and validating their results, with code examples and best practices.
-
-## What Does "Embedding" Mean?
-
-Embedding a game means allowing your users to launch, play, and track progress in a provable onchain game—directly from your app. You can mint new game instances, monitor scores, and even run tournaments or quests using these standards.
-
-## 1. Mint a Game Instance
-
-To let a user start a new game, call the mint function on the game's contract. This creates a unique game token (NFT) for the player, with the desired settings and timing.
-
-```cairo
-use tournaments::components::interfaces::{
-    IGameTokenDispatcher, IGameTokenDispatcherTrait,
-};
-
-let game_dispatcher = IGameTokenDispatcher { contract_address: quest_tile.game_address };
-let game_token_id: u64 = game_dispatcher
-    .mint(player_name, config.settings_id, game_start_delay, game_expiration, to_address);
-```
-
-* `player_name`: The player's display name or identifier.
-* `settings_id`: The ID of the game settings profile to use (see [Settings](/embeddable-game-standard/implementation/settings)).
-* `game_start_delay`: Optional delay before the game can be started.
-* `game_expiration`: When the game expires (for time-limited quests or tournaments).
-* `to_address`: The wallet address to receive the game token.
-
-> **Tip:** Each minted game is a unique NFT, making it easy to track, transfer, or verify ownership and results.
-
-## 2. Validate Game Results
-
-To check a player's score or progress, use the `score` view function. This is enforced by the EGS and available on all compliant games.
-
-```cairo
-use tournaments::components::interfaces::{
-    IGameDetailsDispatcher, IGameDetailsDispatcherTrait
-};
-
-let game_dispatcher = IGameDetailsDispatcher { contract_address: quest_tile.game_address };
-let score: u32 = game_dispatcher.score(quest.game_token_id);
-```
-
-* `quest.game_token_id`: The unique token ID for the player's game instance.
-* Returns the player's score or result, which you can use for leaderboards, rewards, or validation.
-
-> **Info:** You can also query other view functions (like player stats, completion status, etc.) depending on the game's implementation. See the [View Functions](/embeddable-game-standard/implementation#6-add-view-functions) section for more.
-
-## Best Practices & Next Steps
-
-* Use the [Settings](/embeddable-game-standard/implementation/settings) standard to offer custom game modes or difficulty levels.
-* Integrate with [Budokan](/budokan) for tournament management, prize distribution, and more.
-* For advanced integrations, see the [Key Functions](/embeddable-game-standard/key-functions) and [Implementation Guide](/embeddable-game-standard/implementation).
-
-If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Implementation
-
-This guide walks through the steps required for a game developer to implement the
-Embeddable Game Standard and integrate with Budokan tournaments as well as any other meta apps.
-
-## 1. Add EGS library
-
-Start by adding the EGS library in your `Scarb.toml`. You will also need to build the external models to be included
-
-```cairo
-tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }
-```
-
-```cairo
-build-external-contracts = [
-    "tournaments::components::models::game::m_GameMetadata",
-    "tournaments::components::models::game::m_TokenMetadata",
-    "tournaments::components::models::game::m_GameCounter",
-    "tournaments::components::models::game::m_Score",
-    "tournaments::components::models::game::m_Settings",
-    "tournaments::components::models::game::m_SettingsDetails",
-    "tournaments::components::models::game::m_SettingsCounter",
-]
-```
-
-## 2. Import Component
-
-Import and use the `game_component` module from EGS.
-
-```cairo
-use tournaments::components::game::game_component;
-
-#[dojo::contract]
-pub mod MyGame {
-    component!(path: game_component, storage: game, event: GameEvent);
-    #[abi(embed_v0)]
-    impl GameComponentImpl = game_component::GameImpl<ContractState>;
-    impl GameComponentInternalImpl = game_component::InternalImpl<ContractState>;
-    // ... additional game logic ...
-}
-```
-
-## 3. Implement Required Storage and Events
-
-Define the required storage fields and events as specified in the standard.
-
-```cairo
-#[storage]
-struct Storage {
-    #[substorage(v0)]
-    game: game_component::Storage,
-    #[substorage(v0)]
-    erc721: ERC721Component::Storage,
-    #[substorage(v0)]
-    src5: SRC5Component::Storage,
-}
-
-#[event]
-#[derive(Drop, starknet::Event)]
-enum Event {
-    #[flat]
-    GameEvent: game_component::Event,
-    #[flat]
-    ERC721Event: ERC721Component::Event,
-    #[flat]
-    SRC5Event: SRC5Component::Event,
-}
-```
-
-## 4. Expose Required Interfaces
-
-Ensure your contract exposes the following:
-
-* ERC721 interface for game tokens
-* Metadata and settings interfaces
-* Functions for minting, metadata retrieval, and event emission
-
-## 5. Implement Initialization Logic
-
-Implement the `initializer` function to set up game metadata, settings, and storage configuration.
-
-```cairo
-fn initializer(
-    ref self: ComponentState<TContractState>,
-    creator_address: ContractAddress,
-    name: felt252,
-    description: ByteArray,
-    developer: felt252,
-    publisher: felt252,
-    genre: felt252,
-    image: ByteArray,
-    namespace: ByteArray,
-    score_model: ByteArray,
-    score_attribute: ByteArray,
-    settings_model: ByteArray,
-) {
-    // ... initialization logic ...
-}
-```
-
-## 6. Add View Functions
-
-Add Contract view function to return the following:
-
-* The score of a game id
-* Whether a particular settings id exists
-
-```cairo
-use tournaments::components::interfaces::{IGameDetails, ISettings};
-
-#[abi(embed_v0)]
-impl GameDetailsImpl of IGameDetails<ContractState> {
-    fn score(self: @ContractState, game_id: u64) -> u32 {
-        let world: WorldStorage = self.world(@DEFAULT_NS());
-        let game: Game = world.read_model(game_id);
-        game.score.into()
-    }
-}
-
-#[abi(embed_v0)]
-impl SettingsImpl of ISettings<ContractState> {
-    fn setting_exists(self: @ContractState, settings_id: u32) -> bool {
-        let world: WorldStorage = self.world(@DEFAULT_NS());
-        let settings: GameSettings = world.read_model(settings_id);
-        settings.exists()
-    }
-}
-```
-
-## 7. Check Lifecycle
-
-In each game interaction ensure that the following lifecycle check is made
-
-```cairo
-use tournaments::components::libs::lifecycle::{
-    LifecycleAssertionsImpl, LifecycleAssertionsTrait
-};
-
-let token_metadata: TokenMetadata = world.read_model(game_id);
-token_metadata.lifecycle.assert_is_playable(game_id, get_block_timestamp());
-```
-
-By following these steps, your game will be fully compatible with [Budokan](/budokan) and any other application using the Embeddable Game Standard.
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/settings.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Settings
-
-Settings are a core feature of the Embeddable Game Standard (EGS), enabling games to be highly customizable and composable. By associating a game instance with a specific set of settings, you can create unique game modes, difficulty levels, or event rules—all onchain and provable.
-
-## Why Use Settings?
-
-* **Custom Game Modes:** Offer players or tournament organizers the ability to define special rules, deck sizes, or win conditions.
-* **Composability:** Settings can be reused across games, quests, or tournaments, making it easy to launch new experiences.
-* **Transparency:** All settings are stored onchain, so anyone can verify the rules for a given game instance.
-
-> **Tip:** Use settings to power seasonal events, speedruns, or community challenges—just stamp a new settings profile and share the ID!
-
-## How Settings Work in EGS
-
-Each game instance can be linked to a settings profile via a unique `settings_id`. The settings metadata is stored onchain and can be queried or updated as needed.
-
-### Storing Settings Metadata
-
-Within the EGS component, the `SettingsDetails` model is used to store metadata for each settings profile. Here's how you can set or update a settings profile:
-
-```cairo
-fn set_settings(
-    ref self: ComponentState<TContractState>,
-    settings_id: u32,
-    name: felt252,
-    description: ByteArray,
-) {
-    let mut world = WorldTrait::storage(
-        self.get_contract().world_dispatcher(), @self.namespace.read(),
-    );
-    let mut store: Store = StoreTrait::new(world);
-    store
-        .set_settings_details(
-            @SettingsDetails { id: settings_id, name, description, exists: true },
-        );
-}
-```
-
-* `settings_id`: Unique identifier for the settings profile.
-* `name`: Human-readable name for the settings.
-* `description`: Description or metadata for the settings profile.
-
-> **Info:** The `SettingsDetails` model can be extended to include more fields (e.g., difficulty, allowed cards, etc.) depending on your game's needs.
-
-## Creating Settings in Your Game
-
-Within the Game contract, you will store the settings for a particular id in the model you defined as `settings_model` on [initialization](/embeddable-game-standard/implementation#5-implement-initialization-logic). Here's how you can set or update a settings profile:
-
-## Best Practices & Next Steps
-
-* Use clear names and descriptions for each settings profile.
-* Store all relevant game rules in the settings metadata for transparency.
-* Encourage your community to create and share custom settings for new challenges.
-* For more on minting and using settings, see [Embedding Games](/embeddable-game-standard/implementation/embedding-games) and [Key Functions](/embeddable-game-standard/key-functions).
-
-If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
-
-
-
----
-
 file: docs/darkshuffle/guide/battle.mdx
 meta: {
   "layout": "docs"
@@ -3872,6 +3593,290 @@ If you have questions or need help, check the FAQ or contact support through the
 
 ---
 
+file: docs/embeddable-game-standard/implementation/embedding-games.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Embedding Games
+
+Easily integrate onchain games into your own application or platform using the Embeddable Game Standard (EGS). This guide walks you through the process of minting a game instance for a player and validating their results, with code examples and best practices.
+
+## What Does "Embedding" Mean?
+
+Embedding a game means allowing your users to launch, play, and track progress in a provable onchain game—directly from your app. You can mint new game instances, monitor scores, and even run tournaments or quests using these standards.
+
+## 1. Mint a Game Instance
+
+To let a user start a new game, call the mint function on the game's contract. This creates a unique game token (NFT) for the player, with the desired settings and timing.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameTokenDispatcher, IGameTokenDispatcherTrait,
+};
+
+let game_dispatcher = IGameTokenDispatcher { contract_address: quest_tile.game_address };
+let game_token_id: u64 = game_dispatcher
+    .mint(player_name, config.settings_id, game_start_delay, game_expiration, to_address);
+```
+
+* `player_name`: The player's display name or identifier.
+* `settings_id`: The ID of the game settings profile to use (see [Settings](/embeddable-game-standard/implementation/settings)).
+* `game_start_delay`: Optional delay before the game can be started.
+* `game_expiration`: When the game expires (for time-limited quests or tournaments).
+* `to_address`: The wallet address to receive the game token.
+
+> **Tip:** Each minted game is a unique NFT, making it easy to track, transfer, or verify ownership and results.
+
+## 2. Validate Game Results
+
+To check a player's score or progress, use the `score` view function. This is enforced by the EGS and available on all compliant games.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameDetailsDispatcher, IGameDetailsDispatcherTrait
+};
+
+let game_dispatcher = IGameDetailsDispatcher { contract_address: quest_tile.game_address };
+let score: u32 = game_dispatcher.score(quest.game_token_id);
+```
+
+* `quest.game_token_id`: The unique token ID for the player's game instance.
+* Returns the player's score or result, which you can use for leaderboards, rewards, or validation.
+
+> **Info:** You can also query other view functions (like player stats, completion status, etc.) depending on the game's implementation. See the [View Functions](/embeddable-game-standard/implementation#6-add-view-functions) section for more.
+
+## Best Practices & Next Steps
+
+* Use the [Settings](/embeddable-game-standard/implementation/settings) standard to offer custom game modes or difficulty levels.
+* Integrate with [Budokan](/budokan) for tournament management, prize distribution, and more.
+* For advanced integrations, see the [Key Functions](/embeddable-game-standard/key-functions) and [Implementation Guide](/embeddable-game-standard/implementation).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
+
+
+
+---
+
+file: docs/embeddable-game-standard/implementation/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Implementation
+
+This guide walks through the steps required for a game developer to implement the
+Embeddable Game Standard and integrate with Budokan tournaments as well as any other meta apps.
+
+## 1. Add EGS library
+
+Start by adding the EGS library in your `Scarb.toml`. You will also need to build the external models to be included
+
+```cairo
+tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }
+```
+
+```cairo
+build-external-contracts = [
+    "tournaments::components::models::game::m_GameMetadata",
+    "tournaments::components::models::game::m_TokenMetadata",
+    "tournaments::components::models::game::m_GameCounter",
+    "tournaments::components::models::game::m_Score",
+    "tournaments::components::models::game::m_Settings",
+    "tournaments::components::models::game::m_SettingsDetails",
+    "tournaments::components::models::game::m_SettingsCounter",
+]
+```
+
+## 2. Import Component
+
+Import and use the `game_component` module from EGS.
+
+```cairo
+use tournaments::components::game::game_component;
+
+#[dojo::contract]
+pub mod MyGame {
+    component!(path: game_component, storage: game, event: GameEvent);
+    #[abi(embed_v0)]
+    impl GameComponentImpl = game_component::GameImpl<ContractState>;
+    impl GameComponentInternalImpl = game_component::InternalImpl<ContractState>;
+    // ... additional game logic ...
+}
+```
+
+## 3. Implement Required Storage and Events
+
+Define the required storage fields and events as specified in the standard.
+
+```cairo
+#[storage]
+struct Storage {
+    #[substorage(v0)]
+    game: game_component::Storage,
+    #[substorage(v0)]
+    erc721: ERC721Component::Storage,
+    #[substorage(v0)]
+    src5: SRC5Component::Storage,
+}
+
+#[event]
+#[derive(Drop, starknet::Event)]
+enum Event {
+    #[flat]
+    GameEvent: game_component::Event,
+    #[flat]
+    ERC721Event: ERC721Component::Event,
+    #[flat]
+    SRC5Event: SRC5Component::Event,
+}
+```
+
+## 4. Expose Required Interfaces
+
+Ensure your contract exposes the following:
+
+* ERC721 interface for game tokens
+* Metadata and settings interfaces
+* Functions for minting, metadata retrieval, and event emission
+
+## 5. Implement Initialization Logic
+
+Implement the `initializer` function to set up game metadata, settings, and storage configuration.
+
+```cairo
+fn initializer(
+    ref self: ComponentState<TContractState>,
+    creator_address: ContractAddress,
+    name: felt252,
+    description: ByteArray,
+    developer: felt252,
+    publisher: felt252,
+    genre: felt252,
+    image: ByteArray,
+    namespace: ByteArray,
+    score_model: ByteArray,
+    score_attribute: ByteArray,
+    settings_model: ByteArray,
+) {
+    // ... initialization logic ...
+}
+```
+
+## 6. Add View Functions
+
+Add Contract view function to return the following:
+
+* The score of a game id
+* Whether a particular settings id exists
+
+```cairo
+use tournaments::components::interfaces::{IGameDetails, ISettings};
+
+#[abi(embed_v0)]
+impl GameDetailsImpl of IGameDetails<ContractState> {
+    fn score(self: @ContractState, game_id: u64) -> u32 {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let game: Game = world.read_model(game_id);
+        game.score.into()
+    }
+}
+
+#[abi(embed_v0)]
+impl SettingsImpl of ISettings<ContractState> {
+    fn setting_exists(self: @ContractState, settings_id: u32) -> bool {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let settings: GameSettings = world.read_model(settings_id);
+        settings.exists()
+    }
+}
+```
+
+## 7. Check Lifecycle
+
+In each game interaction ensure that the following lifecycle check is made
+
+```cairo
+use tournaments::components::libs::lifecycle::{
+    LifecycleAssertionsImpl, LifecycleAssertionsTrait
+};
+
+let token_metadata: TokenMetadata = world.read_model(game_id);
+token_metadata.lifecycle.assert_is_playable(game_id, get_block_timestamp());
+```
+
+By following these steps, your game will be fully compatible with [Budokan](/budokan) and any other application using the Embeddable Game Standard.
+
+
+
+---
+
+file: docs/embeddable-game-standard/implementation/settings.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Settings
+
+Settings are a core feature of the Embeddable Game Standard (EGS), enabling games to be highly customizable and composable. By associating a game instance with a specific set of settings, you can create unique game modes, difficulty levels, or event rules—all onchain and provable.
+
+## Why Use Settings?
+
+* **Custom Game Modes:** Offer players or tournament organizers the ability to define special rules, deck sizes, or win conditions.
+* **Composability:** Settings can be reused across games, quests, or tournaments, making it easy to launch new experiences.
+* **Transparency:** All settings are stored onchain, so anyone can verify the rules for a given game instance.
+
+> **Tip:** Use settings to power seasonal events, speedruns, or community challenges—just stamp a new settings profile and share the ID!
+
+## How Settings Work in EGS
+
+Each game instance can be linked to a settings profile via a unique `settings_id`. The settings metadata is stored onchain and can be queried or updated as needed.
+
+### Storing Settings Metadata
+
+Within the EGS component, the `SettingsDetails` model is used to store metadata for each settings profile. Here's how you can set or update a settings profile:
+
+```cairo
+fn set_settings(
+    ref self: ComponentState<TContractState>,
+    settings_id: u32,
+    name: felt252,
+    description: ByteArray,
+) {
+    let mut world = WorldTrait::storage(
+        self.get_contract().world_dispatcher(), @self.namespace.read(),
+    );
+    let mut store: Store = StoreTrait::new(world);
+    store
+        .set_settings_details(
+            @SettingsDetails { id: settings_id, name, description, exists: true },
+        );
+}
+```
+
+* `settings_id`: Unique identifier for the settings profile.
+* `name`: Human-readable name for the settings.
+* `description`: Description or metadata for the settings profile.
+
+> **Info:** The `SettingsDetails` model can be extended to include more fields (e.g., difficulty, allowed cards, etc.) depending on your game's needs.
+
+## Creating Settings in Your Game
+
+Within the Game contract, you will store the settings for a particular id in the model you defined as `settings_model` on [initialization](/embeddable-game-standard/implementation#5-implement-initialization-logic). Here's how you can set or update a settings profile:
+
+## Best Practices & Next Steps
+
+* Use clear names and descriptions for each settings profile.
+* Store all relevant game rules in the settings metadata for transparency.
+* Encourage your community to create and share custom settings for new challenges.
+* For more on minting and using settings, see [Embedding Games](/embeddable-game-standard/implementation/embedding-games) and [Key Functions](/embeddable-game-standard/key-functions).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
+
+
+
+---
+
 file: docs/lootsurvivor/beasts/collectibles.mdx
 meta: {
   "layout": "docs"
@@ -3879,7 +3884,7 @@ meta: {
 
 # Beast Collectibles
 
-In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint an NFT to your wallet. There are 93,150 uniquely named beasts to be collected!
+In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint an NFT to your wallet. There is a fixed supply of **93,225** uniquely generated Beasts across **75 species** (1,243 variants per species) to be collected.
 
 <div style={{ display: 'flex', gap: '1rem', margin: '2rem 0', textAlign: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
   <div>
@@ -3958,6 +3963,16 @@ In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint 
   > **Collect Them All:** Build your personal gallery of defeated legendary named beasts!
 </div>
 
+## Collection Overview
+
+<div style={{ background: '#0f172a', padding: '1.25rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.7', border: '1px solid #334155' }}>
+  * **Fully onchain artwork + metadata**: Images and JSON are generated and rendered directly from smart contracts
+  * **Born onchain**: Beasts are earned in Loot Survivor using verifiable randomness; every step is recorded onchain
+  * **Battle‑ready NFTs**: Each Beast mints with combat stats (level, health), type, and tier compatible with gameplay
+  * **Live ranking within species**: Each species tracks ranks #1–#1,243 as they mint; when complete, a King Beast is crowned
+  * **Credibly neutral traits**: Onchain state includes defeat timestamp and the last Adventurer to slay that Beast
+</div>
+
 ### 🎨 NFT Visual Rarity & Properties
 
 <div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.8' }}>
@@ -3979,11 +3994,11 @@ In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint 
   </div>
 
   <div style={{ marginBottom: '0' }}>
-    * **Health**: Beast's health when first discovered
-    * **Tier Level**: T1 (Legendary) through T5 (Common)
-    * **Beast Name**: Base creature name (e.g., "Warlock", "Dragon")
-    * **Prefix**: Special name prefix if applicable (e.g., "Doom", "Blood")
-    * **Victory Timestamp**: Onchain record of when defeated
+    * **Level & Health**: Combat stats encoded at mint
+    * **Tier & Type**: T1–T5 tier and one of Magical, Hunter, Brute
+    * **Name & Prefix**: Base species name plus optional prefix (e.g., "Doom Kraken")
+    * **Defeat Timestamp**: Onchain record of when the Beast was defeated
+    * **Provenance Fields**: Credibly neutral traits like last slayer enable onchain leaderboards and history
   </div>
 </div>
 
@@ -4013,6 +4028,29 @@ In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint 
   * **Lights** (#68) - Extremely uncommon and highly sought after
 
   > **Complete Reference:** Visit the loot section for the full categorized list of all 69 prefixes!
+</div>
+
+## Tier Border Colors
+
+<div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  * **Tier 1 (Legendary)**: Orange border — most powerful
+  * **Tier 2 (Epic)**: Purple border
+  * **Tier 3 (Rare)**: Blue border
+  * **Tier 4 (Uncommon)**: Green border
+  * **Tier 5 (Common)**: White border
+
+  These borders are reflected in NFT visuals for instant rarity recognition.
+</div>
+
+## Contracts & Image Data
+
+<div style={{ background: '#111827', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.7', border: '1px solid #1f2937' }}>
+  * Regular PNG Image Data: [https://voyager.online/contract/0x07bcd91940f5a2640437c764815b6a8a173f09fff991420b691713bebd82f7bf](https://voyager.online/contract/0x07bcd91940f5a2640437c764815b6a8a173f09fff991420b691713bebd82f7bf)
+  * Shiny PNG Image Data: [https://voyager.online/contract/0x03bdFdEeA997CA7C7b1d66590a541FC559cE5A742e0162fE98Fe371E70709444](https://voyager.online/contract/0x03bdFdEeA997CA7C7b1d66590a541FC559cE5A742e0162fE98Fe371E70709444)
+  * Regular GIF Image Data: [https://voyager.online/contract/0x012F11AD850839d27351Bbf49858A3180AdB1C30d9942423FD089F5740776293](https://voyager.online/contract/0x012F11AD850839d27351Bbf49858A3180AdB1C30d9942423FD089F5740776293)
+  * Shiny GIF Image Data: [https://voyager.online/contract/0x0700f224e6fcb344c27f29e62687333b589b3be39a2c026ede5968bf53b6bb2a](https://voyager.online/contract/0x0700f224e6fcb344c27f29e62687333b589b3be39a2c026ede5968bf53b6bb2a)
+
+  > Tip: These contracts generate the onchain images that appear in marketplaces and galleries.
 </div>
 
 ## NFT Ownership Benefits
@@ -4080,61 +4118,66 @@ Beasts are the creatures you'll encounter and battle throughout your adventures 
 <div style={{ display: 'flex', gap: '1rem', margin: '2rem 0', textAlign: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
   <div>
     <img
-      src="/docs/lootsurvivor/warlock.png"
-      alt="Warlock - Magical Beast"
+      src="/docs/lootsurvivor/warlock_regular_static.svg"
+      alt="Warlock Regular Static"
       style={{
     width: "200px",
     height: "200px",
     margin: "0 auto",
     borderRadius: "12px",
-    border: "3px solid #a855f7",
   }}
     />
 
-    <h4 style={{ color: "#a855f7", margin: "0.75rem 0 0.25rem" }}>🪄 Magical</h4>
-
     <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-      Warlock - T1 Legendary
+      Regular Static
     </p>
   </div>
 
   <div>
     <img
-      src="/docs/lootsurvivor/dragon.png"
-      alt="Dragon - Hunter Beast"
+      src="/docs/lootsurvivor/warlock_shiny_static.svg"
+      alt="Warlock Shiny Static"
       style={{
     width: "200px",
     height: "200px",
     margin: "0 auto",
-    borderRadius: "12px",
-    border: "3px solid #10b981",
   }}
     />
 
-    <h4 style={{ color: "#10b981", margin: "0.75rem 0 0.25rem" }}>🏹 Hunter</h4>
-
     <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-      Dragon - T1 Legendary
+      Shiny Static
     </p>
   </div>
 
   <div>
     <img
-      src="/docs/lootsurvivor/kraken.png"
-      alt="Kraken - Brute Beast"
+      src="/docs/lootsurvivor/warlock_regular_animated.svg"
+      alt="Warlock Regular Animated"
       style={{
     width: "200px",
     height: "200px",
     margin: "0 auto",
-    borderRadius: "12px",
-    border: "3px solid #dc2626",
   }}
     />
 
-    <h4 style={{ color: "#dc2626", margin: "0.75rem 0 0.25rem" }}>🔨 Brute</h4>
+    <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
+      Regular Animated
+    </p>
+  </div>
+
+  <div>
+    <img
+      src="/docs/lootsurvivor/warlock_shiny_animated.svg"
+      alt="Warlock Shiny Animated"
+      style={{
+    width: "200px",
+    height: "200px",
+    margin: "0 auto",
+  }}
+    />
 
     <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-      Kraken - T1 Legendary
+      Shiny Animated
     </p>
   </div>
 </div>
@@ -4154,6 +4197,18 @@ Beasts are the creatures you'll encounter and battle throughout your adventures 
   </div>
 
   > **Combat Focus:** Every beast follows the rock-paper-scissors combat system - choose your equipment wisely!
+</div>
+
+## Onchain Collection Integration
+
+<div style={{ background: '#0f172a', padding: '1.25rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.7', border: '1px solid #334155' }}>
+  * **Fully onchain NFT collection**: 75 species with 1,243 variants each (fixed supply **93,225**)
+  * **Visual vs combat traits**: Shiny/Animated visuals for collecting; level/health/type/tier for play
+  * **Born in the dungeon**: Beasts are earned via verifiable randomness while playing Loot Survivor
+  * **Live per‑species ranking**: Each species ranks #1–#1,243 as they’re minted; a King Beast is crowned when complete
+  * **Credibly neutral stats**: Onchain records like last slayer and defeat timestamp enable long‑term growth systems
+
+  > Looking for the collectible NFT details (rarities, visuals, contracts)? See [Beast Collectibles](/lootsurvivor/beasts/collectibles).
 </div>
 
 ## Beast Tier System
@@ -6285,695 +6340,6 @@ Markets can contain:
 * **Gold Management:** Save for critical upgrades vs. immediate needs
 
 > **💡 Pro Tip:** A small market (few items) means many duplicate rolls occurred. Don't expect it to have everything you need!
-
-
-
----
-
-file: docs/lootsurvivor/survivor-token/airdrop.mdx
-meta: {}
-
-# Free Games Airdrop
-
-## Overview
-
-The Loot Survivor airdrop provides **free game entries** to eligible NFT holders and community members. These free games give players access to the LS2 Dungeon, which contains **2,258,100 SURVIVOR tokens** distributed as rewards based on gameplay performance.
-
-## How It Works
-
-### Game-Based Distribution
-
-Instead of receiving SURVIVOR tokens directly, eligible participants receive free game entries to play Loot Survivor. The LS2 Dungeon holds 2,258,100 SURVIVOR tokens that are distributed to players based on their performance:
-
-* **Minimum Level 3**: Must reach at least level 3 to earn tokens
-* **Tokens = Level Reached**: Starting at level 3, tokens equal to the level reached
-* **Promotion Periods**: 4X tokens during weeks 2-4, 2X tokens after week 4
-* **Performance-based rewards**: Higher levels mean more tokens
-* **Multiple attempts**: Each free game entry is a new opportunity to earn tokens
-
-### Example Rewards
-
-**Standard Rate (Week 1):**
-
-* Level 3: 3 tokens
-* Level 10: 10 tokens
-* Level 25: 25 tokens
-
-**4X Promotion (Weeks 2-4):**
-
-* Level 10: 40 tokens
-* Level 25: 100 tokens
-
-**2X Promotion (After Week 4):**
-
-* Level 10: 20 tokens
-* Level 25: 50 tokens
-
-## Eligibility Categories
-
-### NFT Collection Holders
-
-Holders of eligible NFT collections receive free game entries based on their holdings at the snapshot date (August 18th, 2025 at 00:00 UTC). The number of free games is determined by:
-
-* Collection
-* Number of NFTs held
-* Games Amount multiplier for each collection
-
-[View all eligible collections →](/lootsurvivor/survivor-token/eligible-collections)
-
-### Community Contributors
-
-Active community members earn free games through:
-
-* Early participation in Loot Survivor v1
-* Community building and content creation
-* Bug reporting and testing
-* Protocol development contributions
-
-## Claiming Your Free Games
-
-To claim your free game entries and start earning SURVIVOR tokens:
-
-### Visit the Claims Portal
-
-Navigate to [claims.lootsurvivor.io](https://claims.lootsurvivor.io) to begin the claim process.
-
-![Eligibility Checker Interface](/docs/lootsurvivor/eligibility-checker.png)
-*Enter your wallet address to check your free games allocation*
-
-### What to Expect
-
-1. **Enter Your Wallet Address** - Input your EVM or Starknet wallet address
-2. **View Your Allocation** - See your total free games based on NFT holdings
-3. **Connect/Create Controller** - Set up a controller for smooth claims process (can claim for multiple wallets)
-4. **Claim Your Games** - Complete the claim for all eligible free games
-5. **Start Playing** - Begin your adventure and earn SURVIVOR tokens (within 2 weeks)
-
-![Eligibility Results](/docs/lootsurvivor/eligibility-results.png)
-*View your allocation and claim your free games*
-
-### Wallet Ownership Verification
-
-For wallets that are not controllers (such as hardware wallets or EOA wallets):
-
-1. **Sign a Message** - You'll be prompted to sign a message to prove ownership of your wallet
-2. **Verification** - The signature verifies you own the NFTs from the snapshot
-3. **Games Sent to Controller** - Once verified, your free games are sent to your controller wallet
-4. **Play on Controller** - Use your controller wallet to play and earn SURVIVOR tokens
-
-![Wallet Verification](/docs/lootsurvivor/argent-claim.png)
-*Sign a message to verify ownership and claim games to your controller*
-
-The claims portal automatically:
-
-* Verifies your eligibility based on the August 18th, 2025 snapshot
-* Calculates your total free games across all eligible collections
-* Handles the entire claim process securely
-* Provides access to start playing immediately
-
-## Free Games Allocation
-
-### Calculation Method
-
-Free games are allocated based on:
-
-* **NFT Holdings**: Each eligible NFT grants games based on its collection's multiplier
-* **Games Amount**: Collections have different game allocations
-* **Total Cap**: Maximum 50 free games per eligible address
-
-### Distribution Examples
-
-* **Loot Holder**: 5 free games per Loot NFT (capped at 50 total)
-* **Pudgy Penguin Holder**: 10 free games per Penguin (capped at 50 total)
-* **OGS Discord Role**: 10 free games for verified members
-* **Multiple Collections**: Games stack across all eligible holdings (up to 50 max)
-
-## Playing Your Free Games
-
-### Getting Started
-
-1. Claim your free games at [claims.lootsurvivor.io](https://claims.lootsurvivor.io)
-2. Access Loot Survivor gameplay interface
-3. Start a new game using a free entry
-4. Progress through levels to earn SURVIVOR tokens
-
-### Earning Tokens
-
-* **Level 1-2**: No token rewards
-* **Level 3+**: Earn tokens equal to the level reached (e.g., Level 3 = 3 tokens, Level 20 = 20 tokens)
-* **Death**: Game ends, tokens earned are credited based on highest level reached
-* **Strategy**: Plan your builds to maximize level progression for more tokens
-
-### Token Distribution
-
-* When a game ends, a claim button appears
-* Click the claim button to receive your earned tokens
-* Track your total earnings across all games played
-
-## Important Notes
-
-### 2-Week Expiration Period
-
-* **Free games expire 2 weeks after the claim window opens**
-* Plan your gameplay strategy within this timeframe
-* Expired games cannot be recovered or extended
-* All eligible addresses have the same expiration deadline
-
-### Gas Fees
-
-* **All gas fees are covered** through our paymaster
-* No ETH required for claiming free games
-* No transaction fees for playing games
-* Completely free experience from claim to gameplay
-
-### Fair Play
-
-* Protected by onchain VRF (Verifiable Random Function)
-* Anti-bot measures built into the smart contract
-* Fully transparent and verifiable gameplay
-
-## Strategy Tips
-
-### Maximize Your Earnings
-
-* Study optimal builds before playing
-* Join community discussions for strategies
-* Use your free games before the 2-week window expires
-
-### Resource Management
-
-* Free games are valuable opportunities
-* Each game is a chance at significant token earnings
-* Token rewards scale directly with level reached
-* Community guides available for gameplay optimization
-
-## Support
-
-For assistance with free games:
-
-* Visit the official documentation
-* Join Discord for community strategies
-* Check FAQs for common questions
-* Submit support tickets for technical issues
-
-## Disclaimer
-
-Free game entries are distributed to reward early supporters and community members. The 2,258,100 SURVIVOR tokens in the LS2 Dungeon are distributed solely based on gameplay performance. Token earnings depend on individual skill and game progression.
-
-
-
----
-
-file: docs/lootsurvivor/survivor-token/eligible-collections.mdx
-meta: {}
-
-# Eligible Collections for Free Games
-
-The following NFT collections are eligible for **free game entries** to Loot Survivor, where players can earn SURVIVOR tokens through gameplay.
-
-## Free Games Distribution
-
-Eligible NFT holders receive free game entries based on their collection holdings at the snapshot date. These free games provide access to the LS2 Dungeon containing 2,000,000 SURVIVOR tokens. Players earn tokens equal to the level they reach (minimum level 3 required).
-
-## Eligible Collections List
-
-| Collection              | Network  | Collection Size | Free Games per NFT | View Contract                                                                                                 |
-| ----------------------- | -------- | --------------- | ------------------ | ------------------------------------------------------------------------------------------------------------- |
-| 1337 Skulls             | Ethereum | 7,331           | 5                  | [Etherscan](https://etherscan.io/address/0x9251dec8df720c2adf3b6f46d968107cbbadf4d4)                          |
-| Loot                    | Ethereum | 7,779           | 5                  | [Etherscan](https://etherscan.io/address/0xff9c1b15b16263c61d017ee9f65c50e4ae0113d7)                          |
-| Loot Explorers          | Ethereum | 7,998           | 2                  | [Etherscan](https://etherscan.io/address/0x508d06b8f3a4b0fd363239ce61e0c4b0b82f3626)                          |
-| The Wild Bunch          | Ethereum | 3,997           | 2                  | [Etherscan](https://etherscan.io/address/0xe9a1a323b4c8fd5ce6842edaa0cd8af943cbdf22)                          |
-| BAYC                    | Ethereum | 9,998           | 5                  | [Etherscan](https://etherscan.io/address/0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d)                          |
-| Dizzy Dragons           | Ethereum | 9,401           | 2                  | [Etherscan](https://etherscan.io/address/0x882A47e6070acA3f38Ce6929501F4787803A072b)                          |
-| Hyperloot               | Ethereum | 8,585           | 2                  | [Etherscan](https://etherscan.io/address/0x0290d49f53a8d186973b82faafdafe696b29acbb)                          |
-| LobsterDAO              | Ethereum | 3,546           | 4                  | [Etherscan](https://etherscan.io/address/0x026224a2940bfe258d0dbe947919b62fe321f042)                          |
-| Moonbirds               | Ethereum | 9,999           | 4                  | [Etherscan](https://etherscan.io/address/0x23581767a106ae21c074b2276d25e5c3e136a68b)                          |
-| Foxy PFP                | Linea    | 10,000          | 2                  | [Lineascan](https://lineascan.build/address/0xe46c02315c4a991d061a06f165028f8c9167249b)                       |
-| The Birth Lottery       | Linea    | 666             | 2                  | [Lineascan](https://lineascan.build/address/0xc7e1c28dc11e43ebe93f2664a53ae3775eba68cc)                       |
-| Genesis Mana            | Ethereum | 11,535          | 2                  | [Etherscan](https://etherscan.io/address/0xf4b6040a4b1b30f1d1691699a8f3bf957b03e463)                          |
-| The Eye for Adventurers | Ethereum | 1,614           | 3                  | [Etherscan](https://etherscan.io/address/0xb8a51862964f77025abb65e2c6a39ee8070c8ed4)                          |
-| Genesis Adventurers     | Ethereum | 633             | 5                  | [Etherscan](https://etherscan.io/address/0x8db687aceb92c66f013e1d614137238cc698fedb)                          |
-| Terraforms              | Ethereum | 9,911           | 5                  | [Etherscan](https://etherscan.io/address/0x4e1f41613c9084fdb9e34e11fae9412427480e56)                          |
-| The Dudes               | Ethereum | 512             | 3                  | [Etherscan](https://etherscan.io/address/0xb0cf7da8dc482997525be8488b9cad4f44315422)                          |
-| Crypts and Caverns      | Ethereum | 8,785           | 2                  | [Etherscan](https://etherscan.io/address/0x86f7692569914B5060Ef39aAb99e62eC96A6Ed45)                          |
-| Trusta OG Dragons       | Ethereum | 3,707           | 2                  | [Etherscan](https://etherscan.io/address/0xe0e126ce63becbecd72bee4f7673b4e50d5a9965)                          |
-| Wandernauts             | Ethereum | 8,887           | 2                  | [Etherscan](https://etherscan.io/address/0x793daf78b74aadf1eda5cc07a558fed932360a60)                          |
-| Based Ghouls            | Ethereum | 6,667           | 2                  | [Etherscan](https://etherscan.io/address/0xef1a89cbfabe59397ffda11fc5df293e9bc5db90)                          |
-| Pirate Nation           | Ethereum | 9,999           | 3                  | [Etherscan](https://etherscan.io/address/0x1b41d54b3f8de13d58102c50d7431fd6aa1a2c48)                          |
-| Grugs Lair              | Ethereum | 1,000           | 1                  | [Etherscan](https://etherscan.io/address/0xfa9ed22ca5d329ecaee9347f72e18c1fc291471b)                          |
-| Dope Wars               | Ethereum | 7,999           | 3                  | [Etherscan](https://etherscan.io/address/0x8707276df042e89669d69a177d3da7dc78bd8723)                          |
-| Blobert                 | Starknet | 4,844           | 2                  | [Voyager](https://voyager.online/contract/0x00539f522b29ae9251dbf7443c7a950cf260372e69efab3710a11bf17a9599f1) |
-| Schizoid                | Starknet | 999             | 3                  | [Voyager](https://voyager.online/contract/0x077485a949c130cf0d98819d2b0749f5860b0734ea28cb678dd3f39379131bfa) |
-| FOCG Boi Hands          | Starknet | 39              | 2                  | [Voyager](https://voyager.online/contract/0x02ef78f4031b4250e4ae8c4f0b18af4ef0cbbb405cdb20f80d1041b53aa2f1a1) |
-| Brother ID              | Starknet | 2,265           | 2                  | [Voyager](https://voyager.online/contract/0x0212f1c57700f5a3913dd11efba540196aad4cf67772f7090c62709dd804fa74) |
-| Realms                  | Starknet | 5,099           | 3                  | [Voyager](https://voyager.online/contract/0x07ae27a31bb6526e3de9cf02f081f6ce0615ac12a6d7b85ee58b8ad7947a2809) |
-| Banners (Ethereum)      | Ethereum | 1,785           | 3                  | [Etherscan](https://etherscan.io/address/0x527a4206ac04c2017295cf32f1fc2f9e034a7c40)                          |
-| Banners (Starknet)      | Starknet | 9,170           | 2                  | [Voyager](https://voyager.online/contract/0x02d66679de61a5c6d57afd21e005a8c96118bd60315fd79a4521d68f5e5430d1) |
-| Wolf Nation             | Starknet | 333             | 3                  | [Voyager](https://voyager.online/contract/0x0413485dbeccec6320d35dcba14375e7ca973f021486496a61286edb958fd861) |
-| zKube                   | Starknet | 11,326          | 1                  | [Voyager](https://voyager.online/contract/0x04fd5df500e6c6615e4423258639f189455672bc841ba58f1c781ac7c5ff4bd8) |
-| Karats                  | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x07d8ea58612a5de25f29281199a4fc1f2ce42f0f207f93c3a35280605f3b8e68) |
-| Karats 2                | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x030f694df2a04e04cf3e1d3e79dd5aadfdaa77295bb007696222fc60a5e8730d) |
-| Ducks Everywhere        | Starknet | 300             | 10                 | [Voyager](https://voyager.online/contract/0x04fa864a706e3403fd17ac8df307f22eafa21b778b73353abf69a622e47a2003) |
-| Pistols                 | Starknet | 126             | 5                  | [Voyager](https://voyager.online/contract/0x014aa76e6c6f11e3f657ee2c213a62006c78ff2c6f8ed40b92c42fd554c246f2) |
-| Influence Asteroids     | Starknet | 11,726          | 1                  | [Voyager](https://voyager.online/contract/0x0603cf837055c64d026a3c5a9e3a83036cea6c4a3f68a9e19f7a687d726fe817) |
-| Starkurabu              | Starknet | 10,000          | 1                  | [Voyager](https://voyager.online/contract/0x03ab1124ef9ec3a2f2b1d9838f9066f9a894483d40b33390dda8d85c01a315a3) |
-| Jokers Of Neon Beasts   | Starknet | 104             | 5                  | [Voyager](https://voyager.online/contract/0x07268fcf96383f8691b91ba758cc8fefe0844146f0557909345b841fb1de042f) |
-| Based Punks             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xcB28749c24AF4797808364D71d71539bc01E76d4)                           |
-| OK Computer             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xCE2830932889C7fB5e5206287C43554E673dCc88)                           |
-| Blackmirror Experience  | Base     | 7,078           | 2                  | [Basescan](https://basescan.org/address/0x108dB2038C6e8Bc1A0b058c70e752b14d08648BF)                           |
-| re:generates            | Base     | 6,665           | 2                  | [Basescan](https://basescan.org/address/0x56dFE6ae26bf3043DC8Fdf33bF739B4fF4B3BC4A)                           |
-| Writ of Passage         | Arbitrum | 10,000          | 2                  | [Arbiscan](https://arbiscan.io/address/0x5d541B55763A9277f61a739f40B6021A16C2d3d8)                            |
-| Liberty Cats            | Polygon  | 7,777           | 2                  | [Polygonscan](https://polygonscan.com/address/0x0030F47D6a73Bc518CF18fE027Ea91DD6B2b6003)                     |
-| Billions Genesis        | Polygon  | 2,999           | 2                  | [Polygonscan](https://polygonscan.com/address/0xeCb63be05886749De33709835e824AEFcFd74f8F)                     |
-| Pudgy Penguins          | Ethereum | 8,888           | 10                 | [Etherscan](https://etherscan.io/address/0xBd3531dA5CF5857e7CfAA92426877b022e612cf8)                          |
-| The Larp Collective     | Arbitrum | 420             | 2                  | [Arbiscan](https://arbiscan.io/address/0x48D2c1716DFDF8aDd5a5EA658c460e7257448660)                            |
-| ZTX Genesis Homes       | Arbitrum | 3,999           | 2                  | [Arbiscan](https://arbiscan.io/address/0x35373efc2FD7D852729cae869Cc32acc979100bD)                            |
-| Forgotten Runes         | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42)                          |
-| Cool Cats               | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x1a92f7381b9f03921564a437210bb9396471050c)                          |
-| Bankr                   | Base     | 1,000           | 10                 | [Basescan](https://basescan.org/address/0x9fab8c51f911f0ba6dab64fd6e979bcf6424ce82)                           |
-| Mee6 Genesis Pass       | Ethereum | 4,444           | 3                  | [Etherscan](https://etherscan.io/address/0xe9ab13482aeab3727e976257d8e1f026e12e9ecd)                          |
-| Adventurers             | Starknet | 10,638          | 1                  | [Voyager](https://voyager.online/contract/0x018108b32cea514a78ef1b0e4a0753e855cdf620bc0565202c02456f618c4dc4) |
-| OGS Discord Role        | Starknet | -               | 10                 | Discord Verified                                                                                              |
-
-## Understanding Free Games
-
-### How Free Games Work
-
-The "Free Games per NFT" column shows how many free game entries each NFT from that collection grants. For example:
-
-* Owning 1 Loot NFT = 5 free games
-* Owning 2 Pudgy Penguins = 20 free games (10 per NFT)
-* Holding multiple eligible NFTs = Games stack across all collections
-* **Maximum 50 free games per address** regardless of total holdings
-
-### Token Earning Potential
-
-Each free game is an opportunity to earn SURVIVOR tokens through gameplay:
-
-* **Level 1-2**: No rewards (warm-up levels)
-* **Level 3+**: Earn tokens equal to the level reached
-* **Example**: Reaching level 3 earns 3 tokens, level 25 earns 25 tokens, level 50 earns 50 tokens
-
-### Multi-Chain Support
-
-Eligible collections span multiple networks:
-
-* **Ethereum** - The majority of legacy collections
-* **Starknet** - Native Loot Survivor ecosystem collections
-* **Base** - Emerging gaming communities
-* **Arbitrum** - L2 gaming collections
-* **Polygon** - Alternative L2 collections
-* **Linea** - Next-generation gaming projects
-
-## Collection Categories
-
-### Premium Allocations (10+ games)
-
-Collections receiving the highest free game allocations:
-
-* **Pudgy Penguins**: 10 games per NFT
-* **Ducks Everywhere**: 10 games per NFT
-* **Bankr**: 10 games per NFT
-* **OGS Discord Role**: 10 games for verified members
-
-### Loot Ecosystem (5 games)
-
-Original Loot-related collections with enhanced allocations:
-
-* **Loot**: 5 games per NFT
-* **Genesis Adventurers**: 5 games per NFT
-* **1337 Skulls**: 5 games per NFT
-* **BAYC**: 5 games per NFT
-* **Terraforms**: 5 games per NFT
-
-### Standard Gaming Collections (2-4 games)
-
-Most collections receive standard allocations:
-
-* **2 games**: Common allocation for gaming NFTs
-* **3 games**: Enhanced allocation for active communities
-* **4 games**: Premium allocation for key partners
-
-### Entry Level (1 game)
-
-Collections with base-level allocations:
-
-* **Grugs Lair**: 1 game per NFT
-* **Influence Asteroids**: 1 game per NFT
-* **Starkurabu**: 1 game per NFT
-* **Adventurers**: 1 game per NFT
-* **zKube**: 1 game per NFT
-
-## Snapshot Details
-
-The eligibility snapshot was taken on **August 18th, 2025 at 00:00 UTC**. All NFT holdings and free game allocations are based on ownership at this specific point in time.
-
-## Verification Process
-
-To verify your free games allocation:
-
-1. Check your NFT holdings as of August 18th, 2025 at 00:00 UTC
-2. Calculate total free games: (NFTs held × Free Games per NFT)
-3. Sum across all eligible collections you held
-4. Apply the 50 free games per address maximum cap
-5. Connect wallet to claim interface for automatic calculation
-
-## Important Notes
-
-* **Maximum 50 free games per eligible address**
-* **Free games expire 2 weeks after the claim window opens** - Same deadline for all players
-* Multiple NFTs from the same collection grant cumulative games (up to the 50 game cap)
-* Transfers after the snapshot do not affect eligibility
-* The OGS Discord Role requires Discord verification, not on-chain holdings
-* Strategic gameplay can maximize token earnings from free games
-
-
-
----
-
-file: docs/lootsurvivor/survivor-token/index.mdx
-meta: {}
-
-# SURVIVOR Token
-
-The SURVIVOR token is the native governance and economic coordination token for Loot Survivor, designed to decentralize the ownership role of the game contracts and promote the growth of the Loot Survivor ecosystem.
-
-## Overview
-
-* Total Supply: 10,000,000
-* Distribution: 75% Community; 25% Team
-* Lockups: None
-
-## Purpose
-
-SURVIVOR is the governance and economic coordination token for Loot Survivor 2.
-
-Governance: SURVIVOR lets holders propose and vote on specific onchain parameters (e.g., which Dungeon the Beasts inhabit, royalty settings for the Beast NFT collection, Beast Mode settings, which ERC‑20s the Dungeon accepts, and the Dungeon’s payment token).
-
-Autonomous treasury growth: When a player buys a Dungeon Ticket, immutable code automatically uses 80% of that payment to purchase SURVIVOR on a decentralized exchange and deposits the purchased tokens into the Survivor Treasury, which is governed by SURVIVOR holders.
-
-No promises / no rights to payouts: SURVIVOR does not grant rights to profits, revenue, dividends, or distributions. The automated purchases are a mechanical feature of the contracts, not a commitment to support price or provide returns.
-
-## Key Features
-
-### Decentralized Ownership Role
-
-The SURVIVOR token ships with a fully onchain governance system, built on top of [OpenZeppelin’s audited governance components](https://docs.openzeppelin.com/contracts-cairo/2.0.0/governance). The governance system enables SURVIVOR token holders to express their will onchain and for their shared will to execute as an onchain transaction. This allows sensitive, configurable game settings,such as which Dungeon the Beasts are in, to be truly owned and controllable by the community instead of the developers.
-
-The Survivor Governance Contract will control the following settings:
-
-* [Beast NFT](https://voyager.online/nft-contract/0x0280ace0b2171106eaebef91ca9b097a566108e9452c45b94a7924a9f794ae80):
-  * Move Beasts to a new Dungeon
-  * Change royalty information (default: 5% distributed to the Survivor Treasury)
-* [LS2 Beast Mode](https://voyager.online/contract/0x02fb722c25768e4a9994258754e7103895fd2f33cbcc1edc8711807950830cb5):
-  * Change Beast Mode settings
-  * Add and remove ERC‑20s from the Dungeon
-  * Change the payment token for the Dungeon
-
-### Economic Coordination
-
-To support the sustainable growth of the Loot Survivor ecosystem, Loot Survivor 2 ships with an autonomous and immutable SURVIVOR buy‑back mechanism. 80% of the proceeds from the sale of Dungeon Tickets, which are required to enter the Dungeon and collect Beasts, are used to purchase SURVIVOR tokens using Ekubo’s TWAMM and to deposit them into the Survivor Treasury. The remaining 20% is distributed to $veLORDS holders for the benefit of Bibliotheca DAO, the original incubator of Loot Survivor.
-
-### Treasury Bootstrap
-
-The treasury is initially seeded with 1M SURVIVOR and approximately 3M LORDS at genesis.
-
-### SURVIVOR Sale (Programmatic DCA via TWAMM):
-
-* Supply: 15% of total supply.
-* Method: A 3‑month programmatic DCA order via TWAMM (Sept 30–Dec 30).
-* Proceeds: 100% contributed to the community treasury for ecosystem growth as governed onchain.
-
-DISCLAIMERS: This sale is programmatic, there are no allocations, discounts, or price/return statements.
-
-### Community Allocation
-
-75% of the total supply is allocated to the community through various distribution mechanisms, ensuring broad ownership and aligned incentives. Allocations include:
-
-* 22.5% LS2 Dungeon claim allocations (FCFS)
-  * 1 Token per level starting at level 3
-  * 4X Promotion for games played during weeks 2-4
-  * 2X Promotion after week 4 till all tokens are claimed.
-* 15% treasury bootstrap DCA
-* 10% Survivor Treasury
-* 9.3% Beast Entitlements (claim at mint)
-* 6.6% LS1/LS1.5 Players
-* 5% Loot Realms; 2.5% Loot; 1.5% 1337 Skulls; 1% Genesis Project; 1% Tournaments; 1% Beast Games
-
-Note: NFT royalties, if any, are not guaranteed across marketplaces.
-
-### Free Games Airdrop
-
-Loot Survivor 2 launches with a two‑week launch promotion that makes \~500k free games available to \~80k addresses across Ethereum, Arbitrum, Base, Starknet, Abstract, Linea, and Polygon. Those holding select NFTs on these platforms will be able to claim free games (including gas), allowing them to play Loot Survivor 2 and collect Beasts and SURVIVOR tokens.
-
-## Quick Links
-
-* [Tokenomics](/lootsurvivor/survivor-token/tokenomics) - Detailed breakdown of token distribution and allocations
-* [Airdrop](/lootsurvivor/survivor-token/airdrop) - How to claim your SURVIVOR tokens and eligibility criteria
-
-## Security
-
-Governance contracts use well‑known OpenZeppelin components. This is not a security audit; no system is risk‑free.
-Game contracts are cutting‑edge and unaudited; use at your own risk.
-
-## Disclaimers
-
-The SURVIVOR token is designed to decentralize ownership and governance of the Loot Survivor protocol. It represents participation rights in the ecosystem and should not be considered a financial investment.
-
-What SURVIVOR is not: SURVIVOR is not equity or debt. Automated purchases into the treasury are mechanical contract behavior, not price support or an offer of returns. Participation involves smart‑contract risk, market volatility, and governance outcomes that may not align with your preferences. Users should understand these risks before participating. Nothing here is investment advice.
-
-
-
----
-
-file: docs/lootsurvivor/survivor-token/promotions.mdx
-meta: {}
-
-# Promotions
-
-## Starkware & Cartridge Partnership
-
-Loot Survivor has partnered with Starkware and Cartridge to bring an exclusive promotion featuring 100,000 STRK tokens distributed across three legendary Beasts. This collaboration celebrates the launch of SURVIVOR and rewards the most skilled adventurers who can defeat these special creatures.
-
-### Prize Distribution
-
-The 100,000 STRK prize pool is split between three unique Beasts, each offering substantial rewards to the adventurer who claims victory:
-
-<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
-  <img src="/docs/lootsurvivor/jackpot_balrog.png" alt="Torment Bane Balrog" style={{width: "200px", marginRight: "2rem"}} />
-
-  <div>
-    <h4>"Torment Bane" Balrog</h4>
-
-    <ul>
-      <li><strong>STRK Reward</strong>: 33,333 STRK</li>
-      <li><strong>Location</strong>: The Molten Depths</li>
-      <li><strong>Special Traits</strong>: Ancient demon of fire and shadow, Wielder of eternal flames</li>
-    </ul>
-  </div>
-</div>
-
-<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
-  <img src="/docs/lootsurvivor/jackpot_warlock.png" alt="Pain Whisper Warlock" style={{width: "200px", marginRight: "2rem"}} />
-
-  <div>
-    <h4>"Pain Whisper" Warlock</h4>
-
-    <ul>
-      <li><strong>STRK Reward</strong>: 33,333 STRK</li>
-      <li><strong>Location</strong>: The Shadow Sanctum</li>
-      <li><strong>Special Traits</strong>: Master of dark arts, Collector of tormented souls</li>
-    </ul>
-  </div>
-</div>
-
-<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
-  <img src="/docs/lootsurvivor/jackpot_dragon.png" alt="Demon Grasp Dragon" style={{width: "200px", marginRight: "2rem"}} />
-
-  <div>
-    <h4>"Demon Grasp" Dragon</h4>
-
-    <ul>
-      <li><strong>STRK Reward</strong>: 33,334 STRK</li>
-      <li><strong>Location</strong>: The Dragon's Lair</li>
-      <li><strong>Special Traits</strong>: Guardian of ancient treasures, Corrupted by demonic influence</li>
-    </ul>
-  </div>
-</div>
-
-### How It Works
-
-1. **Find the Beast**: These special Beasts spawn randomly in the dungeon
-2. **Defeat to Claim**: The first adventurer to defeat each Beast claims the STRK reward
-3. **Automatic Distribution**: STRK tokens are automatically sent to the winning adventurer's wallet
-4. **One Winner per Beast**: Each Beast can only be defeated once for the reward
-
-### Promotion Period
-
-This promotion runs indefinitely. These special Beasts will continue to spawn in the dungeon, offering adventurers ongoing opportunities to claim the STRK rewards. The promotion remains active until all three unique Beasts have been defeated and the full 100,000 STRK has been distributed.
-
-### About Our Partners
-
-**Starkware** - The technology company behind Starknet, providing the scalable infrastructure that powers Loot Survivor's fully onchain gameplay.
-
-**Cartridge** - The gaming infrastructure platform enabling seamless wallet experiences and player onboarding for Starknet games.
-
-This partnership demonstrates the strong ecosystem support for Loot Survivor and commitment to rewarding skilled players with meaningful prizes.
-
-
-
----
-
-file: docs/lootsurvivor/survivor-token/tokenomics.mdx
-meta: {}
-
-# Tokenomics
-
-## Total Supply
-
-The total supply of the SURVIVOR token is **10,000,000** tokens, distributed between community and team allocations to ensure sustainable growth and development of the Loot Survivor ecosystem.
-
-## Distribution Overview
-
-| Category             | Tokens         | Percentage | Description                                        |
-| -------------------- | -------------- | ---------- | -------------------------------------------------- |
-| **Community**        | **7,500,000**  | **75%**    |                                                    |
-| LS2 Dungeon          | 2,258,100      | 22.58%     | Gameplay rewards (tokens = level reached, from L3) |
-| Treasury DCA         | 1,500,000      | 15%        | 3-month programmatic sale via TWAMM                |
-| Survivor Treasury    | 1,002,222      | 10.02%     | DAO-controlled treasury                            |
-| Beast Entitlements   | 931,500        | 9.32%      | Claim at Beast mint                                |
-| Biblio (Loot Realms) | 500,000        | 5%         | Realms ecosystem                                   |
-| Legacy Beast Bonus   | 332,028        | 3.32%      | LS1 Beast holder rewards                           |
-| Top 1k LS1.5 Players | 326,150        | 3.26%      | Top player rewards                                 |
-| Loot                 | 250,000        | 2.5%       | Original Loot holders                              |
-| 1337 Skulls          | 150,000        | 1.5%       | Skulls holders                                     |
-| Genesis Project      | 100,000        | 1%         | Genesis Adventurers                                |
-| Budokan              | 100,000        | 1%         | Game-agnostic tournament platform                  |
-| Summit               | 100,000        | 1%         | Future Beast battler from LS collections           |
-| **Team**             | **2,500,000**  | **25%**    | No lockups                                         |
-| **Total**            | **10,000,000** | **100%**   |                                                    |
-
-## Distribution Breakdown
-
-### Community Allocation: 7,500,000 (75%)
-
-The majority of SURVIVOR tokens are allocated to the community through various mechanisms designed to reward participation, contribution, and loyalty to the ecosystem.
-
-#### LS2 Dungeon Rewards: 2,258,100 (22.58%)
-
-* First-come, first-served distribution through gameplay
-* Tokens equal to the level reached (starting at level 3)
-* **4X Promotion**: Weeks 2-4 (multiply token rewards by 4)
-* **2X Promotion**: After week 4 until all tokens claimed (multiply token rewards by 2)
-
-#### Treasury Bootstrap DCA: 1,500,000 (15%)
-
-* 3-month programmatic DCA order via TWAMM (Sept 30 - Dec 30)
-* 100% of proceeds contributed to community treasury
-* Ensures fair price discovery and broad distribution
-
-#### Survivor Treasury: 1,002,222 (10.02%)
-
-* DAO-controlled treasury for ecosystem development
-* Initial seed funding at genesis
-* Governed by SURVIVOR token holders
-
-#### Beast Entitlements: 931,500 (9.32%)
-
-* Auto-claimed with each Beast mint (average 10 tokens per Beast)
-* Tier-based distribution:
-  * T1 Beasts: 14 tokens per mint
-  * T2 Beasts: 12 tokens per mint
-  * T3 Beasts: 10 tokens per mint
-  * T4 Beasts: 8 tokens per mint
-  * T5 Beasts: 6 tokens per mint
-
-#### Legacy Players: 658,178 (6.58%)
-
-* **Legacy Beast Bonus**: 332,028 (3.32%)
-  * LS1 Beasts (2,306 total): 249,048 tokens (108 per Beast)
-  * LS1.5 Beasts: 82,980 tokens (36 per Beast)
-* **Top 1k LS1.5 Players**: 326,150 (3.26%) - Top player rewards
-
-#### Ecosystem Allocations: 1,150,000 (11.5%)
-
-* **Biblio (Loot Realms)**: 500,000 (5%) - Realms ecosystem development
-* **Loot**: 250,000 (2.5%) - Distributed to multisig of trusted Loot ecosystem entities
-* **1337 Skulls**: 150,000 (1.5%) - Distributed to multisig of trusted Skulls ecosystem entities
-* **Genesis Project**: 100,000 (1%) - Distributed to multisig of trusted Genesis ecosystem entities
-* **Budokan**: 100,000 (1%) - Player incentives for game-agnostic tournament platform
-* **Summit**: 100,000 (1%) - Player incentives and utility for Beasts collected in Loot Survivor
-
-### Team Allocation: 2,500,000 (25%)
-
-Reserved for the Loot Survivor team. This allocation aligns long-term incentives between the team and the ecosystem's success.
-
-## Value Accrual Mechanisms
-
-### Governance Treasury
-
-SURVIVOR token holders control the governance treasury, which consists of:
-
-* Proceeds from the Treasury Bootstrap DCA (1.5M tokens sold over 3 months)
-* 80% of proceeds from dungeon ticket purchases
-* 1,002,222 SURVIVOR tokens from the Survivor Treasury allocation
-* Initial seed of \~3M LORDS at genesis
-
-These funds can be directed towards:
-
-* Buyback and burns to distribute game revenue to token holders
-* Development funding for new features
-* Liquidity provision incentives
-* Ecosystem partnerships and growth initiatives
-
-### Governance Rights
-
-SURVIVOR token holders control:
-
-* **Beast NFT Settings**:
-  * Move Beasts to new Dungeons
-  * Royalty settings (default 5% to Survivor Treasury)
-* **LS2 Beast Mode**:
-  * Beast Mode configuration
-  * ERC-20 acceptance in Dungeons
-  * Dungeon payment token selection
-* **Treasury Management**:
-  * Allocation of treasury funds
-  * Partnership approvals and funding
-  * Community initiative funding
-
-## Distribution Schedule
-
-### Launch Distributions
-
-* **Free Games Airdrop**: \~500k games to \~80k addresses (2-week claim window)
-* **Beast Entitlements**: Claimable at Beast mint
-* **LS1/LS1.5 Players**: Based on historical participation
-
-### Ongoing Distributions
-
-* **LS2 Dungeon**: First-come, first-served through gameplay
-  * Week 1: Standard rate (tokens = level reached, starting at L3)
-  * Weeks 2-4: 4X promotion (standard rate × 4)
-  * After Week 4: 2X promotion until exhausted (standard rate × 2)
-* **Treasury Bootstrap DCA**: 3-month programmatic sale (Sept 30 - Dec 30)
-
-### No Lockups
-
-* All allocations are immediately liquid upon receipt
-* No vesting schedules or lockup periods
-* Team tokens have no restrictions
-
-## Economic Sustainability
-
-The tokenomics model is designed to create a self-sustaining ecosystem where:
-
-* Players are rewarded for skill and participation
-* Developers are incentivized to build on the platform
-* Token holders benefit from ecosystem growth
-* Protocol revenue supports ongoing development
-
-This balanced approach ensures long-term viability while maintaining decentralization and community ownership.
 
 
 
@@ -9152,6 +8518,697 @@ class RateLimiter {
 ## Conclusion
 
 This integration guide provides the foundation for building applications that interact with Loot Survivor. Whether you're creating a custom frontend, building tools, or extending the game, these patterns and examples will help you get started quickly and build robust integrations.
+
+
+
+---
+
+file: docs/lootsurvivor/token/airdrop.mdx
+meta: {}
+
+# Free Games Airdrop
+
+## Overview
+
+The Loot Survivor airdrop provides **free game entries** to eligible NFT holders and community members. These free games give players access to the LS2 Dungeon, which contains **2,258,100 SURVIVOR tokens** distributed as rewards based on gameplay performance.
+
+## How It Works
+
+### Game-Based Distribution
+
+Instead of receiving SURVIVOR tokens directly, eligible participants receive free game entries to play Loot Survivor. The LS2 Dungeon holds 2,258,100 SURVIVOR tokens that are distributed to players based on their performance:
+
+* **Minimum Level 3**: Must reach at least level 3 to earn tokens
+* **Tokens = Level Reached**: Starting at level 3, tokens equal to the level reached
+* **Promotion Periods**: 4X tokens during weeks 2-4, 2X tokens after week 4
+* **Performance-based rewards**: Higher levels mean more tokens
+* **Multiple attempts**: Each free game entry is a new opportunity to earn tokens
+
+### Example Rewards
+
+**Standard Rate (Week 1):**
+
+* Level 3: 3 tokens
+* Level 10: 10 tokens
+* Level 25: 25 tokens
+
+**4X Promotion (Weeks 2-4):**
+
+* Level 10: 40 tokens
+* Level 25: 100 tokens
+
+**2X Promotion (After Week 4):**
+
+* Level 10: 20 tokens
+* Level 25: 50 tokens
+
+## Eligibility Categories
+
+### NFT Collection Holders
+
+Holders of eligible NFT collections receive free game entries based on their holdings at the snapshot date (August 18th, 2025 at 00:00 UTC). The number of free games is determined by:
+
+* Collection
+* Number of NFTs held
+* Games Amount multiplier for each collection
+
+[View all eligible collections →](/lootsurvivor/token/eligible-collections)
+
+### Community Contributors
+
+Active community members earn free games through:
+
+* Early participation in Loot Survivor v1
+* Community building and content creation
+* Bug reporting and testing
+* Protocol development contributions
+
+## Claiming Your Free Games
+
+To claim your free game entries and start earning SURVIVOR tokens:
+
+### Visit the Claims Portal
+
+Navigate to [claims.lootsurvivor.io](https://claims.lootsurvivor.io) to begin the claim process.
+
+![Eligibility Checker Interface](/docs/lootsurvivor/eligibility-checker.png)
+*Enter your wallet address to check your free games allocation*
+
+### What to Expect
+
+1. **Enter Your Wallet Address** - Input your EVM or Starknet wallet address
+2. **View Your Allocation** - See your total free games based on NFT holdings
+3. **Connect/Create Controller** - Set up a controller for smooth claims process (can claim for multiple wallets)
+4. **Claim Your Games** - Complete the claim for all eligible free games
+5. **Start Playing** - Begin your adventure and earn SURVIVOR tokens (within 2 weeks)
+
+![Eligibility Results](/docs/lootsurvivor/eligibility-results.png)
+*View your allocation and claim your free games*
+
+### Wallet Ownership Verification
+
+For wallets that are not controllers (such as hardware wallets or EOA wallets):
+
+1. **Sign a Message** - You'll be prompted to sign a message to prove ownership of your wallet
+2. **Verification** - The signature verifies you own the NFTs from the snapshot
+3. **Games Sent to Controller** - Once verified, your free games are sent to your controller wallet
+4. **Play on Controller** - Use your controller wallet to play and earn SURVIVOR tokens
+
+![Wallet Verification](/docs/lootsurvivor/argent-claim.png)
+*Sign a message to verify ownership and claim games to your controller*
+
+The claims portal automatically:
+
+* Verifies your eligibility based on the August 18th, 2025 snapshot
+* Calculates your total free games across all eligible collections
+* Handles the entire claim process securely
+* Provides access to start playing immediately
+
+## Free Games Allocation
+
+### Calculation Method
+
+Free games are allocated based on:
+
+* **NFT Holdings**: Each eligible NFT grants games based on its collection's multiplier
+* **Games Amount**: Collections have different game allocations
+* **Total Cap**: Maximum 50 free games per eligible address
+
+### Distribution Examples
+
+* **Loot Holder**: 5 free games per Loot NFT (capped at 50 total)
+* **Pudgy Penguin Holder**: 10 free games per Penguin (capped at 50 total)
+* **OGS Discord Role**: 10 free games for verified members
+* **Multiple Collections**: Games stack across all eligible holdings (up to 50 max)
+
+## Playing Your Free Games
+
+### Getting Started
+
+1. Claim your free games at [claims.lootsurvivor.io](https://claims.lootsurvivor.io)
+2. Access Loot Survivor gameplay interface
+3. Start a new game using a free entry
+4. Progress through levels to earn SURVIVOR tokens
+
+### Earning Tokens
+
+* **Level 1-2**: No token rewards
+* **Level 3+**: Earn tokens equal to the level reached (e.g., Level 3 = 3 tokens, Level 20 = 20 tokens)
+* **Death**: Game ends, tokens earned are credited based on highest level reached
+* **Strategy**: Plan your builds to maximize level progression for more tokens
+
+### Token Distribution
+
+* When a game ends, a claim button appears
+* Click the claim button to receive your earned tokens
+* Track your total earnings across all games played
+
+## Important Notes
+
+### 2-Week Expiration Period
+
+* **Free games expire 2 weeks after the claim window opens**
+* Plan your gameplay strategy within this timeframe
+* Expired games cannot be recovered or extended
+* All eligible addresses have the same expiration deadline
+
+### Gas Fees
+
+* **All gas fees are covered** through our paymaster
+* No ETH required for claiming free games
+* No transaction fees for playing games
+* Completely free experience from claim to gameplay
+
+### Fair Play
+
+* Protected by onchain VRF (Verifiable Random Function)
+* Anti-bot measures built into the smart contract
+* Fully transparent and verifiable gameplay
+
+## Strategy Tips
+
+### Maximize Your Earnings
+
+* Study optimal builds before playing
+* Join community discussions for strategies
+* Use your free games before the 2-week window expires
+
+### Resource Management
+
+* Free games are valuable opportunities
+* Each game is a chance at significant token earnings
+* Token rewards scale directly with level reached
+* Community guides available for gameplay optimization
+
+## Support
+
+For assistance with free games:
+
+* Visit the official documentation
+* Join Discord for community strategies
+* Check FAQs for common questions
+* Submit support tickets for technical issues
+
+## Disclaimer
+
+Free game entries are distributed to reward early supporters and community members. The 2,258,100 SURVIVOR tokens in the LS2 Dungeon are distributed solely based on gameplay performance. Token earnings depend on individual skill and game progression.
+
+
+
+---
+
+file: docs/lootsurvivor/token/eligible-collections.mdx
+meta: {}
+
+# Eligible Collections for Free Games
+
+The following NFT collections are eligible for **free game entries** to Loot Survivor, where players can earn SURVIVOR tokens through gameplay.
+
+## Free Games Distribution
+
+Eligible NFT holders receive free game entries based on their collection holdings at the snapshot date. These free games provide access to the LS2 Dungeon containing 2,000,000 SURVIVOR tokens. Players earn tokens equal to the level they reach (minimum level 3 required).
+
+## Eligible Collections List
+
+| Collection              | Network  | Collection Size | Free Games per NFT | View Contract                                                                                                 |
+| ----------------------- | -------- | --------------- | ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| 1337 Skulls             | Ethereum | 7,331           | 5                  | [Etherscan](https://etherscan.io/address/0x9251dec8df720c2adf3b6f46d968107cbbadf4d4)                          |
+| Loot                    | Ethereum | 7,779           | 5                  | [Etherscan](https://etherscan.io/address/0xff9c1b15b16263c61d017ee9f65c50e4ae0113d7)                          |
+| Loot Explorers          | Ethereum | 7,998           | 2                  | [Etherscan](https://etherscan.io/address/0x508d06b8f3a4b0fd363239ce61e0c4b0b82f3626)                          |
+| The Wild Bunch          | Ethereum | 3,997           | 2                  | [Etherscan](https://etherscan.io/address/0xe9a1a323b4c8fd5ce6842edaa0cd8af943cbdf22)                          |
+| BAYC                    | Ethereum | 9,998           | 5                  | [Etherscan](https://etherscan.io/address/0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d)                          |
+| Dizzy Dragons           | Ethereum | 9,401           | 2                  | [Etherscan](https://etherscan.io/address/0x882A47e6070acA3f38Ce6929501F4787803A072b)                          |
+| Hyperloot               | Ethereum | 8,585           | 2                  | [Etherscan](https://etherscan.io/address/0x0290d49f53a8d186973b82faafdafe696b29acbb)                          |
+| LobsterDAO              | Ethereum | 3,546           | 4                  | [Etherscan](https://etherscan.io/address/0x026224a2940bfe258d0dbe947919b62fe321f042)                          |
+| Moonbirds               | Ethereum | 9,999           | 4                  | [Etherscan](https://etherscan.io/address/0x23581767a106ae21c074b2276d25e5c3e136a68b)                          |
+| Foxy PFP                | Linea    | 10,000          | 2                  | [Lineascan](https://lineascan.build/address/0xe46c02315c4a991d061a06f165028f8c9167249b)                       |
+| The Birth Lottery       | Linea    | 666             | 2                  | [Lineascan](https://lineascan.build/address/0xc7e1c28dc11e43ebe93f2664a53ae3775eba68cc)                       |
+| Genesis Mana            | Ethereum | 11,535          | 2                  | [Etherscan](https://etherscan.io/address/0xf4b6040a4b1b30f1d1691699a8f3bf957b03e463)                          |
+| The Eye for Adventurers | Ethereum | 1,614           | 3                  | [Etherscan](https://etherscan.io/address/0xb8a51862964f77025abb65e2c6a39ee8070c8ed4)                          |
+| Genesis Adventurers     | Ethereum | 633             | 5                  | [Etherscan](https://etherscan.io/address/0x8db687aceb92c66f013e1d614137238cc698fedb)                          |
+| Terraforms              | Ethereum | 9,911           | 5                  | [Etherscan](https://etherscan.io/address/0x4e1f41613c9084fdb9e34e11fae9412427480e56)                          |
+| The Dudes               | Ethereum | 512             | 3                  | [Etherscan](https://etherscan.io/address/0xb0cf7da8dc482997525be8488b9cad4f44315422)                          |
+| Crypts and Caverns      | Ethereum | 8,785           | 2                  | [Etherscan](https://etherscan.io/address/0x86f7692569914B5060Ef39aAb99e62eC96A6Ed45)                          |
+| Trusta OG Dragons       | Ethereum | 3,707           | 2                  | [Etherscan](https://etherscan.io/address/0xe0e126ce63becbecd72bee4f7673b4e50d5a9965)                          |
+| Wandernauts             | Ethereum | 8,887           | 2                  | [Etherscan](https://etherscan.io/address/0x793daf78b74aadf1eda5cc07a558fed932360a60)                          |
+| Based Ghouls            | Ethereum | 6,667           | 2                  | [Etherscan](https://etherscan.io/address/0xef1a89cbfabe59397ffda11fc5df293e9bc5db90)                          |
+| Pirate Nation           | Ethereum | 9,999           | 3                  | [Etherscan](https://etherscan.io/address/0x1b41d54b3f8de13d58102c50d7431fd6aa1a2c48)                          |
+| Grugs Lair              | Ethereum | 1,000           | 1                  | [Etherscan](https://etherscan.io/address/0xfa9ed22ca5d329ecaee9347f72e18c1fc291471b)                          |
+| Dope Wars               | Ethereum | 7,999           | 3                  | [Etherscan](https://etherscan.io/address/0x8707276df042e89669d69a177d3da7dc78bd8723)                          |
+| Blobert                 | Starknet | 4,844           | 2                  | [Voyager](https://voyager.online/contract/0x00539f522b29ae9251dbf7443c7a950cf260372e69efab3710a11bf17a9599f1) |
+| Schizoid                | Starknet | 999             | 3                  | [Voyager](https://voyager.online/contract/0x077485a949c130cf0d98819d2b0749f5860b0734ea28cb678dd3f39379131bfa) |
+| FOCG Boi Hands          | Starknet | 39              | 2                  | [Voyager](https://voyager.online/contract/0x02ef78f4031b4250e4ae8c4f0b18af4ef0cbbb405cdb20f80d1041b53aa2f1a1) |
+| Brother ID              | Starknet | 2,265           | 2                  | [Voyager](https://voyager.online/contract/0x0212f1c57700f5a3913dd11efba540196aad4cf67772f7090c62709dd804fa74) |
+| Realms                  | Starknet | 5,099           | 3                  | [Voyager](https://voyager.online/contract/0x07ae27a31bb6526e3de9cf02f081f6ce0615ac12a6d7b85ee58b8ad7947a2809) |
+| Banners (Ethereum)      | Ethereum | 1,785           | 3                  | [Etherscan](https://etherscan.io/address/0x527a4206ac04c2017295cf32f1fc2f9e034a7c40)                          |
+| Banners (Starknet)      | Starknet | 9,170           | 2                  | [Voyager](https://voyager.online/contract/0x02d66679de61a5c6d57afd21e005a8c96118bd60315fd79a4521d68f5e5430d1) |
+| Wolf Nation             | Starknet | 333             | 3                  | [Voyager](https://voyager.online/contract/0x0413485dbeccec6320d35dcba14375e7ca973f021486496a61286edb958fd861) |
+| zKube                   | Starknet | 11,326          | 1                  | [Voyager](https://voyager.online/contract/0x04fd5df500e6c6615e4423258639f189455672bc841ba58f1c781ac7c5ff4bd8) |
+| Karats                  | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x07d8ea58612a5de25f29281199a4fc1f2ce42f0f207f93c3a35280605f3b8e68) |
+| Karats 2                | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x030f694df2a04e04cf3e1d3e79dd5aadfdaa77295bb007696222fc60a5e8730d) |
+| Ducks Everywhere        | Starknet | 300             | 10                 | [Voyager](https://voyager.online/contract/0x04fa864a706e3403fd17ac8df307f22eafa21b778b73353abf69a622e47a2003) |
+| Pistols                 | Starknet | 126             | 5                  | [Voyager](https://voyager.online/contract/0x014aa76e6c6f11e3f657ee2c213a62006c78ff2c6f8ed40b92c42fd554c246f2) |
+| Influence Asteroids     | Starknet | 11,726          | 1                  | [Voyager](https://voyager.online/contract/0x0603cf837055c64d026a3c5a9e3a83036cea6c4a3f68a9e19f7a687d726fe817) |
+| Starkurabu              | Starknet | 10,000          | 1                  | [Voyager](https://voyager.online/contract/0x03ab1124ef9ec3a2f2b1d9838f9066f9a894483d40b33390dda8d85c01a315a3) |
+| Jokers Of Neon Beasts   | Starknet | 104             | 5                  | [Voyager](https://voyager.online/contract/0x07268fcf96383f8691b91ba758cc8fefe0844146f0557909345b841fb1de042f) |
+| Based Punks             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xcB28749c24AF4797808364D71d71539bc01E76d4)                           |
+| OK Computer             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xCE2830932889C7fB5e5206287C43554E673dCc88)                           |
+| Blackmirror Experience  | Base     | 7,078           | 2                  | [Basescan](https://basescan.org/address/0x108dB2038C6e8Bc1A0b058c70e752b14d08648BF)                           |
+| re:generates            | Base     | 6,665           | 2                  | [Basescan](https://basescan.org/address/0x56dFE6ae26bf3043DC8Fdf33bF739B4fF4B3BC4A)                           |
+| Writ of Passage         | Arbitrum | 10,000          | 2                  | [Arbiscan](https://arbiscan.io/address/0x5d541B55763A9277f61a739f40B6021A16C2d3d8)                            |
+| Liberty Cats            | Polygon  | 7,777           | 2                  | [Polygonscan](https://polygonscan.com/address/0x0030F47D6a73Bc518CF18fE027Ea91DD6B2b6003)                     |
+| Billions Genesis        | Polygon  | 2,999           | 2                  | [Polygonscan](https://polygonscan.com/address/0xeCb63be05886749De33709835e824AEFcFd74f8F)                     |
+| Pudgy Penguins          | Ethereum | 8,888           | 10                 | [Etherscan](https://etherscan.io/address/0xBd3531dA5CF5857e7CfAA92426877b022e612cf8)                          |
+| The Larp Collective     | Arbitrum | 420             | 2                  | [Arbiscan](https://arbiscan.io/address/0x48D2c1716DFDF8aDd5a5EA658c460e7257448660)                            |
+| ZTX Genesis Homes       | Arbitrum | 3,999           | 2                  | [Arbiscan](https://arbiscan.io/address/0x35373efc2FD7D852729cae869Cc32acc979100bD)                            |
+| Forgotten Runes         | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42)                          |
+| Cool Cats               | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x1a92f7381b9f03921564a437210bb9396471050c)                          |
+| Bankr                   | Base     | 1,000           | 10                 | [Basescan](https://basescan.org/address/0x9fab8c51f911f0ba6dab64fd6e979bcf6424ce82)                           |
+| Mee6 Genesis Pass       | Ethereum | 4,444           | 3                  | [Etherscan](https://etherscan.io/address/0xe9ab13482aeab3727e976257d8e1f026e12e9ecd)                          |
+| Adventurers             | Starknet | 10,638          | 1                  | [Voyager](https://voyager.online/contract/0x018108b32cea514a78ef1b0e4a0753e855cdf620bc0565202c02456f618c4dc4) |
+| OGS Discord Role        | Starknet | -               | 10                 | Discord Verified                                                                                              |
+
+## Understanding Free Games
+
+### How Free Games Work
+
+The "Free Games per NFT" column shows how many free game entries each NFT from that collection grants. For example:
+
+* Owning 1 Loot NFT = 5 free games
+* Owning 2 Pudgy Penguins = 20 free games (10 per NFT)
+* Holding multiple eligible NFTs = Games stack across all collections
+* **Maximum 50 free games per address** regardless of total holdings
+
+### Token Earning Potential
+
+Each free game is an opportunity to earn SURVIVOR tokens through gameplay:
+
+* **Level 1-2**: No rewards (warm-up levels)
+* **Level 3+**: Earn tokens equal to the level reached
+* **Example**: Reaching level 3 earns 3 tokens, level 25 earns 25 tokens, level 50 earns 50 tokens
+
+### Multi-Chain Support
+
+Eligible collections span multiple networks:
+
+* **Ethereum** - The majority of legacy collections
+* **Starknet** - Native Loot Survivor ecosystem collections
+* **Base** - Emerging gaming communities
+* **Arbitrum** - L2 gaming collections
+* **Polygon** - Alternative L2 collections
+* **Linea** - Next-generation gaming projects
+
+## Collection Categories
+
+### Premium Allocations (10+ games)
+
+Collections receiving the highest free game allocations:
+
+* **Pudgy Penguins**: 10 games per NFT
+* **Ducks Everywhere**: 10 games per NFT
+* **Bankr**: 10 games per NFT
+* **OGS Discord Role**: 10 games for verified members
+
+### Loot Ecosystem (5 games)
+
+Original Loot-related collections with enhanced allocations:
+
+* **Loot**: 5 games per NFT
+* **Genesis Adventurers**: 5 games per NFT
+* **1337 Skulls**: 5 games per NFT
+* **BAYC**: 5 games per NFT
+* **Terraforms**: 5 games per NFT
+
+### Standard Gaming Collections (2-4 games)
+
+Most collections receive standard allocations:
+
+* **2 games**: Common allocation for gaming NFTs
+* **3 games**: Enhanced allocation for active communities
+* **4 games**: Premium allocation for key partners
+
+### Entry Level (1 game)
+
+Collections with base-level allocations:
+
+* **Grugs Lair**: 1 game per NFT
+* **Influence Asteroids**: 1 game per NFT
+* **Starkurabu**: 1 game per NFT
+* **Adventurers**: 1 game per NFT
+* **zKube**: 1 game per NFT
+
+## Snapshot Details
+
+The eligibility snapshot was taken on **August 18th, 2025 at 00:00 UTC**. All NFT holdings and free game allocations are based on ownership at this specific point in time.
+
+## Verification Process
+
+To verify your free games allocation:
+
+1. Check your NFT holdings as of August 18th, 2025 at 00:00 UTC
+2. Calculate total free games: (NFTs held × Free Games per NFT)
+3. Sum across all eligible collections you held
+4. Apply the 50 free games per address maximum cap
+5. Connect wallet to claim interface for automatic calculation
+
+## Important Notes
+
+* **Maximum 50 free games per eligible address**
+* **Free games expire 2 weeks after the claim window opens** - Same deadline for all players
+* Multiple NFTs from the same collection grant cumulative games (up to the 50 game cap)
+* Transfers after the snapshot do not affect eligibility
+* The OGS Discord Role requires Discord verification, not on-chain holdings
+* Strategic gameplay can maximize token earnings from free games
+
+
+
+---
+
+file: docs/lootsurvivor/token/index.mdx
+meta: {}
+
+# SURVIVOR Token
+
+The SURVIVOR token is the native governance and economic coordination token for Loot Survivor, designed to decentralize the ownership role of the game contracts and promote the growth of the Loot Survivor ecosystem.
+
+## Overview
+
+* Total Supply: 10,000,000
+* Distribution: 75% Community; 25% Team
+* Lockups: None
+
+## Purpose
+
+SURVIVOR is the governance and economic coordination token for Loot Survivor 2.
+
+Governance: SURVIVOR lets holders propose and vote on specific onchain parameters (e.g., which Dungeon the Beasts inhabit, royalty settings for the Beast NFT collection, Beast Mode settings, which ERC‑20s the Dungeon accepts, and the Dungeon’s payment token).
+
+Autonomous treasury growth: When a player buys a Dungeon Ticket, immutable code automatically uses 80% of that payment to purchase SURVIVOR on a decentralized exchange and deposits the purchased tokens into the Survivor Treasury, which is governed by SURVIVOR holders.
+
+No promises / no rights to payouts: SURVIVOR does not grant rights to profits, revenue, dividends, or distributions. The automated purchases are a mechanical feature of the contracts, not a commitment to support price or provide returns.
+
+## Key Features
+
+### Decentralized Ownership Role
+
+The SURVIVOR token ships with a fully onchain governance system, built on top of [OpenZeppelin’s audited governance components](https://docs.openzeppelin.com/contracts-cairo/2.0.0/governance). The governance system enables SURVIVOR token holders to express their will onchain and for their shared will to execute as an onchain transaction. This allows sensitive, configurable game settings,such as which Dungeon the Beasts are in, to be truly owned and controllable by the community instead of the developers.
+
+The Survivor Governance Contract will control the following settings:
+
+* [Beast NFT](https://voyager.online/nft-contract/0x0280ace0b2171106eaebef91ca9b097a566108e9452c45b94a7924a9f794ae80):
+  * Move Beasts to a new Dungeon
+  * Change royalty information (default: 5% distributed to the Survivor Treasury)
+* [LS2 Beast Mode](https://voyager.online/contract/0x02fb722c25768e4a9994258754e7103895fd2f33cbcc1edc8711807950830cb5):
+  * Change Beast Mode settings
+  * Add and remove ERC‑20s from the Dungeon
+  * Change the payment token for the Dungeon
+
+### Economic Coordination
+
+To support the sustainable growth of the Loot Survivor ecosystem, Loot Survivor 2 ships with an autonomous and immutable SURVIVOR buy‑back mechanism. 80% of the proceeds from the sale of Dungeon Tickets, which are required to enter the Dungeon and collect Beasts, are used to purchase SURVIVOR tokens using Ekubo’s TWAMM and to deposit them into the Survivor Treasury. The remaining 20% is distributed to $veLORDS holders for the benefit of Bibliotheca DAO, the original incubator of Loot Survivor.
+
+### Treasury Bootstrap
+
+The treasury is initially seeded with 1M SURVIVOR and approximately 3M LORDS at genesis.
+
+### SURVIVOR Sale (Programmatic DCA via TWAMM):
+
+* Supply: 15% of total supply.
+* Method: A 3‑month programmatic DCA order via TWAMM (Sept 30–Dec 30).
+* Proceeds: 100% contributed to the community treasury for ecosystem growth as governed onchain.
+
+DISCLAIMERS: This sale is programmatic, there are no allocations, discounts, or price/return statements.
+
+### Community Allocation
+
+75% of the total supply is allocated to the community through various distribution mechanisms, ensuring broad ownership and aligned incentives. Allocations include:
+
+* 22.5% LS2 Dungeon claim allocations (FCFS)
+  * 1 Token per level starting at level 3
+  * 4X Promotion for games played during weeks 2-4
+  * 2X Promotion after week 4 till all tokens are claimed.
+* 15% treasury bootstrap DCA
+* 10% Survivor Treasury
+* 9.3% Beast Entitlements (claim at mint)
+* 6.6% LS1/LS1.5 Players
+* 5% Loot Realms; 2.5% Loot; 1.5% 1337 Skulls; 1% Genesis Project; 1% Tournaments; 1% Beast Games
+
+Note: NFT royalties, if any, are not guaranteed across marketplaces.
+
+### Free Games Airdrop
+
+Loot Survivor 2 launches with a two‑week launch promotion that makes \~500k free games available to \~80k addresses across Ethereum, Arbitrum, Base, Starknet, Abstract, Linea, and Polygon. Those holding select NFTs on these platforms will be able to claim free games (including gas), allowing them to play Loot Survivor 2 and collect Beasts and SURVIVOR tokens.
+
+## Quick Links
+
+* [Tokenomics](/lootsurvivor/token/tokenomics) - Detailed breakdown of token distribution and allocations
+* [Airdrop](/lootsurvivor/token/airdrop) - How to claim your SURVIVOR tokens and eligibility criteria
+* [Eligible Collections](/lootsurvivor/token/eligible-collections) - NFT collections eligible for free games
+* [Promotions](/lootsurvivor/token/promotions) - Special promotions and partnerships
+
+## Security
+
+Governance contracts use well‑known OpenZeppelin components. This is not a security audit; no system is risk‑free.
+Game contracts are cutting‑edge and unaudited; use at your own risk.
+
+## Disclaimers
+
+The SURVIVOR token is designed to decentralize ownership and governance of the Loot Survivor protocol. It represents participation rights in the ecosystem and should not be considered a financial investment.
+
+What SURVIVOR is not: SURVIVOR is not equity or debt. Automated purchases into the treasury are mechanical contract behavior, not price support or an offer of returns. Participation involves smart‑contract risk, market volatility, and governance outcomes that may not align with your preferences. Users should understand these risks before participating. Nothing here is investment advice.
+
+
+
+---
+
+file: docs/lootsurvivor/token/promotions.mdx
+meta: {}
+
+# Promotions
+
+## Starkware & Cartridge Partnership
+
+Loot Survivor has partnered with Starkware and Cartridge to bring an exclusive promotion featuring 100,000 STRK tokens distributed across three legendary Beasts. This collaboration celebrates the launch of SURVIVOR and rewards the most skilled adventurers who can defeat these special creatures.
+
+### Prize Distribution
+
+The 100,000 STRK prize pool is split between three unique Beasts, each offering substantial rewards to the adventurer who claims victory:
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
+  <img src="/docs/lootsurvivor/jackpot_balrog.png" alt="Torment Bane Balrog" style={{width: "200px", marginRight: "2rem"}} />
+
+  <div>
+    <h4>"Torment Bane" Balrog</h4>
+
+    <ul>
+      <li><strong>STRK Reward</strong>: 33,333 STRK</li>
+      <li><strong>Location</strong>: The Molten Depths</li>
+      <li><strong>Special Traits</strong>: Ancient demon of fire and shadow, Wielder of eternal flames</li>
+    </ul>
+  </div>
+</div>
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
+  <img src="/docs/lootsurvivor/jackpot_warlock.png" alt="Pain Whisper Warlock" style={{width: "200px", marginRight: "2rem"}} />
+
+  <div>
+    <h4>"Pain Whisper" Warlock</h4>
+
+    <ul>
+      <li><strong>STRK Reward</strong>: 33,333 STRK</li>
+      <li><strong>Location</strong>: The Shadow Sanctum</li>
+      <li><strong>Special Traits</strong>: Master of dark arts, Collector of tormented souls</li>
+    </ul>
+  </div>
+</div>
+
+<div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "3rem"}}>
+  <img src="/docs/lootsurvivor/jackpot_dragon.png" alt="Demon Grasp Dragon" style={{width: "200px", marginRight: "2rem"}} />
+
+  <div>
+    <h4>"Demon Grasp" Dragon</h4>
+
+    <ul>
+      <li><strong>STRK Reward</strong>: 33,334 STRK</li>
+      <li><strong>Location</strong>: The Dragon's Lair</li>
+      <li><strong>Special Traits</strong>: Guardian of ancient treasures, Corrupted by demonic influence</li>
+    </ul>
+  </div>
+</div>
+
+### How It Works
+
+1. **Find the Beast**: These special Beasts spawn randomly in the dungeon
+2. **Defeat to Claim**: The first adventurer to defeat each Beast claims the STRK reward
+3. **Automatic Distribution**: STRK tokens are automatically sent to the winning adventurer's wallet
+4. **One Winner per Beast**: Each Beast can only be defeated once for the reward
+
+### Promotion Period
+
+This promotion runs indefinitely. These special Beasts will continue to spawn in the dungeon, offering adventurers ongoing opportunities to claim the STRK rewards. The promotion remains active until all three unique Beasts have been defeated and the full 100,000 STRK has been distributed.
+
+### About Our Partners
+
+**Starkware** - The technology company behind Starknet, providing the scalable infrastructure that powers Loot Survivor's fully onchain gameplay.
+
+**Cartridge** - The gaming infrastructure platform enabling seamless wallet experiences and player onboarding for Starknet games.
+
+This partnership demonstrates the strong ecosystem support for Loot Survivor and commitment to rewarding skilled players with meaningful prizes.
+
+
+
+---
+
+file: docs/lootsurvivor/token/tokenomics.mdx
+meta: {}
+
+# Tokenomics
+
+## Total Supply
+
+The total supply of the SURVIVOR token is **10,000,000** tokens, distributed between community and team allocations to ensure sustainable growth and development of the Loot Survivor ecosystem.
+
+## Distribution Overview
+
+| Category             | Tokens         | Percentage | Description                                        |
+| -------------------- | -------------- | ---------- | -------------------------------------------------- |
+| **Community**        | **7,500,000**  | **75%**    |                                                    |
+| LS2 Dungeon          | 2,258,100      | 22.58%     | Gameplay rewards (tokens = level reached, from L3) |
+| Treasury DCA         | 1,500,000      | 15%        | 3-month programmatic sale via TWAMM                |
+| Survivor Treasury    | 1,002,222      | 10.02%     | DAO-controlled treasury                            |
+| Beast Entitlements   | 931,500        | 9.32%      | Claim at Beast mint                                |
+| Biblio (Loot Realms) | 500,000        | 5%         | Realms ecosystem                                   |
+| Legacy Beast Bonus   | 332,028        | 3.32%      | LS1 Beast holder rewards                           |
+| Top 1k LS1.5 Players | 326,150        | 3.26%      | Top player rewards                                 |
+| Loot                 | 250,000        | 2.5%       | Original Loot holders                              |
+| 1337 Skulls          | 150,000        | 1.5%       | Skulls holders                                     |
+| Genesis Project      | 100,000        | 1%         | Genesis Adventurers                                |
+| Budokan              | 100,000        | 1%         | Game-agnostic tournament platform                  |
+| Summit               | 100,000        | 1%         | Future Beast battler from LS collections           |
+| **Team**             | **2,500,000**  | **25%**    | No lockups                                         |
+| **Total**            | **10,000,000** | **100%**   |                                                    |
+
+## Distribution Breakdown
+
+### Community Allocation: 7,500,000 (75%)
+
+The majority of SURVIVOR tokens are allocated to the community through various mechanisms designed to reward participation, contribution, and loyalty to the ecosystem.
+
+#### LS2 Dungeon Rewards: 2,258,100 (22.58%)
+
+* First-come, first-served distribution through gameplay
+* Tokens equal to the level reached (starting at level 3)
+* **4X Promotion**: Weeks 2-4 (multiply token rewards by 4)
+* **2X Promotion**: After week 4 until all tokens claimed (multiply token rewards by 2)
+
+#### Treasury Bootstrap DCA: 1,500,000 (15%)
+
+* 3-month programmatic DCA order via TWAMM (Sept 30 - Dec 30)
+* 100% of proceeds contributed to community treasury
+* Ensures fair price discovery and broad distribution
+
+#### Survivor Treasury: 1,002,222 (10.02%)
+
+* DAO-controlled treasury for ecosystem development
+* Initial seed funding at genesis
+* Governed by SURVIVOR token holders
+
+#### Beast Entitlements: 931,500 (9.32%)
+
+* Auto-claimed with each Beast mint (average 10 tokens per Beast)
+* Tier-based distribution:
+  * T1 Beasts: 14 tokens per mint
+  * T2 Beasts: 12 tokens per mint
+  * T3 Beasts: 10 tokens per mint
+  * T4 Beasts: 8 tokens per mint
+  * T5 Beasts: 6 tokens per mint
+
+#### Legacy Players: 658,178 (6.58%)
+
+* **Legacy Beast Bonus**: 332,028 (3.32%)
+  * LS1 Beasts (2,306 total): 249,048 tokens (108 per Beast)
+  * LS1.5 Beasts: 82,980 tokens (36 per Beast)
+* **Top 1k LS1.5 Players**: 326,150 (3.26%) - Top player rewards
+
+#### Ecosystem Allocations: 1,150,000 (11.5%)
+
+* **Biblio (Loot Realms)**: 500,000 (5%) - Realms ecosystem development
+* **Loot**: 250,000 (2.5%) - Distributed to multisig of trusted Loot ecosystem entities
+* **1337 Skulls**: 150,000 (1.5%) - Distributed to multisig of trusted Skulls ecosystem entities
+* **Genesis Project**: 100,000 (1%) - Distributed to multisig of trusted Genesis ecosystem entities
+* **Budokan**: 100,000 (1%) - Player incentives for game-agnostic tournament platform
+* **Summit**: 100,000 (1%) - Player incentives and utility for Beasts collected in Loot Survivor
+
+### Team Allocation: 2,500,000 (25%)
+
+Reserved for the Loot Survivor team. This allocation aligns long-term incentives between the team and the ecosystem's success.
+
+## Value Accrual Mechanisms
+
+### Governance Treasury
+
+SURVIVOR token holders control the governance treasury, which consists of:
+
+* Proceeds from the Treasury Bootstrap DCA (1.5M tokens sold over 3 months)
+* 80% of proceeds from dungeon ticket purchases
+* 1,002,222 SURVIVOR tokens from the Survivor Treasury allocation
+* Initial seed of \~3M LORDS at genesis
+
+These funds can be directed towards:
+
+* Buyback and burns to distribute game revenue to token holders
+* Development funding for new features
+* Liquidity provision incentives
+* Ecosystem partnerships and growth initiatives
+
+### Governance Rights
+
+SURVIVOR token holders control:
+
+* **Beast NFT Settings**:
+  * Move Beasts to new Dungeons
+  * Royalty settings (default 5% to Survivor Treasury)
+* **LS2 Beast Mode**:
+  * Beast Mode configuration
+  * ERC-20 acceptance in Dungeons
+  * Dungeon payment token selection
+* **Treasury Management**:
+  * Allocation of treasury funds
+  * Partnership approvals and funding
+  * Community initiative funding
+
+## Distribution Schedule
+
+### Launch Distributions
+
+* **Free Games Airdrop**: \~500k games to \~80k addresses (2-week claim window)
+* **Beast Entitlements**: Claimable at Beast mint
+* **LS1/LS1.5 Players**: Based on historical participation
+
+### Ongoing Distributions
+
+* **LS2 Dungeon**: First-come, first-served through gameplay
+  * Week 1: Standard rate (tokens = level reached, starting at L3)
+  * Weeks 2-4: 4X promotion (standard rate × 4)
+  * After Week 4: 2X promotion until exhausted (standard rate × 2)
+* **Treasury Bootstrap DCA**: 3-month programmatic sale (Sept 30 - Dec 30)
+
+### No Lockups
+
+* All allocations are immediately liquid upon receipt
+* No vesting schedules or lockup periods
+* Team tokens have no restrictions
+
+## Economic Sustainability
+
+The tokenomics model is designed to create a self-sustaining ecosystem where:
+
+* Players are rewarded for skill and participation
+* Developers are incentivized to build on the platform
+* Token holders benefit from ecosystem growth
+* Protocol revenue supports ongoing development
+
+This balanced approach ensures long-term viability while maintaining decentralization and community ownership.
 
 
 
