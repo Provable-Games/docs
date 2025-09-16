@@ -222,6 +222,25 @@ export default defineConfig({
               },
             ],
           },
+          {
+            text: "Survivor Token",
+            link: "/lootsurvivor/survivor-token",
+            collapsed: true,
+            items: [
+              {
+                text: "Tokenomics",
+                link: "/lootsurvivor/survivor-token/tokenomics",
+              },
+              {
+                text: "Airdrop",
+                link: "/lootsurvivor/survivor-token/airdrop",
+              },
+              {
+                text: "Eligible Collections",
+                link: "/lootsurvivor/survivor-token/eligible-collections",
+              },
+            ],
+          },
           // {
           //   text: "Technical Documentation",
           //   link: "/lootsurvivor/technical",
