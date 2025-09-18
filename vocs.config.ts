@@ -8,10 +8,10 @@ export default defineConfig({
   rootDir: "src",
   title: "Provable Games",
   description:
-    "A Web3 game studio specializing in games and autonomous worlds that can be cryptographically verified using zero-knowledge proofs.",
+    "Using cryptography to create incorruptible and indestructible fun.",
   iconUrl: "/favicon.ico",
   logoUrl: "/logo.svg",
-  ogImageUrl: "/og-banner.png",
+  ogImageUrl: "/new-banner.png",
   socials: [
     {
       icon: "github",
