@@ -220,6 +220,10 @@ export default defineConfig({
                 text: "Collectibles",
                 link: "/lootsurvivor/beasts/collectibles",
               },
+              {
+                text: "Wanted Beasts",
+                link: "/lootsurvivor/beasts/wanted-beasts",
+              },
             ],
           },
           {
@@ -239,11 +243,11 @@ export default defineConfig({
                 text: "Eligible Collections",
                 link: "/lootsurvivor/token/eligible-collections",
               },
-              {
-                text: "Promotions",
-                link: "/lootsurvivor/token/promotions",
-              },
             ],
+          },
+          {
+            text: "Golden Token",
+            link: "/lootsurvivor/golden-token",
           },
           // {
           //   text: "Technical Documentation",
