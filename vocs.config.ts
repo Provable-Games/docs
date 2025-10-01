@@ -188,6 +188,10 @@ export default defineConfig({
             ],
           },
           {
+            text: "Dungeon Tickets",
+            link: "/lootsurvivor/dungeon-tickets",
+          },
+          {
             text: "Stats",
             link: "/lootsurvivor/stats",
           },
