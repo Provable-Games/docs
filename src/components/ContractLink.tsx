@@ -10,7 +10,7 @@ interface ContractLinkProps {
 export function ContractLink({ address, label, network }: ContractLinkProps) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-(--color-brand)">{label || displayAddress(address)}</p>
+      <p className="text-(--color-brand)">{label || address}</p>
       <div className="flex flex-row gap-2">
         <a
           href={`https://${

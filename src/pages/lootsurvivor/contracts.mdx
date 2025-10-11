@@ -8,119 +8,117 @@ import { ContractTable } from "../../components/ContractTable";
 
 Loot Survivor is built on Starknet using the Dojo engine, with all game logic executed fully onchain. The game's smart contracts handle everything from adventurer creation to combat resolution, ensuring transparency and verifiability.
 
-## Contract Architecture
+## Death Mountain Contracts
 
-The Loot Survivor smart contract system is organized into several core components:
-
-- **Game**: Main game logic and state management
-- **Game Token**: Interfaces for Embeddable Game Standard compatibility
-- **Beast**: Creature stats, behavior, and combat mechanics
-- **Adventurer**: Player character data and progression
-- **Loot**: Item generation, properties, and bonuses
-- **Objectives**: Quest and achievement system
-- **Renderer**: Visual rendering and display logic
-- **Settings**: Game configuration and parameters
-
-## Contract Addresses
+The core game engine powering Loot Survivor.
 
 <ContractTable
   contracts={[
-    [
-      {
-        name: "Game",
-        address:
-          "0x553b436ed00409c1bc0cbb1dc765029acad1cdd1f7eb5c778a27bf55fe374c5",
-      },
-      {
-        name: "Game",
-        address:
-          "0x6f7c4350d6d5ee926b3ac4fa0c9c351055456e75c92227468d84232fc493a9c",
-      },
-    ],
-    [
-      {
-        name: "Game Token",
-        address:
-          "0xd9abf3d04eda96f93baf9873bda881a9580c475e551ff23e78c95ab561ea73",
-      },
-      {
-        name: "Game Token",
-        address:
-          "0x5e2dfbdc3c193de629e5beb116083b06bd944c1608c9c793351d5792ba29863",
-      },
-    ],
-    [
-      {
-        name: "Beast",
-        address:
-          "0x5f9371543af0b2b546ba273840e1943e81622105241b4498d1dde4de92e2c77",
-      },
-      {
-        name: "Beast",
-        address:
-          "0x74abc15c0ddef39bdf1ede2a643c07968d3ed5bacb0123db2d5b7154fbb35c7",
-      },
-    ],
-    [
-      {
-        name: "Adventurer",
-        address:
-          "0x49d0f851a94eb1949ca7181855d71139ad438d546bb6c6bd92a8c67a0f7ae4f",
-      },
-      {
-        name: "Adventurer",
-        address:
-          "0x3fc7ecd6d577daa1ee855a9fa13a914d01acda06715c9fc74f1ee1a5e346a01",
-      },
-    ],
-    [
-      {
-        name: "Loot",
-        address:
-          "0x78d7780371156c331f279dcd7b3372c88705ab178293ea9e612ea81bc478fd7",
-      },
-      {
-        name: "Loot",
-        address:
-          "0x4c386505ce1cc0be91e7ae8727c9feec66692a92c851b01e7f764ea0143dbe4",
-      },
-    ],
-    [
-      {
-        name: "Objectives",
-        address:
-          "-",
-      },
-      {
-        name: "Objectives",
-        address:
-          "0x403224d3586a402bf3d9a7553493ba0d931e306e6aae8472503afdf90083e32",
-      },
-    ],
-    [
-      {
-        name: "Renderer",
-        address:
-          "0x73a15594fa18812965007ce02209975d6eb3646f0b4d67c218086eb88a9dc67",
-      },
-      {
-        name: "Renderer",
-        address:
-          "0x6135cd4ee82eb5e7652a636a952c893315914f0655a3cc834ce8b6b1e5ff1cb",
-      },
-    ],
-    [
-      {
-        name: "Settings",
-        address:
-          "0x2757f6f5f3b7d2ec2eb6832e19d98cfaf4a01d0aa749bdf72375f16254f6eae",
-      },
-      {
-        name: "Settings",
-        address:
-          "0x3caf941b916a83550d8f6325802e0cb686c9a0c8b30a23fb9df531ae24d12d0",
-      },
-    ],
+    {
+      name: "Game",
+      address: "0x6f7c4350d6d5ee926b3ac4fa0c9c351055456e75c92227468d84232fc493a9c",
+    },
+    {
+      name: "Game Token",
+      address: "0x5e2dfbdc3c193de629e5beb116083b06bd944c1608c9c793351d5792ba29863",
+    },
+    {
+      name: "Beast",
+      address: "0x74abc15c0ddef39bdf1ede2a643c07968d3ed5bacb0123db2d5b7154fbb35c7",
+    },
+    {
+      name: "Adventurer",
+      address: "0x3fc7ecd6d577daa1ee855a9fa13a914d01acda06715c9fc74f1ee1a5e346a01",
+    },
+    {
+      name: "Loot",
+      address: "0x4c386505ce1cc0be91e7ae8727c9feec66692a92c851b01e7f764ea0143dbe4",
+    },
+    {
+      name: "Objectives",
+      address: "0x403224d3586a402bf3d9a7553493ba0d931e306e6aae8472503afdf90083e32",
+    },
+    {
+      name: "Renderer",
+      address: "0x6135cd4ee82eb5e7652a636a952c893315914f0655a3cc834ce8b6b1e5ff1cb",
+    },
+    {
+      name: "Settings",
+      address: "0x3caf941b916a83550d8f6325802e0cb686c9a0c8b30a23fb9df531ae24d12d0",
+    },
+  ]}
+/>
+
+## NFT & Token Contracts
+
+<ContractTable
+  contracts={[
+    {
+      name: "Golden Token",
+      address: "0x027838dea749f41c6f8a44fcfa791788e6101080c1b3cd646a361f653ad10e2d",
+    },
+    {
+      name: "Beasts",
+      address: "0x046da8955829adf2bda310099a0063451923f02e648cf25a1203aac6335cf0e4",
+    },
+  ]}
+/>
+
+## Governance Contracts
+
+<ContractTable
+  contracts={[
+    {
+      name: "SURVIVOR Token",
+      address: "0x042dd777885ad2c116be96d4d634abc90a26a790ffb5871e037dd5ae7d2ec86b",
+    },
+    {
+      name: "Survivor Controller",
+      address: "0x041bb7729efa185f2cab327de0a668886302f1d4969e3edf504c4741648f858b",
+    },
+    {
+      name: "Survivor Governor",
+      address: "0x050897ea9df71b661b8eac53162be37552e729ee9d33a6f9ae0b61c95a11209e",
+    },
+  ]}
+/>
+
+## Ecosystem Contracts
+
+<ContractTable
+  contracts={[
+    {
+      name: "Beast Mode",
+      address: "0x00a67ef20b61a9846e1c82b411175e6ab167ea9f8632bd6c2091823c3629ec42",
+    },
+    {
+      name: "Dungeon Ticket",
+      address: "0x035f581b050a39958b7188ab5c75daaa1f9d3571a0c032203038c898663f31f8",
+    },
+    {
+      name: "Free Games Claims",
+      address: "0x07713b8aac77a664792bce1c6cb66649bae64dea85ed5d24bbb0bd3629d66899",
+    },
+    {
+      name: "PG World",
+      address: "0x02ef591697f0fd9adc0ba9dbe0ca04dabad80cf95f08ba02e435d9cb6698a28a",
+    },
+    {
+      name: "Token Event Relayer",
+      address: "0x2f1c516fa4d2c41f2021edc3b46f33326e73755e55982374381150e6d8d12df",
+    },
+    {
+      name: "Minigame Registry",
+      address: "0x06e9c39be20dee2800407fe6cb22214a96a71d339940d6f21fcb354604b6cc7e",
+    },
+    {
+      name: "Denshokan",
+      address: "0x036017e69d21d6d8c13e266eabb73ef1f1d02722d86bdcabe5f168f8e549d3cd",
+    },
+    {
+      name: "Budokan",
+      address: "0x58f888ba5897efa811eca5e5818540d35b664f4281660cd839cd5a4b0bf4582",
+    },
   ]}
 />
 
@@ -139,3 +137,10 @@ Players interact with the smart contracts through:
 - **Block Explorers**: View transactions and state on Starkscan or Voyager
 
 All game actions are recorded onchain, providing complete transparency and allowing for independent verification of gameplay mechanics.
+
+## Verification Status
+
+Several contracts have been verified on Voyager for enhanced transparency:
+- **SURVIVOR Token**: Verified ✓
+- **Survivor Controller**: Verified ✓
+- **Survivor Governor**: Verified ✓

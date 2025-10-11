@@ -4,11 +4,10 @@ import { ContractLink } from "./ContractLink";
 interface Contract {
   name: string;
   address: string;
-  chainId: string;
 }
 
 interface ContractTableProps {
-  contracts: Contract[][];
+  contracts: Contract[];
 }
 
 export function ContractTable({ contracts }: ContractTableProps) {
@@ -17,33 +16,23 @@ export function ContractTable({ contracts }: ContractTableProps) {
       <thead>
         <tr>
           <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-            Contract/Network
+            Contract
           </th>
           <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-            Sepolia
-          </th>
-          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-            Mainnet
+            Mainnet Address
           </th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-200">
-        {contracts.map((contractPair, index) => {
-          const [sepoliaContract, mainnetContract] = contractPair;
+        {contracts.map((contract, index) => {
           return (
             <tr key={index}>
               <td className="px-6 py-4 text-sm font-medium">
-                {mainnetContract.name}
-              </td>
-              <td className="px-6 py-4 text-sm w-[100px]">
-                <ContractLink
-                  address={sepoliaContract.address}
-                  network="sepolia"
-                />
+                {contract.name}
               </td>
               <td className="px-6 py-4 text-sm">
                 <ContractLink
-                  address={mainnetContract.address}
+                  address={contract.address}
                   network="mainnet"
                 />
               </td>
