@@ -8586,7 +8586,7 @@ The treasury is initially seeded with 1M SURVIVOR and approximately 3M LORDS at 
 ### SURVIVOR Sale (Programmatic DCA via TWAMM):
 
 * Supply: 15% of total supply.
-* Method: A 3‑month programmatic DCA order via TWAMM (Oct 15 – Dec 30).
+* Method: A 3‑month programmatic DCA order via TWAMM (Oct 15 – Jan 15).
 * Proceeds: 100% contributed to the community treasury for ecosystem growth as governed onchain.
 
 DISCLAIMERS: This sale is programmatic, there are no allocations, discounts, or price/return statements.
@@ -8676,7 +8676,7 @@ The majority of SURVIVOR tokens are allocated to the community through various m
 
 #### Treasury Bootstrap DCA: 1,500,000 (15%)
 
-* 3-month programmatic DCA order via TWAMM (Oct 15 - Dec 30)
+* 3-month programmatic DCA order via TWAMM (Oct 15 - Jan 15)
 * 100% of proceeds contributed to community treasury
 * Ensures fair price discovery and broad distribution
 
@@ -8764,7 +8764,7 @@ SURVIVOR token holders control:
   * Week 1: Standard rate (tokens = level reached, starting at L3)
   * Weeks 2-4: 4X promotion (standard rate × 4)
   * After Week 4: 2X promotion until exhausted (standard rate × 2)
-* **Treasury Bootstrap DCA**: 3-month programmatic sale (Oct 15 - Dec 30)
+* **Treasury Bootstrap DCA**: 3-month programmatic sale (Oct 15 - Jan 15)
 
 ### No Lockups
 
