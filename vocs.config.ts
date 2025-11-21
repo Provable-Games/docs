@@ -160,6 +160,34 @@ export default defineConfig({
         ],
       },
     ],
+    // Summit sidebar
+    "/summit": [
+      {
+        text: "Summit",
+        items: [
+          {
+            text: "Overview",
+            link: "/summit",
+          },
+          {
+            text: "Battle System",
+            link: "/summit/battle-system",
+          },
+          {
+            text: "Beast Upgrades",
+            link: "/summit/beast-upgrades",
+          },
+          {
+            text: "Consumables",
+            link: "/summit/consumables",
+          },
+          {
+            text: "Rewards",
+            link: "/summit/rewards",
+          },
+        ],
+      },
+    ],
     // Loot Survivor sidebar
     "/lootsurvivor": [
       {

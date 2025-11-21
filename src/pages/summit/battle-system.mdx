@@ -1,0 +1,233 @@
+---
+title: Battle System
+sidebar_label: Battle System
+---
+
+# Battle System
+
+Summit uses the same proven combat mechanics from [Loot Survivor](/lootsurvivor/guide/battle), creating a familiar yet competitive environment where your beasts battle each other instead of adventurers.
+
+## Combat Fundamentals
+
+### Turn-Based Combat
+
+Just like in Loot Survivor, combat follows a turn-based system:
+
+1. **Attacker Goes First** - The challenging beast attacks
+2. **Defender Counter-Attacks** - If they survive, they strike back
+3. **Repeat** - Continue until one beast falls
+
+The key difference in Summit is that **both combatants are beasts**, making type advantages and upgrades even more crucial.
+
+### Damage Calculation
+
+Damage in Summit follows the Loot Survivor formula with some additions:
+
+**Base Damage Formula:**
+```
+Power = Beast Level × (6 - Beast Tier)
+```
+
+**Damage Modifiers:**
+- **Type Advantage**: +50% damage when strong, -50% when weak
+- **Attack Potions**: Each potion adds 10% bonus damage (strength)
+- **Critical Hits**: Chance based on Luck stat (0% base, up to 95%)
+- **Special Abilities**: Prefix/suffix bonuses when unlocked
+
+## Type Advantage System
+
+Summit uses the same rock-paper-scissors system from Loot Survivor:
+
+<div style={{
+  display: "flex",
+  justifyContent: "center",
+  marginBottom: "2rem",
+  marginTop: "2rem"
+}}>
+  <div style={{
+    position: "relative",
+    width: "350px",
+    height: "300px"
+  }}>
+    {/* Brute - Top */}
+    <div style={{
+      position: "absolute",
+      top: "0",
+      left: "50%",
+      transform: "translateX(-50%)",
+      textAlign: "center",
+      backgroundColor: "#dc2626",
+      padding: "1rem 1.5rem",
+      borderRadius: "12px",
+      border: "3px solid #991b1b",
+      minWidth: "140px",
+      boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)"
+    }}>
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>🔨</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Brute</div>
+      <div style={{ fontSize: "0.75rem", color: "#fca5a5", marginTop: "0.25rem" }}>Bludgeon</div>
+    </div>
+    
+    {/* Hunter - Bottom Left */}
+    <div style={{
+      position: "absolute",
+      bottom: "0",
+      left: "0",
+      textAlign: "center",
+      backgroundColor: "#059669",
+      padding: "1rem 1.5rem",
+      borderRadius: "12px",
+      border: "3px solid #047857",
+      minWidth: "140px",
+      boxShadow: "0 4px 12px rgba(5, 150, 105, 0.3)"
+    }}>
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>⚔️</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Hunter</div>
+      <div style={{ fontSize: "0.75rem", color: "#86efac", marginTop: "0.25rem" }}>Blade</div>
+    </div>
+    
+    {/* Magical - Bottom Right */}
+    <div style={{
+      position: "absolute",
+      bottom: "0",
+      right: "0",
+      textAlign: "center",
+      backgroundColor: "#7c3aed",
+      padding: "1rem 1.5rem",
+      borderRadius: "12px",
+      border: "3px solid #6d28d9",
+      minWidth: "140px",
+      boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)"
+    }}>
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>✨</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Magical</div>
+      <div style={{ fontSize: "0.75rem", color: "#ddd6fe", marginTop: "0.25rem" }}>Magic</div>
+    </div>
+    
+    {/* Center circular arrows */}
+    <svg style={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "100px",
+      height: "100px",
+      pointerEvents: "none"
+    }}>
+      {/* Three arrows showing advantage flow */}
+      {/* Brute to Hunter (pointing bottom left) */}
+      <path d="M 50 15 L 15 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+      
+      {/* Hunter to Magical (pointing right) */}
+      <path d="M 15 75 L 85 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+      
+      {/* Magical to Brute (pointing top left) */}
+      <path d="M 85 75 L 50 15" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+      
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" 
+         refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="white" />
+        </marker>
+      </defs>
+    </svg>
+  </div>
+</div>
+
+**Remember:** Brute beats Hunter, Hunter beats Magical, Magical beats Brute
+
+## Summit-Specific Combat Features
+
+### Multi-Beast Attacks
+
+Summit allows you to attack with multiple beasts in sequence:
+
+1. **Sequential Combat** - Beasts fight one at a time
+2. **All Attacks in One Transaction** - Your sequence of beasts attacks in a single transaction, giving you a better chance to take the Summit
+3. **First Beast Advantage** - Only the first beast will benefit from attack potions
+4. **Strategic Order** - Choose your beast order wisely
+
+### Extra Lives System
+
+Defenders can have multiple lives:
+- When health reaches 0, an extra life is consumed
+- Beast returns to full health (base + bonus)
+- Combat continues without interruption
+- Beasts can have up to 255 extra lives
+
+### Critical Hit Mechanics
+
+Critical hits in Summit are determined by the Luck stat:
+
+| Luck | Critical Chance |
+|------------|-----------------|
+| 0          | 0%              |
+| 1          | 12%             |
+| 10         | 45%             |
+| 50         | 54%             |
+| 100        | 64%             |
+| 200        | 84%             |
+| 255        | 95%             |
+
+**Critical Hit Damage**: +100% base damage
+
+## Strategic Considerations
+
+### Attacking Strategy
+
+When planning your assault:
+
+1. **Scout the Defender** - Check their type, health, and extra lives
+2. **Order Your Beasts** - Put your strongest with type advantage first
+3. **Load Attack Potions** - Only on your first beast
+4. **Time Your Strike** - Attack when defender is weakened
+
+### Defending Strategy
+
+To hold the Summit longer:
+
+1. **Maximize Health** - Feed $CORPSE tokens for bonus health (up to 1,023)
+2. **Stock Extra Lives** - Apply them immediately after taking Summit
+3. **Choose Defensive Upgrades** - Wisdom to gain bonus levels, Luck to get critical chance, Specials to unlocks name match bonus
+
+### Type Matchup Planning
+
+Since you know the defending beast's type:
+- **Favorable Matchup**: +50% damage makes victory likely
+- **Neutral Matchup**: Comes down to stats and potions
+- **Unfavorable Matchup**: -50% damage makes victory difficult
+
+## Battle Rewards
+
+### Experience Points
+
+XP in Summit works differently than Loot Survivor:
+
+**Attackers Gain:**
+- Base: 10 XP per attack
+- Attack Streak Bonus: +1 XP per consecutive attack (max +10)
+- Beasts can gain up to 40 bonus levels
+
+**Defenders Gain:**
+- XP = Defeated attacker's power / 100
+- Wisdom upgrade required
+- Rewards successful defense
+
+## Tips for Success
+
+### Know Your Enemy
+- Each beast type has predictable strengths and weaknesses
+- Plan your attacks around type advantages
+- Consider the defender's upgrades and health
+
+### Resource Efficiency
+- Don't waste potions on unlikely victories
+- Save revival potions for coordinated attacks
+- Balance upgrades amongst your strongest beasts
+
+### Timing is Everything
+- Attack during low activity periods
+- Coordinate with allies for sequential strikes
+- Take advantage of weakened defenders
+
+The battle system rewards both tactical planning and strategic resource management. Master these mechanics to dominate the Summit!

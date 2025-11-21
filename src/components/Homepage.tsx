@@ -21,6 +21,13 @@ const cardContent = [
       "A feature-rich onchain tournament platform that lets anyone create and compete in onchain tournaments.",
   },
   {
+    title: "Summit",
+    icon: "/summit-logo.png",
+    link: "/summit",
+    description:
+      "An all-against-all, king-of-the-hill battle game where players use their collectable beasts to fight for control of the Summit.",
+  },
+  {
     title: "Embeddable Game Standard",
     icon: "/embeddable-game-standard.png",
     link: "/embeddable-game-standard",
