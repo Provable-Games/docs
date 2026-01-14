@@ -79,6 +79,10 @@ export default defineConfig({
                     text: "Entry Requirements",
                     link: "/budokan/guide/create/entry-requirements",
                   },
+                  {
+                    text: "Best Practices",
+                    link: "/budokan/guide/create/best-practices",
+                  },
                 ],
               },
             ],
