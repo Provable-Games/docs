@@ -8932,40 +8932,46 @@ Items have dual classifications that affect combat performance:
 
 **⚔️ Blade Weapons**
 
-* Strong vs Hide armor
+* Strong vs Cloth armor
 * Weak vs Metal armor
+* Neutral vs Hide armor
 * Examples: Katana, Short Sword, Scimitar
 
 **🔨 Bludgeon Weapons**
 
-* Strong vs Metal armor
+* Strong vs Hide armor
 * Weak vs Cloth armor
+* Neutral vs Metal armor
 * Examples: Club, Mace, Warhammer
 
 **✨ Magic Weapons**
 
-* Strong vs Cloth armor
+* Strong vs Metal armor
 * Weak vs Hide armor
+* Neutral vs Cloth armor
 * Examples: Wand, Book, Ghost Wand
 
 ## Armor Materials
 
 **🛡️ Hide Armor**
 
-* Resists Blade attacks
-* Weak to Magic attacks
+* Resists Magic attacks
+* Weak to Bludgeon attacks
+* Neutral to Blade attacks
 * Examples: Leather armor, Dragon skin
 
 **⚡ Metal Armor**
 
-* Resists Bludgeon attacks
-* Weak to Blade attacks
+* Resists Blade attacks
+* Weak to Magic attacks
+* Neutral to Bludgeon attacks
 * Examples: Chain mail, Plate armor
 
 **🧙 Cloth Armor**
 
-* Resists Magic attacks
-* Weak to Bludgeon attacks
+* Resists Bludgeon attacks
+* Weak to Blade attacks
+* Neutral to Magic attacks
 * Examples: Robes, Shirts
 
 ***
