@@ -16,356 +16,6 @@ import { HomePage } from "../components/Homepage.tsx";
 
 ---
 
-file: docs/budokan/faq.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Budokan: FAQ
-
-Welcome to the Budokan FAQ! Here you'll find answers to the most common questions about using the Budokan tournament platform. If you can't find what you're looking for, check our other guides or contact support through the app.
-
-## General
-
-**What is Budokan?**
-
-Budokan is a permissionless tournament platform for on-chain games, allowing anyone to create, join, and sponsor tournaments using Starknet wallets and a variety of supported tokens.
-
-**Who can participate in Budokan tournaments?**
-
-Anyone with a supported Starknet wallet who meets the tournament's entry requirements can participate.
-
-## Getting Started & Wallets
-
-**How do I get started on Budokan?**
-
-See our [Onboarding Guide](/budokan/guide/onboarding) for step-by-step instructions on setting up your wallet and connecting to Budokan.
-
-**Which wallets are supported?**
-
-Budokan supports Cartridge Controller (recommended), Argent, Braavos, and more. See the [Onboarding Guide](/budokan/guide/onboarding) for details.
-
-**Do I need a wallet to join a tournament?**
-
-Yes, a Starknet wallet is required to enter tournaments, claim prizes, and interact with the platform.
-
-## Tournaments & Entry
-
-**How do I find and join a tournament?**
-
-Browse tournaments on the overview page, select one to view details, and follow the steps in [Entering Tournaments](/budokan/guide/enter) to join.
-
-**What are entry requirements?**
-
-Entry requirements can include holding specific tokens/NFTs, qualifying in previous tournaments, or being on a whitelist. See [Entry Requirements](/budokan/guide/create/entry-requirements) for more info.
-
-**Can I join multiple tournaments?**
-
-Yes, you can join as many tournaments as you qualify for.
-
-**What if I don't meet the entry requirements?**
-
-Review the requirements section on the tournament page for guidance. You may need to acquire certain tokens or qualify in another event.
-
-## Prizes & Fees
-
-**How are prizes funded and distributed?**
-
-Prizes can be funded by tournament creators, sponsors, or the community. They are distributed according to the rules and splits set for each tournament. See [Prizes](/budokan/guide/prizes) for details.
-
-**What tokens can be used for entry fees and prizes?**
-
-Currently, Budokan uses a whitelist of supported tokens. In the future, any token on Ekubo and NFTs will be supported. See [Entry Fees](/budokan/guide/create/entry-fees) and [Prizes](./guide/prizes).
-
-**How do I claim my prize?**
-
-After the tournament ends and results are verified, use the **Claim Prizes** button on the tournament page. See [Prizes](/budokan/guide/prizes) for step-by-step instructions.
-
-**Can sponsors add prizes after a tournament has started?**
-
-Yes! Sponsors and community members can add prizes at any time before the tournament ends. See [Prizes](/budokan/guide/prizes).
-
-## Creating & Managing Tournaments
-
-**How do I create a tournament?**
-
-Click the **Create Tournament** button in the navigation and follow the steps in [Creating a Tournament](/budokan/guide/create).
-
-**What customization options are available?**
-
-You can set game, schedule, entry requirements, fees, prize structure, and more. See [Creating a Tournament](/budokan/guide/create) for a full walkthrough.
-
-**Can I edit a tournament after creation?**
-
-Some settings (like prizes) can be updated before the tournament ends, but core settings are locked after creation. Double-check all details before confirming.
-
-## Troubleshooting & Support
-
-**Why can't I enter a tournament?**
-
-Check that you meet all entry requirements and have a supported wallet connected. If you still have issues, contact support.
-
-**Why can't I claim my prize?**
-
-Ensure the tournament has ended, results are finalized, and you are eligible. If problems persist, see [Prizes](/budokan/guide/prizes) or contact support.
-
-**Where can I get more help?**
-
-Check our guides or contact support through the app for further assistance.
-
-## More Resources
-
-* [Onboarding Guide](/budokan/guide/onboarding)
-* [Entering Tournaments](/budokan/guide/enter)
-* [Creating a Tournament](/budokan/guide/create)
-* [Prizes](/budokan/guide/prizes)
-
-If you have suggestions for this FAQ, let us know!
-
-
-
----
-
-file: docs/budokan/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-import { ContractTable } from '../../components/ContractTable'
-import { Button } from 'vocs/components'
-
-![Overview](/banner-1200x630.webp)
-
-# Budokan
-
-Budokan is an onchain tournament system designed to power competitive gaming experiences on Starknet. It provides a robust, modular, and extensible framework for:
-
-* Creating and managing tournaments with flexible schedules and rules
-* Supporting a variety of entry requirements and fee structures
-* Handling prize pools and distribution (ERC20, ERC721, and custom tokens)
-* Integrating with embeddable game standards for seamless game onboarding
-* Leveraging Dojo world storage and event systems for composability and upgradability
-
-<Button href="https://budokan.gg" target="_blank" className="bg-white text-black" size="lg">
-  Launch App
-</Button>
-
-## Table of Contents
-
-* [Key Functions](/budokan/key-functions)
-* [Guide](/budokan/guide)
-* [FAQ](/budokan/faq)
-
-## Contracts
-
-<ContractTable
-  contracts={[[
-  { name: "Budokan", address: "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3" },
-  { name: "Budokan", address: "0x5accc0e54259cb3176450fa730fc5824cf2d3e550aec385cdaaa6250efdff27" }
-]]}
-/>
-
-## Key Features
-
-* **Modular Architecture**: Components for tournaments, games, schedules, and prizes can be extended or replaced.
-* **Secure and Permissionless**: Anyone can create or enter tournaments, with robust checks for entry requirements and prize claims.
-* **Flexible Entry and Prize Logic**: Supports entry fees, qualification proofs, and multiple prize types.
-* **Leaderboard and Scoring**: Built-in leaderboard management and score submission.
-
-## Use Cases
-
-* Esports tournaments for onchain games
-* Community competitions and challenges
-* Automated prize distribution for game events
-* Open standards for game developers to integrate with tournament infrastructure
-
-Budokan is designed to be the backbone for provable, transparent, and fair onchain competitions, enabling new forms of player engagement and game design.
-
-
-
----
-
-file: docs/budokan/key-functions.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Budokan: Key Functions
-
-This section details the primary functions exposed by the Budokan tournament system. Each function is designed to be permissionless, composable, and secure.
-
-## `create_tournament`
-
-```cairo
-fn create_tournament(
-    ref self: TState,
-    creator_rewards_address: ContractAddress,
-    metadata: Metadata,
-    schedule: Schedule,
-    game_config: GameConfig,
-    entry_fee: Option<EntryFee>,
-    entry_requirement: Option<EntryRequirement>,
-) -> TournamentModel;
-```
-
-**Purpose:** Create a new tournament with specified metadata, schedule, game configuration, entry fee, and requirements. Mints a game token to the creator for reward distribution.
-
-**Parameters:**
-
-* `creator_rewards_address`: Address to receive the creator's game token.
-* `metadata`: Tournament metadata (name, description, etc.).
-* `schedule`: Tournament schedule (registration, submission, finalization phases).
-* `game_config`: Game configuration (game address, settings, prize spots).
-* `entry_fee`: Optional entry fee (ERC20/721, amount, etc.).
-* `entry_requirement`: Optional qualification requirement.
-
-**Returns:** Tournament model struct.
-
-***
-
-## `enter_tournament`
-
-```cairo
-fn enter_tournament(
-    ref self: TState,
-    tournament_id: u64,
-    player_name: felt252,
-    player_address: ContractAddress,
-    qualification: Option<QualificationProof>,
-) -> (u64, u32);
-```
-
-**Purpose:** Register a player for a tournament, minting a game token and assigning an entry number.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament to enter.
-* `player_name`: Name of the player (felt252).
-* `player_address`: Address to mint the game token to.
-* `qualification`: Optional qualification proof.
-
-**Returns:** Tuple of (game token ID, entry number).
-
-***
-
-## `submit_score`
-
-```cairo
-fn submit_score(
-    ref self: TState,
-    tournament_id: u64,
-    token_id: u64,
-    position: u8,
-);
-```
-
-**Purpose:** Submit a score/position for a tournament entry. Updates the leaderboard and marks the score as submitted.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament.
-* `token_id`: Game token ID for the entry.
-* `position`: Leaderboard position (1-based index).
-
-***
-
-## `claim_prize`
-
-```cairo
-fn claim_prize(
-    ref self: TState,
-    tournament_id: u64,
-    prize_type: PrizeType,
-);
-```
-
-**Purpose:** Claim a prize for a tournament after it is finalized. Handles entry fee and custom prize types.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament.
-* `prize_type`: Type of prize to claim (entry fees, custom, etc.).
-
-***
-
-## `add_prize`
-
-```cairo
-fn add_prize(
-    ref self: TState,
-    tournament_id: u64,
-    token_address: ContractAddress,
-    token_type: TokenType,
-    position: u8,
-) -> u64;
-```
-
-**Purpose:** Add a new prize to a tournament for a specific leaderboard position.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament.
-* `token_address`: Address of the prize token.
-* `token_type`: Type of token (ERC20, ERC721, etc.).
-* `position`: Leaderboard position for the prize.
-
-**Returns:** Prize ID.
-
-***
-
-## `register_token`
-
-```cairo
-fn register_token(
-    ref self: TState,
-    address: ContractAddress,
-    token_type: TokenType,
-);
-```
-
-**Purpose:** Register a new token (ERC20/ERC721) for use in tournaments.
-
-**Parameters:**
-
-* `address`: Token contract address.
-* `token_type`: Type of token.
-
-***
-
-## `get_leaderboard`
-
-```cairo
-fn get_leaderboard(
-    self: @TState,
-    tournament_id: u64,
-) -> Array<u64>;
-```
-
-**Purpose:** Retrieve the current leaderboard for a tournament.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament.
-
-**Returns:** Array of game token IDs ordered by position.
-
-***
-
-## Additional Functions
-
-* `total_tournaments`: Returns the total number of tournaments created.
-* `tournament`: Returns the tournament model for a given ID.
-* `get_registration`: Returns registration details for a game token.
-* `get_prize`: Returns prize details for a given prize ID.
-* `tournament_entries`: Returns the number of entries for a tournament.
-* `is_token_registered`: Checks if a token is registered for tournaments.
-* `current_phase`: Returns the current phase of a tournament.
-* `get_tournament_id_for_token_id`: Returns the tournament ID for a given game token.
-
-
-
----
-
 file: docs/darkshuffle/faq.mdx
 meta: {
   "layout": "docs"
@@ -921,6 +571,1199 @@ Settings are managed by smart contracts, making them transparent and tamper-proo
 * [Budokan Tournaments](/budokan/guide/submission): Using settings for competitive play
 
 If you have questions or want to share your custom settings, join the community or reach out via the app's support channels!
+
+
+
+---
+
+file: docs/budokan/faq.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Budokan: FAQ
+
+Welcome to the Budokan FAQ! Here you'll find answers to the most common questions about using the Budokan tournament platform. If you can't find what you're looking for, check our other guides or contact support through the app.
+
+## General
+
+**What is Budokan?**
+
+Budokan is a permissionless tournament platform for on-chain games, allowing anyone to create, join, and sponsor tournaments using Starknet wallets and a variety of supported tokens.
+
+**Who can participate in Budokan tournaments?**
+
+Anyone with a supported Starknet wallet who meets the tournament's entry requirements can participate.
+
+## Getting Started & Wallets
+
+**How do I get started on Budokan?**
+
+See our [Onboarding Guide](/budokan/guide/onboarding) for step-by-step instructions on setting up your wallet and connecting to Budokan.
+
+**Which wallets are supported?**
+
+Budokan supports Cartridge Controller (recommended), Argent, Braavos, and more. See the [Onboarding Guide](/budokan/guide/onboarding) for details.
+
+**Do I need a wallet to join a tournament?**
+
+Yes, a Starknet wallet is required to enter tournaments, claim prizes, and interact with the platform.
+
+## Tournaments & Entry
+
+**How do I find and join a tournament?**
+
+Browse tournaments on the overview page, select one to view details, and follow the steps in [Entering Tournaments](/budokan/guide/enter) to join.
+
+**What are entry requirements?**
+
+Entry requirements can include holding specific tokens/NFTs, qualifying in previous tournaments, or being on a whitelist. See [Entry Requirements](/budokan/guide/create/entry-requirements) for more info.
+
+**Can I join multiple tournaments?**
+
+Yes, you can join as many tournaments as you qualify for.
+
+**What if I don't meet the entry requirements?**
+
+Review the requirements section on the tournament page for guidance. You may need to acquire certain tokens or qualify in another event.
+
+## Prizes & Fees
+
+**How are prizes funded and distributed?**
+
+Prizes can be funded by tournament creators, sponsors, or the community. They are distributed according to the rules and splits set for each tournament. See [Prizes](/budokan/guide/prizes) for details.
+
+**What tokens can be used for entry fees and prizes?**
+
+Currently, Budokan uses a whitelist of supported tokens. In the future, any token on Ekubo and NFTs will be supported. See [Entry Fees](/budokan/guide/create/entry-fees) and [Prizes](./guide/prizes).
+
+**How do I claim my prize?**
+
+After the tournament ends and results are verified, use the **Claim Prizes** button on the tournament page. See [Prizes](/budokan/guide/prizes) for step-by-step instructions.
+
+**Can sponsors add prizes after a tournament has started?**
+
+Yes! Sponsors and community members can add prizes at any time before the tournament ends. See [Prizes](/budokan/guide/prizes).
+
+## Creating & Managing Tournaments
+
+**How do I create a tournament?**
+
+Click the **Create Tournament** button in the navigation and follow the steps in [Creating a Tournament](/budokan/guide/create).
+
+**What customization options are available?**
+
+You can set game, schedule, entry requirements, fees, prize structure, and more. See [Creating a Tournament](/budokan/guide/create) for a full walkthrough.
+
+**Can I edit a tournament after creation?**
+
+Some settings (like prizes) can be updated before the tournament ends, but core settings are locked after creation. Double-check all details before confirming.
+
+## Troubleshooting & Support
+
+**Why can't I enter a tournament?**
+
+Check that you meet all entry requirements and have a supported wallet connected. If you still have issues, contact support.
+
+**Why can't I claim my prize?**
+
+Ensure the tournament has ended, results are finalized, and you are eligible. If problems persist, see [Prizes](/budokan/guide/prizes) or contact support.
+
+**Where can I get more help?**
+
+Check our guides or contact support through the app for further assistance.
+
+## More Resources
+
+* [Onboarding Guide](/budokan/guide/onboarding)
+* [Entering Tournaments](/budokan/guide/enter)
+* [Creating a Tournament](/budokan/guide/create)
+* [Prizes](/budokan/guide/prizes)
+
+If you have suggestions for this FAQ, let us know!
+
+
+
+---
+
+file: docs/budokan/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+import { ContractTable } from '../../components/ContractTable'
+import { Button } from 'vocs/components'
+
+![Overview](/banner-1200x630.webp)
+
+# Budokan
+
+Budokan is an onchain tournament system designed to power competitive gaming experiences on Starknet. It provides a robust, modular, and extensible framework for:
+
+* Creating and managing tournaments with flexible schedules and rules
+* Supporting a variety of entry requirements and fee structures
+* Handling prize pools and distribution (ERC20, ERC721, and custom tokens)
+* Integrating with embeddable game standards for seamless game onboarding
+* Leveraging Dojo world storage and event systems for composability and upgradability
+
+<Button href="https://budokan.gg" target="_blank" className="bg-white text-black" size="lg">
+  Launch App
+</Button>
+
+## Table of Contents
+
+* [Key Functions](/budokan/key-functions)
+* [Guide](/budokan/guide)
+* [FAQ](/budokan/faq)
+
+## Contracts
+
+<ContractTable
+  contracts={[[
+  { name: "Budokan", address: "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3" },
+  { name: "Budokan", address: "0x5accc0e54259cb3176450fa730fc5824cf2d3e550aec385cdaaa6250efdff27" }
+]]}
+/>
+
+## Key Features
+
+* **Modular Architecture**: Components for tournaments, games, schedules, and prizes can be extended or replaced.
+* **Secure and Permissionless**: Anyone can create or enter tournaments, with robust checks for entry requirements and prize claims.
+* **Flexible Entry and Prize Logic**: Supports entry fees, qualification proofs, and multiple prize types.
+* **Leaderboard and Scoring**: Built-in leaderboard management and score submission.
+
+## Use Cases
+
+* Esports tournaments for onchain games
+* Community competitions and challenges
+* Automated prize distribution for game events
+* Open standards for game developers to integrate with tournament infrastructure
+
+Budokan is designed to be the backbone for provable, transparent, and fair onchain competitions, enabling new forms of player engagement and game design.
+
+
+
+---
+
+file: docs/budokan/key-functions.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Budokan: Key Functions
+
+This section details the primary functions exposed by the Budokan tournament system. Each function is designed to be permissionless, composable, and secure.
+
+## `create_tournament`
+
+```cairo
+fn create_tournament(
+    ref self: TState,
+    creator_rewards_address: ContractAddress,
+    metadata: Metadata,
+    schedule: Schedule,
+    game_config: GameConfig,
+    entry_fee: Option<EntryFee>,
+    entry_requirement: Option<EntryRequirement>,
+) -> TournamentModel;
+```
+
+**Purpose:** Create a new tournament with specified metadata, schedule, game configuration, entry fee, and requirements. Mints a game token to the creator for reward distribution.
+
+**Parameters:**
+
+* `creator_rewards_address`: Address to receive the creator's game token.
+* `metadata`: Tournament metadata (name, description, etc.).
+* `schedule`: Tournament schedule (registration, submission, finalization phases).
+* `game_config`: Game configuration (game address, settings, prize spots).
+* `entry_fee`: Optional entry fee (ERC20/721, amount, etc.).
+* `entry_requirement`: Optional qualification requirement.
+
+**Returns:** Tournament model struct.
+
+***
+
+## `enter_tournament`
+
+```cairo
+fn enter_tournament(
+    ref self: TState,
+    tournament_id: u64,
+    player_name: felt252,
+    player_address: ContractAddress,
+    qualification: Option<QualificationProof>,
+) -> (u64, u32);
+```
+
+**Purpose:** Register a player for a tournament, minting a game token and assigning an entry number.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament to enter.
+* `player_name`: Name of the player (felt252).
+* `player_address`: Address to mint the game token to.
+* `qualification`: Optional qualification proof.
+
+**Returns:** Tuple of (game token ID, entry number).
+
+***
+
+## `submit_score`
+
+```cairo
+fn submit_score(
+    ref self: TState,
+    tournament_id: u64,
+    token_id: u64,
+    position: u8,
+);
+```
+
+**Purpose:** Submit a score/position for a tournament entry. Updates the leaderboard and marks the score as submitted.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament.
+* `token_id`: Game token ID for the entry.
+* `position`: Leaderboard position (1-based index).
+
+***
+
+## `claim_prize`
+
+```cairo
+fn claim_prize(
+    ref self: TState,
+    tournament_id: u64,
+    prize_type: PrizeType,
+);
+```
+
+**Purpose:** Claim a prize for a tournament after it is finalized. Handles entry fee and custom prize types.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament.
+* `prize_type`: Type of prize to claim (entry fees, custom, etc.).
+
+***
+
+## `add_prize`
+
+```cairo
+fn add_prize(
+    ref self: TState,
+    tournament_id: u64,
+    token_address: ContractAddress,
+    token_type: TokenType,
+    position: u8,
+) -> u64;
+```
+
+**Purpose:** Add a new prize to a tournament for a specific leaderboard position.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament.
+* `token_address`: Address of the prize token.
+* `token_type`: Type of token (ERC20, ERC721, etc.).
+* `position`: Leaderboard position for the prize.
+
+**Returns:** Prize ID.
+
+***
+
+## `register_token`
+
+```cairo
+fn register_token(
+    ref self: TState,
+    address: ContractAddress,
+    token_type: TokenType,
+);
+```
+
+**Purpose:** Register a new token (ERC20/ERC721) for use in tournaments.
+
+**Parameters:**
+
+* `address`: Token contract address.
+* `token_type`: Type of token.
+
+***
+
+## `get_leaderboard`
+
+```cairo
+fn get_leaderboard(
+    self: @TState,
+    tournament_id: u64,
+) -> Array<u64>;
+```
+
+**Purpose:** Retrieve the current leaderboard for a tournament.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament.
+
+**Returns:** Array of game token IDs ordered by position.
+
+***
+
+## Additional Functions
+
+* `total_tournaments`: Returns the total number of tournaments created.
+* `tournament`: Returns the tournament model for a given ID.
+* `get_registration`: Returns registration details for a game token.
+* `get_prize`: Returns prize details for a given prize ID.
+* `tournament_entries`: Returns the number of entries for a tournament.
+* `is_token_registered`: Checks if a token is registered for tournaments.
+* `current_phase`: Returns the current phase of a tournament.
+* `get_tournament_id_for_token_id`: Returns the tournament ID for a given game token.
+
+
+
+---
+
+file: docs/summit/battle-system.mdx
+meta: {
+  "title": "Battle System",
+  "sidebar_label": "Battle System"
+}
+
+# Battle System
+
+Summit uses the same proven combat mechanics from [Loot Survivor](/lootsurvivor/guide/battle), creating a familiar yet competitive environment where your beasts battle each other instead of adventurers.
+
+## Combat Fundamentals
+
+### Turn-Based Combat
+
+Just like in Loot Survivor, combat follows a turn-based system:
+
+1. **Attacker Goes First** - The challenging beast attacks
+2. **Defender Counter-Attacks** - If they survive, they strike back
+3. **Repeat** - Continue until one beast falls
+
+The key difference in Summit is that **both combatants are beasts**, making type advantages and upgrades even more crucial.
+
+### Damage Calculation
+
+Damage in Summit follows the Loot Survivor formula with some additions:
+
+**Base Damage Formula:**
+
+```
+Power = Beast Level × (6 - Beast Tier)
+```
+
+**Damage Modifiers:**
+
+* **Type Advantage**: +50% damage when strong, -50% when weak
+* **Attack Potions**: Each potion adds 10% bonus damage (strength)
+* **Critical Hits**: Chance based on Luck stat (0% base, up to 95%)
+* **Special Abilities**: Prefix/suffix bonuses when unlocked
+
+## Type Advantage System
+
+Summit uses the same rock-paper-scissors system from Loot Survivor:
+
+<div
+  style={{
+display: "flex",
+justifyContent: "center",
+marginBottom: "2rem",
+marginTop: "2rem"
+}}
+>
+  <div
+    style={{
+  position: "relative",
+  width: "350px",
+  height: "300px"
+}}
+  >
+    {/* Brute - Top */}
+
+    <div
+      style={{
+    position: "absolute",
+    top: "0",
+    left: "50%",
+    transform: "translateX(-50%)",
+    textAlign: "center",
+    backgroundColor: "#dc2626",
+    padding: "1rem 1.5rem",
+    borderRadius: "12px",
+    border: "3px solid #991b1b",
+    minWidth: "140px",
+    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)"
+  }}
+    >
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>🔨</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Brute</div>
+      <div style={{ fontSize: "0.75rem", color: "#fca5a5", marginTop: "0.25rem" }}>Bludgeon</div>
+    </div>
+
+    {/* Hunter - Bottom Left */}
+
+    <div
+      style={{
+    position: "absolute",
+    bottom: "0",
+    left: "0",
+    textAlign: "center",
+    backgroundColor: "#059669",
+    padding: "1rem 1.5rem",
+    borderRadius: "12px",
+    border: "3px solid #047857",
+    minWidth: "140px",
+    boxShadow: "0 4px 12px rgba(5, 150, 105, 0.3)"
+  }}
+    >
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>⚔️</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Hunter</div>
+      <div style={{ fontSize: "0.75rem", color: "#86efac", marginTop: "0.25rem" }}>Blade</div>
+    </div>
+
+    {/* Magical - Bottom Right */}
+
+    <div
+      style={{
+    position: "absolute",
+    bottom: "0",
+    right: "0",
+    textAlign: "center",
+    backgroundColor: "#7c3aed",
+    padding: "1rem 1.5rem",
+    borderRadius: "12px",
+    border: "3px solid #6d28d9",
+    minWidth: "140px",
+    boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)"
+  }}
+    >
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>✨</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Magical</div>
+      <div style={{ fontSize: "0.75rem", color: "#ddd6fe", marginTop: "0.25rem" }}>Magic</div>
+    </div>
+
+    {/* Center circular arrows */}
+
+    <svg
+      style={{
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "100px",
+    height: "100px",
+    pointerEvents: "none"
+  }}
+    >
+      {/* Three arrows showing advantage flow */}
+
+      {/* Brute to Hunter (pointing bottom left) */}
+
+      <path d="M 50 15 L 15 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+
+      {/* Hunter to Magical (pointing right) */}
+
+      <path d="M 15 75 L 85 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+
+      {/* Magical to Brute (pointing top left) */}
+
+      <path d="M 85 75 L 50 15" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="white" />
+        </marker>
+      </defs>
+    </svg>
+  </div>
+</div>
+
+**Remember:** Brute beats Hunter, Hunter beats Magical, Magical beats Brute
+
+## Summit-Specific Combat Features
+
+### Multi-Beast Attacks
+
+Summit allows you to attack with multiple beasts in sequence:
+
+1. **Sequential Combat** - Beasts fight one at a time
+2. **All Attacks in One Transaction** - Your sequence of beasts attacks in a single transaction, giving you a better chance to take the Summit
+3. **First Beast Advantage** - Only the first beast will benefit from attack potions
+4. **Strategic Order** - Choose your beast order wisely
+
+### Extra Lives System
+
+Defenders can have multiple lives:
+
+* When health reaches 0, an extra life is consumed
+* Beast returns to full health (base + bonus)
+* Combat continues without interruption
+* Beasts can have up to 255 extra lives
+
+### Critical Hit Mechanics
+
+Critical hits in Summit are determined by the Luck stat:
+
+| Luck | Critical Chance |
+| ---- | --------------- |
+| 0    | 0%              |
+| 1    | 12%             |
+| 10   | 45%             |
+| 50   | 54%             |
+| 100  | 64%             |
+| 200  | 84%             |
+| 255  | 95%             |
+
+**Critical Hit Damage**: +100% base damage
+
+## Strategic Considerations
+
+### Attacking Strategy
+
+When planning your assault:
+
+1. **Scout the Defender** - Check their type, health, and extra lives
+2. **Order Your Beasts** - Put your strongest with type advantage first
+3. **Load Attack Potions** - Only on your first beast
+4. **Time Your Strike** - Attack when defender is weakened
+
+### Defending Strategy
+
+To hold the Summit longer:
+
+1. **Maximize Health** - Feed $CORPSE tokens for bonus health (up to 1,023)
+2. **Stock Extra Lives** - Apply them immediately after taking Summit
+3. **Choose Defensive Upgrades** - Wisdom to gain bonus levels, Luck to get critical chance, Specials to unlocks name match bonus
+
+### Type Matchup Planning
+
+Since you know the defending beast's type:
+
+* **Favorable Matchup**: +50% damage makes victory likely
+* **Neutral Matchup**: Comes down to stats and potions
+* **Unfavorable Matchup**: -50% damage makes victory difficult
+
+## Battle Rewards
+
+### Experience Points
+
+XP in Summit works differently than Loot Survivor:
+
+**Attackers Gain:**
+
+* Base: 10 XP per attack
+* Attack Streak Bonus: +1 XP per consecutive attack (max +10)
+* Beasts can gain up to 40 bonus levels
+
+**Defenders Gain:**
+
+* XP = Defeated attacker's power / 100
+* Wisdom upgrade required
+* Rewards successful defense
+
+## Tips for Success
+
+### Know Your Enemy
+
+* Each beast type has predictable strengths and weaknesses
+* Plan your attacks around type advantages
+* Consider the defender's upgrades and health
+
+### Resource Efficiency
+
+* Don't waste potions on unlikely victories
+* Save revival potions for coordinated attacks
+* Balance upgrades amongst your strongest beasts
+
+### Timing is Everything
+
+* Attack during low activity periods
+* Coordinate with allies for sequential strikes
+* Take advantage of weakened defenders
+
+The battle system rewards both tactical planning and strategic resource management. Master these mechanics to dominate the Summit!
+
+
+
+---
+
+file: docs/summit/beast-upgrades.mdx
+meta: {
+  "title": "Beast Upgrades",
+  "sidebar_label": "Beast Upgrades"
+}
+
+# Beast Upgrades
+
+Summit introduces a unique upgrade system that expands upon your [Loot Survivor Beasts](/lootsurvivor/beasts), adding new strategic layers through attributes and abilities that are exclusive to Summit gameplay.
+
+## How Upgrades Work
+
+Your beasts can be enhanced using tokens earned from Loot Survivor gameplay:
+
+* **Kill Tokens** - Earned when your beasts kill adventurers (1 per kill). Used to increase attributes or unlock abilities
+* **Corpse Tokens** - Extracted from your dead adventurers (1 per level). Used exclusively to increase your beast's health
+* **One-time upgrades** - Permanent improvements that fundamentally change how your beast performs in Summit
+
+The key is that Summit rewards players who are active in both games - your success in Loot Survivor directly translates to more powerful beasts in Summit.
+
+## Attributes
+
+### 🎲 Luck - Critical Hit Chance
+
+Luck increases your chance to land critical hits for massive damage.
+
+**Cost:** 1 $Skull per level (up to 255)
+
+**Best For:** High powered beasts focused on dealing damage
+
+### ⚡ Spirit - Revival Time Reduction
+
+Spirit reduces the revival time after your beast dies, getting them back in action faster.
+
+**Effect:**
+
+* Each point of Spirit reduces revival time
+* Additional 4-hour reduction if your beast hasn't been killed in Loot Survivor for 2+ weeks
+
+**Revival Time Calculation:**
+
+* Base: 24 hours
+* With Maximum Spirit: Reduced by 18.5 hours
+* Survivor bonus: -4 hours (if not killed in Loot Survivor in 14 days)
+* Minimum possible: 1.5 hours (with all reductions)
+
+**Cost:** 1 $Skull per level (up to 255)
+
+**Best For:** Active players who attack frequently
+
+## Abilities
+
+Abilities are powerful one-time unlocks that fundamentally change how your beast performs:
+
+### ⭐ Specials - Name Match Bonuses
+
+Unlocks your beast's prefix and suffix abilities, providing combat bonuses based on name matches.
+
+**Effect:**
+
+* Activates prefix ability (8x bonus damage)
+* Activates suffix ability (2x bonus damage)
+* Bonuses apply when names match in combat
+
+**Cost:** 10 Kill Tokens
+
+**Best For:** Beasts with matching names against strong defenders
+
+### 🤝 Diplomacy - Shared Rewards & Power Boost
+
+Empower and share rewards with other beasts that have the same prefix and suffix.
+
+**Effect:**
+
+* When a matching beast holds Summit, you gain a share of the $SURVIVOR reward
+* Empowers the matching Summit holder with a damage bonus based on your beast's power
+* Creates alliance opportunities
+* Encourages coordinated play
+
+**Damage Bonus Calculation:**
+
+```
+Damage Boost = (Total Power of all Diplomacy beasts / 500) × 10%
+```
+
+**Example:**
+
+* Your "Agony Bane" beast (Power 200) has Diplomacy
+* Two other "Agony Bane" beasts (Power 150 each) also have Diplomacy
+* Total Power = 200 + 150 + 150 = 500
+* Summit holder gets: (500 / 500) × 10% = 10% damage boost
+
+**Cost:** 15 Kill Tokens
+
+**Best For:**
+
+* Players with multiple matching beasts or coordinating with allies
+* Casual players who won't take Summit themselves but have name matches with powerful players
+
+### 🧠 Wisdom - Defensive XP Gain
+
+Gain experience points when successfully defending attacks on the Summit.
+
+**Effect:**
+
+* XP gained = Attacker's power / 100
+* Only triggers on successful defense
+* Helps level up while holding Summit
+
+**Cost:** 20 Kill Tokens
+
+**Best For:** Defensive strategies and long Summit reigns
+
+## Vitality - Bonus Health
+
+### ❤️ Health Enhancement
+
+Permanently increase your beast's health using Corpse Tokens.
+
+**Stats:**
+
+* Maximum Bonus: 1,023 health
+* Cost: 1 Corpse Token per health point
+
+**Strategic Impact:**
+
+* More health = longer Summit defense
+* Essential for tanky builds
+* Pairs well with Extra Life potions
+
+## Upgrade Strategy Guide
+
+### Offensive Build
+
+Focus on maximizing damage output over time:
+
+1. **Luck** to gain critical chance
+2. **Specials** for name bonuses
+3. **Spirit** for frequent attacks
+
+### Defensive Build
+
+Optimize for holding the Summit:
+
+1. **Maximum health** (1,023 bonus)
+2. **Wisdom** for XP while defending
+3. **Moderate Luck** for counter-attacks
+
+### Alliance Build
+
+For coordinated groups:
+
+1. **Diplomacy** on matching beasts
+2. **Balanced stats** across team
+3. **Coordinate Summit control**
+
+## Token Management
+
+### Earning Tokens
+
+Tokens are earned through [Loot Survivor](/lootsurvivor) gameplay:
+
+#### Kill Tokens
+
+Earned when your beast successfully kills an adventurer:
+
+* **1 Kill Token** per adventurer killed
+* Accumulates across all your beasts
+
+#### Corpse Tokens
+
+Extracted from your own dead adventurers:
+
+* **1 Corpse Token per adventurer level**
+* Only from adventurers you own
+* Adventurer must be dead (0 health)
+* Extract tokens through the Summit interface
+
+**Example:** A dead level 15 adventurer yields 15 Corpse Tokens
+
+### Spending Priority
+
+Consider these factors:
+
+1. **Immediate needs** - What helps you win now?
+2. **Long-term goals** - Building for sustained success
+3. **Beast potential** - Invest in your strongest beasts
+4. **Play style** - Match upgrades to how you play
+
+The upgrade system transforms your beasts into customized warriors. Choose wisely - these permanent improvements define your Summit strategy!
+
+
+
+---
+
+file: docs/summit/consumables.mdx
+meta: {
+  "title": "Consumables Guide",
+  "sidebar_label": "Consumables"
+}
+
+# Consumables Guide
+
+Potions are the strategic fuel of Summit battles. Knowing when and how to use them can mean the difference between a brief appearance and a legendary reign.
+
+## Types of Potions
+
+### 💀 Revival Potions
+
+Skip the 24-hour death cooldown and get back in the fight immediately.
+
+**How They Work:**
+
+* Instantly revives a dead beast
+* Cost increases with each use on the same beast
+* Essential for chain attacks
+
+**Cost Scaling:**
+
+| Revival # | Potions Required | Total Used |
+| --------- | ---------------- | ---------- |
+| 1st       | 1                | 1          |
+| 2nd       | 2                | 3          |
+| 3rd       | 3                | 6          |
+| 4th       | 4                | 10         |
+| ...       | ...              | ...        |
+| 16th      | 16               | 136        |
+
+**Note:** Revival cost caps at 16 potions. All revivals will cost 16 potions at this point.
+
+**Strategic Uses:**
+
+* Enable rapid counter-attacks after defeat
+* Chain multiple beast assaults
+* Maintain pressure on Summit holder
+* React quickly to opportunities
+
+### ⚔️ Attack Potions
+
+Boost your damage output for devastating first strikes.
+
+**How They Work:**
+
+* Each potion increases attack damage
+* Only usable by attackers (not defenders)
+* Only the first beast in multi-attacks can use them
+* Maximum 255 potions per battle
+
+**Strategic Uses:**
+
+* Overwhelm high-health defenders
+* Secure one-shot kills with type advantage
+* Break through extra lives quickly
+* Make impossible matchups winnable
+
+### 💚 Extra Life Potions
+
+Give your beast multiple chances to defend the Summit.
+
+**How They Work:**
+
+* Automatically activates when health reaches 0
+* Restores beast to full health (base + bonus)
+* Can only be applied to current Summit holder
+* Maximum 255 extra lives
+
+**Strategic Uses:**
+
+* Extend Summit defense duration
+* Discourage attackers (psychological warfare)
+* Survive coordinated assaults
+
+### ☠️ Poison Potions
+
+Slowly weaken the Summit holder over time without direct combat.
+
+**How They Work:**
+
+* Deals 1 damage per second to the Summit holder
+* Damage stops at 1 health and 0 extra lives (cannot kill)
+* Multiple poison potions stack for faster damage
+* Can only be applied to current Summit holder
+
+**Strategic Uses:**
+
+* Weaken defenders before attacking
+* Force defenders to waste extra lives
+* Create time pressure on Summit holders
+* Coordinate with allies for timed strikes
+
+## Potion Market
+
+### Dynamic Pricing System
+
+Similar to [Loot Survivor's dungeon tickets](/lootsurvivor/dungeon-tickets), potions are the revenue source of Summit and uses a dynamic pricing model:
+
+**How It Works:**
+
+* **Continuous Emission**: Potions are continuously released over time (amount TBD)
+* **Real-Time Pricing**: Price adjusts based on demand - can go up OR down
+* **Live Price Display**: Current price is always visible before purchase
+* **Market-Driven**: Natural price discovery through supply and demand
+
+**Key Features:**
+
+* Prices decrease during low-demand periods
+* Prices increase when many players are buying
+* Purchase with any token on Starknet
+
+**Strategic Purchasing:**
+
+* Monitor price trends for optimal buying times
+* Consider DCA (Dollar-Cost Averaging) orders for bulk purchases
+
+**Revenue Distribution:**
+100% of proceeds from potion sales are used to buy back $SURVIVOR tokens for the DAO treasury, supporting the long-term sustainability of the Survivor ecosystem.
+
+## Tips for Success
+
+### For Beginners
+
+1. Start with revival potions to learn timing
+2. Use attack potions with type advantage
+3. Apply extra lives on attack before taking Summit
+
+### For Veterans
+
+1. Calculate exact potion requirements
+2. Time market purchases strategically
+3. Coordinate group strategies
+4. Optimize cost per block held
+
+### Common Mistakes
+
+* Spending all potions immediately, not considering the whole duration of Summit.
+* Using attack potions with type disadvantage
+* Applying extra lives on weak beasts
+* Reviving the same beast too many times
+* Ignoring potion economics
+
+The key to potion mastery is understanding not just what each does, but when each creates maximum value. Use them wisely, and the Summit will be yours!
+
+
+
+---
+
+file: docs/summit/index.mdx
+meta: {
+  "title": "Summit Overview",
+  "sidebar_label": "Overview"
+}
+
+:::warning\[Alpha Notice]
+Summit is currently in alpha and is subject to change.
+:::
+
+# Summit
+
+Summit is an all-against-all, king-of-the-hill battle game where players use their [Loot Survivor Beasts](/lootsurvivor/beasts) to fight for control of the Summit. The beast standing on the Summit earns rewards based on how long they can defend their position.
+
+## How It Works
+
+Summit takes the collectible beasts from Loot Survivor and gives them a new battlefield where they can compete directly against each other. Think of it as a PvP arena where your beasts battle for supremacy and earn rewards.
+
+### The Basic Loop
+
+1. **Challenge the Summit** - Use your beasts to attack whoever currently holds the Summit
+2. **Claim Victory** - If your beast wins, it becomes the new king of the hill
+3. **Defend Your Throne** - Fight off challengers to maintain control
+4. **Earn Rewards** - Receive 0.02 $SURVIVOR for every second you hold the Summit (0.1 per block)
+
+### What You Need to Play
+
+* **Beast NFTs**
+  * Collect them by playing [Loot Survivor](https://lootsurvivor.io/)
+  * Purchase on marketplace: [Realms Marketplace](https://empire.realms.world/trade/beasts)
+
+## Key Features
+
+### 🏆 King of the Hill
+
+Only one beast can control the Summit at a time. Every attacker tries to dethrone the current king, creating an endless battle for dominance.
+
+### 💀 Revival Mechanics
+
+Dead beasts have a 24-hour cooldown before they can fight again - unless you use revival potions to get them back in action immediately.
+
+### 📈 Beast Progression
+
+Your beasts gain experience from battles and can be upgraded with new abilities unique to Summit:
+
+* **Luck** - Increases critical hit chance
+* **Spirit** - Reduces revival cooldown time
+* **Specials** - Unlocks prefix/suffix name match bonus
+* **Diplomacy** - Empower & Share rewards with matching beasts
+* **Wisdom** - Gain XP when defending the Summit
+* **Vitality** - Gain Bonus Health
+
+### 🧪 Consumables
+
+Four types of potions add layers of strategy:
+
+* **Revival Potions** - Skip the death cooldown
+* **Attack Potions** - Boost damage for assault
+* **Extra Life Potions** - Give defenders multiple lives
+* **Poison Potions** - Poison the Summit, making it take damage every second
+
+## Game Ending
+
+Summit will distribute a total of **100,000 $SURVIVOR** tokens:
+
+* **0.1 $SURVIVOR** per block to the Summit holder (and matching name beasts with diplomacy unlocked)
+* Game ends when all tokens are distributed
+* Estimated duration is 2 months
+
+## Getting Started
+
+1. **Get Beasts** - Own at least one beast NFT
+2. **Scout the Summit** - Check who currently holds the position
+3. **Plan Your Attack** - Time your assault when you have the best chance
+4. **Upgrade Wisely** - Use **$Skull** tokens earned from killing adventurers and **$CORPSE** tokens
+   earned from fallen adventurers to enhance your beasts
+
+## Why Play Summit?
+
+* **Direct Competition** - Test your beasts against other players
+* **Earn Rewards** - $SURVIVOR tokens for successful defenses
+* **Strategic Depth** - Multiple paths to victory through upgrades and timing
+* **Community Interaction** - Form alliances or rivalries with other players
+* **Limited Duration** - Once the 100,000 $SURVIVOR are gone, the game ends
+
+Ready to conquer the Summit? Learn about the [Battle System](/summit/battle-system) to understand combat mechanics.
+
+
+
+---
+
+file: docs/summit/rewards.mdx
+meta: {
+  "title": "Rewards Guide",
+  "sidebar_label": "Rewards"
+}
+
+# Rewards Guide
+
+Summit's reward system is straightforward: hold the Summit longer, earn more $SURVIVOR. With a total pool of 100,000 $SURVIVOR to distribute, every block matters.
+
+## How Rewards Work
+
+### The Prize Pool
+
+Summit has a **finite reward pool**:
+
+* **Total Distribution**: 100,000 $SURVIVOR tokens
+* **Rate**: 0.1 $SURVIVOR per block to the Summit holder
+* **Game End**: When all tokens are distributed
+* **Duration**: Approximately 2 months (depending on block times)
+
+### Block-by-Block Earnings
+
+Every block your beast holds the Summit:
+
+* Base reward: **0.1 $SURVIVOR** per block
+* Reward accumulates automatically
+* Paid out when your beast is dethroned
+
+**Diplomacy Reward Sharing:**
+
+If matching beasts have the Diplomacy upgrade:
+
+* Each Diplomacy beast receives **0.01 $SURVIVOR per block**
+* Maximum of 75 matching beasts can exist
+* Summit holder keeps the remainder
+
+**Example Distribution For A Block:**
+
+| Diplomacy Beasts | Each Gets | Summit Holder Gets |
+| ---------------- | --------- | ------------------ |
+| 0                | -         | 0.1 $SURVIVOR      |
+| 10               | 0.01      | 0.09 $SURVIVOR     |
+| 75 (max)         | 0.01      | 0.025 $SURVIVOR    |
+
+\*$SURVIVOR is the governance token for the Survivor ecosystem
+
+## The Economics of Summit
+
+### Circular Economy
+
+Summit creates a sustainable economic loop:
+
+1. **Potion Market Revenue** → 100% used to buy back $SURVIVOR tokens
+2. **$SURVIVOR Distribution** → 100,000 tokens distributed to Summit holders
+3. **Governance Power** → Token holders govern the ecosystem
+4. **Market Dynamics** → Demand for potions driven by competition for $SURVIVOR
+
+**Fair Distribution:**
+
+* No pre-mining or special allocations
+* Pure merit-based rewards
+* Skill and strategy determine earnings
+* Self-sustaining through potion sales
+
+### Investment vs Returns
+
+Calculate your potential ROI:
+
+**Break-Even Analysis:**
+
+```
+Potion Cost ÷ 0.1 = Blocks needed to break even
+```
+
+## Maximizing Your Rewards
+
+### Timing Strategies
+
+**Early Bird Advantage:**
+
+* Fewer beasts in circulation early on = less competition
+* Lower kill token supply = fewer upgraded beasts
+* Establish dominance before the ecosystem matures
+
+**Peak Hours vs Off-Hours:**
+
+* Monitor global activity patterns
+* Strike during low-competition periods
+* Coordinate with timezone advantages
+
+**Beast Cooldown Windows:**
+
+* Track when dominant beasts are on revival cooldown
+* Attack when top competitors can't respond
+* Monitor recent battles to predict cooldown timings
+* 24-hour windows create predictable opportunities
+
+**Potion Supply Awareness:**
+
+* Monitor current potion market supply
+* Use your potions when supply is low (others can't respond)
+* Stock up when prices drop during low demand
+* Scarcity creates defensive advantages
+
+## Tracking Your Performance
+
+### Key Metrics
+
+Monitor these statistics:
+
+* **Total $SURVIVOR Earned**: Your lifetime rewards
+* **Blocks Held**: Total time on Summit
+* **ROI**: Earnings vs investment
+
+### Alliance Opportunities
+
+**Strategic Cooperation:**
+
+* Diplomacy creates passive income for supporters (see reward distribution above)
+* Coordinate attacks with name-matching beast owners
+* Share upgrade costs and potion resources
+* Build "beast families" for mutual benefit
+
+## Summary
+
+Summit's reward system is elegant in its simplicity: defend the hill, earn $SURVIVOR. With 100,000 tokens to distribute at 0.1 per block, success comes down to:
+
+1. **Strategic Timing** - Attack when you can win and hold
+2. **Resource Management** - Invest enough to succeed, not more
+3. **Beast Development** - Build defensive capabilities
+4. **Governance Value** - $SURVIVOR tokens grant voting power in the Survivor ecosystem
+
+The clock is ticking, the reward pool is finite, and only the strongest beasts will claim the largest shares. Make every block count!
 
 
 
@@ -1502,119 +2345,117 @@ import { ContractTable } from "../../components/ContractTable";
 
 Loot Survivor is built on Starknet using the Dojo engine, with all game logic executed fully onchain. The game's smart contracts handle everything from adventurer creation to combat resolution, ensuring transparency and verifiability.
 
-## Contract Architecture
+## Death Mountain Contracts
 
-The Loot Survivor smart contract system is organized into several core components:
-
-* **Game**: Main game logic and state management
-* **Game Token**: Interfaces for Embeddable Game Standard compatibility
-* **Beast**: Creature stats, behavior, and combat mechanics
-* **Adventurer**: Player character data and progression
-* **Loot**: Item generation, properties, and bonuses
-* **Objectives**: Quest and achievement system
-* **Renderer**: Visual rendering and display logic
-* **Settings**: Game configuration and parameters
-
-## Contract Addresses
+The core game engine powering Loot Survivor.
 
 <ContractTable
   contracts={[
-  [
-    {
-      name: "Game",
-      address:
-        "0x553b436ed00409c1bc0cbb1dc765029acad1cdd1f7eb5c778a27bf55fe374c5",
-    },
-    {
-      name: "Game",
-      address:
-        "0x6f7c4350d6d5ee926b3ac4fa0c9c351055456e75c92227468d84232fc493a9c",
-    },
-  ],
-  [
-    {
-      name: "Game Token",
-      address:
-        "0xd9abf3d04eda96f93baf9873bda881a9580c475e551ff23e78c95ab561ea73",
-    },
-    {
-      name: "Game Token",
-      address:
-        "0x5e2dfbdc3c193de629e5beb116083b06bd944c1608c9c793351d5792ba29863",
-    },
-  ],
-  [
-    {
-      name: "Beast",
-      address:
-        "0x5f9371543af0b2b546ba273840e1943e81622105241b4498d1dde4de92e2c77",
-    },
-    {
-      name: "Beast",
-      address:
-        "0x74abc15c0ddef39bdf1ede2a643c07968d3ed5bacb0123db2d5b7154fbb35c7",
-    },
-  ],
-  [
-    {
-      name: "Adventurer",
-      address:
-        "0x49d0f851a94eb1949ca7181855d71139ad438d546bb6c6bd92a8c67a0f7ae4f",
-    },
-    {
-      name: "Adventurer",
-      address:
-        "0x3fc7ecd6d577daa1ee855a9fa13a914d01acda06715c9fc74f1ee1a5e346a01",
-    },
-  ],
-  [
-    {
-      name: "Loot",
-      address:
-        "0x78d7780371156c331f279dcd7b3372c88705ab178293ea9e612ea81bc478fd7",
-    },
-    {
-      name: "Loot",
-      address:
-        "0x4c386505ce1cc0be91e7ae8727c9feec66692a92c851b01e7f764ea0143dbe4",
-    },
-  ],
-  [
-    {
-      name: "Objectives",
-      address:
-        "-",
-    },
-    {
-      name: "Objectives",
-      address:
-        "0x403224d3586a402bf3d9a7553493ba0d931e306e6aae8472503afdf90083e32",
-    },
-  ],
-  [
-    {
-      name: "Renderer",
-      address:
-        "0x73a15594fa18812965007ce02209975d6eb3646f0b4d67c218086eb88a9dc67",
-    },
-    {
-      name: "Renderer",
-      address:
-        "0x6135cd4ee82eb5e7652a636a952c893315914f0655a3cc834ce8b6b1e5ff1cb",
-    },
-  ],
-  [
-    {
-      name: "Settings",
-      address:
-        "0x2757f6f5f3b7d2ec2eb6832e19d98cfaf4a01d0aa749bdf72375f16254f6eae",
-    },
-    {
-      name: "Settings",
-      address:
-        "0x3caf941b916a83550d8f6325802e0cb686c9a0c8b30a23fb9df531ae24d12d0",
-    },
-  ],
+  {
+    name: "Game",
+    address: "0x6f7c4350d6d5ee926b3ac4fa0c9c351055456e75c92227468d84232fc493a9c",
+  },
+  {
+    name: "Game Token",
+    address: "0x5e2dfbdc3c193de629e5beb116083b06bd944c1608c9c793351d5792ba29863",
+  },
+  {
+    name: "Beast",
+    address: "0x74abc15c0ddef39bdf1ede2a643c07968d3ed5bacb0123db2d5b7154fbb35c7",
+  },
+  {
+    name: "Adventurer",
+    address: "0x3fc7ecd6d577daa1ee855a9fa13a914d01acda06715c9fc74f1ee1a5e346a01",
+  },
+  {
+    name: "Loot",
+    address: "0x4c386505ce1cc0be91e7ae8727c9feec66692a92c851b01e7f764ea0143dbe4",
+  },
+  {
+    name: "Objectives",
+    address: "0x403224d3586a402bf3d9a7553493ba0d931e306e6aae8472503afdf90083e32",
+  },
+  {
+    name: "Renderer",
+    address: "0x6135cd4ee82eb5e7652a636a952c893315914f0655a3cc834ce8b6b1e5ff1cb",
+  },
+  {
+    name: "Settings",
+    address: "0x3caf941b916a83550d8f6325802e0cb686c9a0c8b30a23fb9df531ae24d12d0",
+  },
+]}
+/>
+
+## NFT & Token Contracts
+
+<ContractTable
+  contracts={[
+  {
+    name: "Golden Token",
+    address: "0x027838dea749f41c6f8a44fcfa791788e6101080c1b3cd646a361f653ad10e2d",
+  },
+  {
+    name: "Beasts",
+    address: "0x046da8955829adf2bda310099a0063451923f02e648cf25a1203aac6335cf0e4",
+  },
+]}
+/>
+
+## Governance Contracts
+
+<ContractTable
+  contracts={[
+  {
+    name: "SURVIVOR Token",
+    address: "0x042dd777885ad2c116be96d4d634abc90a26a790ffb5871e037dd5ae7d2ec86b",
+  },
+  {
+    name: "Survivor Controller",
+    address: "0x041bb7729efa185f2cab327de0a668886302f1d4969e3edf504c4741648f858b",
+  },
+  {
+    name: "Survivor Governor",
+    address: "0x050897ea9df71b661b8eac53162be37552e729ee9d33a6f9ae0b61c95a11209e",
+  },
+]}
+/>
+
+## Ecosystem Contracts
+
+<ContractTable
+  contracts={[
+  {
+    name: "Beast Mode",
+    address: "0x00a67ef20b61a9846e1c82b411175e6ab167ea9f8632bd6c2091823c3629ec42",
+  },
+  {
+    name: "Dungeon Ticket",
+    address: "0x035f581b050a39958b7188ab5c75daaa1f9d3571a0c032203038c898663f31f8",
+  },
+  {
+    name: "Free Games Claims",
+    address: "0x07713b8aac77a664792bce1c6cb66649bae64dea85ed5d24bbb0bd3629d66899",
+  },
+  {
+    name: "PG World",
+    address: "0x02ef591697f0fd9adc0ba9dbe0ca04dabad80cf95f08ba02e435d9cb6698a28a",
+  },
+  {
+    name: "Token Event Relayer",
+    address: "0x2f1c516fa4d2c41f2021edc3b46f33326e73755e55982374381150e6d8d12df",
+  },
+  {
+    name: "Minigame Registry",
+    address: "0x06e9c39be20dee2800407fe6cb22214a96a71d339940d6f21fcb354604b6cc7e",
+  },
+  {
+    name: "Denshokan",
+    address: "0x036017e69d21d6d8c13e266eabb73ef1f1d02722d86bdcabe5f168f8e549d3cd",
+  },
+  {
+    name: "Budokan",
+    address: "0x58f888ba5897efa811eca5e5818540d35b664f4281660cd839cd5a4b0bf4582",
+  },
 ]}
 />
 
@@ -1634,6 +2475,14 @@ Players interact with the smart contracts through:
 
 All game actions are recorded onchain, providing complete transparency and allowing for independent verification of gameplay mechanics.
 
+## Verification Status
+
+Several contracts have been verified on Voyager for enhanced transparency:
+
+* **SURVIVOR Token**: Verified ✓
+* **Survivor Controller**: Verified ✓
+* **Survivor Governor**: Verified ✓
+
 
 
 ---
@@ -1647,7 +2496,7 @@ meta: {}
 
 <div style={{ display: "flex", alignItems: "center", gap: "2rem", marginBottom: "2rem" }}>
   <div style={{ flex: "1" }}>
-    Dungeon tickets are your entry pass to Beast Mode in Loot Survivor 2. Each ticket grants access to the Dungeon where you can collect unique Beast NFTs and earn SURVIVOR tokens through gameplay.
+    Dungeon tickets are your entry pass to [Beast Mode](/lootsurvivor/game-modes) in Loot Survivor 2. Each ticket grants access to the Dungeon where you can collect unique [Beast NFTs](/lootsurvivor/beasts) and earn [SURVIVOR tokens](/lootsurvivor/token) through gameplay.
   </div>
 
   <img src="/docs/lootsurvivor/dungeon_ticket.png" alt="Dungeon Ticket" style={{ width: "200px", flexShrink: 0 }} />
@@ -1662,25 +2511,56 @@ Loot Survivor uses an innovative dynamic pricing model for dungeon tickets:
 * **Transparent Pricing**: Live price is always visible before purchase
 * **Market-Driven**: Price discovery happens naturally through supply and demand
 
+### Issuance Schedule
+
+The ticket issuance system is designed for long-term sustainability:
+
+* **Total Supply**: 100 million games over 132 years
+* **Base Rate**: \~2,000 games issued per day
+* **Duration**: Maximum issuance period of 132 years
+* **Distribution**: Equal rate emission ensures predictable supply
+
+### Adaptive Issuance Mechanism
+
+The protocol includes an automatic adjustment mechanism to maintain market balance:
+
+* **Price Monitoring**: Contract continuously monitors ticket prices
+* **Trigger Threshold**: If price falls below $1 for 3 consecutive days
+* **Automatic Response**: Issuance rate halves to reduce supply pressure
+* **Market Protection**: Helps maintain sustainable pricing over the long term
+
+This adaptive system ensures that ticket supply responds to market conditions, protecting both players and the ecosystem from extreme price volatility while maintaining accessibility.
+
+### Governance Control
+
+All key parameters of the dungeon ticket system are fully configurable by [SURVIVOR token](/lootsurvivor/token) holders through on-chain governance:
+
+* **Issuance Parameters**: Emission rate, halving triggers, and total supply
+* **Payment Tokens**: Which tokens are accepted for ticket purchases
+* **Price Thresholds**: Adjustment triggers and response mechanisms
+* **Distribution Ratios**: Revenue split between treasury and veLORDS
+
+This decentralized control ensures the community can adapt the system to changing market conditions and player needs over time.
+
 ## What You Get
 
 Each dungeon ticket provides:
 
 ### 🐉 Beast Collection
 
-* Access to collect unique Beast NFTs
+* Access to collect unique [Beast NFTs](/lootsurvivor/beasts/collectibles)
 * 85% of the total Beast supply still available in the Dungeon
 * Each Beast is a unique, tradeable NFT
 
 ### 💰 SURVIVOR Tokens
 
-* Earn SURVIVOR tokens based on your performance
+* Earn [SURVIVOR tokens](/lootsurvivor/token/tokenomics) based on your performance
 * Tokens = level reached (starting at level 3)
 * **Limited Time Boost**: 4x SURVIVOR rewards during weeks 2-4
 
 ### 🎯 Wanted Beast Bounties
 
-* Hunt special Beasts with 100,000 STRK bounty (\~$15,000)
+* Hunt [special Beasts](/lootsurvivor/beasts/wanted-beasts) with 100,000 STRK bounty (\~$15,000)
 * Split equally between three legendary Beasts
 * First adventurer to defeat each Beast claims their bounty
 
@@ -1698,11 +2578,11 @@ Dungeon tickets can be purchased with **any token** on Starknet - ETH, USDC, STR
 
 ### Option 1: Direct Purchase
 
-Purchase through the Ekubo Protocol AMM at the live market price. This is the most direct method for experienced DeFi users. Select your preferred token and the system handles the swap automatically.
+Purchase through the [Ekubo Protocol](https://app.ekubo.org) AMM at the live market price. This is the most direct method for experienced DeFi users. Select your preferred token and the system handles the swap automatically.
 
 ### Option 2: Simple Checkout
 
-Use Cartridge for easy entry with card/fiat payment. Perfect for newcomers to Web3 gaming. Credit card payments are converted seamlessly.
+Use [Cartridge](https://cartridge.gg) for easy entry with card/fiat payment. Perfect for newcomers to Web3 gaming. Credit card payments are converted seamlessly.
 
 ### Pro Strategy: Dollar-Cost Averaging
 
@@ -1723,15 +2603,15 @@ All ticket proceeds are distributed transparently on-chain:
 
 ### 80% → Survivor Treasury
 
-* Automated SURVIVOR token buybacks via TWAMM
+* Automated [SURVIVOR token](/lootsurvivor/token) buybacks via TWAMM
 * DAO-controlled treasury for ecosystem growth
 * Governed by SURVIVOR token holders
 * Pre-seeded at genesis for sustainability
 
 ### 20% → veLORDS Holders
 
-* Distributed to veLORDS stakers
-* Rewards the Bibliotheca DAO ecosystem
+* Distributed to [veLORDS](https://realms.world) stakers
+* Rewards the [Bibliotheca DAO](https://bibliothecadao.xyz) ecosystem
 * Recognizes Bibliotheca as the original incubator
 
 ## Key Benefits
@@ -1768,7 +2648,7 @@ All ticket proceeds are distributed transparently on-chain:
   }}
   >
     <h4>💎 NFT Collection</h4>
-    <p>Every Beast is a unique, tradeable NFT with varying rarity</p>
+    <p>Every [Beast](/lootsurvivor/beasts) is a unique, tradeable NFT with varying rarity</p>
   </div>
 
   <div
@@ -1780,7 +2660,7 @@ All ticket proceeds are distributed transparently on-chain:
   }}
   >
     <h4>📈 Token Rewards</h4>
-    <p>Earn SURVIVOR governance tokens based on your skill</p>
+    <p>Earn [SURVIVOR governance tokens](/lootsurvivor/token) based on your skill</p>
   </div>
 
   <div
@@ -1792,7 +2672,7 @@ All ticket proceeds are distributed transparently on-chain:
   }}
   >
     <h4>🏆 Bounty Hunting</h4>
-    <p>Chase special Beasts for substantial STRK rewards</p>
+    <p>Chase [special Beasts](/lootsurvivor/beasts/wanted-beasts) for substantial STRK rewards</p>
   </div>
 </div>
 
@@ -3080,387 +3960,6 @@ Stats are the foundation of every successful adventurer in Loot Survivor. Whethe
 
 ---
 
-file: docs/budokan/guide/enter.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Entering Tournaments
-
-This guide will walk you through how to find, enter, and track tournaments. Whether you're a new or returning player, follow these steps to get started.
-
-## Browsing Tournaments
-
-On the **Overview** page, you can:
-
-* Filter tournaments by game, status (upcoming, live, ended), or your participation.
-* View summarized information on each tournament card, including:
-  * Name
-  * Duration
-  * Number of participants
-  * Time remaining
-  * Entry fee (in $)
-  * Prize pot (in $)
-  * Key badges for important details (explained on the full details page)
-
-![Overview](/docs/overview.png)
-*Figure 1: Tournament overview page.*
-
-## Viewing Tournament Details
-
-To learn more about a tournament:
-
-1. Click on a tournament card to open its details page.
-2. Review the following sections:
-   * **Requirements and Interactions** (top-right)
-   * **Tournament Details**
-   * **Timeline**
-   * **Prizes**
-   * **Scores (Entries)**
-   * **My Entries**
-
-The **Timeline** shows the tournament's structure, including the submission period after the tournament ends.
-
-![Tournament Details](/docs/tournament-details.png)
-*Figure 2: Tournament details page.*
-
-> **Note:** Scores must be submitted during the submission period after the tournament ends to be eligible for prizes. The platform provides tools to handle this automatically, but you can also submit scores manually through the app.
-
-## How to Enter a Tournament
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>To join a tournament:</p>
-
-    <ol style={{ listStyleType: 'decimal', marginLeft: '1.5em' }}>
-      <li>On the tournament details page, click the <strong>Enter Tournament</strong> button.</li>
-
-      <li>
-        <div>
-          Review the entry fee breakdown, including:
-
-          <ul style={{ listStyleType: 'disc', marginLeft: '1.5em' }}>
-            <li>Tournament creator fees</li>
-            <li>Game fees</li>
-            <li>Prize pool contribution</li>
-          </ul>
-        </div>
-      </li>
-
-      <li>Check any entry requirements and confirm you qualify.</li>
-      <li>Enter your player name when prompted.</li>
-      <li>Confirm your entry and pay any required fees.</li>
-    </ol>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/enter-tournament.png" alt="Entering a tournament" width="300" height="300" />
-
-    <br />
-
-    <em>Figure 3: Entering a tournament.</em>
-  </div>
-</div>
-
-> **Tip:** If you do not meet the entry requirements, review the requirements section for guidance on how to qualify.
-
-## After Entering
-
-Once you have entered a tournament:
-
-* Your entry will appear in the **Scores (Entries)** table.
-* You will see your game listed under **My Entries**.
-* Any entry fees you pay are instantly added to the prize pool.
-
-![Entered Tournament](/docs/entered-tournament.png)
-*Figure 4: After entering a tournament.*
-
-## Related Guides
-
-* [Submitting Scores](/budokan/guide/submission)
-* [Tournament Prizes](/budokan/guide/prizes)
-
-If you have questions or encounter issues, check the [FAQ](/budokan/faq) or contact support through the app.
-
-
-
----
-
-file: docs/budokan/guide/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Budokan: Guide
-
-This guide walks you through the complete process of using Budokan, from creating tournaments to claiming prizes.
-
-## Table of Contents
-
-* [Onboarding](/budokan/guide/onboarding)
-* [Entering a Tournament](/budokan/guide/enter)
-* [Creating a Tournament](/budokan/guide/create)
-* [Prizes](/budokan/guide/prizes)
-
-## Overview
-
-Budokan provides a complete tournament management system with three main phases:
-
-1. Player Registration and Participation
-2. Tournament Creation and Setup
-3. Prize Management and Distribution
-
-Each section of this guide provides detailed instructions and examples for these key processes.
-
-
-
----
-
-file: docs/budokan/guide/onboarding.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Getting Started: Onboarding
-
-Welcome to Budokan! This guide will help you set up your wallet and get ready to play on-chain games. Budokan supports a variety of Starknet wallets, with a special recommendation for the [Cartridge Controller](https://cartridge.gg/controller) due to its advanced features and signerless transactions.
-
-## Choosing a Wallet
-
-Budokan currently supports connection through several wallets. For the best experience, we recommend using the Cartridge Controller, which enables gas-less transactions and seamless gameplay on the platform.
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <ul>
-      <li><strong>Cartridge Controller</strong> (recommended)</li>
-      <li>Argent</li>
-      <li>Braavos</li>
-    </ul>
-
-    <p>
-      The Cartridge Controller offers extended features ideal for on-chain games, including signerless transactions and multi-platform login options.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/wallets.png" alt="Budokan Wallets" width="400" height="200" />
-
-    <br />
-
-    <em>Figure 1: Supported wallets on Budokan.</em>
-  </div>
-</div>
-
-## Setting Up Your Wallet
-
-Follow these steps to get started:
-
-1. If you don't already have a wallet, select Controller and sign up.
-2. Choose your preferred login method. The Cartridge Controller supports:
-   * Social logins (Discord)
-   * Other blockchain wallets (Metamask, Phantom, Rabby)
-   * Passkey
-3. Complete the sign-up process as guided.
-4. Once your wallet is set up, connect it to Budokan through the platform's wallet connection interface.
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      The Cartridge Controller makes onboarding easy, allowing you to use familiar social accounts or other wallets. After setup, you'll be ready to join tournaments and play games on Budokan.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/controller-sign-up.png" alt="Controller Onboarding" width="200" height="100" />
-
-    <br />
-
-    <em>Figure 2: Signing up with the Cartridge Controller.</em>
-  </div>
-</div>
-
-> **Tip:** Using the Cartridge Controller enables gas-less transactions and a smoother experience across all supported games.
-
-## Next Steps & Related Guides
-
-* [Entering Tournaments](/budokan/guide/enter)
-* [Submitting Scores](/budokan/guide/submission)
-* [FAQ](/budokan/faq)
-
-If you have questions or need help, check the FAQ or contact support through the app.
-
-
-
----
-
-file: docs/budokan/guide/prizes.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Budokan Prizes
-
-Budokan features a flexible, permissionless prize system that allows anyone to add prizes to new or ongoing tournaments. This guide explains how prizes work, how to add and claim them, and best practices for both players and sponsors.
-
-## Supported Prize Tokens
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      For security, Budokan currently uses a whitelist of tokens for prizes. In the future, any token supported on Ekubo, as well as NFTs (ERC721), will be available for use. This enables communities and sponsors to contribute a wide variety of rewards.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/prize-token-list.png" alt="Prize Tokens" width="300" height="600" />
-
-    <br />
-
-    <em>Figure 1: Supported ERC20s and NFTs for prizes.</em>
-  </div>
-</div>
-
-## How to Add Prizes
-
-Prizes can be added at multiple stages during a tournament's lifecycle:
-
-1. **During Tournament Creation:**
-   * Set up prize tokens and distribution when creating your tournament.
-   * Choose from supported ERC20s or NFTs.
-
-![Prizes](/docs/prizes.png)
-*Figure 2: Tournament Prizes Form during creation.*
-
-2. **After Tournament Creation:**
-   * Add prizes at any time before the tournament ends.
-   * Go to the tournament page and click the **Add Prizes** button.
-
-![Add Prizes Button](/docs/add-prizes-button.png)
-*Figure 3: Add Prizes on the tournament page.*
-
-> **Tip:** Sponsors and community members can contribute prizes even after a tournament has started, increasing engagement and excitement.
-
-## Prize Eligibility & Distribution
-
-Prizes are distributed based on the tournament's rules and leaderboard positions. Here's how it works:
-
-* **Eligibility:**
-  * Players must meet all tournament requirements and achieve a winning position to be eligible for prizes.
-
-* **Distribution:**
-  * Prizes will be allocated to winners after the tournament concludes, the submission period ends and the prizes have been claimed.
-  * The distribution follows the splits set by the tournament creator or sponsor.
-
-> **Note:** Always check the tournament details for specific prize eligibility rules and distribution breakdowns.
-
-## Claiming Prizes
-
-1. **When to Claim:**
-   * Prizes become claimable after the tournament ends and all results are verified.
-   * You will be notified in the app or via your tournament dashboard.
-
-2. **How to Claim:**
-   * Go to the tournament page and look for the **Claim Prizes** button in the top right.
-   * The will effectively distribute all prizes, game fees and creator fees in a single tx.
-
-## For Sponsors & Community Contributors
-
-Budokan encourages sponsors and community members to add prizes to tournaments. Here's how you can get involved:
-
-* **Adding Prizes:**
-  * Use the **Add Prizes** button on any tournament page to contribute tokens or NFTs.
-  * Specify the prize type, amount, and any special eligibility requirements.
-
-* **Visibility:**
-  * Your contribution will be visible on the tournament page, and you will be credited as a sponsor.
-
-> **Tip:** Adding prizes can boost tournament participation and promote your project or community.
-
-## Related Guides
-
-* [Creating a Tournament](/budokan/guide/create)
-* [Entry Fees](/budokan/guide/create/entry-fees)
-* [Entry Requirements](/budokan/guide/create/entry-requirements)
-* [Onboarding](/budokan/guide/onboarding)
-* [FAQ](/budokan/faq)
-
-If you have questions or need help, check the FAQ or contact support through the app.
-
-
-
----
-
-file: docs/budokan/guide/submission.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Submitting Scores
-
-Congratulations on achieving a high score! To ensure your results count and you remain eligible for prizes, you must submit your score to the contract during the designated submission period. This guide explains how and when to submit, how verification works, and how automation can help.
-
-## Submission Period
-
-After a tournament ends, there is a dedicated window—called the **submission period**—for players to submit their scores on-chain. The tournament creator sets this window (minimum 15 minutes). It is crucial to submit your score during this time; otherwise, you may not qualify for prizes or leaderboard positions.
-
-> **Note:** If you miss the submission period, your score may not be recognized, and you could forfeit any prizes.
-
-## How to Submit Your Score
-
-1. When the tournament ends, check the tournament page for the submission window and instructions.
-2. Submit your score through the app interface during the submission period.
-3. Once your score is submitted and verified, a checkmark or "verified" mark will appear next to your name in the leaderboard.
-
-<div className="flex flex-row gap-4 items-center">
-  <div className="flex-1">
-    <img src="/docs/submit-button.png" alt="Submission Dialog" width="700" height="700" />
-
-    <br />
-
-    <em>Figure 1: Submit Scores Button.</em>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/submission-dialog.png" alt="Submission Dialog" width="400" height="200" />
-
-    <br />
-
-    <em>Figure 2: Submission dialog for top scores.</em>
-  </div>
-</div>
-
-## Score Verification
-
-* Submitted scores are validated by the contract to ensure they qualify for their claimed positions.
-* Only verified scores are eligible for prizes and final leaderboard placement.
-
-![Submitted Scores](/docs/submitted-scores.jpeg)
-*Figure 3: Submitted scores table with verified entries.*
-
-## Automated Submission
-
-Budokan provides an automated submission bot that detects when a tournament ends and schedules the top scores to be submitted on-chain. This helps ensure that scores are not missed due to user error or forgetfulness.
-
-You can find the code and instructions for running your own submission bot here:
-
-[Submission Bot Template](https://github.com/Provable-Games/budokan-submission-bot)
-
-> **Tip:** Even with automation, always double-check that your score has been submitted and verified before the submission window closes.
-
-***
-
-## Related Guides
-
-* [Entering Tournaments](/budokan/guide/enter)
-* [Prizes](/budokan/guide/prizes)
-* [FAQ](/budokan/faq)
-
-If you have questions or need help, check the FAQ or contact support through the app.
-
-
-
----
-
 file: docs/darkshuffle/guide/battle.mdx
 meta: {
   "layout": "docs"
@@ -4171,6 +4670,387 @@ If you have questions or want to see more examples, check the rest of the EGS do
 
 ---
 
+file: docs/budokan/guide/enter.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Entering Tournaments
+
+This guide will walk you through how to find, enter, and track tournaments. Whether you're a new or returning player, follow these steps to get started.
+
+## Browsing Tournaments
+
+On the **Overview** page, you can:
+
+* Filter tournaments by game, status (upcoming, live, ended), or your participation.
+* View summarized information on each tournament card, including:
+  * Name
+  * Duration
+  * Number of participants
+  * Time remaining
+  * Entry fee (in $)
+  * Prize pot (in $)
+  * Key badges for important details (explained on the full details page)
+
+![Overview](/docs/overview.png)
+*Figure 1: Tournament overview page.*
+
+## Viewing Tournament Details
+
+To learn more about a tournament:
+
+1. Click on a tournament card to open its details page.
+2. Review the following sections:
+   * **Requirements and Interactions** (top-right)
+   * **Tournament Details**
+   * **Timeline**
+   * **Prizes**
+   * **Scores (Entries)**
+   * **My Entries**
+
+The **Timeline** shows the tournament's structure, including the submission period after the tournament ends.
+
+![Tournament Details](/docs/tournament-details.png)
+*Figure 2: Tournament details page.*
+
+> **Note:** Scores must be submitted during the submission period after the tournament ends to be eligible for prizes. The platform provides tools to handle this automatically, but you can also submit scores manually through the app.
+
+## How to Enter a Tournament
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>To join a tournament:</p>
+
+    <ol style={{ listStyleType: 'decimal', marginLeft: '1.5em' }}>
+      <li>On the tournament details page, click the <strong>Enter Tournament</strong> button.</li>
+
+      <li>
+        <div>
+          Review the entry fee breakdown, including:
+
+          <ul style={{ listStyleType: 'disc', marginLeft: '1.5em' }}>
+            <li>Tournament creator fees</li>
+            <li>Game fees</li>
+            <li>Prize pool contribution</li>
+          </ul>
+        </div>
+      </li>
+
+      <li>Check any entry requirements and confirm you qualify.</li>
+      <li>Enter your player name when prompted.</li>
+      <li>Confirm your entry and pay any required fees.</li>
+    </ol>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/enter-tournament.png" alt="Entering a tournament" width="300" height="300" />
+
+    <br />
+
+    <em>Figure 3: Entering a tournament.</em>
+  </div>
+</div>
+
+> **Tip:** If you do not meet the entry requirements, review the requirements section for guidance on how to qualify.
+
+## After Entering
+
+Once you have entered a tournament:
+
+* Your entry will appear in the **Scores (Entries)** table.
+* You will see your game listed under **My Entries**.
+* Any entry fees you pay are instantly added to the prize pool.
+
+![Entered Tournament](/docs/entered-tournament.png)
+*Figure 4: After entering a tournament.*
+
+## Related Guides
+
+* [Submitting Scores](/budokan/guide/submission)
+* [Tournament Prizes](/budokan/guide/prizes)
+
+If you have questions or encounter issues, check the [FAQ](/budokan/faq) or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Budokan: Guide
+
+This guide walks you through the complete process of using Budokan, from creating tournaments to claiming prizes.
+
+## Table of Contents
+
+* [Onboarding](/budokan/guide/onboarding)
+* [Entering a Tournament](/budokan/guide/enter)
+* [Creating a Tournament](/budokan/guide/create)
+* [Prizes](/budokan/guide/prizes)
+
+## Overview
+
+Budokan provides a complete tournament management system with three main phases:
+
+1. Player Registration and Participation
+2. Tournament Creation and Setup
+3. Prize Management and Distribution
+
+Each section of this guide provides detailed instructions and examples for these key processes.
+
+
+
+---
+
+file: docs/budokan/guide/onboarding.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Getting Started: Onboarding
+
+Welcome to Budokan! This guide will help you set up your wallet and get ready to play on-chain games. Budokan supports a variety of Starknet wallets, with a special recommendation for the [Cartridge Controller](https://cartridge.gg/controller) due to its advanced features and signerless transactions.
+
+## Choosing a Wallet
+
+Budokan currently supports connection through several wallets. For the best experience, we recommend using the Cartridge Controller, which enables gas-less transactions and seamless gameplay on the platform.
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <ul>
+      <li><strong>Cartridge Controller</strong> (recommended)</li>
+      <li>Argent</li>
+      <li>Braavos</li>
+    </ul>
+
+    <p>
+      The Cartridge Controller offers extended features ideal for on-chain games, including signerless transactions and multi-platform login options.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/wallets.png" alt="Budokan Wallets" width="400" height="200" />
+
+    <br />
+
+    <em>Figure 1: Supported wallets on Budokan.</em>
+  </div>
+</div>
+
+## Setting Up Your Wallet
+
+Follow these steps to get started:
+
+1. If you don't already have a wallet, select Controller and sign up.
+2. Choose your preferred login method. The Cartridge Controller supports:
+   * Social logins (Discord)
+   * Other blockchain wallets (Metamask, Phantom, Rabby)
+   * Passkey
+3. Complete the sign-up process as guided.
+4. Once your wallet is set up, connect it to Budokan through the platform's wallet connection interface.
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      The Cartridge Controller makes onboarding easy, allowing you to use familiar social accounts or other wallets. After setup, you'll be ready to join tournaments and play games on Budokan.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/controller-sign-up.png" alt="Controller Onboarding" width="200" height="100" />
+
+    <br />
+
+    <em>Figure 2: Signing up with the Cartridge Controller.</em>
+  </div>
+</div>
+
+> **Tip:** Using the Cartridge Controller enables gas-less transactions and a smoother experience across all supported games.
+
+## Next Steps & Related Guides
+
+* [Entering Tournaments](/budokan/guide/enter)
+* [Submitting Scores](/budokan/guide/submission)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/prizes.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Budokan Prizes
+
+Budokan features a flexible, permissionless prize system that allows anyone to add prizes to new or ongoing tournaments. This guide explains how prizes work, how to add and claim them, and best practices for both players and sponsors.
+
+## Supported Prize Tokens
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      For security, Budokan currently uses a whitelist of tokens for prizes. In the future, any token supported on Ekubo, as well as NFTs (ERC721), will be available for use. This enables communities and sponsors to contribute a wide variety of rewards.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/prize-token-list.png" alt="Prize Tokens" width="300" height="600" />
+
+    <br />
+
+    <em>Figure 1: Supported ERC20s and NFTs for prizes.</em>
+  </div>
+</div>
+
+## How to Add Prizes
+
+Prizes can be added at multiple stages during a tournament's lifecycle:
+
+1. **During Tournament Creation:**
+   * Set up prize tokens and distribution when creating your tournament.
+   * Choose from supported ERC20s or NFTs.
+
+![Prizes](/docs/prizes.png)
+*Figure 2: Tournament Prizes Form during creation.*
+
+2. **After Tournament Creation:**
+   * Add prizes at any time before the tournament ends.
+   * Go to the tournament page and click the **Add Prizes** button.
+
+![Add Prizes Button](/docs/add-prizes-button.png)
+*Figure 3: Add Prizes on the tournament page.*
+
+> **Tip:** Sponsors and community members can contribute prizes even after a tournament has started, increasing engagement and excitement.
+
+## Prize Eligibility & Distribution
+
+Prizes are distributed based on the tournament's rules and leaderboard positions. Here's how it works:
+
+* **Eligibility:**
+  * Players must meet all tournament requirements and achieve a winning position to be eligible for prizes.
+
+* **Distribution:**
+  * Prizes will be allocated to winners after the tournament concludes, the submission period ends and the prizes have been claimed.
+  * The distribution follows the splits set by the tournament creator or sponsor.
+
+> **Note:** Always check the tournament details for specific prize eligibility rules and distribution breakdowns.
+
+## Claiming Prizes
+
+1. **When to Claim:**
+   * Prizes become claimable after the tournament ends and all results are verified.
+   * You will be notified in the app or via your tournament dashboard.
+
+2. **How to Claim:**
+   * Go to the tournament page and look for the **Claim Prizes** button in the top right.
+   * The will effectively distribute all prizes, game fees and creator fees in a single tx.
+
+## For Sponsors & Community Contributors
+
+Budokan encourages sponsors and community members to add prizes to tournaments. Here's how you can get involved:
+
+* **Adding Prizes:**
+  * Use the **Add Prizes** button on any tournament page to contribute tokens or NFTs.
+  * Specify the prize type, amount, and any special eligibility requirements.
+
+* **Visibility:**
+  * Your contribution will be visible on the tournament page, and you will be credited as a sponsor.
+
+> **Tip:** Adding prizes can boost tournament participation and promote your project or community.
+
+## Related Guides
+
+* [Creating a Tournament](/budokan/guide/create)
+* [Entry Fees](/budokan/guide/create/entry-fees)
+* [Entry Requirements](/budokan/guide/create/entry-requirements)
+* [Onboarding](/budokan/guide/onboarding)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/submission.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Submitting Scores
+
+Congratulations on achieving a high score! To ensure your results count and you remain eligible for prizes, you must submit your score to the contract during the designated submission period. This guide explains how and when to submit, how verification works, and how automation can help.
+
+## Submission Period
+
+After a tournament ends, there is a dedicated window—called the **submission period**—for players to submit their scores on-chain. The tournament creator sets this window (minimum 15 minutes). It is crucial to submit your score during this time; otherwise, you may not qualify for prizes or leaderboard positions.
+
+> **Note:** If you miss the submission period, your score may not be recognized, and you could forfeit any prizes.
+
+## How to Submit Your Score
+
+1. When the tournament ends, check the tournament page for the submission window and instructions.
+2. Submit your score through the app interface during the submission period.
+3. Once your score is submitted and verified, a checkmark or "verified" mark will appear next to your name in the leaderboard.
+
+<div className="flex flex-row gap-4 items-center">
+  <div className="flex-1">
+    <img src="/docs/submit-button.png" alt="Submission Dialog" width="700" height="700" />
+
+    <br />
+
+    <em>Figure 1: Submit Scores Button.</em>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/submission-dialog.png" alt="Submission Dialog" width="400" height="200" />
+
+    <br />
+
+    <em>Figure 2: Submission dialog for top scores.</em>
+  </div>
+</div>
+
+## Score Verification
+
+* Submitted scores are validated by the contract to ensure they qualify for their claimed positions.
+* Only verified scores are eligible for prizes and final leaderboard placement.
+
+![Submitted Scores](/docs/submitted-scores.jpeg)
+*Figure 3: Submitted scores table with verified entries.*
+
+## Automated Submission
+
+Budokan provides an automated submission bot that detects when a tournament ends and schedules the top scores to be submitted on-chain. This helps ensure that scores are not missed due to user error or forgetfulness.
+
+You can find the code and instructions for running your own submission bot here:
+
+[Submission Bot Template](https://github.com/Provable-Games/budokan-submission-bot)
+
+> **Tip:** Even with automation, always double-check that your score has been submitted and verified before the submission window closes.
+
+***
+
+## Related Guides
+
+* [Entering Tournaments](/budokan/guide/enter)
+* [Prizes](/budokan/guide/prizes)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
 file: docs/lootsurvivor/beasts/collectibles.mdx
 meta: {
   "layout": "docs"
@@ -4567,1427 +5447,6 @@ This promotion runs indefinitely. These special Beasts will continue to spawn in
 **Cartridge** - The gaming infrastructure platform enabling seamless wallet experiences and player onboarding for Starknet games.
 
 This partnership demonstrates the strong ecosystem support for Loot Survivor and commitment to rewarding skilled players with meaningful prizes.
-
-
-
----
-
-file: docs/lootsurvivor/guide/battle.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Combat Guide
-
-Combat in Loot Survivor is a turn-based system where preparation meets execution. Every encounter tests your understanding of type advantages, stat optimization, and tactical decision-making. Master the art of battle to survive Death Mountain's deadliest challenges.
-
-> **🎯 Combat Philosophy:** Turn-based combat means every action counts. Sometimes survival means avoiding the fight entirely.
-
-## Battle Interface
-
-<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
-  <img
-    src="/docs/lootsurvivor/battle.png"
-    alt="Loot Survivor Battle Screen"
-    style={{
-    width: "100%",
-    display: "block",
-    margin: "0 auto",
-    borderRadius: "8px",
-    border: "2px solid #333",
-  }}
-  />
-
-  <br />
-
-  <em style={{ display: "block", textAlign: "center" }}>
-    Figure: Battle interface showing adventurer vs beast encounter
-  </em>
-</div>
-
-***
-
-# Combat Mechanics
-
-## Turn-Based Combat Flow
-
-<div
-  style={{
-backgroundColor: "rgba(16, 185, 129, 0.1)",
-border: "2px solid #10b981",
-borderRadius: "8px",
-padding: "1.5rem",
-marginBottom: "2rem"
-}}
->
-  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#10b981" }}>⏱️ Combat Turn Order</h3>
-
-  <p style={{ marginBottom: "1rem" }}>
-    Combat follows a strict turn-based sequence where <strong>adventurers always act first</strong>:
-  </p>
-
-  <ol style={{ marginBottom: 0 }}>
-    <li style={{ marginBottom: "0.75rem" }}>
-      <strong>Adventurer Turn</strong> - Choose your action:
-
-      <ul style={{ marginTop: "0.5rem", marginLeft: "1rem" }}>
-        <li>⚔️ Attack the beast</li>
-        <li>🏃 Attempt to flee</li>
-        <li>🔄 Switch equipment (beast gets free attack)</li>
-      </ul>
-    </li>
-
-    <li style={{ marginBottom: "0.75rem" }}>
-      <strong>Beast Counterattack</strong> - If not defeated or fled:
-
-      <ul style={{ marginTop: "0.5rem", marginLeft: "1rem" }}>
-        <li>Beast automatically attacks back</li>
-        <li>Targets a <strong>random armor slot</strong> (1 of 5: Head, Chest, Waist, Foot, Hand)</li>
-        <li>Damage reduced by armor in that specific slot</li>
-      </ul>
-    </li>
-
-    <li>
-      <strong>Repeat</strong> - Combat continues until victory, defeat, or successful escape
-    </li>
-  </ol>
-</div>
-
-> **💡 Key Insight:** Since beasts attack random armor slots, having balanced armor coverage is more important than stacking defense in one slot!
-
-## Damage System
-
-<div
-  style={{
-backgroundColor: "rgba(251, 191, 36, 0.1)",
-border: "2px solid #fbbf24",
-borderRadius: "8px",
-padding: "1.5rem",
-marginBottom: "2rem"
-}}
->
-  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#fbbf24" }}>⚡ Understanding Power</h3>
-
-  <p style={{ marginBottom: "0.75rem" }}>
-    <strong>Power</strong> is displayed in combat for the base damage before modifiers.
-    It appears as a number on item and beast info showing the raw damage potential.
-  </p>
-
-  <p style={{ fontFamily: "monospace", fontSize: "1.1rem", marginBottom: 0 }}>
-    <strong>Power = Weapon Level × (6 - Weapon Tier)</strong>
-  </p>
-</div>
-
-### Combat Damage Modifiers
-
-The full damage amount includes several factors during combat:
-
-* **⚔️ Base Damage** - Your Power value (Weapon tier × level formula above)
-* **🎯 Type Advantage** - +50% when strong, -50% when weak
-* **💪 Strength Bonus** - +10% damage per STR point
-* **✨ Critical Hits** - LUCK/100% chance for 100% bonus damage (see [Combat Mechanics](/lootsurvivor/combat) for details)
-
-## Type Advantage System
-
-<div
-  style={{
-display: "flex",
-justifyContent: "center",
-marginBottom: "2rem",
-marginTop: "2rem"
-}}
->
-  <div
-    style={{
-  position: "relative",
-  width: "350px",
-  height: "300px"
-}}
-  >
-    {/* Brute - Top */}
-
-    <div
-      style={{
-    position: "absolute",
-    top: "0",
-    left: "50%",
-    transform: "translateX(-50%)",
-    textAlign: "center",
-    backgroundColor: "#dc2626",
-    padding: "1rem 1.5rem",
-    borderRadius: "12px",
-    border: "3px solid #991b1b",
-    minWidth: "140px",
-    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)"
-  }}
-    >
-      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>🔨</div>
-      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Brute</div>
-      <div style={{ fontSize: "0.75rem", color: "#fca5a5", marginTop: "0.25rem" }}>Bludgeon + Metal</div>
-    </div>
-
-    {/* Hunter - Bottom Left */}
-
-    <div
-      style={{
-    position: "absolute",
-    bottom: "0",
-    left: "0",
-    textAlign: "center",
-    backgroundColor: "#059669",
-    padding: "1rem 1.5rem",
-    borderRadius: "12px",
-    border: "3px solid #047857",
-    minWidth: "140px",
-    boxShadow: "0 4px 12px rgba(5, 150, 105, 0.3)"
-  }}
-    >
-      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>⚔️</div>
-      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Hunter</div>
-      <div style={{ fontSize: "0.75rem", color: "#86efac", marginTop: "0.25rem" }}>Blade + Hide</div>
-    </div>
-
-    {/* Magical - Bottom Right */}
-
-    <div
-      style={{
-    position: "absolute",
-    bottom: "0",
-    right: "0",
-    textAlign: "center",
-    backgroundColor: "#7c3aed",
-    padding: "1rem 1.5rem",
-    borderRadius: "12px",
-    border: "3px solid #6d28d9",
-    minWidth: "140px",
-    boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)"
-  }}
-    >
-      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>✨</div>
-      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Magical</div>
-      <div style={{ fontSize: "0.75rem", color: "#ddd6fe", marginTop: "0.25rem" }}>Magic + Cloth</div>
-    </div>
-
-    {/* Center circular arrows */}
-
-    <svg
-      style={{
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "100px",
-    height: "100px",
-    pointerEvents: "none"
-  }}
-    >
-      {/* Three arrows showing advantage flow */}
-
-      {/* Brute to Hunter (pointing bottom left) */}
-
-      <path d="M 50 15 L 15 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
-
-      {/* Hunter to Magical (pointing right) */}
-
-      <path d="M 15 75 L 85 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
-
-      {/* Magical to Brute (pointing top left) */}
-
-      <path d="M 85 75 L 50 15" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
-
-      <defs>
-        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-          <polygon points="0 0, 8 3, 0 6" fill="white" />
-        </marker>
-      </defs>
-    </svg>
-  </div>
-</div>
-
-<div
-  style={{
-textAlign: "center",
-marginBottom: "1rem",
-fontSize: "0.95rem",
-color: "#999"
-}}
->
-  <span style={{ color: "#fca5a5" }}>Bludgeon + Metal</span> beats
-  <span style={{ color: "#86efac" }}> Blade + Hide</span> beats
-  <span style={{ color: "#ddd6fe" }}> Magic + Cloth</span> beats
-  <span style={{ color: "#fca5a5" }}> Bludgeon + Metal</span>
-</div>
-
-### Type Advantage Effects
-
-**📈 With Advantage:**
-
-* **Damage Multiplier:** +50%
-* **Example:** 20 base damage → 30 damage output
-* **Visual Cue:** Green damage numbers in combat log
-
-**📉 With Disadvantage:**
-
-* **Damage Multiplier:** -50%
-* **Example:** 20 base damage → 10 damage output
-* **Visual Cue:** Red damage numbers in combat log
-
-### Strategic Equipment Sets
-
-<div
-  style={{ 
-background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
-border: '2px solid #6366f1',
-borderRadius: '12px',
-padding: '1.5rem',
-marginTop: '1.5rem'
-}}
->
-  <div style={{ marginBottom: '1rem' }}>
-    <strong style={{ color: '#a78bfa', fontSize: '1.1rem' }}>🛡️ Full Armor Sets</strong>
-
-    <p style={{ marginTop: '0.5rem', marginBottom: 0, lineHeight: '1.6' }}>
-      Each armor type excels against specific attacks: <strong>Metal</strong> resists Blade, <strong>Hide</strong> resists Magic,
-      <strong>Cloth</strong> resists Bludgeon. But beware - each has a weakness!
-    </p>
-  </div>
-
-  <div style={{ marginBottom: '1rem' }}>
-    <strong style={{ color: '#f59e0b', fontSize: '1.1rem' }}>⚔️ Offensive Priority</strong>
-
-    <p style={{ marginTop: '0.5rem', marginBottom: 0, lineHeight: '1.6' }}>
-      Your weapon choice matters more than armor. Remember: <strong>Bludgeon</strong> crushes Hide,
-      <strong>Blade</strong> slices Cloth, <strong>Magic</strong> pierces Metal. +50% damage is huge!
-    </p>
-  </div>
-
-  <div style={{ marginBottom: '1rem' }}>
-    <strong style={{ color: '#10b981', fontSize: '1.1rem' }}>🎯 Beast Hunting</strong>
-
-    <p style={{ marginTop: '0.5rem', marginBottom: 0, lineHeight: '1.6' }}>
-      When hunting specific beasts, matching your full armor set to counter their attacks is powerful.
-      Know your target and gear up accordingly for maximum survivability.
-    </p>
-  </div>
-
-  <div
-    style={{ 
-background: 'rgba(255, 255, 255, 0.05)',
-borderRadius: '8px',
-padding: '1rem',
-marginTop: '1rem'
-}}
-  >
-    <strong>💡 Pro Strategy:</strong> Early game, prioritize covering all armor slots with appropriate types over hunting for higher tiers!
-  </div>
-</div>
-
-***
-
-# Combat Actions
-
-## ⚔️ Attack Options
-
-### Single Attack
-
-Execute one calculated strike against your opponent.
-
-**Stat Influences:**
-
-* **STR:** +10% damage per point
-* **LUCK:** Critical hit chance (LUCK/100%)
-* **Weapon Tier:** Base damage multiplier
-
-**Best for:** Controlled combat, testing damage, conserving resources
-
-### Attack Until Death
-
-Chain attacks automatically until victory or defeat.
-
-**⚠️ High Risk Mode:**
-
-* No control once initiated
-* Fight continues until resolution
-* Cannot flee mid-sequence
-
-**Use when:**
-
-* Beast health is very low
-* You have type advantage
-* Confident in victory
-* Emergency/desperate situations
-
-## 🏃 Flee Mechanics
-
-**Flee Formula:**
-
-```
-Success Rate = (DEX / Level) × 100%
-```
-
-| DEX/Level | Success | Level 10 Example | Level 20 Example |
-| --------- | ------- | ---------------- | ---------------- |
-| 0.5       | 50%     | DEX 5            | DEX 10           |
-| 0.75      | 75%     | DEX 7-8          | DEX 15           |
-| 1.0       | 100%    | DEX 10           | DEX 20           |
-| 1.5       | 100%    | DEX 15           | DEX 30           |
-
-**Key Points:**
-
-* DEX equal to level = 100% success
-* Success rate caps at 100%
-* Failed flee attempts waste a turn
-* Ambush encounters have no additional penalties
-
-## 🛡️ Equipment Switching
-
-You can change your equipment mid-combat to gain type advantages, but the beast gets a free attack when you do. Strategic swapping can turn a losing fight into victory - switch to counter their type for +50% damage or -50% damage reduction.
-
-> **💡 Important:** Bundle all gear changes into one action to minimize the number of free attacks the beast gets. Multiple switches still only give the beast one free attack!
-
-***
-
-# Combat Decision Making
-
-When entering combat, consider these factors:
-
-* **🏃 Flee** - When you have low HP, type disadvantage, or facing a stronger beast
-* **🔄 Switch Gear** - When you have the wrong equipment type and need advantage
-* **⚔️ Attack** - When you have good matchup and are confident in victory
-* **💀 All-Out Attack** - When beast has very low HP and victory is guaranteed
-
-***
-
-# Combat Rewards
-
-## Experience Points (XP)
-
-<div
-  style={{
-backgroundColor: "rgba(34, 197, 94, 0.1)",
-border: "2px solid #22c55e",
-borderRadius: "8px",
-padding: "1.5rem",
-marginBottom: "2rem"
-}}
->
-  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#22c55e" }}>💰 Victory Rewards</h3>
-
-  <p style={{ marginBottom: "1rem" }}>
-    Defeating beasts grants XP and gold based on their power, with bonuses for finding items:
-  </p>
-
-  <div style={{ marginBottom: "1rem" }}>
-    <strong>Base Reward Formulas:</strong>
-
-    <div style={{ fontFamily: "monospace", marginLeft: "1rem", marginTop: "0.5rem" }}>
-      Adventurer XP = Beast Power / 2<br />
-      Item XP = 2 \* Adventurer XP<br />
-      Gold = Beast Power / 2 (same as XP)
-    </div>
-  </div>
-
-  <div>
-    <strong>Level Decay:</strong>
-
-    <p style={{ marginLeft: "1rem", marginTop: "0.5rem", marginBottom: 0 }}>
-      XP rewards decrease as you level up (2% per level, max 95% reduction)<br />
-      <span style={{ color: "#fbbf24" }}>Gold rewards do NOT decay - always full value!</span>
-    </p>
-  </div>
-</div>
-
-### Reward Calculation Examples
-
-| Your Level | Beast (T3, Lv10) | Base Rewards | XP After Decay | Gold (No Decay) | Item XP |
-| ---------- | ---------------- | ------------ | -------------- | --------------- | ------- |
-| Level 1    | Power: 30        | 15           | 15 XP (0%)     | 15 🪙           | 30 XP   |
-| Level 10   | Power: 30        | 15           | 12 XP (-20%)   | 15 🪙           | 24 XP   |
-| Level 25   | Power: 30        | 15           | 7 XP (-50%)    | 15 🪙           | 15 XP   |
-| Level 50+  | Power: 30        | 15           | 1 XP (-95%)    | 15 🪙           | 2 XP    |
-
-> **💡 Tip:** The XP decay encourages fighting appropriate challenges, but gold rewards stay consistent - making every victory valuable!
-
-***
-
-# Summary
-
-Combat success in Loot Survivor comes from understanding type advantages, optimizing your stats, and making tactical decisions. Every battle offers multiple approaches - from switching gear for advantages to knowing when discretion is the better part of valor.
-
-**Key Combat Principles:**
-
-* Type advantage provides significant damage bonuses/penalties
-* STR scaling makes strength investment worthwhile for damage dealers
-* DEX equal to your level guarantees successful escapes
-* Gear switching can turn losing fights into victories
-* Sometimes the best fight is the one you avoid
-
-
-
----
-
-file: docs/lootsurvivor/guide/explore.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Exploration Guide
-
-Exploration is the heart of Loot Survivor's gameplay loop. Every step into the unknown brings potential rewards and deadly dangers. Understanding the exploration system is key to surviving Death Mountain's treacherous depths.
-
-> **🎲 Random Encounters:** Every exploration is a roll of the dice with equal chances for discovery, obstacles, or beasts!
-
-## Exploration Interface
-
-<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
-  <img
-    src="/docs/lootsurvivor/explore.png"
-    alt="Loot Survivor Exploration Screen"
-    style={{
-    width: "100%",
-    display: "block",
-    margin: "0 auto",
-    borderRadius: "8px",
-    border: "2px solid #333",
-  }}
-  />
-
-  <br />
-
-  <em style={{ display: "block", textAlign: "center" }}>
-    Figure: Exploration interface with adventure log and market
-  </em>
-</div>
-
-***
-
-# How Exploration Works
-
-When you click "Explore", the game rolls for one of three equally likely outcomes:
-
-* **📦 Item Discovery (33.33%)** - Find gold, potions, or equipment
-* **🪨 Obstacle (33.33%)** - Environmental hazards to overcome
-* **👹 Beast Encounter (33.33%)** - Mandatory combat encounters
-
-## Item Discovery Breakdown
-
-When you hit the 33% item discovery chance, it subdivides into:
-
-* **💰 Gold (45% of discoveries)** - Currency for market purchases (\~15% of all explores)
-* **🧪 Health Potion (45% of discoveries)** - Restores HP when used (\~15% of all explores)
-* **⚔️ Equipment (10% of discoveries)** - Weapons, armor, jewelry (\~3.3% of all explores)
-
-***
-
-# Discovery Types
-
-## 💰 Gold Discovery
-
-**Formula:** `Gold = Random(1 to Adventurer Level)`
-
-| Level | Gold Range | Average |
-| ----- | ---------- | ------- |
-| 5     | 1-5g       | 3g      |
-| 10    | 1-10g      | 5.5g    |
-| 20    | 1-20g      | 10.5g   |
-| 30    | 1-30g      | 15.5g   |
-| 50    | 1-50g      | 25.5g   |
-
-**Key Features:**
-
-* Amount scales with your level
-* Can be saved between explorations
-* CHA stat reduces market prices
-* Essential for equipment upgrades
-* **Maximum capacity: 511 gold**
-
-> **💰 Gold Cap:** You can only carry up to 511 gold. Any excess is lost, so spend wisely!
-
-## ⚔️ Equipment Discovery
-
-Equipment drops are your primary source of gear upgrades. When you discover loot (3.3% of all explores), the tier distribution is:
-
-| Item Tier          | Drop Rate | Of All Explores | Description     |
-| ------------------ | --------- | --------------- | --------------- |
-| **T5 (Common)**    | 50%       | \~1.65%         | Basic gear      |
-| **T4 (Uncommon)**  | 30%       | \~1.0%          | Decent upgrades |
-| **T3 (Rare)**      | 12%       | \~0.4%          | Good equipment  |
-| **T2 (Epic)**      | 6%        | \~0.2%          | Powerful items  |
-| **T1 (Legendary)** | 2%        | \~0.066%        | Best in slot    |
-
-> **Item assigning:** Items are automatically equipped or added to bag if there are free slots. Otherwise, if items are already discovered or there is no space they are converted to gold.
-
-## 🧪 Health Discovery
-
-**Formula:** `HP = Random(2 to Level × 2)`
-
-| Level | HP Range | Average | % of Max HP |
-| ----- | -------- | ------- | ----------- |
-| 5     | 2-10 HP  | 6 HP    | \~0.6%      |
-| 10    | 2-20 HP  | 11 HP   | \~1.1%      |
-| 20    | 2-40 HP  | 21 HP   | \~2.1%      |
-| 30    | 2-60 HP  | 31 HP   | \~3.0%      |
-| 50    | 2-100 HP | 51 HP   | \~5.0%      |
-
-**Potion Information:**
-
-* Found in 15% of all explores
-* Instantly restores HP when discovered
-* **Maximum health: 1023 HP** (adventurer cap)
-
-> **❤️ Health Cap:** Adventurers have a maximum health of 1023 HP. Health potions cannot exceed this limit.
-
-## ⭐ Experience Gains
-
-Exploration provides consistent experience points for leveling up:
-
-| XP Source          | XP Gained                           | Scaling | Risk Level |
-| ------------------ | ----------------------------------- | ------- | ---------- |
-| **Item Discovery** | 1                                   | None    | Safe       |
-| **Beast Kills**    | Beast Level × (Tier Multiplier - 1) | Decayed | High       |
-| **Obstacles**      | Same as above                       | Decayed | Medium     |
-
-***
-
-# Beast Encounters
-
-<div style={{ background: '#2a1a2a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc2626', margin: '2rem 0' }}>
-  ## ⚠️ Mandatory Combat
-
-  **IMPORTANT:** Discovering a beast during exploration **always locks you into combat**. There is no way to avoid the fight once a beast is encountered.
-
-  **Combat is Unavoidable:**
-
-  * Beast encounters force immediate battle
-  * No option to flee before combat begins
-  * You must fight until victory, defeat, or successful flee attempt
-  * See the [Battle Guide](/lootsurvivor/guide/battle) for detailed combat mechanics
-</div>
-
-## Beast Strength Calculation
-
-When a beast is discovered, its level and health are determined by your adventurer level:
-
-### Beast Level Formula
-
-```
-Base Level = 1 + Random(0 to Adventurer Level × 3 - 1)
-Final Level = Base Level + Difficulty Bonus
-```
-
-**Difficulty Bonuses by Adventurer Level:**
-
-| Adventurer Level | Difficulty Bonus | Level Range | Average Level |
-| ---------------- | ---------------- | ----------- | ------------- |
-| **1-19**         | +0               | 1-57        | \~29          |
-| **20-29**        | +10              | 11-97       | \~54          |
-| **30-39**        | +20              | 21-137      | \~79          |
-| **40-49**        | +40              | 41-187      | \~114         |
-| **50+**          | +80              | 81-230+     | \~155+        |
-
-### Beast Health Formula
-
-```
-Base Health = 1 + Random(0 to Adventurer Level × 20 - 1)
-Final Health = Base Health + Health Bonus
-```
-
-**Health Bonuses by Adventurer Level:**
-
-| Adventurer Level | Health Bonus | Health Range | Average Health |
-| ---------------- | ------------ | ------------ | -------------- |
-| **1-19**         | +10          | 11-390       | \~200          |
-| **20-29**        | +100         | 101-680      | \~390          |
-| **30-39**        | +200         | 201-980      | \~590          |
-| **40-49**        | +400         | 401-1023\*   | \~712          |
-| **50+**          | +500         | 501-1023\*   | \~762          |
-
-\*Capped at maximum health of 1023 HP
-
-> **⚠️ Power Spikes:** Beasts get significantly stronger at levels 20, 30, 40, and 50. Plan your upgrades accordingly!
->
-> **❤️ Beast Health Cap:** Like adventurers, beasts have a maximum health of 1023 HP.
-
-## Ambush Disadvantages
-
-Beast encounters during exploration catch you off-guard with several penalties:
-
-* **⚡ Initiative Loss** - Beast attacks first in combat
-* **🛡️ No Preparation** - Cannot switch gear before combat begins
-
-## Ambush Avoidance
-
-**Ambush Avoidance Formula:**
-
-```
-Avoidance Chance = (WIS / Level) × 100%
-```
-
-| WIS/Level | Avoidance | Level 10 Example | Level 20 Example |
-| --------- | --------- | ---------------- | ---------------- |
-| 0.5       | 50%       | WIS 5            | WIS 10           |
-| 0.75      | 75%       | WIS 7-8          | WIS 15           |
-| 1.0       | 100%      | WIS 10           | WIS 20           |
-| 1.5       | 100%      | WIS 15           | WIS 30           |
-
-**Key Points:**
-
-* WIS equal to level = 100% avoidance
-* Success rate caps at 100%
-* Only applies to beast encounters
-* Does not prevent the encounter entirely
-
-> **👁️ Important:** Wisdom helps avoid the ambush penalties, but you will still be locked into combat when a beast is encountered.
-
-***
-
-# Environmental Challenges
-
-## 🪨 Obstacle System
-
-Obstacles are unavoidable environmental hazards with three distinct categories:
-
-### Obstacle Types
-
-**✨ Magical Obstacles (25 types)**
-
-* Examples: Demonic Altar, Vortex of Despair, Cursed Tomb
-* **Counter:** Hide armor
-
-**🗡️ Blade Obstacles (25 types)**
-
-* Examples: Pendulum Blades, Poison Darts, Hidden Arrows
-* **Counter:** Metal armor
-
-**🔨 Bludgeon Obstacles (25 types)**
-
-* Examples: Collapsing Ceiling, Rolling Boulder, Crushing Walls
-* **Counter:** Cloth armor
-
-### Obstacle Level Calculation
-
-When an obstacle is encountered, its level is determined using the same formula as beast levels:
-
-```
-Base Level = 1 + Random(0 to Adventurer Level × 3 - 1)
-Final Level = Base Level + Difficulty Bonus
-```
-
-**Difficulty Bonuses by Adventurer Level:**
-
-| Adventurer Level | Difficulty Bonus | Obstacle Level Range | Average Level |
-| ---------------- | ---------------- | -------------------- | ------------- |
-| **1-19**         | +0               | 1-57                 | \~29          |
-| **20-29**        | +10              | 11-97                | \~54          |
-| **30-39**        | +20              | 21-137               | \~79          |
-| **40-49**        | +40              | 41-187               | \~114         |
-| **50+**          | +80              | 81-230+              | \~155+        |
-
-> **📊 Note:** Unlike beasts, obstacles don't have health - they deal damage based on their level if not avoided.
-
-### Damage Mitigation
-
-| Method            | Effect               | Requirement          |
-| ----------------- | -------------------- | -------------------- |
-| **Intelligence**  | Complete avoidance   | INT ≥ obstacle level |
-| **Armor Match**   | 50% damage reduction | Correct armor type   |
-| **No Protection** | Full damage          | No mitigation        |
-
-***
-
-# Summary
-
-Exploration provides the foundation for your Death Mountain adventure through consistent rewards and progression opportunities. Understanding the 33/33/33 split between discoveries, obstacles, and beasts helps you make informed decisions about when and how to explore.
-
-**Key Takeaways:**
-
-* Equal chances for all three outcome types
-* Higher levels = better gold and health discoveries
-* LUCK influences equipment tier drops
-* INT helps avoid obstacles, WIS helps avoid ambushes
-* Choose exploration modes based on your current needs
-
-
-
----
-
-file: docs/lootsurvivor/guide/getting-started.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Getting Started with Loot Survivor
-
-Welcome, adventurer! This guide will help you begin your journey into the depths of Death Mountain. Whether you're new to blockchain gaming or Starknet, we'll get you up and running quickly.
-
-> **⚡ Fast Track:** Want to play right now? Click "Practice Mode" and start exploring immediately!
-
-## Game Modes
-
-<div
-  style={{
-  display: "flex",
-  gap: "1.5rem",
-  marginTop: "2rem",
-  marginBottom: "2rem",
-  flexWrap: "wrap",
-  maxWidth: "800px",
-}}
->
-  <div
-    style={{
-    flex: "1",
-    minWidth: "280px",
-    backgroundColor: "rgba(26, 26, 26, 0.8)",
-    border: "2px solid #444",
-    borderRadius: "12px",
-    padding: "2rem",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-    transition: "all 0.3s ease",
-    ":hover": {
-      borderColor: "#666",
-      transform: "translateY(-2px)",
-      boxShadow: "0 6px 16px rgba(0, 0, 0, 0.4)",
-    },
-  }}
-  >
-    <h3
-      style={{
-      marginTop: 0,
-      marginBottom: "1.25rem",
-      fontSize: "1.25rem",
-      fontWeight: "600",
-      color: "#fff",
-    }}
-    >
-      🎮 Practice Mode
-    </h3>
-
-    <ul
-      style={{
-      listStyleType: "none",
-      paddingLeft: 0,
-      margin: 0,
-      fontSize: "0.95rem",
-      lineHeight: "1.6",
-    }}
-    >
-      <li style={{ marginBottom: "0.75rem", color: "#4ade80" }}>
-        ✓ Instant play
-      </li>
-
-      <li style={{ marginBottom: "0.75rem", color: "#4ade80" }}>
-        ✓ No rewards or progression
-      </li>
-
-      <li style={{ color: "#4ade80" }}>✓ No wallet needed</li>
-    </ul>
-
-    <div
-      style={{
-      marginTop: "1.5rem",
-      paddingTop: "1.5rem",
-      borderTop: "1px solid #444",
-      fontSize: "0.85rem",
-      color: "#999",
-      textAlign: "center",
-    }}
-    >
-      Perfect for learning
-    </div>
-  </div>
-
-  <div
-    style={{
-    flex: "1",
-    minWidth: "280px",
-    backgroundColor: "rgba(26, 26, 26, 0.8)",
-    border: "2px solid #444",
-    borderRadius: "12px",
-    padding: "2rem",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-    transition: "all 0.3s ease",
-    position: "relative",
-    overflow: "hidden",
-  }}
-  >
-    <div
-      style={{
-      position: "absolute",
-      top: "-50px",
-      right: "-50px",
-      width: "100px",
-      height: "100px",
-      backgroundColor: "rgba(251, 191, 36, 0.1)",
-      borderRadius: "50%",
-      filter: "blur(40px)",
-    }}
-    />
-
-    <h3
-      style={{
-      marginTop: 0,
-      marginBottom: "1.25rem",
-      fontSize: "1.25rem",
-      fontWeight: "600",
-      color: "#fff",
-    }}
-    >
-      🏆 Beast Mode
-    </h3>
-
-    <ul
-      style={{
-      listStyleType: "none",
-      paddingLeft: 0,
-      margin: 0,
-      fontSize: "0.95rem",
-      lineHeight: "1.6",
-    }}
-    >
-      <li style={{ marginBottom: "0.75rem", color: "#fbbf24" }}>
-        ✓ Dungeon Ticket entry
-      </li>
-
-      <li style={{ marginBottom: "0.75rem", color: "#fbbf24" }}>
-        ✓ Collectible beasts
-      </li>
-
-      <li style={{ color: "#fbbf24" }}>✓ Requires wallet setup</li>
-    </ul>
-
-    <div
-      style={{
-      marginTop: "1.5rem",
-      paddingTop: "1.5rem",
-      borderTop: "1px solid #444",
-      fontSize: "0.85rem",
-      color: "#999",
-      textAlign: "center",
-    }}
-    >
-      Full blockchain experience
-    </div>
-  </div>
-</div>
-
-> **Recommendation:** Start with Practice Mode to learn the basics, then upgrade to Beast Mode for the full experience.
-
-## Play Anywhere
-
-<div
-  style={{
-  backgroundColor: "rgba(34, 197, 94, 0.1)",
-  border: "2px solid #22c55e",
-  borderRadius: "8px",
-  padding: "1.5rem",
-  marginTop: "2rem",
-  marginBottom: "2rem",
-}}
->
-  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#22c55e" }}>
-    📱 Fully Mobile Ready
-  </h3>
-
-  <p style={{ marginBottom: "1.5rem", fontSize: "1.1rem", lineHeight: "1.6" }}>
-    Loot Survivor is designed for seamless gameplay across all devices. Whether
-    you prefer the immersive desktop experience or the convenience of mobile
-    gaming, enjoy the same full-featured adventure anywhere you go.
-  </p>
-
-  <div
-    style={{
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "1.5rem",
-    marginBottom: "1.5rem",
-  }}
-  >
-    <div
-      style={{
-      textAlign: "center",
-      padding: "1rem",
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      borderRadius: "8px",
-      border: "1px solid rgba(34, 197, 94, 0.3)",
-    }}
-    >
-      <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🖥️</div>
-      <h4 style={{ margin: "0 0 0.5rem 0", color: "#22c55e" }}>Desktop</h4>
-
-      <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.9rem", opacity: "0.9" }}>
-        AI-powered immersive visuals with detailed UI
-      </p>
-
-      <div style={{ fontSize: "0.8rem", opacity: "0.7", lineHeight: "1.4" }}>
-        Latest AI technology creates stunning visual experiences for deep
-        exploration sessions
-      </div>
-    </div>
-
-    <div
-      style={{
-      textAlign: "center",
-      padding: "1rem",
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      borderRadius: "8px",
-      border: "1px solid rgba(34, 197, 94, 0.3)",
-    }}
-    >
-      <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📱</div>
-      <h4 style={{ margin: "0 0 0.5rem 0", color: "#22c55e" }}>Mobile</h4>
-
-      <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.9rem", opacity: "0.9" }}>
-        Pixel-art adventurer for fast-paced gameplay
-      </p>
-
-      <div style={{ fontSize: "0.8rem", opacity: "0.7", lineHeight: "1.4" }}>
-        Classic pixel aesthetics optimized for quick sessions and touch controls
-      </div>
-    </div>
-  </div>
-
-  <div style={{ textAlign: "center" }}>
-    <a
-      href="/lootsurvivor/platforms"
-      style={{
-      color: "#22c55e",
-      textDecoration: "none",
-      fontWeight: "600",
-      fontSize: "1rem",
-    }}
-    >
-      📸 View Platform Comparison & Screenshots →
-    </a>
-  </div>
-</div>
-
-## Main Menu Interface
-
-<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
-  <img
-    src="/docs/lootsurvivor/menu.png"
-    alt="Loot Survivor Main Menu"
-    style={{
-    width: "100%",
-    display: "block",
-    margin: "0 auto",
-    borderRadius: "8px",
-    border: "2px solid #333",
-  }}
-  />
-
-  <br />
-
-  <em style={{ display: "block", textAlign: "center" }}>
-    Figure: Main menu interface
-  </em>
-</div>
-
-***
-
-# Beast Mode Setup
-
-> **Ready for the full experience?** Beast Mode offers real blockchain rewards, NFT beasts, and permanent progression.
-
-## Prerequisites
-
-**🔐 Wallet Required**
-
-* Cartridge Controller
-* Built for gaming with gasless transactions
-* Supports social login and multi-platform access
-
-**💰 Payment Options**
-
-* Multiple crypto tokens accepted (ETH, USDC, STRK, and more)
-* Credit card payments supported
-* Variable ticket pricing based on demand
-
-## Wallet Setup Process
-
-### Step 1: Create Controller Wallet
-
-<div
-  style={{
-  display: "flex",
-  gap: "2rem",
-  alignItems: "flex-start",
-  margin: "1rem 0",
-  flexWrap: "wrap",
-}}
->
-  <div style={{ flex: "1", minWidth: "300px" }}>
-    <strong>Choose your signup method:</strong>
-
-    <ul
-      style={{
-      paddingLeft: "1.5rem",
-      marginTop: "0.5rem",
-      listStyleType: "disc",
-    }}
-    >
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        <strong>🔐 Social Login</strong> - Discord, Google, GitHub
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        <strong>🔑 Passkey</strong> - Biometric authentication
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        <strong>💼 Existing Wallet</strong> - MetaMask, Phantom, Rabby
-      </li>
-    </ul>
-
-    <br />
-
-    <strong>Benefits of Controller:</strong>
-
-    <ul
-      style={{
-      paddingLeft: "1.5rem",
-      marginTop: "0.5rem",
-      listStyleType: "disc",
-    }}
-    >
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        Gasless transactions for smooth gameplay
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        Social login convenience
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        Multi-platform access
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        Built specifically for gaming
-      </li>
-    </ul>
-  </div>
-
-  <div style={{ flex: "1", textAlign: "center" }}>
-    <img
-      src="/docs/lootsurvivor/controller-sign-up.png"
-      alt="Controller sign-up interface"
-      style={{
-      width: "100%",
-      maxWidth: "400px",
-      borderRadius: "8px",
-      border: "1px solid #333",
-    }}
-    />
-
-    <em style={{ display: "block", marginTop: "0.5rem", fontSize: "0.9em" }}>
-      Controller sign-up interface
-    </em>
-  </div>
-</div>
-
-### Step 2: Connect and Purchase
-
-<div
-  style={{
-  display: "flex",
-  gap: "2rem",
-  alignItems: "flex-start",
-  margin: "1rem 0",
-  flexWrap: "wrap",
-}}
->
-  <div style={{ flex: "1", minWidth: "300px" }}>
-    <strong>Follow these steps:</strong>
-
-    <ol
-      style={{
-      paddingLeft: "1.5rem",
-      marginTop: "0.5rem",
-      listStyleType: "decimal",
-    }}
-    >
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        <strong>🌐 Visit Game</strong> - Navigate to lootsurvivor.io
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        <strong>🔗 Connect Wallet</strong> - Click "Login" and approve
-        connection
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        <strong>🎟️ Buy Ticket</strong> - Purchase dungeon entry with crypto or
-        credit card (see <a href="/lootsurvivor/dungeon-tickets">Dungeon Tickets</a> for details)
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        <strong>⚔️ Start Adventure</strong> - Create your adventurer
-      </li>
-    </ol>
-
-    <br />
-
-    <strong>Pro Tips:</strong>
-
-    <ul
-      style={{
-      paddingLeft: "1.5rem",
-      marginTop: "0.5rem",
-      listStyleType: "disc",
-    }}
-    >
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        Keep some funds for multiple games
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        Ticket prices vary based on demand
-      </li>
-
-      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
-        Your progress saves to the blockchain
-      </li>
-    </ul>
-  </div>
-
-  <div style={{ flex: "1", textAlign: "center" }}>
-    <img
-      src="/docs/lootsurvivor/ticket-purchase.png"
-      alt="Dungeon ticket purchase interface"
-      style={{
-      width: "100%",
-      maxWidth: "400px",
-      borderRadius: "8px",
-      border: "2px solid #333",
-    }}
-    />
-
-    <em style={{ display: "block", marginTop: "0.5rem", fontSize: "0.9em" }}>
-      Dungeon ticket purchase interface
-    </em>
-  </div>
-</div>
-
-***
-
-# Your First Adventure
-
-## Understanding Your Adventurer
-
-When you create a new adventurer, you'll receive:
-
-* **⚔️ Starting Weapon** - Random Tier 5 weapon
-* **📊 Base Stats** - 12 points randomly distributed
-* **❤️ Health** - 100 HP + VIT bonus
-
-## Core Game Loop
-
-The adventure follows a simple cycle:
-
-1. **🔍 Explore** - Search for items, gold, and XP
-2. **⚔️ Combat** - Fight or flee from beasts
-3. **📈 Level Up** - Allocate stat points
-4. **🛍️ Market** - Buy equipment and potions
-5. **🔄 Repeat** - Continue deeper into Death Mountain
-
-**Goal:** Survive as long as possible!
-
-## Game Interface Overview
-
-### Main HUD Elements
-
-| Element         | Icon | Description                   | Location     |
-| --------------- | ---- | ----------------------------- | ------------ |
-| **Health Bar**  | ❤️   | Current HP (100 + VIT bonus)  | Top left     |
-| **XP Progress** | ⭐    | Experience toward next level  | Below health |
-| **Gold**        | 🪙   | Currency for market purchases | Top right    |
-| **Equipment**   | 🛡️  | 8 equipped item slots         | Center panel |
-| **Inventory**   | 🎒   | 15 additional storage slots   | Right panel  |
-
-### Action Controls
-
-* **🔍 Explore** - Continue deeper into the dungeon
-* **⚔️ Attack** - Fight beasts you encounter
-* **🏃 Flee** - Escape from combat encounters
-* **📈 Upgrade** - Allocate stat points when available
-* **🛍️ Market** - Buy equipment and potions
-
-***
-
-# Community & Support
-
-Join the Loot Survivor community:
-
-* **💬 Discord:** [discord.gg/lootsurvivor](https://discord.gg/Q36rUxS66c)
-* **🐦 Twitter:** [@lootsurvivor](https://twitter.com/lootsurvivor)
-* **🐙 GitHub:** [Report Issues](https://github.com/Provable-Games/death-mountain/issues)
-
-***
-
-# Ready to Begin?
-
-Every adventure is unique, every death is permanent, and every decision matters. Start with **Practice Mode** to learn the basics, then upgrade to **Beast Mode** for the full blockchain experience!
-
-
-
----
-
-file: docs/lootsurvivor/guide/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Loot Survivor: Guide
-
-Welcome to the Loot Survivor guide! Here you'll find everything you need to get started and master the core mechanics. Whether you're a new adventurer or looking to understand the game systems, this guide covers the essential aspects of gameplay.
-
-## Table of Contents
-
-* [Getting Started](/lootsurvivor/guide/getting-started): Setting up your wallet and starting your first adventure
-* [Explore](/lootsurvivor/guide/explore): Navigating the dungeon and discovering challenges
-* [Battle](/lootsurvivor/guide/battle): Combat mechanics and defeating beasts
-* [Upgrade](/lootsurvivor/guide/upgrade): Leveling up and stat allocation
-
-## Overview
-
-Loot Survivor is a fully onchain dungeon crawler roguelike where every decision could be your last. In this guide, you'll learn:
-
-1. **How to onboard and set up your wallet** for seamless play on Starknet
-2. **The core gameplay loop**—from exploring dungeons to battling beasts
-3. **How to allocate stats** when leveling up your adventurer
-4. **Combat mechanics** including type advantages and battle actions
-
-Each section provides clear explanations and visuals to help you understand the game mechanics. Dive in and start your journey!
-
-
-
----
-
-file: docs/lootsurvivor/guide/upgrade.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Upgrade Guide
-
-Leveling up and upgrading your adventurer is a pivotal moment in every Loot Survivor run. Each level brings stat points to allocate and opens the market with fresh items. Master the upgrade system to transform your adventurer from a fragile newcomer into an unstoppable force!
-
-> **⚡ Power Spike:** Every level up is an opportunity to dramatically increase your power. Plan your upgrades carefully!
-
-## Upgrade Overview
-
-The upgrade system consists of three key components:
-
-1. **Stat Allocation** - Distribute points to enhance your adventurer's capabilities
-2. **Market Refresh** - Access new items with each level up
-3. **Purchase Decisions** - Buy equipment and potions from the market
-
-## Upgrade Interface
-
-<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
-  <img
-    src="/docs/lootsurvivor/upgrade.png"
-    alt="Loot Survivor Upgrade Screen"
-    style={{
-    width: "100%",
-    display: "block",
-    margin: "0 auto",
-    borderRadius: "8px",
-    border: "2px solid #333",
-  }}
-  />
-
-  <br />
-
-  <em style={{ display: "block", textAlign: "center" }}>
-    Figure: Upgrade interface with stat menu
-  </em>
-</div>
-
-***
-
-# Stat Allocation
-
-## Stat Point Distribution
-
-You receive **1 stat point per level** to allocate among:
-
-| Stat     | Effect per Point               | Primary Use          |
-| -------- | ------------------------------ | -------------------- |
-| **STR**  | +10% attack damage             | Combat damage        |
-| **DEX**  | Improves flee success          | Escaping from beasts |
-| **VIT**  | +15 HP max & current           | Health and survival  |
-| **INT**  | Aids obstacle avoidance        | Avoiding obstacles   |
-| **WIS**  | Helps evade beast ambushes     | Ambush prevention    |
-| **CHA**  | Gold discount on items/potions | Market purchases     |
-| **LUCK** | ❌ Cannot upgrade               | Item discovery only  |
-
-> **🎯 Allocation Note:** Consider focusing on 2-3 primary stats rather than spreading points evenly across all stats.
-
-***
-
-# Market System
-
-## How Markets Generate
-
-<div
-  style={{
-backgroundColor: "rgba(59, 130, 246, 0.1)",
-border: "2px solid #3b82f6",
-borderRadius: "8px",
-padding: "1.5rem",
-marginBottom: "2rem",
-marginTop: "2rem"
-}}
->
-  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#3b82f6" }}>🎲 Market Generation Mechanics</h3>
-
-  <p style={{ marginBottom: "1rem" }}>
-    Each level up generates a unique market through random selection:
-  </p>
-
-  <ul style={{ marginBottom: 0 }}>
-    <li style={{ marginBottom: "0.75rem" }}>
-      <strong>25 Rolls:</strong> The game rolls for 25 random items
-    </li>
-
-    <li style={{ marginBottom: "0.75rem" }}>
-      <strong>No Duplicates:</strong> If the same item is rolled multiple times, it only appears once
-    </li>
-
-    <li style={{ marginBottom: "0.75rem" }}>
-      <strong>Variable Size:</strong> Markets can have 1-25 items depending on duplicate rolls
-    </li>
-
-    <li style={{ marginBottom: "0.75rem" }}>
-      <strong>Level Locked:</strong> The same market persists for your entire level
-    </li>
-
-    <li>
-      <strong>Fresh on Level Up:</strong> New random items appear when you reach the next level
-    </li>
-  </ul>
-</div>
-
-### Market Contents
-
-Markets can contain:
-
-* **⚔️ Weapons** - All tiers and types
-* **🛡️ Armor** - Head, chest, waist, foot, and hand pieces
-* **💍 Jewelry** - Rings and necklaces for stat boosts
-* **🧪 Potions** - Health and other consumables
-
-### Market Strategy
-
-* **Check Everything:** With limited rolls, valuable items might be rare
-* **Plan Purchases:** The market won't refresh until next level
-* **CHA Benefits:** Higher Charisma reduces all market prices
-* **Gold Management:** Save for critical upgrades vs. immediate needs
-
-> **💡 Pro Tip:** A small market (few items) means many duplicate rolls occurred. Don't expect it to have everything you need!
 
 
 
@@ -8548,6 +8007,7 @@ The SURVIVOR token is the native governance and economic coordination token for 
 * Total Supply: 10,000,000
 * Distribution: 75% Community; 25% Team
 * Lockups: None
+* Contract: [`0x042dd777885ad2c116be96d4d634abc90a26a790ffb5871e037dd5ae7d2ec86b`](/lootsurvivor/contracts#governance-contracts)
 
 ## Purpose
 
@@ -8782,6 +8242,1427 @@ The tokenomics model is designed to create a self-sustaining ecosystem where:
 * Protocol revenue supports ongoing development
 
 This balanced approach ensures long-term viability while maintaining decentralization and community ownership.
+
+
+
+---
+
+file: docs/lootsurvivor/guide/battle.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Combat Guide
+
+Combat in Loot Survivor is a turn-based system where preparation meets execution. Every encounter tests your understanding of type advantages, stat optimization, and tactical decision-making. Master the art of battle to survive Death Mountain's deadliest challenges.
+
+> **🎯 Combat Philosophy:** Turn-based combat means every action counts. Sometimes survival means avoiding the fight entirely.
+
+## Battle Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/battle.png"
+    alt="Loot Survivor Battle Screen"
+    style={{
+    width: "100%",
+    display: "block",
+    margin: "0 auto",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+  />
+
+  <br />
+
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Battle interface showing adventurer vs beast encounter
+  </em>
+</div>
+
+***
+
+# Combat Mechanics
+
+## Turn-Based Combat Flow
+
+<div
+  style={{
+backgroundColor: "rgba(16, 185, 129, 0.1)",
+border: "2px solid #10b981",
+borderRadius: "8px",
+padding: "1.5rem",
+marginBottom: "2rem"
+}}
+>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#10b981" }}>⏱️ Combat Turn Order</h3>
+
+  <p style={{ marginBottom: "1rem" }}>
+    Combat follows a strict turn-based sequence where <strong>adventurers always act first</strong>:
+  </p>
+
+  <ol style={{ marginBottom: 0 }}>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Adventurer Turn</strong> - Choose your action:
+
+      <ul style={{ marginTop: "0.5rem", marginLeft: "1rem" }}>
+        <li>⚔️ Attack the beast</li>
+        <li>🏃 Attempt to flee</li>
+        <li>🔄 Switch equipment (beast gets free attack)</li>
+      </ul>
+    </li>
+
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Beast Counterattack</strong> - If not defeated or fled:
+
+      <ul style={{ marginTop: "0.5rem", marginLeft: "1rem" }}>
+        <li>Beast automatically attacks back</li>
+        <li>Targets a <strong>random armor slot</strong> (1 of 5: Head, Chest, Waist, Foot, Hand)</li>
+        <li>Damage reduced by armor in that specific slot</li>
+      </ul>
+    </li>
+
+    <li>
+      <strong>Repeat</strong> - Combat continues until victory, defeat, or successful escape
+    </li>
+  </ol>
+</div>
+
+> **💡 Key Insight:** Since beasts attack random armor slots, having balanced armor coverage is more important than stacking defense in one slot!
+
+## Damage System
+
+<div
+  style={{
+backgroundColor: "rgba(251, 191, 36, 0.1)",
+border: "2px solid #fbbf24",
+borderRadius: "8px",
+padding: "1.5rem",
+marginBottom: "2rem"
+}}
+>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#fbbf24" }}>⚡ Understanding Power</h3>
+
+  <p style={{ marginBottom: "0.75rem" }}>
+    <strong>Power</strong> is displayed in combat for the base damage before modifiers.
+    It appears as a number on item and beast info showing the raw damage potential.
+  </p>
+
+  <p style={{ fontFamily: "monospace", fontSize: "1.1rem", marginBottom: 0 }}>
+    <strong>Power = Weapon Level × (6 - Weapon Tier)</strong>
+  </p>
+</div>
+
+### Combat Damage Modifiers
+
+The full damage amount includes several factors during combat:
+
+* **⚔️ Base Damage** - Your Power value (Weapon tier × level formula above)
+* **🎯 Type Advantage** - +50% when strong, -50% when weak
+* **💪 Strength Bonus** - +10% damage per STR point
+* **✨ Critical Hits** - LUCK/100% chance for 100% bonus damage (see [Combat Mechanics](/lootsurvivor/combat) for details)
+
+## Type Advantage System
+
+<div
+  style={{
+display: "flex",
+justifyContent: "center",
+marginBottom: "2rem",
+marginTop: "2rem"
+}}
+>
+  <div
+    style={{
+  position: "relative",
+  width: "350px",
+  height: "300px"
+}}
+  >
+    {/* Brute - Top */}
+
+    <div
+      style={{
+    position: "absolute",
+    top: "0",
+    left: "50%",
+    transform: "translateX(-50%)",
+    textAlign: "center",
+    backgroundColor: "#dc2626",
+    padding: "1rem 1.5rem",
+    borderRadius: "12px",
+    border: "3px solid #991b1b",
+    minWidth: "140px",
+    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)"
+  }}
+    >
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>🔨</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Brute</div>
+      <div style={{ fontSize: "0.75rem", color: "#fca5a5", marginTop: "0.25rem" }}>Bludgeon + Metal</div>
+    </div>
+
+    {/* Hunter - Bottom Left */}
+
+    <div
+      style={{
+    position: "absolute",
+    bottom: "0",
+    left: "0",
+    textAlign: "center",
+    backgroundColor: "#059669",
+    padding: "1rem 1.5rem",
+    borderRadius: "12px",
+    border: "3px solid #047857",
+    minWidth: "140px",
+    boxShadow: "0 4px 12px rgba(5, 150, 105, 0.3)"
+  }}
+    >
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>⚔️</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Hunter</div>
+      <div style={{ fontSize: "0.75rem", color: "#86efac", marginTop: "0.25rem" }}>Blade + Hide</div>
+    </div>
+
+    {/* Magical - Bottom Right */}
+
+    <div
+      style={{
+    position: "absolute",
+    bottom: "0",
+    right: "0",
+    textAlign: "center",
+    backgroundColor: "#7c3aed",
+    padding: "1rem 1.5rem",
+    borderRadius: "12px",
+    border: "3px solid #6d28d9",
+    minWidth: "140px",
+    boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)"
+  }}
+    >
+      <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>✨</div>
+      <div style={{ fontWeight: "bold", color: "#fff", fontSize: "1.1rem" }}>Magical</div>
+      <div style={{ fontSize: "0.75rem", color: "#ddd6fe", marginTop: "0.25rem" }}>Magic + Cloth</div>
+    </div>
+
+    {/* Center circular arrows */}
+
+    <svg
+      style={{
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "100px",
+    height: "100px",
+    pointerEvents: "none"
+  }}
+    >
+      {/* Three arrows showing advantage flow */}
+
+      {/* Brute to Hunter (pointing bottom left) */}
+
+      <path d="M 50 15 L 15 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+
+      {/* Hunter to Magical (pointing right) */}
+
+      <path d="M 15 75 L 85 75" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+
+      {/* Magical to Brute (pointing top left) */}
+
+      <path d="M 85 75 L 50 15" stroke="white" strokeWidth="3" markerEnd="url(#arrowhead)" opacity="0.9" />
+
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="white" />
+        </marker>
+      </defs>
+    </svg>
+  </div>
+</div>
+
+<div
+  style={{
+textAlign: "center",
+marginBottom: "1rem",
+fontSize: "0.95rem",
+color: "#999"
+}}
+>
+  <span style={{ color: "#fca5a5" }}>Bludgeon + Metal</span> beats
+  <span style={{ color: "#86efac" }}> Blade + Hide</span> beats
+  <span style={{ color: "#ddd6fe" }}> Magic + Cloth</span> beats
+  <span style={{ color: "#fca5a5" }}> Bludgeon + Metal</span>
+</div>
+
+### Type Advantage Effects
+
+**📈 With Advantage:**
+
+* **Damage Multiplier:** +50%
+* **Example:** 20 base damage → 30 damage output
+* **Visual Cue:** Green damage numbers in combat log
+
+**📉 With Disadvantage:**
+
+* **Damage Multiplier:** -50%
+* **Example:** 20 base damage → 10 damage output
+* **Visual Cue:** Red damage numbers in combat log
+
+### Strategic Equipment Sets
+
+<div
+  style={{ 
+background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+border: '2px solid #6366f1',
+borderRadius: '12px',
+padding: '1.5rem',
+marginTop: '1.5rem'
+}}
+>
+  <div style={{ marginBottom: '1rem' }}>
+    <strong style={{ color: '#a78bfa', fontSize: '1.1rem' }}>🛡️ Full Armor Sets</strong>
+
+    <p style={{ marginTop: '0.5rem', marginBottom: 0, lineHeight: '1.6' }}>
+      Each armor type excels against specific attacks: <strong>Metal</strong> resists Blade, <strong>Hide</strong> resists Magic,
+      <strong>Cloth</strong> resists Bludgeon. But beware - each has a weakness!
+    </p>
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    <strong style={{ color: '#f59e0b', fontSize: '1.1rem' }}>⚔️ Offensive Priority</strong>
+
+    <p style={{ marginTop: '0.5rem', marginBottom: 0, lineHeight: '1.6' }}>
+      Your weapon choice matters more than armor. Remember: <strong>Bludgeon</strong> crushes Hide,
+      <strong>Blade</strong> slices Cloth, <strong>Magic</strong> pierces Metal. +50% damage is huge!
+    </p>
+  </div>
+
+  <div style={{ marginBottom: '1rem' }}>
+    <strong style={{ color: '#10b981', fontSize: '1.1rem' }}>🎯 Beast Hunting</strong>
+
+    <p style={{ marginTop: '0.5rem', marginBottom: 0, lineHeight: '1.6' }}>
+      When hunting specific beasts, matching your full armor set to counter their attacks is powerful.
+      Know your target and gear up accordingly for maximum survivability.
+    </p>
+  </div>
+
+  <div
+    style={{ 
+background: 'rgba(255, 255, 255, 0.05)',
+borderRadius: '8px',
+padding: '1rem',
+marginTop: '1rem'
+}}
+  >
+    <strong>💡 Pro Strategy:</strong> Early game, prioritize covering all armor slots with appropriate types over hunting for higher tiers!
+  </div>
+</div>
+
+***
+
+# Combat Actions
+
+## ⚔️ Attack Options
+
+### Single Attack
+
+Execute one calculated strike against your opponent.
+
+**Stat Influences:**
+
+* **STR:** +10% damage per point
+* **LUCK:** Critical hit chance (LUCK/100%)
+* **Weapon Tier:** Base damage multiplier
+
+**Best for:** Controlled combat, testing damage, conserving resources
+
+### Attack Until Death
+
+Chain attacks automatically until victory or defeat.
+
+**⚠️ High Risk Mode:**
+
+* No control once initiated
+* Fight continues until resolution
+* Cannot flee mid-sequence
+
+**Use when:**
+
+* Beast health is very low
+* You have type advantage
+* Confident in victory
+* Emergency/desperate situations
+
+## 🏃 Flee Mechanics
+
+**Flee Formula:**
+
+```
+Success Rate = (DEX / Level) × 100%
+```
+
+| DEX/Level | Success | Level 10 Example | Level 20 Example |
+| --------- | ------- | ---------------- | ---------------- |
+| 0.5       | 50%     | DEX 5            | DEX 10           |
+| 0.75      | 75%     | DEX 7-8          | DEX 15           |
+| 1.0       | 100%    | DEX 10           | DEX 20           |
+| 1.5       | 100%    | DEX 15           | DEX 30           |
+
+**Key Points:**
+
+* DEX equal to level = 100% success
+* Success rate caps at 100%
+* Failed flee attempts waste a turn
+* Ambush encounters have no additional penalties
+
+## 🛡️ Equipment Switching
+
+You can change your equipment mid-combat to gain type advantages, but the beast gets a free attack when you do. Strategic swapping can turn a losing fight into victory - switch to counter their type for +50% damage or -50% damage reduction.
+
+> **💡 Important:** Bundle all gear changes into one action to minimize the number of free attacks the beast gets. Multiple switches still only give the beast one free attack!
+
+***
+
+# Combat Decision Making
+
+When entering combat, consider these factors:
+
+* **🏃 Flee** - When you have low HP, type disadvantage, or facing a stronger beast
+* **🔄 Switch Gear** - When you have the wrong equipment type and need advantage
+* **⚔️ Attack** - When you have good matchup and are confident in victory
+* **💀 All-Out Attack** - When beast has very low HP and victory is guaranteed
+
+***
+
+# Combat Rewards
+
+## Experience Points (XP)
+
+<div
+  style={{
+backgroundColor: "rgba(34, 197, 94, 0.1)",
+border: "2px solid #22c55e",
+borderRadius: "8px",
+padding: "1.5rem",
+marginBottom: "2rem"
+}}
+>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#22c55e" }}>💰 Victory Rewards</h3>
+
+  <p style={{ marginBottom: "1rem" }}>
+    Defeating beasts grants XP and gold based on their power, with bonuses for finding items:
+  </p>
+
+  <div style={{ marginBottom: "1rem" }}>
+    <strong>Base Reward Formulas:</strong>
+
+    <div style={{ fontFamily: "monospace", marginLeft: "1rem", marginTop: "0.5rem" }}>
+      Adventurer XP = Beast Power / 2<br />
+      Item XP = 2 \* Adventurer XP<br />
+      Gold = Beast Power / 2 (same as XP)
+    </div>
+  </div>
+
+  <div>
+    <strong>Level Decay:</strong>
+
+    <p style={{ marginLeft: "1rem", marginTop: "0.5rem", marginBottom: 0 }}>
+      XP rewards decrease as you level up (2% per level, max 95% reduction)<br />
+      <span style={{ color: "#fbbf24" }}>Gold rewards do NOT decay - always full value!</span>
+    </p>
+  </div>
+</div>
+
+### Reward Calculation Examples
+
+| Your Level | Beast (T3, Lv10) | Base Rewards | XP After Decay | Gold (No Decay) | Item XP |
+| ---------- | ---------------- | ------------ | -------------- | --------------- | ------- |
+| Level 1    | Power: 30        | 15           | 15 XP (0%)     | 15 🪙           | 30 XP   |
+| Level 10   | Power: 30        | 15           | 12 XP (-20%)   | 15 🪙           | 24 XP   |
+| Level 25   | Power: 30        | 15           | 7 XP (-50%)    | 15 🪙           | 15 XP   |
+| Level 50+  | Power: 30        | 15           | 1 XP (-95%)    | 15 🪙           | 2 XP    |
+
+> **💡 Tip:** The XP decay encourages fighting appropriate challenges, but gold rewards stay consistent - making every victory valuable!
+
+***
+
+# Summary
+
+Combat success in Loot Survivor comes from understanding type advantages, optimizing your stats, and making tactical decisions. Every battle offers multiple approaches - from switching gear for advantages to knowing when discretion is the better part of valor.
+
+**Key Combat Principles:**
+
+* Type advantage provides significant damage bonuses/penalties
+* STR scaling makes strength investment worthwhile for damage dealers
+* DEX equal to your level guarantees successful escapes
+* Gear switching can turn losing fights into victories
+* Sometimes the best fight is the one you avoid
+
+
+
+---
+
+file: docs/lootsurvivor/guide/explore.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Exploration Guide
+
+Exploration is the heart of Loot Survivor's gameplay loop. Every step into the unknown brings potential rewards and deadly dangers. Understanding the exploration system is key to surviving Death Mountain's treacherous depths.
+
+> **🎲 Random Encounters:** Every exploration is a roll of the dice with equal chances for discovery, obstacles, or beasts!
+
+## Exploration Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/explore.png"
+    alt="Loot Survivor Exploration Screen"
+    style={{
+    width: "100%",
+    display: "block",
+    margin: "0 auto",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+  />
+
+  <br />
+
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Exploration interface with adventure log and market
+  </em>
+</div>
+
+***
+
+# How Exploration Works
+
+When you click "Explore", the game rolls for one of three equally likely outcomes:
+
+* **📦 Item Discovery (33.33%)** - Find gold, potions, or equipment
+* **🪨 Obstacle (33.33%)** - Environmental hazards to overcome
+* **👹 Beast Encounter (33.33%)** - Mandatory combat encounters
+
+## Item Discovery Breakdown
+
+When you hit the 33% item discovery chance, it subdivides into:
+
+* **💰 Gold (45% of discoveries)** - Currency for market purchases (\~15% of all explores)
+* **🧪 Health Potion (45% of discoveries)** - Restores HP when used (\~15% of all explores)
+* **⚔️ Equipment (10% of discoveries)** - Weapons, armor, jewelry (\~3.3% of all explores)
+
+***
+
+# Discovery Types
+
+## 💰 Gold Discovery
+
+**Formula:** `Gold = Random(1 to Adventurer Level)`
+
+| Level | Gold Range | Average |
+| ----- | ---------- | ------- |
+| 5     | 1-5g       | 3g      |
+| 10    | 1-10g      | 5.5g    |
+| 20    | 1-20g      | 10.5g   |
+| 30    | 1-30g      | 15.5g   |
+| 50    | 1-50g      | 25.5g   |
+
+**Key Features:**
+
+* Amount scales with your level
+* Can be saved between explorations
+* CHA stat reduces market prices
+* Essential for equipment upgrades
+* **Maximum capacity: 511 gold**
+
+> **💰 Gold Cap:** You can only carry up to 511 gold. Any excess is lost, so spend wisely!
+
+## ⚔️ Equipment Discovery
+
+Equipment drops are your primary source of gear upgrades. When you discover loot (3.3% of all explores), the tier distribution is:
+
+| Item Tier          | Drop Rate | Of All Explores | Description     |
+| ------------------ | --------- | --------------- | --------------- |
+| **T5 (Common)**    | 50%       | \~1.65%         | Basic gear      |
+| **T4 (Uncommon)**  | 30%       | \~1.0%          | Decent upgrades |
+| **T3 (Rare)**      | 12%       | \~0.4%          | Good equipment  |
+| **T2 (Epic)**      | 6%        | \~0.2%          | Powerful items  |
+| **T1 (Legendary)** | 2%        | \~0.066%        | Best in slot    |
+
+> **Item assigning:** Items are automatically equipped or added to bag if there are free slots. Otherwise, if items are already discovered or there is no space they are converted to gold.
+
+## 🧪 Health Discovery
+
+**Formula:** `HP = Random(2 to Level × 2)`
+
+| Level | HP Range | Average | % of Max HP |
+| ----- | -------- | ------- | ----------- |
+| 5     | 2-10 HP  | 6 HP    | \~0.6%      |
+| 10    | 2-20 HP  | 11 HP   | \~1.1%      |
+| 20    | 2-40 HP  | 21 HP   | \~2.1%      |
+| 30    | 2-60 HP  | 31 HP   | \~3.0%      |
+| 50    | 2-100 HP | 51 HP   | \~5.0%      |
+
+**Potion Information:**
+
+* Found in 15% of all explores
+* Instantly restores HP when discovered
+* **Maximum health: 1023 HP** (adventurer cap)
+
+> **❤️ Health Cap:** Adventurers have a maximum health of 1023 HP. Health potions cannot exceed this limit.
+
+## ⭐ Experience Gains
+
+Exploration provides consistent experience points for leveling up:
+
+| XP Source          | XP Gained                           | Scaling | Risk Level |
+| ------------------ | ----------------------------------- | ------- | ---------- |
+| **Item Discovery** | 1                                   | None    | Safe       |
+| **Beast Kills**    | Beast Level × (Tier Multiplier - 1) | Decayed | High       |
+| **Obstacles**      | Same as above                       | Decayed | Medium     |
+
+***
+
+# Beast Encounters
+
+<div style={{ background: '#2a1a2a', padding: '1.5rem', borderRadius: '8px', border: '2px solid #dc2626', margin: '2rem 0' }}>
+  ## ⚠️ Mandatory Combat
+
+  **IMPORTANT:** Discovering a beast during exploration **always locks you into combat**. There is no way to avoid the fight once a beast is encountered.
+
+  **Combat is Unavoidable:**
+
+  * Beast encounters force immediate battle
+  * No option to flee before combat begins
+  * You must fight until victory, defeat, or successful flee attempt
+  * See the [Battle Guide](/lootsurvivor/guide/battle) for detailed combat mechanics
+</div>
+
+## Beast Strength Calculation
+
+When a beast is discovered, its level and health are determined by your adventurer level:
+
+### Beast Level Formula
+
+```
+Base Level = 1 + Random(0 to Adventurer Level × 3 - 1)
+Final Level = Base Level + Difficulty Bonus
+```
+
+**Difficulty Bonuses by Adventurer Level:**
+
+| Adventurer Level | Difficulty Bonus | Level Range | Average Level |
+| ---------------- | ---------------- | ----------- | ------------- |
+| **1-19**         | +0               | 1-57        | \~29          |
+| **20-29**        | +10              | 11-97       | \~54          |
+| **30-39**        | +20              | 21-137      | \~79          |
+| **40-49**        | +40              | 41-187      | \~114         |
+| **50+**          | +80              | 81-230+     | \~155+        |
+
+### Beast Health Formula
+
+```
+Base Health = 1 + Random(0 to Adventurer Level × 20 - 1)
+Final Health = Base Health + Health Bonus
+```
+
+**Health Bonuses by Adventurer Level:**
+
+| Adventurer Level | Health Bonus | Health Range | Average Health |
+| ---------------- | ------------ | ------------ | -------------- |
+| **1-19**         | +10          | 11-390       | \~200          |
+| **20-29**        | +100         | 101-680      | \~390          |
+| **30-39**        | +200         | 201-980      | \~590          |
+| **40-49**        | +400         | 401-1023\*   | \~712          |
+| **50+**          | +500         | 501-1023\*   | \~762          |
+
+\*Capped at maximum health of 1023 HP
+
+> **⚠️ Power Spikes:** Beasts get significantly stronger at levels 20, 30, 40, and 50. Plan your upgrades accordingly!
+>
+> **❤️ Beast Health Cap:** Like adventurers, beasts have a maximum health of 1023 HP.
+
+## Ambush Disadvantages
+
+Beast encounters during exploration catch you off-guard with several penalties:
+
+* **⚡ Initiative Loss** - Beast attacks first in combat
+* **🛡️ No Preparation** - Cannot switch gear before combat begins
+
+## Ambush Avoidance
+
+**Ambush Avoidance Formula:**
+
+```
+Avoidance Chance = (WIS / Level) × 100%
+```
+
+| WIS/Level | Avoidance | Level 10 Example | Level 20 Example |
+| --------- | --------- | ---------------- | ---------------- |
+| 0.5       | 50%       | WIS 5            | WIS 10           |
+| 0.75      | 75%       | WIS 7-8          | WIS 15           |
+| 1.0       | 100%      | WIS 10           | WIS 20           |
+| 1.5       | 100%      | WIS 15           | WIS 30           |
+
+**Key Points:**
+
+* WIS equal to level = 100% avoidance
+* Success rate caps at 100%
+* Only applies to beast encounters
+* Does not prevent the encounter entirely
+
+> **👁️ Important:** Wisdom helps avoid the ambush penalties, but you will still be locked into combat when a beast is encountered.
+
+***
+
+# Environmental Challenges
+
+## 🪨 Obstacle System
+
+Obstacles are unavoidable environmental hazards with three distinct categories:
+
+### Obstacle Types
+
+**✨ Magical Obstacles (25 types)**
+
+* Examples: Demonic Altar, Vortex of Despair, Cursed Tomb
+* **Counter:** Hide armor
+
+**🗡️ Blade Obstacles (25 types)**
+
+* Examples: Pendulum Blades, Poison Darts, Hidden Arrows
+* **Counter:** Metal armor
+
+**🔨 Bludgeon Obstacles (25 types)**
+
+* Examples: Collapsing Ceiling, Rolling Boulder, Crushing Walls
+* **Counter:** Cloth armor
+
+### Obstacle Level Calculation
+
+When an obstacle is encountered, its level is determined using the same formula as beast levels:
+
+```
+Base Level = 1 + Random(0 to Adventurer Level × 3 - 1)
+Final Level = Base Level + Difficulty Bonus
+```
+
+**Difficulty Bonuses by Adventurer Level:**
+
+| Adventurer Level | Difficulty Bonus | Obstacle Level Range | Average Level |
+| ---------------- | ---------------- | -------------------- | ------------- |
+| **1-19**         | +0               | 1-57                 | \~29          |
+| **20-29**        | +10              | 11-97                | \~54          |
+| **30-39**        | +20              | 21-137               | \~79          |
+| **40-49**        | +40              | 41-187               | \~114         |
+| **50+**          | +80              | 81-230+              | \~155+        |
+
+> **📊 Note:** Unlike beasts, obstacles don't have health - they deal damage based on their level if not avoided.
+
+### Damage Mitigation
+
+| Method            | Effect               | Requirement          |
+| ----------------- | -------------------- | -------------------- |
+| **Intelligence**  | Complete avoidance   | INT ≥ obstacle level |
+| **Armor Match**   | 50% damage reduction | Correct armor type   |
+| **No Protection** | Full damage          | No mitigation        |
+
+***
+
+# Summary
+
+Exploration provides the foundation for your Death Mountain adventure through consistent rewards and progression opportunities. Understanding the 33/33/33 split between discoveries, obstacles, and beasts helps you make informed decisions about when and how to explore.
+
+**Key Takeaways:**
+
+* Equal chances for all three outcome types
+* Higher levels = better gold and health discoveries
+* LUCK influences equipment tier drops
+* INT helps avoid obstacles, WIS helps avoid ambushes
+* Choose exploration modes based on your current needs
+
+
+
+---
+
+file: docs/lootsurvivor/guide/getting-started.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Getting Started with Loot Survivor
+
+Welcome, adventurer! This guide will help you begin your journey into the depths of Death Mountain. Whether you're new to blockchain gaming or Starknet, we'll get you up and running quickly.
+
+> **⚡ Fast Track:** Want to play right now? Click "Practice Mode" and start exploring immediately!
+
+## Game Modes
+
+<div
+  style={{
+  display: "flex",
+  gap: "1.5rem",
+  marginTop: "2rem",
+  marginBottom: "2rem",
+  flexWrap: "wrap",
+  maxWidth: "800px",
+}}
+>
+  <div
+    style={{
+    flex: "1",
+    minWidth: "280px",
+    backgroundColor: "rgba(26, 26, 26, 0.8)",
+    border: "2px solid #444",
+    borderRadius: "12px",
+    padding: "2rem",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+    transition: "all 0.3s ease",
+    ":hover": {
+      borderColor: "#666",
+      transform: "translateY(-2px)",
+      boxShadow: "0 6px 16px rgba(0, 0, 0, 0.4)",
+    },
+  }}
+  >
+    <h3
+      style={{
+      marginTop: 0,
+      marginBottom: "1.25rem",
+      fontSize: "1.25rem",
+      fontWeight: "600",
+      color: "#fff",
+    }}
+    >
+      🎮 Practice Mode
+    </h3>
+
+    <ul
+      style={{
+      listStyleType: "none",
+      paddingLeft: 0,
+      margin: 0,
+      fontSize: "0.95rem",
+      lineHeight: "1.6",
+    }}
+    >
+      <li style={{ marginBottom: "0.75rem", color: "#4ade80" }}>
+        ✓ Instant play
+      </li>
+
+      <li style={{ marginBottom: "0.75rem", color: "#4ade80" }}>
+        ✓ No rewards or progression
+      </li>
+
+      <li style={{ color: "#4ade80" }}>✓ No wallet needed</li>
+    </ul>
+
+    <div
+      style={{
+      marginTop: "1.5rem",
+      paddingTop: "1.5rem",
+      borderTop: "1px solid #444",
+      fontSize: "0.85rem",
+      color: "#999",
+      textAlign: "center",
+    }}
+    >
+      Perfect for learning
+    </div>
+  </div>
+
+  <div
+    style={{
+    flex: "1",
+    minWidth: "280px",
+    backgroundColor: "rgba(26, 26, 26, 0.8)",
+    border: "2px solid #444",
+    borderRadius: "12px",
+    padding: "2rem",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+    transition: "all 0.3s ease",
+    position: "relative",
+    overflow: "hidden",
+  }}
+  >
+    <div
+      style={{
+      position: "absolute",
+      top: "-50px",
+      right: "-50px",
+      width: "100px",
+      height: "100px",
+      backgroundColor: "rgba(251, 191, 36, 0.1)",
+      borderRadius: "50%",
+      filter: "blur(40px)",
+    }}
+    />
+
+    <h3
+      style={{
+      marginTop: 0,
+      marginBottom: "1.25rem",
+      fontSize: "1.25rem",
+      fontWeight: "600",
+      color: "#fff",
+    }}
+    >
+      🏆 Beast Mode
+    </h3>
+
+    <ul
+      style={{
+      listStyleType: "none",
+      paddingLeft: 0,
+      margin: 0,
+      fontSize: "0.95rem",
+      lineHeight: "1.6",
+    }}
+    >
+      <li style={{ marginBottom: "0.75rem", color: "#fbbf24" }}>
+        ✓ Dungeon Ticket entry
+      </li>
+
+      <li style={{ marginBottom: "0.75rem", color: "#fbbf24" }}>
+        ✓ Collectible beasts
+      </li>
+
+      <li style={{ color: "#fbbf24" }}>✓ Requires wallet setup</li>
+    </ul>
+
+    <div
+      style={{
+      marginTop: "1.5rem",
+      paddingTop: "1.5rem",
+      borderTop: "1px solid #444",
+      fontSize: "0.85rem",
+      color: "#999",
+      textAlign: "center",
+    }}
+    >
+      Full blockchain experience
+    </div>
+  </div>
+</div>
+
+> **Recommendation:** Start with Practice Mode to learn the basics, then upgrade to Beast Mode for the full experience.
+
+## Play Anywhere
+
+<div
+  style={{
+  backgroundColor: "rgba(34, 197, 94, 0.1)",
+  border: "2px solid #22c55e",
+  borderRadius: "8px",
+  padding: "1.5rem",
+  marginTop: "2rem",
+  marginBottom: "2rem",
+}}
+>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#22c55e" }}>
+    📱 Fully Mobile Ready
+  </h3>
+
+  <p style={{ marginBottom: "1.5rem", fontSize: "1.1rem", lineHeight: "1.6" }}>
+    Loot Survivor is designed for seamless gameplay across all devices. Whether
+    you prefer the immersive desktop experience or the convenience of mobile
+    gaming, enjoy the same full-featured adventure anywhere you go.
+  </p>
+
+  <div
+    style={{
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "1.5rem",
+    marginBottom: "1.5rem",
+  }}
+  >
+    <div
+      style={{
+      textAlign: "center",
+      padding: "1rem",
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      borderRadius: "8px",
+      border: "1px solid rgba(34, 197, 94, 0.3)",
+    }}
+    >
+      <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🖥️</div>
+      <h4 style={{ margin: "0 0 0.5rem 0", color: "#22c55e" }}>Desktop</h4>
+
+      <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.9rem", opacity: "0.9" }}>
+        AI-powered immersive visuals with detailed UI
+      </p>
+
+      <div style={{ fontSize: "0.8rem", opacity: "0.7", lineHeight: "1.4" }}>
+        Latest AI technology creates stunning visual experiences for deep
+        exploration sessions
+      </div>
+    </div>
+
+    <div
+      style={{
+      textAlign: "center",
+      padding: "1rem",
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      borderRadius: "8px",
+      border: "1px solid rgba(34, 197, 94, 0.3)",
+    }}
+    >
+      <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📱</div>
+      <h4 style={{ margin: "0 0 0.5rem 0", color: "#22c55e" }}>Mobile</h4>
+
+      <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.9rem", opacity: "0.9" }}>
+        Pixel-art adventurer for fast-paced gameplay
+      </p>
+
+      <div style={{ fontSize: "0.8rem", opacity: "0.7", lineHeight: "1.4" }}>
+        Classic pixel aesthetics optimized for quick sessions and touch controls
+      </div>
+    </div>
+  </div>
+
+  <div style={{ textAlign: "center" }}>
+    <a
+      href="/lootsurvivor/platforms"
+      style={{
+      color: "#22c55e",
+      textDecoration: "none",
+      fontWeight: "600",
+      fontSize: "1rem",
+    }}
+    >
+      📸 View Platform Comparison & Screenshots →
+    </a>
+  </div>
+</div>
+
+## Main Menu Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/menu.png"
+    alt="Loot Survivor Main Menu"
+    style={{
+    width: "100%",
+    display: "block",
+    margin: "0 auto",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+  />
+
+  <br />
+
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Main menu interface
+  </em>
+</div>
+
+***
+
+# Beast Mode Setup
+
+> **Ready for the full experience?** Beast Mode offers real blockchain rewards, NFT beasts, and permanent progression.
+
+## Prerequisites
+
+**🔐 Wallet Required**
+
+* Cartridge Controller
+* Built for gaming with gasless transactions
+* Supports social login and multi-platform access
+
+**💰 Payment Options**
+
+* Multiple crypto tokens accepted (ETH, USDC, STRK, and more)
+* Credit card payments supported
+* Variable ticket pricing based on demand
+
+## Wallet Setup Process
+
+### Step 1: Create Controller Wallet
+
+<div
+  style={{
+  display: "flex",
+  gap: "2rem",
+  alignItems: "flex-start",
+  margin: "1rem 0",
+  flexWrap: "wrap",
+}}
+>
+  <div style={{ flex: "1", minWidth: "300px" }}>
+    <strong>Choose your signup method:</strong>
+
+    <ul
+      style={{
+      paddingLeft: "1.5rem",
+      marginTop: "0.5rem",
+      listStyleType: "disc",
+    }}
+    >
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🔐 Social Login</strong> - Discord, Google, GitHub
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🔑 Passkey</strong> - Biometric authentication
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>💼 Existing Wallet</strong> - MetaMask, Phantom, Rabby
+      </li>
+    </ul>
+
+    <br />
+
+    <strong>Benefits of Controller:</strong>
+
+    <ul
+      style={{
+      paddingLeft: "1.5rem",
+      marginTop: "0.5rem",
+      listStyleType: "disc",
+    }}
+    >
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Gasless transactions for smooth gameplay
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Social login convenience
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Multi-platform access
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Built specifically for gaming
+      </li>
+    </ul>
+  </div>
+
+  <div style={{ flex: "1", textAlign: "center" }}>
+    <img
+      src="/docs/lootsurvivor/controller-sign-up.png"
+      alt="Controller sign-up interface"
+      style={{
+      width: "100%",
+      maxWidth: "400px",
+      borderRadius: "8px",
+      border: "1px solid #333",
+    }}
+    />
+
+    <em style={{ display: "block", marginTop: "0.5rem", fontSize: "0.9em" }}>
+      Controller sign-up interface
+    </em>
+  </div>
+</div>
+
+### Step 2: Connect and Purchase
+
+<div
+  style={{
+  display: "flex",
+  gap: "2rem",
+  alignItems: "flex-start",
+  margin: "1rem 0",
+  flexWrap: "wrap",
+}}
+>
+  <div style={{ flex: "1", minWidth: "300px" }}>
+    <strong>Follow these steps:</strong>
+
+    <ol
+      style={{
+      paddingLeft: "1.5rem",
+      marginTop: "0.5rem",
+      listStyleType: "decimal",
+    }}
+    >
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🌐 Visit Game</strong> - Navigate to lootsurvivor.io
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🔗 Connect Wallet</strong> - Click "Login" and approve
+        connection
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>🎟️ Buy Ticket</strong> - Purchase dungeon entry with crypto or
+        credit card (see <a href="/lootsurvivor/dungeon-tickets">Dungeon Tickets</a> for details)
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        <strong>⚔️ Start Adventure</strong> - Create your adventurer
+      </li>
+    </ol>
+
+    <br />
+
+    <strong>Pro Tips:</strong>
+
+    <ul
+      style={{
+      paddingLeft: "1.5rem",
+      marginTop: "0.5rem",
+      listStyleType: "disc",
+    }}
+    >
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Keep some funds for multiple games
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Ticket prices vary based on demand
+      </li>
+
+      <li style={{ marginBottom: "0.25rem", display: "list-item" }}>
+        Your progress saves to the blockchain
+      </li>
+    </ul>
+  </div>
+
+  <div style={{ flex: "1", textAlign: "center" }}>
+    <img
+      src="/docs/lootsurvivor/ticket-purchase.png"
+      alt="Dungeon ticket purchase interface"
+      style={{
+      width: "100%",
+      maxWidth: "400px",
+      borderRadius: "8px",
+      border: "2px solid #333",
+    }}
+    />
+
+    <em style={{ display: "block", marginTop: "0.5rem", fontSize: "0.9em" }}>
+      Dungeon ticket purchase interface
+    </em>
+  </div>
+</div>
+
+***
+
+# Your First Adventure
+
+## Understanding Your Adventurer
+
+When you create a new adventurer, you'll receive:
+
+* **⚔️ Starting Weapon** - Random Tier 5 weapon
+* **📊 Base Stats** - 12 points randomly distributed
+* **❤️ Health** - 100 HP + VIT bonus
+
+## Core Game Loop
+
+The adventure follows a simple cycle:
+
+1. **🔍 Explore** - Search for items, gold, and XP
+2. **⚔️ Combat** - Fight or flee from beasts
+3. **📈 Level Up** - Allocate stat points
+4. **🛍️ Market** - Buy equipment and potions
+5. **🔄 Repeat** - Continue deeper into Death Mountain
+
+**Goal:** Survive as long as possible!
+
+## Game Interface Overview
+
+### Main HUD Elements
+
+| Element         | Icon | Description                   | Location     |
+| --------------- | ---- | ----------------------------- | ------------ |
+| **Health Bar**  | ❤️   | Current HP (100 + VIT bonus)  | Top left     |
+| **XP Progress** | ⭐    | Experience toward next level  | Below health |
+| **Gold**        | 🪙   | Currency for market purchases | Top right    |
+| **Equipment**   | 🛡️  | 8 equipped item slots         | Center panel |
+| **Inventory**   | 🎒   | 15 additional storage slots   | Right panel  |
+
+### Action Controls
+
+* **🔍 Explore** - Continue deeper into the dungeon
+* **⚔️ Attack** - Fight beasts you encounter
+* **🏃 Flee** - Escape from combat encounters
+* **📈 Upgrade** - Allocate stat points when available
+* **🛍️ Market** - Buy equipment and potions
+
+***
+
+# Community & Support
+
+Join the Loot Survivor community:
+
+* **💬 Discord:** [discord.gg/lootsurvivor](https://discord.gg/Q36rUxS66c)
+* **🐦 Twitter:** [@lootsurvivor](https://twitter.com/lootsurvivor)
+* **🐙 GitHub:** [Report Issues](https://github.com/Provable-Games/death-mountain/issues)
+
+***
+
+# Ready to Begin?
+
+Every adventure is unique, every death is permanent, and every decision matters. Start with **Practice Mode** to learn the basics, then upgrade to **Beast Mode** for the full blockchain experience!
+
+
+
+---
+
+file: docs/lootsurvivor/guide/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Loot Survivor: Guide
+
+Welcome to the Loot Survivor guide! Here you'll find everything you need to get started and master the core mechanics. Whether you're a new adventurer or looking to understand the game systems, this guide covers the essential aspects of gameplay.
+
+## Table of Contents
+
+* [Getting Started](/lootsurvivor/guide/getting-started): Setting up your wallet and starting your first adventure
+* [Explore](/lootsurvivor/guide/explore): Navigating the dungeon and discovering challenges
+* [Battle](/lootsurvivor/guide/battle): Combat mechanics and defeating beasts
+* [Upgrade](/lootsurvivor/guide/upgrade): Leveling up and stat allocation
+
+## Overview
+
+Loot Survivor is a fully onchain dungeon crawler roguelike where every decision could be your last. In this guide, you'll learn:
+
+1. **How to onboard and set up your wallet** for seamless play on Starknet
+2. **The core gameplay loop**—from exploring dungeons to battling beasts
+3. **How to allocate stats** when leveling up your adventurer
+4. **Combat mechanics** including type advantages and battle actions
+
+Each section provides clear explanations and visuals to help you understand the game mechanics. Dive in and start your journey!
+
+
+
+---
+
+file: docs/lootsurvivor/guide/upgrade.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Upgrade Guide
+
+Leveling up and upgrading your adventurer is a pivotal moment in every Loot Survivor run. Each level brings stat points to allocate and opens the market with fresh items. Master the upgrade system to transform your adventurer from a fragile newcomer into an unstoppable force!
+
+> **⚡ Power Spike:** Every level up is an opportunity to dramatically increase your power. Plan your upgrades carefully!
+
+## Upgrade Overview
+
+The upgrade system consists of three key components:
+
+1. **Stat Allocation** - Distribute points to enhance your adventurer's capabilities
+2. **Market Refresh** - Access new items with each level up
+3. **Purchase Decisions** - Buy equipment and potions from the market
+
+## Upgrade Interface
+
+<div style={{ maxWidth: "900px", margin: "2rem auto" }}>
+  <img
+    src="/docs/lootsurvivor/upgrade.png"
+    alt="Loot Survivor Upgrade Screen"
+    style={{
+    width: "100%",
+    display: "block",
+    margin: "0 auto",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+  />
+
+  <br />
+
+  <em style={{ display: "block", textAlign: "center" }}>
+    Figure: Upgrade interface with stat menu
+  </em>
+</div>
+
+***
+
+# Stat Allocation
+
+## Stat Point Distribution
+
+You receive **1 stat point per level** to allocate among:
+
+| Stat     | Effect per Point               | Primary Use          |
+| -------- | ------------------------------ | -------------------- |
+| **STR**  | +10% attack damage             | Combat damage        |
+| **DEX**  | Improves flee success          | Escaping from beasts |
+| **VIT**  | +15 HP max & current           | Health and survival  |
+| **INT**  | Aids obstacle avoidance        | Avoiding obstacles   |
+| **WIS**  | Helps evade beast ambushes     | Ambush prevention    |
+| **CHA**  | Gold discount on items/potions | Market purchases     |
+| **LUCK** | ❌ Cannot upgrade               | Item discovery only  |
+
+> **🎯 Allocation Note:** Consider focusing on 2-3 primary stats rather than spreading points evenly across all stats.
+
+***
+
+# Market System
+
+## How Markets Generate
+
+<div
+  style={{
+backgroundColor: "rgba(59, 130, 246, 0.1)",
+border: "2px solid #3b82f6",
+borderRadius: "8px",
+padding: "1.5rem",
+marginBottom: "2rem",
+marginTop: "2rem"
+}}
+>
+  <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#3b82f6" }}>🎲 Market Generation Mechanics</h3>
+
+  <p style={{ marginBottom: "1rem" }}>
+    Each level up generates a unique market through random selection:
+  </p>
+
+  <ul style={{ marginBottom: 0 }}>
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>25 Rolls:</strong> The game rolls for 25 random items
+    </li>
+
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>No Duplicates:</strong> If the same item is rolled multiple times, it only appears once
+    </li>
+
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Variable Size:</strong> Markets can have 1-25 items depending on duplicate rolls
+    </li>
+
+    <li style={{ marginBottom: "0.75rem" }}>
+      <strong>Level Locked:</strong> The same market persists for your entire level
+    </li>
+
+    <li>
+      <strong>Fresh on Level Up:</strong> New random items appear when you reach the next level
+    </li>
+  </ul>
+</div>
+
+### Market Contents
+
+Markets can contain:
+
+* **⚔️ Weapons** - All tiers and types
+* **🛡️ Armor** - Head, chest, waist, foot, and hand pieces
+* **💍 Jewelry** - Rings and necklaces for stat boosts
+* **🧪 Potions** - Health and other consumables
+
+### Market Strategy
+
+* **Check Everything:** With limited rolls, valuable items might be rare
+* **Plan Purchases:** The market won't refresh until next level
+* **CHA Benefits:** Higher Charisma reduces all market prices
+* **Gold Management:** Save for critical upgrades vs. immediate needs
+
+> **💡 Pro Tip:** A small market (few items) means many duplicate rolls occurred. Don't expect it to have everything you need!
 
 
 
