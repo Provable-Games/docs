@@ -1,0 +1,279 @@
+---
+layout: docs
+---
+
+# Quick Start: Number Guess Game
+
+This tutorial walks through building a complete EGS-compliant game based on the [Number Guess](https://github.com/Provable-Games/denshokan/blob/main/contracts/src/number_guess.cairo) reference implementation.
+
+## What We're Building
+
+A number-guessing game where:
+- The contract generates a secret number within a configurable range
+- The player guesses until they find it (or run out of attempts)
+- Score is calculated based on efficiency (fewer guesses = higher score)
+- Settings define difficulty (range size, max attempts)
+- Objectives track achievements (first win, quick thinker, perfect game)
+
+## Step 1: Define Your Game Interface
+
+```cairo
+#[starknet::interface]
+pub trait INumberGuess<TContractState> {
+    fn new_game(ref self: TContractState, token_id: felt252, settings_id: u32);
+    fn guess(ref self: TContractState, token_id: felt252, number: u32) -> i8;
+    fn guess_count(self: @TContractState, token_id: felt252) -> u32;
+    fn get_range(self: @TContractState, token_id: felt252) -> (u32, u32);
+    fn get_max_attempts(self: @TContractState, token_id: felt252) -> u32;
+    fn games_played(self: @TContractState, token_id: felt252) -> u32;
+    fn games_won(self: @TContractState, token_id: felt252) -> u32;
+}
+```
+
+The `guess()` function returns `-1` (too low), `0` (correct), or `1` (too high).
+
+## Step 2: Compose Components
+
+```cairo
+#[starknet::contract]
+mod NumberGuess {
+    use game_components_minigame::minigame::MinigameComponent;
+    use game_components_minigame::objectives::ObjectivesComponent;
+    use game_components_minigame::settings::SettingsComponent;
+    use openzeppelin_introspection::src5::SRC5Component;
+
+    component!(path: MinigameComponent, storage: minigame, event: MinigameEvent);
+    component!(path: ObjectivesComponent, storage: objectives, event: ObjectivesEvent);
+    component!(path: SettingsComponent, storage: settings, event: SettingsEvent);
+    component!(path: SRC5Component, storage: src5, event: SRC5Event);
+
+    #[abi(embed_v0)]
+    impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
+
+    #[storage]
+    struct Storage {
+        #[substorage(v0)]
+        minigame: MinigameComponent::Storage,
+        #[substorage(v0)]
+        objectives: ObjectivesComponent::Storage,
+        #[substorage(v0)]
+        settings: SettingsComponent::Storage,
+        #[substorage(v0)]
+        src5: SRC5Component::Storage,
+        // Game-specific storage
+        secret_numbers: Map<felt252, u32>,
+        current_guess_count: Map<felt252, u32>,
+        game_status: Map<felt252, u8>,
+        range_min: Map<felt252, u32>,
+        range_max: Map<felt252, u32>,
+        max_attempts: Map<felt252, u32>,
+        scores: Map<felt252, u64>,
+        game_overs: Map<felt252, bool>,
+        // Settings data
+        settings_data: Map<u32, (u32, u32, u32)>,  // (min, max, max_attempts)
+    }
+    // ...
+}
+```
+
+## Step 3: Implement IMinigameTokenData
+
+This is the core requirement. The token contract reads your game's state through this interface:
+
+```cairo
+use game_components_minigame::interface::{IMINIGAME_ID, IMinigameTokenData};
+
+#[abi(embed_v0)]
+impl MinigameTokenDataImpl of IMinigameTokenData<ContractState> {
+    fn score(self: @ContractState, token_id: felt252) -> u64 {
+        self.scores.read(token_id)
+    }
+
+    fn game_over(self: @ContractState, token_id: felt252) -> bool {
+        self.game_overs.read(token_id)
+    }
+
+    fn score_batch(self: @ContractState, token_ids: Span<felt252>) -> Array<u64> {
+        let mut results = array![];
+        for token_id in token_ids {
+            results.append(self.scores.read(*token_id));
+        };
+        results
+    }
+
+    fn game_over_batch(self: @ContractState, token_ids: Span<felt252>) -> Array<bool> {
+        let mut results = array![];
+        for token_id in token_ids {
+            results.append(self.game_overs.read(*token_id));
+        };
+        results
+    }
+}
+```
+
+## Step 4: Implement Game Logic
+
+The core game loop: generate a secret, let the player guess, calculate a score.
+
+```cairo
+fn new_game(ref self: ContractState, token_id: felt252, settings_id: u32) {
+    // Load settings (range min/max, max attempts)
+    let (min, max, attempts) = self.settings_data.read(settings_id);
+    assert!(max > min, "Invalid settings");
+
+    // Generate secret using Pedersen hash
+    let games = self.games_played.read(token_id);
+    let seed = core::pedersen::pedersen(token_id, games.into());
+    let range: u32 = max - min + 1;
+    let hash_u256: u256 = seed.into();
+    let secret: u32 = min + (hash_u256 % range.into()).try_into().unwrap();
+
+    // Store game state
+    self.secret_numbers.write(token_id, secret);
+    self.current_guess_count.write(token_id, 0);
+    self.range_min.write(token_id, min);
+    self.range_max.write(token_id, max);
+    self.max_attempts.write(token_id, attempts);
+    self.game_status.write(token_id, 1); // STATUS_PLAYING
+}
+```
+
+```cairo
+fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
+    assert!(self.game_status.read(token_id) == 1, "No active game");
+
+    let count = self.current_guess_count.read(token_id) + 1;
+    self.current_guess_count.write(token_id, count);
+
+    let secret = self.secret_numbers.read(token_id);
+
+    if number == secret {
+        // Player wins - calculate score
+        let score = calculate_score(count, self.range_min.read(token_id), self.range_max.read(token_id));
+        let total = self.scores.read(token_id) + score;
+        self.scores.write(token_id, total);
+        self.game_status.write(token_id, 2); // STATUS_WON
+        return 0; // Correct
+    }
+
+    // Check max attempts
+    let max = self.max_attempts.read(token_id);
+    if max > 0 && count >= max {
+        self.game_status.write(token_id, 3); // STATUS_LOST
+        self.game_overs.write(token_id, true);
+    }
+
+    if number < secret { -1 } else { 1 }
+}
+```
+
+## Step 5: Add Settings (Optional)
+
+Implement `IMinigameTokenSettings` to let anyone create custom difficulty levels:
+
+```cairo
+use game_components_minigame::interface::IMinigameTokenSettings;
+
+#[abi(embed_v0)]
+impl SettingsImpl of IMinigameTokenSettings<ContractState> {
+    fn create_settings(
+        ref self: ContractState,
+        name: ByteArray,
+        description: ByteArray,
+        settings: Span<GameSetting>,
+    ) -> u32 {
+        // Parse settings from key-value pairs
+        let mut min: u32 = 1;
+        let mut max: u32 = 100;
+        let mut max_attempts: u32 = 0;
+
+        // ... parse settings span ...
+
+        // Store in game-specific storage
+        let settings_id = self.settings.create_settings(name, description, settings);
+        self.settings_data.write(settings_id, (min, max, max_attempts));
+        settings_id
+    }
+}
+```
+
+During initialization, create default settings:
+
+```cairo
+// Easy: 1-10, unlimited attempts
+// Medium: 1-100, 10 attempts
+// Hard: 1-1000, 10 attempts
+```
+
+## Step 6: Register with Registry
+
+Your game's initializer should register it with the game registry:
+
+```cairo
+use game_components_minigame::minigame::MinigameComponent;
+
+#[abi(embed_v0)]
+impl InitImpl of INumberGuessInit<ContractState> {
+    fn initializer(
+        ref self: ContractState,
+        game_creator: ContractAddress,
+        game_name: ByteArray,
+        game_description: ByteArray,
+        game_developer: ByteArray,
+        game_publisher: ByteArray,
+        game_genre: ByteArray,
+        game_image: ByteArray,
+        game_color: Option<ByteArray>,
+        client_url: Option<ByteArray>,
+        renderer_address: Option<ContractAddress>,
+        settings_address: Option<ContractAddress>,
+        objectives_address: Option<ContractAddress>,
+        minigame_token_address: ContractAddress,
+        royalty_fraction: Option<u128>,
+    ) {
+        self.minigame.initializer(
+            game_creator, game_name, game_description,
+            game_developer, game_publisher, game_genre,
+            game_image, game_color, client_url,
+            renderer_address, settings_address, objectives_address,
+            minigame_token_address, royalty_fraction,
+        );
+
+        // Create default settings and objectives
+        // ...
+    }
+}
+```
+
+## Step 7: Test
+
+```cairo
+#[test]
+fn test_number_guess_basic() {
+    let game = deploy_number_guess();
+
+    // Start a new game with Easy settings (1-10)
+    game.new_game(token_id: 1, settings_id: 1);
+
+    // Make guesses
+    let result = game.guess(token_id: 1, number: 5);
+    // result is -1 (too low), 0 (correct), or 1 (too high)
+
+    // After winning, check score
+    let score = game.score(token_id: 1);
+    assert!(score > 0, "Should have a score after winning");
+}
+```
+
+## Summary
+
+To make your game EGS-compliant:
+
+1. **Required**: Implement `IMinigameTokenData` (score + game_over)
+2. **Required**: Register `IMINIGAME_ID` via SRC5
+3. **Required**: Register with the game Registry
+4. **Optional**: Implement `IMinigameTokenSettings` for custom difficulty
+5. **Optional**: Implement `IMinigameTokenObjectives` for achievements
+6. **Optional**: Implement `IMinigameDetails` for rich game state display
+
+For a complete reference implementation, see the [Number Guess source code](https://github.com/Provable-Games/denshokan/blob/main/contracts/src/number_guess.cairo).

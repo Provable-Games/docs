@@ -102,21 +102,113 @@ export default defineConfig({
             link: "/embeddable-game-standard",
           },
           {
-            text: "Key Functions",
-            link: "/embeddable-game-standard/key-functions",
+            text: "Architecture",
+            link: "/embeddable-game-standard/architecture",
           },
           {
-            text: "Implementation",
-            link: "/embeddable-game-standard/implementation",
+            text: "Building a Game",
+            link: "/embeddable-game-standard/building-a-game",
             collapsed: true,
             items: [
               {
-                text: "Game Settings",
-                link: "/embeddable-game-standard/implementation/settings",
+                text: "Quick Start",
+                link: "/embeddable-game-standard/building-a-game/quick-start",
               },
               {
-                text: "Embedding Games",
-                link: "/embeddable-game-standard/implementation/embedding-games",
+                text: "Score & Game Over",
+                link: "/embeddable-game-standard/building-a-game/score-and-game-over",
+              },
+              {
+                text: "Settings & Objectives",
+                link: "/embeddable-game-standard/building-a-game/settings-and-objectives",
+              },
+              {
+                text: "Lifecycle & Playability",
+                link: "/embeddable-game-standard/building-a-game/lifecycle",
+              },
+            ],
+          },
+          {
+            text: "Building a Platform",
+            link: "/embeddable-game-standard/building-a-platform",
+            collapsed: true,
+            items: [
+              {
+                text: "MetagameComponent",
+                link: "/embeddable-game-standard/building-a-platform/metagame",
+              },
+              {
+                text: "Callbacks & Automation",
+                link: "/embeddable-game-standard/building-a-platform/callbacks",
+              },
+              {
+                text: "Registry & Discovery",
+                link: "/embeddable-game-standard/building-a-platform/registry",
+              },
+            ],
+          },
+          {
+            text: "game-components Reference",
+            link: "/embeddable-game-standard/reference",
+            collapsed: true,
+            items: [
+              {
+                text: "MinigameToken (ERC721)",
+                link: "/embeddable-game-standard/reference/token",
+              },
+              {
+                text: "MinigameComponent",
+                link: "/embeddable-game-standard/reference/minigame",
+              },
+              {
+                text: "Leaderboard",
+                link: "/embeddable-game-standard/reference/leaderboard",
+              },
+              {
+                text: "Tokenomics",
+                link: "/embeddable-game-standard/reference/tokenomics",
+              },
+              {
+                text: "Presets",
+                link: "/embeddable-game-standard/reference/presets",
+              },
+            ],
+          },
+          {
+            text: "Frontend Integration",
+            link: "/embeddable-game-standard/frontend",
+            collapsed: true,
+            items: [
+              {
+                text: "denshokan-sdk",
+                link: "/embeddable-game-standard/frontend/sdk",
+              },
+              {
+                text: "React Hooks",
+                link: "/embeddable-game-standard/frontend/react-hooks",
+              },
+              {
+                text: "WebSocket Subscriptions",
+                link: "/embeddable-game-standard/frontend/websockets",
+              },
+            ],
+          },
+          {
+            text: "Advanced Topics",
+            link: "/embeddable-game-standard/advanced",
+            collapsed: true,
+            items: [
+              {
+                text: "Packed Token IDs",
+                link: "/embeddable-game-standard/advanced/packed-token-ids",
+              },
+              {
+                text: "SRC5 Interface Discovery",
+                link: "/embeddable-game-standard/advanced/src5",
+              },
+              {
+                text: "Feature Flags & Optimization",
+                link: "/embeddable-game-standard/advanced/feature-flags",
               },
             ],
           },

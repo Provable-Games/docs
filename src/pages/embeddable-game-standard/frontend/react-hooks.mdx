@@ -1,0 +1,252 @@
+---
+layout: docs
+---
+
+# React Hooks
+
+The SDK provides React hooks for declarative data fetching. All hooks return `{ data, isLoading, error, refetch }` and handle loading states automatically.
+
+## Setup
+
+Wrap your app with `DenshokanProvider`:
+
+```tsx
+import { DenshokanProvider } from "@provable-games/denshokan-sdk/react";
+
+function App() {
+  return (
+    <DenshokanProvider config={{ chain: "mainnet" }}>
+      <MyApp />
+    </DenshokanProvider>
+  );
+}
+```
+
+### Provider Props
+
+```typescript
+interface DenshokanProviderProps {
+  children: ReactNode;
+  config?: DenshokanClientConfig;  // Create a new client from config
+  client?: DenshokanClient;        // Or pass an existing client
+}
+```
+
+You can pass either `config` (and a client will be created) or `client` (to reuse an existing instance).
+
+### Accessing the Client
+
+```tsx
+import { useDenshokanClient } from "@provable-games/denshokan-sdk/react";
+
+function MyComponent() {
+  const client = useDenshokanClient();
+  // Use client for custom queries or write operations
+}
+```
+
+## Data Hooks
+
+### Games
+
+```tsx
+import { useGames, useGame, useGameStats } from "@provable-games/denshokan-sdk/react";
+
+function GameList() {
+  const { data: games, isLoading } = useGames({ limit: 20, offset: 0 });
+
+  return games?.data.map(game => (
+    <div key={game.gameId}>{game.name}</div>
+  ));
+}
+
+function GameDetail({ address }: { address: string }) {
+  const { data: game } = useGame(address);
+  const { data: stats } = useGameStats(address);
+
+  return (
+    <div>
+      <h1>{game?.name}</h1>
+      <p>{stats?.totalTokens} tokens minted</p>
+      <p>{stats?.uniquePlayers} unique players</p>
+    </div>
+  );
+}
+```
+
+### Tokens
+
+```tsx
+import { useTokens, useToken, useTokenScores } from "@provable-games/denshokan-sdk/react";
+
+function TokenList({ gameAddress }: { gameAddress: string }) {
+  const { data: tokens } = useTokens({
+    gameAddress,
+    gameOver: true,
+    limit: 50,
+  });
+
+  return tokens?.data.map(token => (
+    <div key={token.tokenId}>
+      Score: {token.score}
+    </div>
+  ));
+}
+
+function TokenDetail({ tokenId }: { tokenId: string }) {
+  const { data: token, isLoading } = useToken(tokenId);
+  const { data: scores } = useTokenScores(tokenId, 10);
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <p>Score: {token?.score}</p>
+      <p>Game Over: {token?.gameOver ? "Yes" : "No"}</p>
+      <p>Playable: {token?.isPlayable ? "Yes" : "No"}</p>
+    </div>
+  );
+}
+```
+
+### Players
+
+```tsx
+import { usePlayerStats, usePlayerTokens } from "@provable-games/denshokan-sdk/react";
+
+function PlayerProfile({ address }: { address: string }) {
+  const { data: stats } = usePlayerStats(address);
+  const { data: tokens } = usePlayerTokens(address, {
+    gameAddress: "0x1234...",
+  });
+
+  return (
+    <div>
+      <p>Total Tokens: {stats?.totalTokens}</p>
+      <p>Games Played: {stats?.gamesPlayed}</p>
+      {tokens?.data.map(t => <TokenCard key={t.tokenId} token={t} />)}
+    </div>
+  );
+}
+```
+
+### Token Decoding (Client-side)
+
+Decode a packed token ID without any network call:
+
+```tsx
+import { useDecodeToken } from "@provable-games/denshokan-sdk/react";
+
+function TokenInfo({ tokenId }: { tokenId: string }) {
+  const decoded = useDecodeToken(tokenId);
+
+  if (!decoded) return null;
+
+  return (
+    <div>
+      <p>Game ID: {decoded.gameId}</p>
+      <p>Settings: {decoded.settingsId}</p>
+      <p>Minted: {decoded.mintedAt}</p>
+      <p>Soulbound: {decoded.soulbound ? "Yes" : "No"}</p>
+    </div>
+  );
+}
+```
+
+## RPC Hooks
+
+Direct contract reads:
+
+```tsx
+import {
+  useBalanceOf,
+  useOwnerOf,
+  useTokenUri,
+  useTokenMetadataBatch,
+  useScoreBatch,
+  useGameOverBatch,
+  useObjectivesCount,
+  useObjectiveDetails,
+  useObjectivesDetails,
+  useSettingsCount,
+  useSettingDetails,
+  useSettingsDetails,
+} from "@provable-games/denshokan-sdk/react";
+
+function OwnerInfo({ tokenId }: { tokenId: string }) {
+  const { data: owner } = useOwnerOf(tokenId);
+  const { data: balance } = useBalanceOf(owner ?? undefined);
+
+  return <p>Owner {owner} has {balance?.toString()} tokens</p>;
+}
+```
+
+### Batch RPC Hooks
+
+```tsx
+function Scores({ tokenIds, gameAddress }: Props) {
+  const { data: scores } = useScoreBatch(tokenIds, gameAddress);
+  const { data: gameOvers } = useGameOverBatch(tokenIds, gameAddress);
+
+  return tokenIds.map((id, i) => (
+    <div key={id}>
+      Score: {scores?.[i]?.toString() ?? "..."} |
+      Over: {gameOvers?.[i] ? "Yes" : "No"}
+    </div>
+  ));
+}
+```
+
+### Settings & Objectives Hooks
+
+```tsx
+function GameSettings({ gameAddress }: { gameAddress: string }) {
+  const { data: count } = useSettingsCount(gameAddress);
+  const { data: settings } = useSettingsDetails(gameAddress, {
+    limit: 10, offset: 0,
+  });
+
+  return (
+    <div>
+      <p>{count} settings available</p>
+      {settings?.data.map(s => (
+        <div key={s.id}>{s.name}: {s.description}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Hook Return Type
+
+All hooks return the same shape:
+
+```typescript
+interface UseAsyncResult<T> {
+  data: T | null;       // The fetched data (null while loading)
+  isLoading: boolean;   // True during initial load
+  error: Error | null;  // Error if the fetch failed
+  refetch: () => void;  // Manually trigger a re-fetch
+}
+```
+
+### Conditional Fetching
+
+Hooks accept `undefined` parameters and won't fetch until all required params are defined:
+
+```tsx
+function TokenDetail({ tokenId }: { tokenId?: string }) {
+  // Won't fetch until tokenId is defined
+  const { data } = useToken(tokenId);
+}
+```
+
+This makes it safe to chain hooks:
+
+```tsx
+function GameInfo({ tokenId }: { tokenId: string }) {
+  const { data: token } = useToken(tokenId);
+  // Only fetches once token.gameAddress is available
+  const { data: game } = useGame(token?.gameAddress);
+}
+```

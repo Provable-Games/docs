@@ -1,0 +1,140 @@
+---
+layout: docs
+---
+
+# SRC5 Interface Discovery
+
+[SRC5](https://github.com/starknet-io/SNIPs/blob/main/SNIPS/snip-5.md) is Starknet's standard for interface introspection (equivalent to Ethereum's ERC-165). EGS uses SRC5 extensively for safe, optional integration between contracts.
+
+## What SRC5 Does
+
+Every SRC5-compliant contract implements:
+
+```cairo
+#[starknet::interface]
+pub trait ISRC5<TState> {
+    fn supports_interface(self: @TState, interface_id: felt252) -> bool;
+}
+```
+
+Before calling an interface method on another contract, you check if it supports that interface:
+
+```cairo
+let src5 = ISRC5Dispatcher { contract_address: target };
+if src5.supports_interface(IMETAGAME_CALLBACK_ID) {
+    // Safe to dispatch callback
+    let callback = IMetagameCallbackDispatcher { contract_address: target };
+    callback.on_score_update(token_id, score);
+}
+```
+
+## How EGS Uses SRC5
+
+### Game Discovery
+
+The token contract checks if a game implements `IMinigameTokenData` before reading scores:
+
+```cairo
+if src5.supports_interface(IMINIGAME_ID) {
+    let game = IMinigameTokenDataDispatcher { contract_address: game_addr };
+    let score = game.score(token_id);
+}
+```
+
+### Optional Extensions
+
+The token checks which extensions a game supports:
+
+```cairo
+// Does this game have settings?
+if src5.supports_interface(IMINIGAME_TOKEN_SETTINGS_ID) {
+    // Safe to query settings
+}
+
+// Does this game have objectives?
+if src5.supports_interface(IMINIGAME_TOKEN_OBJECTIVES_ID) {
+    // Safe to query objectives
+}
+```
+
+### Callback Routing
+
+When syncing game state, the token checks if the minter wants callbacks:
+
+```cairo
+if src5.supports_interface(IMETAGAME_CALLBACK_ID) {
+    // Dispatch score/game_over/objective callbacks
+} else {
+    // Skip callbacks - minter doesn't support them
+}
+```
+
+## Interface ID Table
+
+| Interface | ID | Used By |
+|-----------|---|---------|
+| `IMinigame` | `IMINIGAME_ID` | Game contracts |
+| `IMinigameTokenSettings` | Component-registered | Games with settings |
+| `IMinigameTokenObjectives` | Component-registered | Games with objectives |
+| `IMetagame` | `0x0260d5160a283a03815f6c3799926c7bdbec5f22e759f992fb8faf172243ab20` | Platform contracts |
+| `IMetagameCallback` | `0x04d4f4758b99dcb4f1e2dc37c3a6e8c7a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6` | Platforms that receive callbacks |
+| `IMetagameContext` | `0x0c2e78065b81a310a1cb470d14a7b88875542ad05286b3263cf3c254082386e` | Platforms with context data |
+| `IMinigameRegistry` | `0x014a8d6e4bf56a4bbf869257d1f846e5a2ac1e3508466147556f186143409be1` | Registry contracts |
+| `ILeaderboard` | `0x03c0f9265d397c10970f24822e4b57cac7d8895f8c449b7c9caaa26910499705` | Leaderboard contracts |
+| `IMinigameTokenContext` | `0x02b329e82f6f6b94f8949b36c5dc95acf86c6083b08d99bc81e399b4b0e8d19a` | Tokens with context |
+
+## Computing Interface IDs
+
+Interface IDs in Cairo are computed from the trait's selector. The constant is defined in the interface module:
+
+```cairo
+// In game_components_minigame::interface
+pub const IMINIGAME_ID: felt252 = 0xa08df7e54b63300eeacf85a0f3289c405351278620b5af7e5d868b91f4d43d;
+```
+
+## Registering Interfaces
+
+When your contract implements an EGS interface, register it in the constructor:
+
+```cairo
+use openzeppelin_introspection::src5::SRC5Component;
+use game_components_minigame::interface::IMINIGAME_ID;
+
+component!(path: SRC5Component, storage: src5, event: SRC5Event);
+
+#[constructor]
+fn constructor(ref self: ContractState) {
+    self.src5.register_interface(IMINIGAME_ID);
+}
+```
+
+Components like `MinigameComponent` and `MetagameComponent` register their interfaces automatically during initialization.
+
+## Safe Dispatch Pattern
+
+Always check before calling:
+
+```cairo
+use openzeppelin_introspection::src5::{ISRC5Dispatcher, ISRC5DispatcherTrait};
+
+fn safe_callback(
+    minter_address: ContractAddress,
+    token_id: u256,
+    score: u64,
+) {
+    // Check if minter supports callbacks
+    let src5 = ISRC5Dispatcher { contract_address: minter_address };
+    if !src5.supports_interface(IMETAGAME_CALLBACK_ID) {
+        return; // Skip - minter doesn't support callbacks
+    }
+
+    // Safe to dispatch
+    let callback = IMetagameCallbackDispatcher { contract_address: minter_address };
+    callback.on_score_update(token_id, score);
+}
+```
+
+This pattern prevents:
+- Reverts when calling unsupported interfaces
+- Wasted gas on contracts that don't need callbacks
+- Breaking changes when new interfaces are added

@@ -1,0 +1,147 @@
+---
+layout: docs
+---
+
+# Callbacks & Automation
+
+When a game's state changes, the MinigameToken can automatically notify the minting platform. This enables reactive systems like automatic prize distribution, quest completion, and leaderboard updates.
+
+## IMetagameCallback Interface
+
+```cairo
+pub const IMETAGAME_CALLBACK_ID: felt252 =
+    0x04d4f4758b99dcb4f1e2dc37c3a6e8c7a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6;
+
+#[starknet::interface]
+pub trait IMetagameCallback<TState> {
+    /// Called when a token's score changes
+    fn on_score_update(ref self: TState, token_id: u256, score: u64);
+
+    /// Called when a game ends (game_over becomes true)
+    fn on_game_over(ref self: TState, token_id: u256, final_score: u64);
+
+    /// Called when a token completes its objective
+    fn on_objective_complete(ref self: TState, token_id: u256);
+}
+```
+
+## How It Works
+
+When `update_game(token_id)` is called on the MinigameToken:
+
+1. Token reads the minter address from the packed token ID
+2. Token checks if the minter implements `IMetagameCallback` via SRC5
+3. If supported, token dispatches the appropriate callback(s)
+
+```
+update_game(token_id)
+    │
+    ├── Read score from game contract
+    ├── Read game_over from game contract
+    │
+    ├── Score changed?
+    │   └── Yes → minter.on_score_update(token_id, new_score)
+    │
+    ├── Game over? (and wasn't before)
+    │   └── Yes → minter.on_game_over(token_id, final_score)
+    │
+    └── Objective completed? (and wasn't before)
+        └── Yes → minter.on_objective_complete(token_id)
+```
+
+### SRC5 Gating
+
+Callbacks are **opt-in**. The token only dispatches callbacks if the minter's contract:
+1. Implements `SRC5` (has `supports_interface()`)
+2. Returns `true` for `IMETAGAME_CALLBACK_ID`
+
+If the minter is an EOA (externally owned account) or a contract without SRC5, no callbacks are attempted. This is safe - no reverts, no wasted gas.
+
+## Implementing Callbacks
+
+```cairo
+#[starknet::contract]
+mod MyTournament {
+    use game_components_metagame::callback::IMetagameCallback;
+    use openzeppelin_introspection::src5::SRC5Component;
+
+    component!(path: SRC5Component, storage: src5, event: SRC5Event);
+
+    #[abi(embed_v0)]
+    impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
+
+    #[storage]
+    struct Storage {
+        #[substorage(v0)]
+        src5: SRC5Component::Storage,
+        leaderboard: Map<felt252, u64>,  // token_id -> score
+        completed: Map<felt252, bool>,
+    }
+
+    #[constructor]
+    fn constructor(ref self: ContractState) {
+        // Register callback support so the token knows to call us
+        self.src5.register_interface(
+            0x04d4f4758b99dcb4f1e2dc37c3a6e8c7a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+        );
+    }
+
+    #[abi(embed_v0)]
+    impl CallbackImpl of IMetagameCallback<ContractState> {
+        fn on_score_update(ref self: ContractState, token_id: u256, score: u64) {
+            // Update leaderboard
+            let id: felt252 = token_id.try_into().unwrap();
+            self.leaderboard.write(id, score);
+        }
+
+        fn on_game_over(ref self: ContractState, token_id: u256, final_score: u64) {
+            // Mark as completed, trigger prize distribution
+            let id: felt252 = token_id.try_into().unwrap();
+            self.completed.write(id, true);
+            self.leaderboard.write(id, final_score);
+        }
+
+        fn on_objective_complete(ref self: ContractState, token_id: u256) {
+            // Award achievement badge or unlock next quest
+        }
+    }
+}
+```
+
+## Use Cases
+
+### Tournament Automation
+
+```
+Player finishes game
+    → update_game() called
+    → on_game_over(token_id, final_score) callback
+    → Tournament contract updates leaderboard
+    → If all entrants finished, distribute prizes
+```
+
+### Quest Completion
+
+```
+Player achieves objective
+    → update_game() called
+    → on_objective_complete(token_id) callback
+    → Quest contract marks quest as complete
+    → Unlock next quest in chain
+```
+
+### Real-time Leaderboards
+
+```
+Player scores points
+    → update_game() called
+    → on_score_update(token_id, score) callback
+    → Leaderboard contract re-ranks entries
+    → Frontend subscribes to events for live updates
+```
+
+## Security Considerations
+
+- **Callbacks are called by the token contract**, not the player. Verify `get_caller_address()` is the expected token contract
+- **Callbacks should not revert** on unexpected data. A reverting callback blocks `update_game()` for all tokens minted by that platform
+- **Gas limits**: Keep callback logic lightweight. Heavy computation should be deferred to separate transactions

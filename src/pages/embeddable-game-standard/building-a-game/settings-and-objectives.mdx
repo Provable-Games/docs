@@ -1,0 +1,280 @@
+---
+layout: docs
+---
+
+# Settings & Objectives
+
+Settings let you define configurable game modes. Objectives let you define trackable achievements. Both are optional but powerful ways to extend your game's composability.
+
+## Settings
+
+Settings are named configurations that define how a game plays. For example, a Number Guess game might have:
+
+| Settings ID | Name | Range | Max Attempts |
+|------------|------|-------|-------------|
+| 1 | Easy | 1-10 | Unlimited |
+| 2 | Medium | 1-100 | 10 |
+| 3 | Hard | 1-1000 | 10 |
+
+When a token is minted, the minter specifies a `settings_id`. The game reads that ID to determine the rules for that session.
+
+### IMinigameTokenSettings
+
+```cairo
+#[starknet::interface]
+pub trait IMinigameTokenSettings<TState> {
+    /// Create a new settings configuration. Returns the new settings_id.
+    /// This is intentionally permissionless - anyone can create settings.
+    fn create_settings(
+        ref self: TState,
+        name: ByteArray,
+        description: ByteArray,
+        settings: Span<GameSetting>,
+    ) -> u32;
+
+    /// Check if a settings_id exists.
+    fn settings_exists(self: @TState, settings_id: u32) -> bool;
+
+    /// Get the total number of settings configurations.
+    fn settings_count(self: @TState) -> u32;
+
+    /// Get the details of a settings configuration.
+    fn settings_details(self: @TState, settings_id: u32) -> GameSettingDetails;
+
+    /// Batch version of settings_details.
+    fn settings_details_batch(
+        self: @TState, settings_ids: Span<u32>,
+    ) -> Array<GameSettingDetails>;
+}
+```
+
+### GameSettingDetails Struct
+
+```cairo
+#[derive(Drop, Serde)]
+pub struct GameSettingDetails {
+    pub name: ByteArray,             // "Hard Mode"
+    pub description: ByteArray,      // "Range 1-1000, 10 attempts max"
+    pub settings: Span<GameSetting>, // Key-value pairs
+}
+
+#[derive(Drop, Serde)]
+pub struct GameSetting {
+    pub name: ByteArray,   // "range_min", "range_max", "max_attempts"
+    pub value: ByteArray,  // "1", "1000", "10"
+}
+```
+
+### Implementation Pattern
+
+Your game stores the parsed setting values in its own storage, then delegates the metadata to `SettingsComponent`:
+
+```cairo
+use game_components_minigame::settings::SettingsComponent;
+
+component!(path: SettingsComponent, storage: settings, event: SettingsEvent);
+
+#[abi(embed_v0)]
+impl SettingsImpl of IMinigameTokenSettings<ContractState> {
+    fn create_settings(
+        ref self: ContractState,
+        name: ByteArray,
+        description: ByteArray,
+        settings: Span<GameSetting>,
+    ) -> u32 {
+        // Parse the key-value pairs into your game's data
+        let mut min: u32 = 1;
+        let mut max: u32 = 100;
+        let mut max_attempts: u32 = 0;
+
+        for setting in settings {
+            if *setting.name == "range_min" {
+                min = parse_u32(*setting.value);
+            } else if *setting.name == "range_max" {
+                max = parse_u32(*setting.value);
+            } else if *setting.name == "max_attempts" {
+                max_attempts = parse_u32(*setting.value);
+            }
+        };
+
+        assert!(max > min, "max must be greater than min");
+
+        // Store in component (handles ID allocation and metadata)
+        let settings_id = self.settings.create(name, description, settings);
+
+        // Store parsed values in game-specific storage
+        self.settings_data.write(settings_id, (min, max, max_attempts));
+
+        settings_id
+    }
+
+    fn settings_exists(self: @ContractState, settings_id: u32) -> bool {
+        self.settings.exists(settings_id)
+    }
+
+    fn settings_count(self: @ContractState) -> u32 {
+        self.settings.count()
+    }
+
+    fn settings_details(self: @ContractState, settings_id: u32) -> GameSettingDetails {
+        self.settings.details(settings_id)
+    }
+
+    fn settings_details_batch(
+        self: @ContractState, settings_ids: Span<u32>,
+    ) -> Array<GameSettingDetails> {
+        self.settings.details_batch(settings_ids)
+    }
+}
+```
+
+### Permissionless Creation
+
+Settings creation is intentionally permissionless. Anyone can create a new difficulty configuration. This enables:
+- Community-created challenge modes
+- Tournament organizers defining custom rules
+- Seasonal events with special settings
+
+The game validates inputs (e.g., `max > min`) but doesn't restrict who can create them.
+
+## Objectives
+
+Objectives are trackable achievements that can be completed during gameplay. They provide structured goals beyond just scoring.
+
+### IMinigameTokenObjectives
+
+```cairo
+#[starknet::interface]
+pub trait IMinigameTokenObjectives<TState> {
+    /// Create a new objective. Returns the new objective_id.
+    /// Permissionless - anyone can create objectives.
+    fn create_objective(
+        ref self: TState,
+        name: ByteArray,
+        description: ByteArray,
+        objectives: Span<GameObjective>,
+    ) -> u32;
+
+    /// Check if an objective exists.
+    fn objective_exists(self: @TState, objective_id: u32) -> bool;
+
+    /// Get the total number of objectives.
+    fn objectives_count(self: @TState) -> u32;
+
+    /// Check if a token has completed a specific objective.
+    fn completed_objective(self: @TState, token_id: felt252, objective_id: u32) -> bool;
+
+    /// Get the details of an objective.
+    fn objectives_details(self: @TState, objective_id: u32) -> GameObjectiveDetails;
+
+    /// Batch versions
+    fn objectives_details_batch(
+        self: @TState, objective_ids: Span<u32>,
+    ) -> Array<GameObjectiveDetails>;
+    fn completed_objective_batch(
+        self: @TState, token_ids: Span<felt252>, objective_id: u32,
+    ) -> Array<bool>;
+}
+```
+
+### GameObjectiveDetails Struct
+
+```cairo
+#[derive(Drop, Serde)]
+pub struct GameObjectiveDetails {
+    pub name: ByteArray,                 // "Quick Thinker"
+    pub description: ByteArray,          // "Win a game in 5 or fewer guesses"
+    pub objectives: Span<GameObjective>, // Structured criteria
+}
+
+#[derive(Drop, Serde)]
+pub struct GameObjective {
+    pub name: ByteArray,   // "type", "threshold"
+    pub value: ByteArray,  // "2", "5"
+}
+```
+
+### Example: Number Guess Objectives
+
+```
+Objective 1: "First Win"
+  type = 1 (Win any game)
+
+Objective 2: "Quick Thinker"
+  type = 2, threshold = 5 (Win in 5 or fewer guesses)
+
+Objective 3: "Lucky Guess"
+  type = 3 (Perfect 1-guess win)
+```
+
+### Checking Objective Completion
+
+When a game event occurs (e.g., player wins), check all active objectives for the token:
+
+```cairo
+fn check_objectives(ref self: ContractState, token_id: felt252) {
+    let objective_count = self.objectives.count();
+    let mut i: u32 = 1;
+
+    loop {
+        if i > objective_count { break; }
+
+        // Skip already completed objectives for this token
+        if !self.token_objectives_completed.read((token_id, i)) {
+            let details = self.objective_data.read(i);
+            let completed = match details.objective_type {
+                1 => true,  // Win: always true if we got here
+                2 => self.current_guess_count.read(token_id) <= details.threshold,
+                3 => self.current_guess_count.read(token_id) == 1,
+                _ => false,
+            };
+
+            if completed {
+                self.token_objectives_completed.write((token_id, i), true);
+            }
+        }
+
+        i += 1;
+    };
+}
+```
+
+### Objectives vs Settings
+
+| Aspect | Settings | Objectives |
+|--------|---------|-----------|
+| **Purpose** | Define how the game plays | Define what the player achieves |
+| **When set** | At mint time (settings_id in token) | Checked during gameplay |
+| **Scope** | Per-token (one settings_id per game session) | Per-token per-objective |
+| **Creation** | Permissionless | Permissionless |
+| **Example** | "Hard Mode: range 1-1000, 10 attempts" | "Win in under 5 guesses" |
+
+## Embedding Components
+
+To add settings and objectives to your game, compose the components:
+
+```cairo
+component!(path: SettingsComponent, storage: settings, event: SettingsEvent);
+component!(path: ObjectivesComponent, storage: objectives, event: ObjectivesEvent);
+
+#[storage]
+struct Storage {
+    #[substorage(v0)]
+    settings: SettingsComponent::Storage,
+    #[substorage(v0)]
+    objectives: ObjectivesComponent::Storage,
+    // ... your game storage
+}
+
+#[event]
+#[derive(Drop, starknet::Event)]
+enum Event {
+    #[flat]
+    SettingsEvent: SettingsComponent::Event,
+    #[flat]
+    ObjectivesEvent: ObjectivesComponent::Event,
+    // ...
+}
+```
+
+Initialize default settings and objectives in your constructor or initializer.

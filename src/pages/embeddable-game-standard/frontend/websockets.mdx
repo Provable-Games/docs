@@ -1,0 +1,148 @@
+---
+layout: docs
+---
+
+# WebSocket Subscriptions
+
+The SDK provides real-time event subscriptions via WebSocket. Subscribe to game events for live leaderboards, activity feeds, and instant notifications.
+
+## Channels
+
+| Channel | Events | Description |
+|---------|--------|-------------|
+| `tokens` | Token state changes | Any update to a token (score, game over, name) |
+| `scores` | Score updates | When a token's score changes |
+| `game_over` | Game completions | When a game session ends |
+| `mints` | New mints | When new game tokens are minted |
+
+## Using the Client
+
+```typescript
+import { DenshokanClient } from "@provable-games/denshokan-sdk";
+
+const client = new DenshokanClient({ chain: "mainnet" });
+
+// Subscribe to score updates for game ID 1
+const unsubscribe = client.subscribe(
+  {
+    channels: ["scores", "game_over"],
+    gameIds: [1],
+  },
+  (message) => {
+    console.log(`Channel: ${message.channel}`);
+    console.log(`Data:`, message.data);
+  },
+);
+
+// Later: unsubscribe
+unsubscribe();
+
+// Cleanup all connections
+client.disconnect();
+```
+
+## React Hook
+
+```tsx
+import { useSubscription } from "@provable-games/denshokan-sdk/react";
+
+function LiveLeaderboard({ gameId }: { gameId: number }) {
+  const [scores, setScores] = useState<Map<string, number>>(new Map());
+
+  useSubscription(
+    ["scores", "game_over"],  // channels
+    (message) => {
+      if (message.channel === "scores") {
+        const { tokenId, score } = message.data as any;
+        setScores(prev => new Map(prev).set(tokenId, score));
+      }
+    },
+    [gameId],  // optional: filter by game IDs
+  );
+
+  return (
+    <ul>
+      {[...scores.entries()]
+        .sort(([, a], [, b]) => b - a)
+        .map(([id, score]) => (
+          <li key={id}>Token {id}: {score}</li>
+        ))}
+    </ul>
+  );
+}
+```
+
+### useSubscription Signature
+
+```typescript
+function useSubscription(
+  channels: WSChannel[],      // ["tokens" | "scores" | "game_over" | "mints"]
+  handler: WSEventHandler,    // (message: WSMessage) => void
+  gameIds?: number[],         // Optional: filter by game IDs
+): void;
+```
+
+The hook manages connection lifecycle automatically:
+- Connects when the component mounts
+- Re-subscribes if channels or gameIds change
+- Disconnects when the component unmounts
+
+## Message Format
+
+```typescript
+interface WSMessage {
+  channel: string;     // "scores", "game_over", "tokens", "mints"
+  data: unknown;       // Channel-specific payload
+  _timing?: {
+    serverTs: number;  // Server timestamp
+  };
+}
+```
+
+## Connection Management
+
+The WebSocket manager handles:
+- **Auto-reconnect** with exponential backoff (1s, 2s, 4s, ... up to 30s)
+- **Max 10 reconnect attempts** before giving up
+- **Re-subscription** on reconnect (all active subscriptions are restored)
+- **Idle disconnect** if no active subscriptions remain
+
+### Manual Connection
+
+```typescript
+// Connect manually (usually not needed - subscribe() auto-connects)
+client.connect();
+
+// Check connection status
+const connected = client.getConnectionStatus().ws;
+
+// Disconnect
+client.disconnect();
+```
+
+## Combining with Data Hooks
+
+A common pattern is to use data hooks for initial load and WebSocket for live updates:
+
+```tsx
+function GameDashboard({ gameAddress }: { gameAddress: string }) {
+  const { data: tokens, refetch } = useTokens({
+    gameAddress,
+    gameOver: false,
+    limit: 50,
+  });
+
+  // Refetch when a game completes
+  useSubscription(
+    ["game_over"],
+    () => refetch(),
+    [gameId],
+  );
+
+  return <TokenList tokens={tokens?.data ?? []} />;
+}
+```
+
+This gives you:
+- Instant initial render from the API
+- Automatic updates when state changes on-chain

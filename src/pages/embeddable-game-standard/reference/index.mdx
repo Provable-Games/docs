@@ -1,0 +1,74 @@
+---
+layout: docs
+---
+
+# game-components Reference
+
+The `game-components` library provides modular Cairo components for building EGS-compliant contracts on Starknet. Each component is a self-contained unit that can be composed into your contract.
+
+## Package Overview
+
+| Package | Crate Name | Purpose |
+|---------|-----------|---------|
+| **interfaces** | `game_components_interfaces` | All trait definitions, structs, and interface IDs |
+| **token** | `game_components_token` | ERC721 with packed token IDs and compile-time feature flags |
+| **minigame** | `game_components_minigame` | Game logic foundation (settings, objectives, details) |
+| **metagame** | `game_components_metagame` | Platform coordination, callbacks, context |
+| **registry** | `game_components_registry` | Game registration and discovery |
+| **leaderboard** | `game_components_leaderboard` | Tournament scoring and ranking |
+| **tokenomics** | `game_components_tokenomics` | Ekubo TWAMM buyback and stream distribution |
+| **presets** | `game_components_presets` | Ready-to-deploy contracts |
+| **utils** | `game_components_utils` | Pure utilities (encoding, JSON, rendering) |
+
+## Dependency Graph
+
+```
+interfaces ◀─── token ◀─── presets
+    ▲              ▲
+    │              │
+    ├── minigame   ├── metagame
+    ├── registry   ├── leaderboard
+    └── tokenomics └── utils
+```
+
+All packages depend on `interfaces` for trait definitions. The `token` package is the most complex, composing multiple components.
+
+## Installation
+
+Add the packages you need to your `Scarb.toml`:
+
+```toml
+[dependencies]
+starknet = "2.15.1"
+
+# Core - almost always needed
+game_components_minigame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# Token contract
+game_components_token = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# Platform integration
+game_components_metagame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# Game discovery
+game_components_registry = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# Tournament scoring
+game_components_leaderboard = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# Token economics
+game_components_tokenomics = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# OpenZeppelin (required)
+openzeppelin_token = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
+openzeppelin_introspection = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
+openzeppelin_access = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
+```
+
+## Reference Pages
+
+- [MinigameToken (ERC721)](/embeddable-game-standard/reference/token) - The core token contract with packed IDs, feature flags, and component composition
+- [MinigameComponent](/embeddable-game-standard/reference/minigame) - Game logic foundation: `IMinigameTokenData`, settings, objectives
+- [Leaderboard](/embeddable-game-standard/reference/leaderboard) - Tournament scoring, ranking, and administration
+- [Tokenomics](/embeddable-game-standard/reference/tokenomics) - Buyback and stream token distribution via Ekubo TWAMM
+- [Presets](/embeddable-game-standard/reference/presets) - Ready-to-deploy contracts

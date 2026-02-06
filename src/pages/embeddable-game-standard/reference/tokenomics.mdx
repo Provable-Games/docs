@@ -1,0 +1,184 @@
+---
+layout: docs
+---
+
+# Tokenomics
+
+The tokenomics package provides two components for autonomous token operations on Ekubo's TWAMM (Time-Weighted Average Market Maker): **BuybackComponent** for token buybacks and **StreamComponent** for token distribution.
+
+## BuybackComponent
+
+Enables autonomous, time-weighted token buybacks using Ekubo TWAMM orders. Platforms can configure buyback parameters and let anyone trigger them.
+
+### IBuyback Interface
+
+```cairo
+#[starknet::interface]
+pub trait IBuyback<TContractState> {
+    /// Execute a buyback order
+    fn buy_back(ref self: TContractState, params: BuybackParams);
+
+    /// Claim proceeds from completed buyback orders
+    fn claim_buyback_proceeds(
+        ref self: TContractState, sell_token: ContractAddress, limit: u16,
+    ) -> u128;
+
+    /// Sweep accumulated buy tokens to treasury
+    fn sweep_buy_token_to_treasury(ref self: TContractState) -> u256;
+
+    /// Get global buyback configuration
+    fn get_global_config(self: @TContractState) -> GlobalBuybackConfig;
+
+    /// Get per-token configuration (overrides global)
+    fn get_token_config(
+        self: @TContractState, sell_token: ContractAddress,
+    ) -> Option<TokenBuybackConfig>;
+
+    /// Get effective config (per-token if set, else global)
+    fn get_effective_config(
+        self: @TContractState, sell_token: ContractAddress,
+    ) -> TokenBuybackConfig;
+
+    /// Get order details
+    fn get_order_count(self: @TContractState, sell_token: ContractAddress) -> u128;
+    fn get_unclaimed_orders_count(
+        self: @TContractState, sell_token: ContractAddress,
+    ) -> u128;
+    fn get_order_info(
+        self: @TContractState, sell_token: ContractAddress, index: u128,
+    ) -> OrderInfo;
+}
+```
+
+### IBuybackAdmin Interface
+
+```cairo
+#[starknet::interface]
+pub trait IBuybackAdmin<TContractState> {
+    fn set_global_config(ref self: TContractState, config: GlobalBuybackConfig);
+    fn set_token_config(
+        ref self: TContractState,
+        sell_token: ContractAddress,
+        config: Option<TokenBuybackConfig>,
+    );
+}
+```
+
+### Configuration
+
+```cairo
+#[derive(Copy, Drop, Serde, starknet::Store)]
+pub struct GlobalBuybackConfig {
+    pub default_buy_token: ContractAddress,  // Token to buy (e.g., LORDS)
+    pub default_treasury: ContractAddress,   // Where proceeds go
+    pub default_minimum_amount: u128,        // Min sell amount per order
+    pub default_min_delay: u64,              // Min seconds before order starts
+    pub default_max_delay: u64,              // Max seconds before order starts
+    pub default_min_duration: u64,           // Min order duration
+    pub default_max_duration: u64,           // Max order duration
+    pub default_fee: u128,                   // Ekubo pool fee tier
+}
+
+#[derive(Copy, Drop, Serde)]
+pub struct BuybackParams {
+    pub sell_token: ContractAddress,  // Token to sell (e.g., ETH)
+    pub start_time: u64,             // When the TWAMM order begins
+    pub end_time: u64,               // When the TWAMM order ends
+}
+```
+
+### How It Works
+
+1. Platform accumulates revenue tokens (e.g., ETH from entry fees)
+2. Anyone calls `buy_back(params)` to create a TWAMM order
+3. Ekubo executes the order gradually over the time window
+4. Anyone calls `claim_buyback_proceeds()` to claim bought tokens
+5. `sweep_buy_token_to_treasury()` sends claimed tokens to treasury
+
+This creates continuous, manipulation-resistant buying pressure.
+
+## StreamComponent
+
+Enables token distribution via Ekubo TWAMM. Used for streaming tokens to holders over time.
+
+### IStreamToken Interface
+
+```cairo
+#[starknet::interface]
+pub trait IStreamToken<TContractState> {
+    fn burn(ref self: TContractState, amount: u256);
+    fn burn_from(ref self: TContractState, account: ContractAddress, amount: u256);
+    fn claim_distribution_proceeds(
+        ref self: TContractState, order_index: u32,
+    ) -> u128;
+    fn get_order_count(self: @TContractState) -> u32;
+    fn get_order(self: @TContractState, order_index: u32) -> StoredDistributionOrder;
+    fn is_initialized(self: @TContractState) -> bool;
+    fn get_deployment_state(self: @TContractState) -> u8;
+}
+
+#[starknet::interface]
+pub trait IStreamTokenSetup<TContractState> {
+    fn provide_initial_liquidity(ref self: TContractState) -> (u64, u128, u256, u256);
+    fn start_distributions(ref self: TContractState);
+}
+```
+
+### IStreamTokenFactory Interface
+
+```cairo
+#[starknet::interface]
+pub trait IStreamTokenFactory<TContractState> {
+    fn create_token(ref self: TContractState, params: CreateTokenParams) -> ContractAddress;
+    fn is_valid_token(self: @TContractState, token: ContractAddress) -> bool;
+    fn get_token_count(self: @TContractState) -> u64;
+}
+```
+
+### CreateTokenParams
+
+```cairo
+#[derive(Drop, Serde)]
+pub struct CreateTokenParams {
+    pub name: ByteArray,
+    pub symbol: ByteArray,
+    pub total_supply: u128,
+    pub liquidity_config: LiquidityConfig,
+    pub distribution_orders: Span<DistributionOrder>,
+    pub premint_allocations: Span<PremintAllocation>,
+}
+
+#[derive(Copy, Drop, Serde)]
+pub struct LiquidityConfig {
+    pub paired_token: ContractAddress,
+    pub fee: u128,
+    pub stream_token_amount: u128,
+    pub paired_token_amount: u128,
+    pub min_liquidity: u128,
+}
+
+#[derive(Copy, Drop, Serde)]
+pub struct DistributionOrder {
+    pub buy_token: ContractAddress,
+    pub fee: u128,
+    pub start_time: u64,
+    pub end_time: u64,
+    pub amount: u128,
+    pub proceeds_recipient: ContractAddress,
+}
+
+#[derive(Copy, Drop, Serde)]
+pub struct PremintAllocation {
+    pub recipient: ContractAddress,
+    pub amount: u128,
+}
+```
+
+### Factory Pattern
+
+The StreamTokenFactory deploys new ERC20 stream tokens with:
+1. **Pre-mint allocations** - Initial distribution to team, treasury, etc.
+2. **Liquidity provision** - Paired with another token on Ekubo
+3. **Distribution orders** - TWAMM streams that sell tokens over time
+
+This enables fair token launches with predictable distribution schedules.

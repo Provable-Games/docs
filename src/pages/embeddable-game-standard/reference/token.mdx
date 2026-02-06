@@ -1,0 +1,151 @@
+---
+layout: docs
+---
+
+# MinigameToken (ERC721)
+
+The MinigameToken is the central ERC721 contract that represents game sessions. It composes multiple game-components and packs immutable game data directly into the token ID.
+
+## IMinigameTokenMixin
+
+The full token interface combines core ERC721, game lifecycle, and optional extensions:
+
+### Core Methods
+
+```cairo
+// Minting
+fn mint(ref self: TState, params: MintParams) -> felt252;
+fn mint_batch(ref self: TState, params: Array<MintParams>) -> Array<felt252>;
+
+// Game lifecycle
+fn update_game(ref self: TState, token_id: felt252);
+fn update_game_batch(ref self: TState, token_ids: Span<felt252>);
+
+// Token metadata
+fn token_metadata(self: @TState, token_id: felt252) -> TokenMetadata;
+fn token_metadata_batch(self: @TState, token_ids: Span<felt252>) -> Array<TokenMetadata>;
+fn token_mutable_state(self: @TState, token_id: felt252) -> TokenMutableState;
+fn token_mutable_state_batch(self: @TState, token_ids: Span<felt252>) -> Array<TokenMutableState>;
+
+// Game address resolution
+fn token_game_address(self: @TState, token_id: felt252) -> ContractAddress;
+fn token_game_address_batch(self: @TState, token_ids: Span<felt252>) -> Array<ContractAddress>;
+
+// Playability
+fn is_playable(self: @TState, token_id: felt252) -> bool;
+fn is_playable_batch(self: @TState, token_ids: Span<felt252>) -> Array<bool>;
+```
+
+### Player Name Methods
+
+```cairo
+fn player_name(self: @TState, token_id: felt252) -> felt252;
+fn player_name_batch(self: @TState, token_ids: Span<felt252>) -> Array<felt252>;
+fn update_player_name(ref self: TState, token_id: felt252, name: felt252);
+fn update_player_name_batch(ref self: TState, updates: Span<PlayerNameUpdate>);
+```
+
+### Settings Extension
+
+```cairo
+fn settings_id(self: @TState, token_id: felt252) -> u32;
+fn settings_id_batch(self: @TState, token_ids: Span<felt252>) -> Array<u32>;
+```
+
+### Objectives Extension
+
+```cairo
+fn objective_id(self: @TState, token_id: felt252) -> u32;
+fn objective_id_batch(self: @TState, token_ids: Span<felt252>) -> Array<u32>;
+```
+
+### Minter Extension
+
+```cairo
+fn minted_by(self: @TState, token_id: felt252) -> u64;
+fn minted_by_batch(self: @TState, token_ids: Span<felt252>) -> Array<u64>;
+```
+
+### Soulbound Extension
+
+```cairo
+fn is_soulbound(self: @TState, token_id: felt252) -> bool;
+fn is_soulbound_batch(self: @TState, token_ids: Span<felt252>) -> Array<bool>;
+```
+
+### Renderer Extension
+
+```cairo
+fn renderer_address(self: @TState, token_id: felt252) -> ContractAddress;
+fn renderer_address_batch(self: @TState, token_ids: Span<felt252>) -> Array<ContractAddress>;
+fn set_token_renderer(ref self: TState, token_id: felt252, renderer: ContractAddress);
+fn reset_token_renderer(ref self: TState, token_id: felt252);
+```
+
+## MintParams
+
+```cairo
+#[derive(Drop, Serde)]
+pub struct MintParams {
+    pub game_address: ContractAddress,
+    pub player_name: Option<felt252>,
+    pub settings_id: Option<u32>,
+    pub start: Option<u64>,
+    pub end: Option<u64>,
+    pub objective_id: Option<u32>,
+    pub context: Option<GameContextDetails>,
+    pub client_url: Option<ByteArray>,
+    pub renderer_address: Option<ContractAddress>,
+    pub to: ContractAddress,
+    pub soulbound: bool,
+    pub paymaster: bool,
+    pub salt: u16,
+    pub metadata: u16,
+}
+```
+
+## TokenMetadata
+
+```cairo
+#[derive(Copy, Drop, Serde)]
+pub struct TokenMetadata {
+    pub game_id: u64,
+    pub minted_at: u64,
+    pub settings_id: u32,
+    pub lifecycle: Lifecycle,
+    pub minted_by: u64,
+    pub soulbound: bool,
+    pub game_over: bool,
+    pub completed_objective: bool,
+    pub has_context: bool,
+    pub objective_id: u32,
+    pub paymaster: bool,
+    pub metadata: u16,
+}
+```
+
+## TokenMutableState
+
+Only two fields are mutable after minting:
+
+```cairo
+#[derive(Copy, Drop, Serde)]
+pub struct TokenMutableState {
+    pub game_over: bool,
+    pub completed_objective: bool,
+}
+```
+
+These are stored separately and packed into a single `felt252` using `StorePacking` (2 bits total).
+
+## Feature Flags
+
+The token contract uses compile-time feature flags to control which extensions are included. This reduces contract size by eliminating dead code.
+
+See [Feature Flags](/embeddable-game-standard/advanced/feature-flags) for details.
+
+## Packed Token IDs
+
+Token IDs are `felt252` values with 13 fields packed into 251 bits. This allows reading immutable token data without any storage lookups.
+
+See [Packed Token IDs](/embeddable-game-standard/advanced/packed-token-ids) for the bit layout and decoding.

@@ -1,0 +1,150 @@
+---
+layout: docs
+---
+
+# Architecture
+
+The Embeddable Game Standard is built around three contract roles: **Metagame** (the platform), **MinigameToken** (the shared ERC721), and **Minigame** (the game logic). These roles communicate through well-defined interfaces discovered via SRC5.
+
+## System Diagram
+
+```
+┌─────────────┐         ┌──────────────────┐         ┌─────────────┐
+│  Metagame   │──mint──▶│  MinigameToken   │◀──reg───│  Registry   │
+│  (Platform) │         │    (ERC721)      │         │             │
+│             │◀callback│                  │──read──▶│  Minigame   │
+│             │         │  ┌────────────┐  │         │  (Your Game)│
+└─────────────┘         │  │ CoreToken  │  │         └─────────────┘
+                        │  │ Minter     │  │
+                        │  │ Settings   │  │
+                        │  │ Objectives │  │
+                        │  │ Context    │  │
+                        │  │ Renderer   │  │
+                        │  │ Lifecycle  │  │
+                        │  └────────────┘  │
+                        └──────────────────┘
+```
+
+### MinigameToken (Center)
+
+The MinigameToken is an ERC721 contract that composes multiple game-components. Each token represents a single game session. The token ID is a packed `felt252` encoding immutable game data (game ID, settings, timestamps, flags) directly into the ID itself.
+
+**Composed components:**
+- **CoreTokenComponent** - Base lifecycle: mint, update, game over
+- **MinterComponent** - Tracks who minted each token (platforms, users)
+- **SettingsComponent** - Stores game setting configurations
+- **ObjectivesComponent** - Tracks achievement completion
+- **ContextComponent** - Optional mutable context data
+- **RendererComponent** - Custom token URI rendering
+- **ERC721EnumerableComponent** - On-chain token iteration
+
+### Minigame (Right)
+
+Your game contract implements `IMinigameTokenData` to expose score and game-over status. When the token contract calls `update_game()`, it reads your game's state and syncs it to the token.
+
+### Metagame (Left)
+
+A platform contract that mints tokens and optionally receives callbacks. If the minter implements `IMetagameCallback` (discoverable via SRC5), the token automatically dispatches:
+- `on_score_update(token_id, score)` when a score changes
+- `on_game_over(token_id, final_score)` when a game completes
+- `on_objective_complete(token_id)` when an objective is met
+
+### Registry
+
+The registry maps game contracts to metadata (name, description, developer, genre, image, royalties). Games self-register and receive a creator NFT that controls royalty payments.
+
+## Game Lifecycle
+
+```
+1. Setup      Game contract deploys and registers with the Registry
+2. Mint       Platform or user calls mint() on MinigameToken
+              → Creates packed token ID with game_id, settings, timing
+3. Play       Player interacts with the Minigame contract
+              → Game updates its internal state (score, progress)
+4. Sync       Anyone calls update_game(token_id) on MinigameToken
+              → Token reads score/game_over from Minigame via IMinigameTokenData
+              → If minter supports IMetagameCallback, dispatches callbacks
+5. Complete   Game marks game_over = true
+              → Final sync writes permanent result to token
+```
+
+## Component Relationships
+
+| Component | Depends On | Purpose |
+|-----------|-----------|---------|
+| CoreTokenComponent | ERC721, SRC5 | Base mint/update/lifecycle |
+| MinterComponent | CoreToken | Track minting addresses with incrementing IDs |
+| SettingsComponent | Minigame (IMinigameTokenSettings) | Store named setting configurations |
+| ObjectivesComponent | Minigame (IMinigameTokenObjectives) | Track named objectives and completion |
+| ContextComponent | Metagame (IMetagameContext) | Store per-token context from platform |
+| RendererComponent | - | Delegate token URI to external contract |
+| LeaderboardComponent | - | Standalone tournament scoring |
+| BuybackComponent | Ekubo TWAMM | Autonomous token buybacks |
+| StreamComponent | Ekubo TWAMM | Token distribution streams |
+
+## SRC5 Interface Discovery
+
+EGS uses [SRC5](https://github.com/starknet-io/SNIPs/blob/main/SNIPS/snip-5.md) (Starknet's equivalent of ERC-165) for runtime interface detection. Before calling an interface method, contracts check `supports_interface(interface_id)`.
+
+This enables safe, optional integration: a token can check if a minter supports callbacks before dispatching, and a platform can check if a game supports settings before querying them.
+
+### Interface ID Table
+
+| Interface | ID | Package |
+|-----------|---|---------|
+| `IMinigame` | `0x3d31...` | `game_components_minigame` |
+| `IMinigameTokenData` | Part of IMinigame | `game_components_minigame` |
+| `IMinigameTokenSettings` | Component-registered | `game_components_minigame` |
+| `IMinigameTokenObjectives` | Component-registered | `game_components_minigame` |
+| `IMetagame` | `0x0260...` | `game_components_metagame` |
+| `IMetagameCallback` | `0x04d4...` | `game_components_metagame` |
+| `IMetagameContext` | `0x0c2e...` | `game_components_metagame` |
+| `IMinigameRegistry` | `0x014a...` | `game_components_registry` |
+| `ILeaderboard` | `0x03c0...` | `game_components_leaderboard` |
+
+[Full interface ID reference →](/embeddable-game-standard/advanced/src5)
+
+## Data Flow
+
+```
+                    ┌─────────────────────────────────────────┐
+                    │           Starknet Blockchain            │
+                    │                                         │
+  mint() ──────────▶│  MinigameToken ◀──── Minigame           │
+  update_game() ───▶│       │                  │              │
+                    │       ▼                  │              │
+                    │  Events (Transfer,       │              │
+                    │   ScoreUpdate,           │              │
+                    │   GameOver)              │              │
+                    └───────┬──────────────────┘              │
+                            │
+                    ┌───────▼───────┐
+                    │   Indexer     │  (Apibara)
+                    │   ┌───────┐  │
+                    │   │ Decode│  │
+                    │   │ Events│  │
+                    │   └───┬───┘  │
+                    └───────┼──────┘
+                            │
+                    ┌───────▼───────┐
+                    │  PostgreSQL   │
+                    └───────┬───────┘
+                            │
+                ┌───────────┼───────────┐
+                │           │           │
+         ┌──────▼─────┐ ┌──▼──┐ ┌──────▼──────┐
+         │  REST API  │ │ WS  │ │ RPC (direct) │
+         └──────┬─────┘ └──┬──┘ └──────┬───────┘
+                │           │           │
+         ┌──────▼───────────▼───────────▼──────┐
+         │         denshokan-sdk               │
+         │  (DenshokanClient + React hooks)    │
+         └─────────────────────────────────────┘
+```
+
+The SDK provides three data paths:
+1. **REST API** - Indexed data with filtering, pagination, and aggregation
+2. **WebSocket** - Real-time event subscriptions (scores, mints, game over)
+3. **RPC** - Direct contract reads for on-chain truth (ERC721 methods, batch queries)
+
+Smart fallback: if the API is unavailable, the SDK automatically falls back to RPC.

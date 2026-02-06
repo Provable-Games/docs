@@ -1,0 +1,177 @@
+---
+layout: docs
+---
+
+# MetagameComponent
+
+The MetagameComponent provides deeper integration between a platform and the EGS token system. It handles minter registration, callback routing, and optional context management.
+
+## When to Use It
+
+Use MetagameComponent when your platform:
+- Needs to receive automatic callbacks on score updates and game completions
+- Wants to attach per-token context data (quest info, tournament metadata)
+- Benefits from automatic minter registration
+
+For simple mint-and-read use cases, [direct minting](/embeddable-game-standard/building-a-platform) is sufficient.
+
+## IMetagame Interface
+
+```cairo
+pub const IMETAGAME_ID: felt252 =
+    0x0260d5160a283a03815f6c3799926c7bdbec5f22e759f992fb8faf172243ab20;
+
+#[starknet::interface]
+pub trait IMetagame<TContractState> {
+    /// Address of the optional context contract
+    fn context_address(self: @TContractState) -> ContractAddress;
+
+    /// Default MinigameToken address this metagame interacts with
+    fn default_token_address(self: @TContractState) -> ContractAddress;
+}
+```
+
+## Composing the Component
+
+```cairo
+#[starknet::contract]
+mod MyPlatform {
+    use game_components_metagame::metagame::MetagameComponent;
+    use openzeppelin_introspection::src5::SRC5Component;
+
+    component!(path: MetagameComponent, storage: metagame, event: MetagameEvent);
+    component!(path: SRC5Component, storage: src5, event: SRC5Event);
+
+    #[abi(embed_v0)]
+    impl MetagameImpl = MetagameComponent::MetagameImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
+
+    #[storage]
+    struct Storage {
+        #[substorage(v0)]
+        metagame: MetagameComponent::Storage,
+        #[substorage(v0)]
+        src5: SRC5Component::Storage,
+    }
+
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        #[flat]
+        MetagameEvent: MetagameComponent::Event,
+        #[flat]
+        SRC5Event: SRC5Component::Event,
+    }
+
+    #[constructor]
+    fn constructor(
+        ref self: ContractState,
+        token_address: ContractAddress,
+        context_address: ContractAddress,
+    ) {
+        self.metagame.initializer(token_address, context_address);
+    }
+}
+```
+
+## Initialization
+
+The MetagameComponent's `initializer` sets up:
+1. The default MinigameToken address
+2. An optional context contract address
+3. Registers the `IMETAGAME_ID` interface via SRC5
+
+```cairo
+self.metagame.initializer(
+    token_address,    // MinigameToken contract
+    context_address,  // Optional context contract (zero = none)
+);
+```
+
+## Context Extension
+
+Metagames can attach per-token context data. This is useful for:
+- Tournament metadata (round number, bracket position)
+- Quest context (which quest, what reward tier)
+- Platform-specific data
+
+### GameContextDetails Struct
+
+```cairo
+#[derive(Drop, Serde, Clone)]
+pub struct GameContextDetails {
+    pub name: ByteArray,               // "Season 2 Tournament"
+    pub description: ByteArray,        // "Round of 16, Bracket A"
+    pub id: Option<u32>,              // Optional context ID
+    pub context: Span<GameContext>,   // Key-value pairs
+}
+
+#[derive(Drop, Serde, Clone)]
+pub struct GameContext {
+    pub name: ByteArray,   // "bracket"
+    pub value: ByteArray,  // "A"
+}
+```
+
+Pass context when minting:
+
+```cairo
+let token_id = token.mint(MintParams {
+    game_address,
+    context: Option::Some(GameContextDetails {
+        name: "Season 2 Tournament",
+        description: "Round of 16",
+        id: Option::Some(42),
+        context: array![
+            GameContext { name: "bracket", value: "A" },
+            GameContext { name: "round", value: "16" },
+        ].span(),
+    }),
+    // ... other params
+});
+```
+
+### IMetagameContext Interface
+
+If your metagame implements context, register `IMETAGAME_CONTEXT_ID`:
+
+```cairo
+pub const IMETAGAME_CONTEXT_ID: felt252 =
+    0x0c2e78065b81a310a1cb470d14a7b88875542ad05286b3263cf3c254082386e;
+
+#[starknet::interface]
+pub trait IMetagameContext<TState> {
+    fn has_context(self: @TState, token_id: felt252) -> bool;
+}
+
+#[starknet::interface]
+pub trait IMetagameContextDetails<TState> {
+    fn context_details(self: @TState, token_id: felt252) -> GameContextDetails;
+}
+```
+
+## Minting via MetagameComponent
+
+The component provides convenience methods for minting:
+
+```cairo
+// Mint with context
+let params = MintGameParams {
+    player_name: Option::Some('Alice'),
+    settings_id: Option::Some(2),
+    start: Option::None,
+    end: Option::None,
+    objective_id: Option::None,
+    context: Option::Some(my_context),
+    client_url: Option::None,
+    renderer_address: Option::None,
+    to: player_address,
+    soulbound: true,
+    paymaster: false,
+    salt: 0,
+    metadata: 0,
+};
+
+let token_id = self.metagame.mint(game_address, params);
+```

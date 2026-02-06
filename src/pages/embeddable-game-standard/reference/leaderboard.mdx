@@ -1,0 +1,186 @@
+---
+layout: docs
+---
+
+# Leaderboard
+
+The LeaderboardComponent provides tournament scoring and ranking functionality. It supports multiple independent tournaments, configurable sorting, and size limits.
+
+## ILeaderboard Interface
+
+```cairo
+pub const ILEADERBOARD_ID: felt252 =
+    0x03c0f9265d397c10970f24822e4b57cac7d8895f8c449b7c9caaa26910499705;
+
+#[starknet::interface]
+pub trait ILeaderboard<TState> {
+    /// Submit a score to a tournament leaderboard
+    fn submit_score(
+        ref self: TState,
+        tournament_id: u64,
+        token_id: felt252,
+        score: u64,
+        position: u8,
+    ) -> LeaderboardResult;
+
+    /// Get all entries for a tournament
+    fn get_entries(self: @TState, tournament_id: u64) -> Array<LeaderboardEntry>;
+
+    /// Get the top N entries
+    fn get_top_entries(
+        self: @TState, tournament_id: u64, count: u32,
+    ) -> Array<LeaderboardEntry>;
+
+    /// Get the position of a specific token
+    fn get_position(
+        self: @TState, tournament_id: u64, token_id: felt252,
+    ) -> Option<u8>;
+
+    /// Check if a score would qualify for the leaderboard
+    fn qualifies(self: @TState, tournament_id: u64, score: u64) -> bool;
+
+    /// Check if the leaderboard is full
+    fn is_full(self: @TState, tournament_id: u64) -> bool;
+
+    /// Get the number of entries
+    fn get_leaderboard_length(self: @TState, tournament_id: u64) -> u32;
+
+    /// Get tournament configuration
+    fn get_tournament_config(
+        self: @TState, tournament_id: u64,
+    ) -> LeaderboardStoreConfig;
+}
+```
+
+## ILeaderboardAdmin Interface
+
+```cairo
+#[starknet::interface]
+pub trait ILeaderboardAdmin<TState> {
+    /// Configure a tournament leaderboard
+    fn configure_tournament(
+        ref self: TState,
+        tournament_id: u64,
+        max_entries: u32,
+        ascending: bool,
+        game_address: ContractAddress,
+    );
+
+    /// Clear all entries from a tournament
+    fn clear_leaderboard(ref self: TState, tournament_id: u64);
+
+    /// Get the owner
+    fn owner(self: @TState) -> ContractAddress;
+
+    /// Transfer ownership
+    fn transfer_ownership(ref self: TState, new_owner: ContractAddress);
+}
+```
+
+## Data Structures
+
+### LeaderboardEntry
+
+```cairo
+#[derive(Drop, Serde, Copy)]
+pub struct LeaderboardEntry {
+    pub id: felt252,   // Token ID
+    pub score: u64,    // Score value
+}
+```
+
+### LeaderboardResult
+
+```cairo
+#[derive(Drop, Serde, Copy)]
+pub enum LeaderboardResult {
+    Success: (),
+    InvalidPosition: (),
+    LeaderboardFull: (),
+    ScoreTooLow: (),
+    ScoreTooHigh: (),
+    DuplicateEntry: (),
+    InvalidConfig: (),
+}
+```
+
+### LeaderboardStoreConfig
+
+```cairo
+#[derive(Drop, Serde, Copy)]
+pub struct LeaderboardStoreConfig {
+    pub max_entries: u32,
+    pub ascending: bool,          // true = lower score is better
+    pub game_address: ContractAddress,
+}
+```
+
+### LeaderboardConfig
+
+```cairo
+#[derive(Drop, Serde, Copy)]
+pub struct LeaderboardConfig {
+    pub max_entries: u32,
+    pub ascending: bool,
+    pub allow_ties: bool,
+}
+```
+
+## Usage
+
+### Setting Up a Tournament
+
+```cairo
+let leaderboard = ILeaderboardAdminDispatcher { contract_address };
+
+// Create a top-10 leaderboard (higher score = better)
+leaderboard.configure_tournament(
+    tournament_id: 1,
+    max_entries: 10,
+    ascending: false,      // Higher scores rank higher
+    game_address: game_addr,
+);
+```
+
+### Submitting Scores
+
+```cairo
+let leaderboard = ILeaderboardDispatcher { contract_address };
+
+let result = leaderboard.submit_score(
+    tournament_id: 1,
+    token_id: player_token,
+    score: 1500,
+    position: 0,  // Auto-place based on score
+);
+
+match result {
+    LeaderboardResult::Success => { /* Score recorded */ },
+    LeaderboardResult::ScoreTooLow => { /* Didn't qualify */ },
+    LeaderboardResult::LeaderboardFull => { /* No room */ },
+    _ => { /* Handle other cases */ },
+}
+```
+
+### Reading the Leaderboard
+
+```cairo
+// Top 3
+let top = leaderboard.get_top_entries(tournament_id: 1, count: 3);
+
+// All entries
+let all = leaderboard.get_entries(tournament_id: 1);
+
+// Check if a score qualifies
+let would_qualify = leaderboard.qualifies(tournament_id: 1, score: 1200);
+```
+
+## Multi-Tournament Support
+
+Each `tournament_id` is an independent leaderboard. This allows:
+- Multiple concurrent tournaments
+- Different game modes with separate rankings
+- Seasonal leaderboards
+- Time-limited competitions
+
+All managed by a single LeaderboardComponent instance.

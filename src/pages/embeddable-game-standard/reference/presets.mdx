@@ -1,0 +1,169 @@
+---
+layout: docs
+---
+
+# Presets
+
+Presets are ready-to-deploy contracts that compose game-components into complete, functional contracts. Use them directly or as starting points for customization.
+
+## LeaderboardPreset
+
+A standalone leaderboard contract with ownership and SRC5 support.
+
+```cairo
+#[starknet::contract]
+mod LeaderboardPreset {
+    component!(path: LeaderboardComponent, storage: leaderboard, event: LeaderboardEvent);
+    component!(path: SRC5Component, storage: src5, event: SRC5Event);
+
+    #[abi(embed_v0)]
+    impl LeaderboardMixinImpl =
+        LeaderboardComponent::LeaderboardImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl LeaderboardAdminMixinImpl =
+        LeaderboardComponent::LeaderboardAdminImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl SRC5MixinImpl = SRC5Component::SRC5Impl<ContractState>;
+
+    #[constructor]
+    fn constructor(ref self: ContractState, owner: ContractAddress) {
+        self.leaderboard.initializer(owner);
+    }
+}
+```
+
+**Constructor parameters:**
+- `owner` - Address that can configure tournaments and manage the leaderboard
+
+**Provides:**
+- `ILeaderboard` - Submit scores, query rankings
+- `ILeaderboardAdmin` - Configure tournaments, clear leaderboards
+- `ISRC5` - Interface introspection
+
+## AutonomousBuyback
+
+A buyback contract with Ownable access control for configuring buyback parameters.
+
+```cairo
+#[starknet::contract]
+pub mod AutonomousBuyback {
+    component!(path: BuybackComponent, storage: buyback, event: BuybackEvent);
+    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+
+    #[abi(embed_v0)]
+    impl BuybackImpl = BuybackComponent::BuybackImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl OwnableMixinImpl =
+        OwnableComponent::OwnableMixinImpl<ContractState>;
+
+    #[constructor]
+    fn constructor(
+        ref self: ContractState,
+        owner: ContractAddress,
+        global_config: GlobalBuybackConfig,
+        positions_address: ContractAddress,
+        extension_address: ContractAddress,
+    ) {
+        self.ownable.initializer(owner);
+        self.buyback.initializer(global_config, positions_address, extension_address);
+    }
+
+    #[abi(embed_v0)]
+    impl BuybackAdminImpl of IBuybackAdmin<ContractState> {
+        fn set_global_config(ref self: ContractState, config: GlobalBuybackConfig) {
+            self.ownable.assert_only_owner();
+            self.buyback.set_global_config(config);
+        }
+
+        fn set_token_config(
+            ref self: ContractState,
+            sell_token: ContractAddress,
+            config: Option<TokenBuybackConfig>,
+        ) {
+            self.ownable.assert_only_owner();
+            self.buyback.set_token_config(sell_token, config);
+        }
+    }
+}
+```
+
+**Constructor parameters:**
+- `owner` - Address that can update buyback configuration
+- `global_config` - Default buyback settings (buy token, treasury, timing, fees)
+- `positions_address` - Ekubo positions contract
+- `extension_address` - Ekubo extension contract
+
+**Provides:**
+- `IBuyback` - Execute buybacks, claim proceeds
+- `IBuybackAdmin` - Configure buyback parameters (owner only)
+- `IOwnableMixin` - Ownership management
+
+## StreamToken
+
+An ERC20 token with built-in TWAMM distribution streams and initial liquidity provision.
+
+```cairo
+#[starknet::contract]
+pub mod StreamToken {
+    component!(path: ERC20Component, storage: erc20, event: ERC20Event);
+    component!(path: StreamComponent, storage: stream, event: StreamEvent);
+
+    pub impl ERC20Config of ERC20Component::ImmutableConfig {
+        const DECIMALS: u8 = 18;
+    }
+
+    #[abi(embed_v0)]
+    impl ERC20MixinImpl = ERC20Component::ERC20MixinImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl StreamImpl = StreamComponent::StreamImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl StreamSetupImpl = StreamComponent::StreamSetupImpl<ContractState>;
+
+    #[constructor]
+    fn constructor(
+        ref self: ContractState,
+        name: ByteArray,
+        symbol: ByteArray,
+        total_supply: u128,
+        factory: ContractAddress,
+        positions_address: ContractAddress,
+        core_address: ContractAddress,
+        registry_address: ContractAddress,
+        extension_address: ContractAddress,
+        liquidity_config: LiquidityConfig,
+        distribution_orders: Span<DistributionOrder>,
+        premint_allocations: Span<PremintAllocation>,
+    ) {
+        self.erc20.initializer(name, symbol);
+        self.stream.initializer(
+            factory, positions_address, core_address,
+            registry_address, extension_address,
+            liquidity_config, distribution_orders, premint_allocations,
+        );
+
+        // Mint registry token for game registration
+        self.erc20.mint(registry_address, ERC20_UNIT.into());
+        self.stream.register_token();
+
+        // Pre-mint allocations
+        for premint in premint_allocations {
+            self.erc20.mint(*premint.recipient, (*premint.amount).into());
+        };
+
+        // Remaining supply to factory for liquidity
+        let remaining = total_supply - ERC20_UNIT - premint_total;
+        self.erc20.mint(factory, remaining.into());
+    }
+}
+```
+
+**Provides:**
+- `IERC20Mixin` - Standard ERC20 (transfer, approve, etc.)
+- `IStreamToken` - Burn, claim distribution proceeds, query orders
+- `IStreamTokenSetup` - Provide initial liquidity, start distributions
+
+**Lifecycle:**
+1. Factory deploys StreamToken with configuration
+2. `provide_initial_liquidity()` creates Ekubo liquidity position
+3. `start_distributions()` begins TWAMM distribution orders
+4. Token holders can trade; distribution proceeds are claimable

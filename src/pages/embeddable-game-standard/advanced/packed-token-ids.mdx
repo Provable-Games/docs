@@ -1,0 +1,142 @@
+---
+layout: docs
+---
+
+# Packed Token IDs
+
+EGS token IDs are not simple incrementing integers. They are `felt252` values (251 bits) that encode 13 fields of immutable game data directly into the ID. This means you can read a token's game, settings, timing, and flags without any storage lookups.
+
+## Bit Layout
+
+| Bits | Field | Size | Max Value |
+|------|-------|------|-----------|
+| 0-29 | `game_id` | 30 bits | ~1 billion games |
+| 30-69 | `minted_by` | 40 bits | ~1 trillion minters |
+| 70-99 | `settings_id` | 30 bits | ~1 billion settings |
+| 100-134 | `minted_at` | 35 bits | Unix seconds until ~3058 |
+| 135-159 | `start_delay` | 25 bits | ~388 days (in seconds) |
+| 160-184 | `end_delay` | 25 bits | ~388 days (in seconds) |
+| 185-214 | `objective_id` | 30 bits | ~1 billion objectives |
+| 215 | `soulbound` | 1 bit | true/false |
+| 216 | `has_context` | 1 bit | true/false |
+| 217 | `paymaster` | 1 bit | true/false |
+| 218-227 | `tx_hash` | 10 bits | Uniqueness from tx hash |
+| 228-237 | `salt` | 10 bits | User-provided salt |
+| 238-250 | `metadata` | 13 bits | Game-defined metadata |
+
+**Total: 251 bits** (fits exactly in a `felt252`)
+
+## Why Pack Token IDs?
+
+### Storage Optimization
+
+Without packing, each token would need 13 storage slots to hold its metadata. With packing, the metadata **is** the token ID - zero additional storage for immutable fields.
+
+### Query Efficiency
+
+The Denshokan Viewer contract can filter tokens by game, settings, or minter by unpacking the ID in-memory, without reading any extra storage. This makes on-chain queries significantly cheaper.
+
+### Client-side Decoding
+
+Frontends can decode a token ID instantly without any RPC calls:
+
+```typescript
+import { decodePackedTokenId } from "@provable-games/denshokan-sdk";
+
+const decoded = decodePackedTokenId("0x123abc...");
+console.log(decoded.gameId);      // 1
+console.log(decoded.settingsId);  // 2
+console.log(decoded.mintedAt);    // Date object
+console.log(decoded.soulbound);   // false
+```
+
+## Cairo Packing
+
+```cairo
+pub fn pack_token_id(
+    game_id: u32,
+    minted_by: u64,
+    settings_id: u32,
+    minted_at: u64,
+    start_delay: u32,
+    end_delay: u32,
+    objective_id: u32,
+    soulbound: bool,
+    has_context: bool,
+    paymaster: bool,
+    tx_hash: u16,
+    salt: u16,
+    metadata: u16,
+) -> felt252 {
+    // Pack fields by shifting and OR-ing
+    let mut packed: u256 = game_id.into();
+    packed = packed | (Into::<u64, u256>::into(minted_by) * TWO_POW_30);
+    packed = packed | (Into::<u32, u256>::into(settings_id) * TWO_POW_70);
+    packed = packed | (Into::<u64, u256>::into(minted_at) * TWO_POW_100);
+    // ... and so on for each field
+    packed.try_into().unwrap()
+}
+```
+
+## Cairo Unpacking
+
+```cairo
+pub fn unpack_token_id(token_id: felt252) -> PackedTokenId {
+    let packed: u256 = token_id.into();
+    PackedTokenId {
+        game_id: (packed & MASK_30).try_into().unwrap(),
+        minted_by: ((packed / TWO_POW_30) & MASK_40).try_into().unwrap(),
+        settings_id: ((packed / TWO_POW_70) & MASK_30).try_into().unwrap(),
+        minted_at: ((packed / TWO_POW_100) & MASK_35).try_into().unwrap(),
+        start_delay: ((packed / TWO_POW_135) & MASK_25).try_into().unwrap(),
+        end_delay: ((packed / TWO_POW_160) & MASK_25).try_into().unwrap(),
+        objective_id: ((packed / TWO_POW_185) & MASK_30).try_into().unwrap(),
+        soulbound: ((packed / TWO_POW_215) & 1) == 1,
+        has_context: ((packed / TWO_POW_216) & 1) == 1,
+        paymaster: ((packed / TWO_POW_217) & 1) == 1,
+        tx_hash: ((packed / TWO_POW_218) & MASK_10).try_into().unwrap(),
+        salt: ((packed / TWO_POW_228) & MASK_10).try_into().unwrap(),
+        metadata: ((packed / TWO_POW_238) & MASK_13).try_into().unwrap(),
+    }
+}
+```
+
+## TypeScript Decoding
+
+```typescript
+export function decodePackedTokenId(tokenId: string | bigint): DecodedTokenId {
+  const id = BigInt(tokenId);
+
+  return {
+    tokenId: id,
+    gameId: Number(id & 0x3FFFFFFFn),                           // 30 bits
+    mintedBy: (id >> 30n) & 0xFFFFFFFFFFn,                      // 40 bits
+    settingsId: Number((id >> 70n) & 0x3FFFFFFFn),              // 30 bits
+    mintedAt: new Date(Number((id >> 100n) & 0x7FFFFFFFFn) * 1000), // 35 bits
+    startDelay: Number((id >> 135n) & 0x1FFFFFFn),              // 25 bits
+    endDelay: Number((id >> 160n) & 0x1FFFFFFn),                // 25 bits
+    objectiveId: Number((id >> 185n) & 0x3FFFFFFFn),            // 30 bits
+    soulbound: Boolean((id >> 215n) & 1n),                      // 1 bit
+    hasContext: Boolean((id >> 216n) & 1n),                      // 1 bit
+    paymaster: Boolean((id >> 217n) & 1n),                      // 1 bit
+    txHash: Number((id >> 218n) & 0x3FFn),                      // 10 bits
+    salt: Number((id >> 228n) & 0x3FFn),                        // 10 bits
+    metadata: Number((id >> 238n) & 0x1FFFn),                   // 13 bits
+  };
+}
+```
+
+## Trade-offs
+
+**Advantages:**
+- Zero storage cost for immutable metadata
+- Instant client-side decoding
+- Efficient on-chain filtering
+- Token ID itself is a provable commitment to game parameters
+
+**Limitations:**
+- Fields have fixed bit widths (e.g., `game_id` limited to ~1 billion)
+- `minted_by` is truncated to 40 bits (not a full address)
+- `start` and `end` are stored as delays, not absolute timestamps
+- Token IDs are not human-readable
+- Cannot change immutable fields after minting

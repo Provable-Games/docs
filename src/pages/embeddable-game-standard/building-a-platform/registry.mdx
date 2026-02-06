@@ -1,0 +1,192 @@
+---
+layout: docs
+---
+
+# Registry & Discovery
+
+The MinigameRegistry is the central directory where games register themselves and platforms discover available games.
+
+## IMinigameRegistry Interface
+
+```cairo
+pub const IMINIGAME_REGISTRY_ID: felt252 =
+    0x014a8d6e4bf56a4bbf869257d1f846e5a2ac1e3508466147556f186143409be1;
+
+#[starknet::interface]
+pub trait IMinigameRegistry<TState> {
+    // Discovery
+    fn game_count(self: @TState) -> u64;
+    fn game_id_from_address(self: @TState, contract_address: ContractAddress) -> u64;
+    fn game_address_from_id(self: @TState, game_id: u64) -> ContractAddress;
+    fn game_metadata(self: @TState, game_id: u64) -> GameMetadata;
+    fn is_game_registered(self: @TState, contract_address: ContractAddress) -> bool;
+
+    // Registration
+    fn register_game(
+        ref self: TState,
+        creator_address: ContractAddress,
+        name: ByteArray,
+        description: ByteArray,
+        developer: ByteArray,
+        publisher: ByteArray,
+        genre: ByteArray,
+        image: ByteArray,
+        color: Option<ByteArray>,
+        client_url: Option<ByteArray>,
+        renderer_address: Option<ContractAddress>,
+        royalty_fraction: Option<u128>,
+    ) -> u64;
+
+    // Admin
+    fn set_game_royalty(ref self: TState, game_id: u64, royalty_fraction: u128);
+
+    // Batch queries
+    fn game_metadata_batch(self: @TState, game_ids: Span<u64>) -> Array<GameMetadata>;
+    fn games_registered_batch(
+        self: @TState, addresses: Span<ContractAddress>,
+    ) -> Array<bool>;
+    fn get_games(self: @TState, start: u64, count: u64) -> Array<GameMetadata>;
+    fn get_games_by_developer(
+        self: @TState, developer: ByteArray, start: u64, count: u64,
+    ) -> Array<GameMetadata>;
+    fn get_games_by_publisher(
+        self: @TState, publisher: ByteArray, start: u64, count: u64,
+    ) -> Array<GameMetadata>;
+    fn get_games_by_genre(
+        self: @TState, genre: ByteArray, start: u64, count: u64,
+    ) -> Array<GameMetadata>;
+}
+```
+
+## GameMetadata Struct
+
+```cairo
+#[derive(Drop, Serde, Clone, starknet::Store)]
+pub struct GameMetadata {
+    pub contract_address: ContractAddress,
+    pub name: ByteArray,              // "Number Guess"
+    pub description: ByteArray,       // "Guess the secret number"
+    pub developer: ByteArray,         // "Provable Games"
+    pub publisher: ByteArray,         // "Provable Games"
+    pub genre: ByteArray,             // "Puzzle"
+    pub image: ByteArray,             // URL or IPFS hash
+    pub color: ByteArray,             // Hex color for UI theming
+    pub client_url: ByteArray,        // URL to game client
+    pub renderer_address: ContractAddress, // Custom token renderer
+    pub royalty_fraction: u128,       // Basis points (500 = 5%)
+    pub created_at: u64,              // Block timestamp
+}
+```
+
+## How Registration Works
+
+Games register themselves during initialization. The Denshokan implementation calls `register_game()` from the minigame's `initializer()`:
+
+```cairo
+fn initializer(ref self: ContractState, ...) {
+    // Register game with the registry
+    self.minigame.initializer(
+        game_creator,
+        game_name,
+        game_description,
+        game_developer,
+        game_publisher,
+        game_genre,
+        game_image,
+        game_color,
+        client_url,
+        renderer_address,
+        settings_address,
+        objectives_address,
+        minigame_token_address,
+        royalty_fraction,
+    );
+}
+```
+
+The MinigameComponent internally calls the registry. Upon registration:
+1. The game receives an auto-incrementing `game_id`
+2. The creator receives an ERC721 "creator token" (token ID = game_id)
+3. The game_id is packed into all future token IDs for that game
+
+### Creator Tokens
+
+The registry contract is itself an ERC721. When a game registers, the registry mints a creator NFT to the `creator_address`. This NFT:
+- Represents ownership of the game registration
+- Controls royalty payments (the current owner receives royalties)
+- Can be transferred to change the royalty recipient
+
+## Discovering Games
+
+### List All Games
+
+```cairo
+let registry = IMinigameRegistryDispatcher { contract_address: registry_address };
+
+let total = registry.game_count();
+let games: Array<GameMetadata> = registry.get_games(start: 0, count: 20);
+```
+
+### Find by Category
+
+```cairo
+// By developer
+let games = registry.get_games_by_developer("Provable Games", 0, 20);
+
+// By genre
+let games = registry.get_games_by_genre("Puzzle", 0, 20);
+
+// By publisher
+let games = registry.get_games_by_publisher("Provable Games", 0, 20);
+```
+
+### Check Registration
+
+```cairo
+// By address
+let is_registered: bool = registry.is_game_registered(game_address);
+
+// Batch check
+let statuses: Array<bool> = registry.games_registered_batch(
+    array![addr1, addr2, addr3].span()
+);
+```
+
+### Resolve IDs and Addresses
+
+```cairo
+// Address → ID
+let game_id: u64 = registry.game_id_from_address(game_address);
+
+// ID → Address
+let game_address: ContractAddress = registry.game_address_from_id(game_id);
+```
+
+## Royalties
+
+Games can set a royalty fraction (in basis points, where 10000 = 100%):
+
+```cairo
+// Set 5% royalty at registration
+register_game(..., royalty_fraction: Option::Some(500));
+
+// Update royalty later (only creator token owner)
+registry.set_game_royalty(game_id, 300); // 3%
+```
+
+The MinigameToken implements ERC-2981 and uses the registry to resolve royalties dynamically:
+- The royalty receiver is the current owner of the creator NFT
+- If the creator token is transferred, royalties flow to the new owner
+
+## Hooks Pattern
+
+The registry component provides hooks for custom behavior after registration:
+
+```cairo
+fn after_register_game(game_id: u64, creator_address: ContractAddress) {
+    // Denshokan mints a creator NFT here
+    self.erc721.mint(creator_address, game_id.into());
+}
+```
+
+This hook pattern allows different registry implementations to add custom logic (minting NFTs, emitting events, updating state) without modifying the core registry.

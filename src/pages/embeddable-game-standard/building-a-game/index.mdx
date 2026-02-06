@@ -1,0 +1,132 @@
+---
+layout: docs
+---
+
+# Building a Game
+
+This guide walks you through making your Starknet game compatible with the Embeddable Game Standard. By the end, your game will be mintable, scoreable, and embeddable in any EGS platform.
+
+## What Your Game Must Do
+
+At minimum, your game contract must:
+
+1. **Implement `IMinigameTokenData`** - Expose `score()` and `game_over()` so the token contract can read your game's state
+2. **Register `IMINIGAME_ID` via SRC5** - So the token contract can discover your game's capabilities
+3. **Register with the game Registry** - So platforms can find and display your game
+
+Optionally, your game can also implement:
+- **`IMinigameTokenSettings`** - Named difficulty configurations (Easy, Medium, Hard)
+- **`IMinigameTokenObjectives`** - Trackable achievements (First Win, Perfect Game)
+- **`IMinigameDetails`** - Rich game state for display (move history, board state)
+
+## Prerequisites
+
+- [Scarb](https://docs.swmansion.com/scarb/) 2.15.0+
+- [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/) 0.54.1+
+- Familiarity with Cairo and `#[starknet::component]` patterns
+
+## Dependency Setup
+
+Add game-components to your `Scarb.toml`:
+
+```toml
+[dependencies]
+starknet = "2.15.1"
+game_components_minigame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+game_components_utils = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+openzeppelin_introspection = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
+
+[dev-dependencies]
+snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.55.0" }
+```
+
+## Minimal Contract Skeleton
+
+Here's the minimum viable game contract:
+
+```cairo
+use starknet::ContractAddress;
+
+#[starknet::interface]
+pub trait IMyGame<TContractState> {
+    fn play(ref self: TContractState, token_id: felt252);
+}
+
+#[starknet::contract]
+mod MyGame {
+    use game_components_minigame::interface::{IMINIGAME_ID, IMinigameTokenData};
+    use openzeppelin_introspection::src5::SRC5Component;
+    use starknet::ContractAddress;
+
+    component!(path: SRC5Component, storage: src5, event: SRC5Event);
+
+    #[abi(embed_v0)]
+    impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
+
+    #[storage]
+    struct Storage {
+        #[substorage(v0)]
+        src5: SRC5Component::Storage,
+        scores: Map<felt252, u64>,
+        game_overs: Map<felt252, bool>,
+    }
+
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        #[flat]
+        SRC5Event: SRC5Component::Event,
+    }
+
+    #[constructor]
+    fn constructor(ref self: ContractState) {
+        // Register the minigame interface so the token can discover us
+        self.src5.register_interface(IMINIGAME_ID);
+    }
+
+    // Required: implement IMinigameTokenData
+    #[abi(embed_v0)]
+    impl MinigameTokenDataImpl of IMinigameTokenData<ContractState> {
+        fn score(self: @ContractState, token_id: felt252) -> u64 {
+            self.scores.read(token_id)
+        }
+
+        fn game_over(self: @ContractState, token_id: felt252) -> bool {
+            self.game_overs.read(token_id)
+        }
+
+        fn score_batch(self: @ContractState, token_ids: Span<felt252>) -> Array<u64> {
+            let mut results = array![];
+            for token_id in token_ids {
+                results.append(self.scores.read(*token_id));
+            };
+            results
+        }
+
+        fn game_over_batch(self: @ContractState, token_ids: Span<felt252>) -> Array<bool> {
+            let mut results = array![];
+            for token_id in token_ids {
+                results.append(self.game_overs.read(*token_id));
+            };
+            results
+        }
+    }
+
+    // Your game logic
+    #[abi(embed_v0)]
+    impl MyGameImpl of super::IMyGame<ContractState> {
+        fn play(ref self: ContractState, token_id: felt252) {
+            // Your game logic here
+            self.scores.write(token_id, 100);
+            self.game_overs.write(token_id, true);
+        }
+    }
+}
+```
+
+## Next Steps
+
+- [Quick Start](/embeddable-game-standard/building-a-game/quick-start) - Hands-on tutorial building a Number Guess game
+- [Score & Game Over](/embeddable-game-standard/building-a-game/score-and-game-over) - Deep dive on `IMinigameTokenData`
+- [Settings & Objectives](/embeddable-game-standard/building-a-game/settings-and-objectives) - Add configurable difficulty and achievements
+- [Lifecycle & Playability](/embeddable-game-standard/building-a-game/lifecycle) - Token lifecycle, timing, and soulbound tokens

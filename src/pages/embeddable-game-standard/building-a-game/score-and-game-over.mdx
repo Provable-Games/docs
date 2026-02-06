@@ -1,0 +1,132 @@
+---
+layout: docs
+---
+
+# Score & Game Over
+
+The `IMinigameTokenData` trait is the core interface every EGS game must implement. It defines how the token contract reads your game's state.
+
+## IMinigameTokenData
+
+```cairo
+#[starknet::interface]
+pub trait IMinigameTokenData<TState> {
+    /// Returns the current score for a token.
+    fn score(self: @TState, token_id: felt252) -> u64;
+
+    /// Returns whether the game is over for a token.
+    fn game_over(self: @TState, token_id: felt252) -> bool;
+
+    /// Batch version of score() for efficient multi-token queries.
+    fn score_batch(self: @TState, token_ids: Span<felt252>) -> Array<u64>;
+
+    /// Batch version of game_over() for efficient multi-token queries.
+    fn game_over_batch(self: @TState, token_ids: Span<felt252>) -> Array<bool>;
+}
+```
+
+### Score Semantics
+
+- **Type**: `u64` (0 to 18,446,744,073,709,551,615)
+- **Meaning**: Game-defined. Can represent points, time survived, distance traveled, or any numeric metric
+- **Cumulative vs per-game**: Your choice. Number Guess accumulates score across multiple rounds. Tic-Tac-Toe counts wins (1 per win)
+- **Zero is valid**: A score of 0 means the player hasn't scored yet (or the game defines 0 as a valid score)
+
+### Game Over Semantics
+
+- **Type**: `bool`
+- **`false`**: The game session is still active. The player can continue playing
+- **`true`**: The game session has ended. The final score is locked
+- **Irreversible**: Once `game_over` returns `true` for a token, it should not revert to `false`
+
+### Batch Methods
+
+Batch methods exist for gas efficiency. When a platform needs to check scores for 50 tokens, one `score_batch()` call is far cheaper than 50 individual `score()` calls.
+
+Your implementation should iterate over the span:
+
+```cairo
+fn score_batch(self: @ContractState, token_ids: Span<felt252>) -> Array<u64> {
+    let mut results = array![];
+    for token_id in token_ids {
+        results.append(self.scores.read(*token_id));
+    };
+    results
+}
+```
+
+## The update_game() Flow
+
+When `update_game(token_id)` is called on the MinigameToken contract:
+
+1. Token looks up the game contract address for this token
+2. Token calls `score(token_id)` on your game via `IMinigameTokenData`
+3. Token calls `game_over(token_id)` on your game
+4. If the score changed, token emits a `ScoreUpdate` event
+5. If `game_over` is `true` and wasn't before, token emits a `GameOver` event
+6. If the minter supports `IMetagameCallback` (SRC5 check), token dispatches callbacks
+
+```
+MinigameToken                         Your Game
+     │                                    │
+     │── score(token_id) ────────────────▶│
+     │◀── returns 150 ───────────────────│
+     │                                    │
+     │── game_over(token_id) ────────────▶│
+     │◀── returns true ──────────────────│
+     │                                    │
+     │── [emit ScoreUpdate] ──────────▶  (indexed)
+     │── [emit GameOver] ─────────────▶  (indexed)
+     │── [callback to minter] ────────▶  (if supported)
+```
+
+### Who Calls update_game()?
+
+Anyone can call it. Common patterns:
+- **The game itself** calls it after each action (most responsive)
+- **The player** calls it when ready to finalize
+- **A platform** calls it to sync before checking results
+- **An automated keeper** calls it periodically
+
+## Optional: IMinigameDetails
+
+For richer display in frontends, implement `IMinigameDetails`:
+
+```cairo
+#[starknet::interface]
+pub trait IMinigameDetails<TState> {
+    /// Human-readable name for a token's game state
+    fn token_name(self: @TState, token_id: felt252) -> ByteArray;
+
+    /// Description of the current game state
+    fn token_description(self: @TState, token_id: felt252) -> ByteArray;
+
+    /// Key-value pairs describing game state (e.g., moves, board, items)
+    fn game_details(self: @TState, token_id: felt252) -> Array<GameDetail>;
+
+    /// Batch versions
+    fn token_name_batch(self: @TState, token_ids: Span<felt252>) -> Array<ByteArray>;
+    fn token_description_batch(self: @TState, token_ids: Span<felt252>) -> Array<ByteArray>;
+    fn game_details_batch(self: @TState, token_ids: Span<felt252>) -> Array<Array<GameDetail>>;
+}
+```
+
+The `GameDetail` struct:
+
+```cairo
+#[derive(Drop, Serde)]
+pub struct GameDetail {
+    pub name: ByteArray,   // e.g., "Board State", "Guesses Remaining"
+    pub value: ByteArray,  // e.g., "X.O|..X|O..", "3"
+}
+```
+
+This allows frontends to display game-specific information without hardcoding knowledge of each game's internals.
+
+## Design Guidance
+
+**Keep score() and game_over() cheap.** These are view functions called frequently. Read from storage directly; don't compute on the fly.
+
+**Make game_over permanent.** Once a game ends, the result should be immutable. This ensures leaderboards and tournament results are trustworthy.
+
+**Use cumulative scoring carefully.** If your game allows multiple rounds per token (like Number Guess), decide whether score accumulates or resets. Document this for platform integrators.

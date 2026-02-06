@@ -1,0 +1,260 @@
+---
+layout: docs
+---
+
+# DenshokanClient
+
+The `DenshokanClient` is the core class for interacting with EGS data. It provides methods for querying games, tokens, players, and activity through REST API and Starknet RPC.
+
+## Configuration
+
+```typescript
+import { DenshokanClient } from "@provable-games/denshokan-sdk";
+
+const client = new DenshokanClient({
+  chain: "mainnet",           // "mainnet" | "sepolia"
+  apiUrl: "https://...",      // Override API URL
+  wsUrl: "wss://...",         // Override WebSocket URL
+  rpcUrl: "https://...",      // Override RPC URL
+  primarySource: "api",       // "api" | "rpc" (default: "api")
+  fetch: {
+    timeout: 10000,           // Request timeout (ms)
+    maxRetries: 3,            // Max retry attempts
+    baseBackoff: 1000,        // Base backoff delay (ms)
+    maxBackoff: 30000,        // Max backoff delay (ms)
+  },
+  ws: {
+    maxReconnectAttempts: 10, // Max reconnect attempts
+    reconnectBaseDelay: 1000, // Base reconnect delay (ms)
+  },
+});
+```
+
+## Games
+
+```typescript
+// List games with pagination
+const games = await client.getGames({ limit: 20, offset: 0 });
+// Returns: { data: Game[], total: number }
+
+// Get a single game (API with RPC fallback)
+const game = await client.getGame("0x1234...");
+// Returns: Game
+
+// Get game statistics
+const stats = await client.getGameStats("0x1234...");
+// Returns: GameStats { totalTokens, completedGames, activeGames, uniquePlayers }
+```
+
+## Tokens
+
+```typescript
+// List tokens with filtering
+const tokens = await client.getTokens({
+  gameAddress: "0x1234...",
+  owner: "0x5678...",
+  settingsId: 2,
+  gameOver: true,
+  playable: false,
+  soulbound: false,
+  limit: 50,
+  offset: 0,
+});
+// Returns: { data: Token[], total: number }
+
+// Get a single token (API with RPC fallback)
+const token = await client.getToken("0xabc...");
+// Returns: Token
+
+// Get score history
+const scores = await client.getTokenScores("0xabc...", 10);
+// Returns: ScoreHistory[]
+```
+
+### Token Filter Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `gameAddress` | `string` | Filter by game contract address |
+| `gameId` | `number` | Filter by game ID |
+| `owner` | `string` | Filter by token owner |
+| `settingsId` | `number` | Filter by settings configuration |
+| `objectiveId` | `number` | Filter by objective |
+| `minterAddress` | `string` | Filter by who minted the token |
+| `soulbound` | `boolean` | Filter by soulbound status |
+| `playable` | `boolean` | Filter by playability |
+| `gameOver` | `boolean` | Filter by game completion |
+| `mintedAfter` | `number` | Filter by mint timestamp (after) |
+| `mintedBefore` | `number` | Filter by mint timestamp (before) |
+| `limit` | `number` | Page size |
+| `offset` | `number` | Page offset |
+
+## Players
+
+```typescript
+// Get player's tokens
+const tokens = await client.getPlayerTokens("0x5678...", {
+  gameAddress: "0x1234...",  // Optional: filter by game
+});
+// Returns: { data: Token[], total: number }
+
+// Get player statistics
+const stats = await client.getPlayerStats("0x5678...");
+// Returns: PlayerStats { totalTokens, gamesPlayed, completedGames, totalScore }
+```
+
+## Settings & Objectives
+
+```typescript
+// Get settings for a game
+const settings = await client.getSettingsDetails("0x1234...", {
+  limit: 10, offset: 0,
+});
+// Returns: PaginatedResult<GameSettingDetails>
+
+// Get a specific setting
+const setting = await client.getSettingDetails(2, "0x1234...");
+// Returns: GameSettingDetails { id, name, description, settings }
+
+// Get objectives for a game
+const objectives = await client.getObjectivesDetails("0x1234...");
+// Returns: PaginatedResult<GameObjectiveDetails>
+```
+
+## RPC Methods
+
+Direct contract reads when you need on-chain truth:
+
+### ERC721
+
+```typescript
+const balance = await client.balanceOf("0x5678...");   // bigint
+const owner = await client.ownerOf("0xabc...");        // string
+const uri = await client.tokenUri("0xabc...");         // string
+const name = await client.name();                       // string
+const supply = await client.totalSupply();              // bigint
+```
+
+### Token Metadata (Batch)
+
+```typescript
+const metadata = await client.tokenMetadataBatch(["0xa..", "0xb.."]);
+// Returns: TokenMetadata[]
+
+const states = await client.tokenMutableStateBatch(["0xa..", "0xb.."]);
+// Returns: { gameOver: boolean, completedObjective: boolean }[]
+
+const playable = await client.isPlayableBatch(["0xa..", "0xb.."]);
+// Returns: boolean[]
+```
+
+### Game Contract Reads
+
+```typescript
+const score = await client.score("0xabc...", "0x1234...");   // bigint
+const over = await client.gameOver("0xabc...", "0x1234..."); // boolean
+
+// Batch
+const scores = await client.scoreBatch(
+  ["0xa..", "0xb.."],  // token IDs
+  "0x1234...",          // game address
+);
+```
+
+## Write Operations
+
+```typescript
+// Mint a new game token
+const calls = client.mint({
+  gameId: 1,
+  settingsId: 2,
+  to: playerAddress,
+  soulbound: false,
+});
+// Returns: Call[] (for starknet.js account.execute())
+
+// Update game state (sync score/game_over)
+const calls = client.updateGame(tokenId);
+
+// Update player name
+const calls = client.updatePlayerName(tokenId, "NewName");
+```
+
+## Utilities
+
+### Decode Token ID
+
+Extract all 13 packed fields without any RPC call:
+
+```typescript
+const decoded = client.decodeTokenId("0x123...");
+// Returns: DecodedTokenId {
+//   tokenId: bigint,
+//   gameId: number,
+//   mintedBy: bigint,
+//   settingsId: number,
+//   mintedAt: Date,
+//   startDelay: number,
+//   endDelay: number,
+//   objectiveId: number,
+//   soulbound: boolean,
+//   hasContext: boolean,
+//   paymaster: boolean,
+//   txHash: number,
+//   salt: number,
+//   metadata: number,
+// }
+```
+
+### Connection Status
+
+```typescript
+const status = client.getConnectionStatus();
+// Returns: { api: boolean, ws: boolean, rpc: boolean }
+```
+
+## Error Handling
+
+```typescript
+import {
+  DenshokanError,
+  ApiError,
+  RpcError,
+  TokenNotFoundError,
+  DataSourceError,
+} from "@provable-games/denshokan-sdk";
+
+try {
+  const token = await client.getToken(id);
+} catch (error) {
+  if (error instanceof TokenNotFoundError) {
+    console.log(`Token ${error.tokenId} not found`);
+  } else if (error instanceof ApiError) {
+    console.log(`API error: ${error.statusCode}`);
+  } else if (error instanceof DataSourceError) {
+    console.log("Both API and RPC failed");
+  }
+}
+```
+
+### Error Hierarchy
+
+| Error | Description |
+|-------|-------------|
+| `DenshokanError` | Base error class |
+| `ApiError` | REST API returned an error (has `statusCode`) |
+| `RpcError` | Starknet RPC call failed |
+| `RateLimitError` | Rate limit exceeded (has `retryAfter`) |
+| `TimeoutError` | Request timed out |
+| `AbortError` | Request was aborted |
+| `TokenNotFoundError` | Token doesn't exist |
+| `GameNotFoundError` | Game doesn't exist |
+| `InvalidChainError` | Invalid chain specified |
+| `DataSourceError` | Both primary and fallback sources failed |
+
+## Cleanup
+
+```typescript
+// Disconnect WebSocket and cleanup
+client.disconnect();
+```

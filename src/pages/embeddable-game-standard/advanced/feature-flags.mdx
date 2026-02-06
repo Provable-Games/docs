@@ -1,0 +1,144 @@
+---
+layout: docs
+---
+
+# Feature Flags & Optimization
+
+The MinigameToken contract uses compile-time feature flags to control which extensions are included. This is critical for staying under Starknet's 4MB contract size limit.
+
+## The Problem
+
+A fully-featured MinigameToken with all extensions (settings, objectives, context, renderer, soulbound, lifecycle, minter, enumerable) can exceed 4MB when compiled. Many games don't need every feature.
+
+## config.cairo
+
+The token package defines boolean constants that enable or disable features at compile time:
+
+```cairo
+// packages/token/src/config.cairo
+
+pub const CORE_TOKEN_ENABLED: bool = true;        // Base lifecycle (always on)
+pub const ERC721_ENABLED: bool = true;             // Standard NFT (always on)
+pub const SRC5_ENABLED: bool = true;               // Interface discovery (always on)
+pub const MINTER_ENABLED: bool = true;             // Minter tracking
+pub const MULTI_GAME_ENABLED: bool = true;         // Multiple game support
+pub const OBJECTIVES_ENABLED: bool = true;         // Objective tracking
+pub const SETTINGS_ENABLED: bool = true;           // Settings support
+pub const SOULBOUND_ENABLED: bool = true;          // Transfer restriction
+pub const CONTEXT_ENABLED: bool = true;            // Platform context data
+pub const RENDERER_ENABLED: bool = true;           // Custom token renderers
+pub const LIFECYCLE_ENABLED: bool = true;           // Start/end timing
+pub const PLAYABILITY_ENABLED: bool = true;         // is_playable() checks
+pub const COMPILE_TIME_INTERFACES: bool = true;     // Use compile-time interface checks
+```
+
+## How It Works
+
+Throughout the token contract, feature flags gate code paths:
+
+```cairo
+fn mint(ref self: ContractState, params: MintParams) -> felt252 {
+    // Core minting logic (always runs)
+    let token_id = pack_token_id(...);
+    self.erc721.mint(params.to, token_id.into());
+
+    // Conditional: only if settings are enabled
+    if SETTINGS_ENABLED {
+        if let Option::Some(settings_id) = params.settings_id {
+            // Store settings association
+        }
+    }
+
+    // Conditional: only if objectives are enabled
+    if OBJECTIVES_ENABLED {
+        if let Option::Some(objective_id) = params.objective_id {
+            // Store objective association
+        }
+    }
+
+    // Conditional: only if context is enabled
+    if CONTEXT_ENABLED {
+        if let Option::Some(context) = params.context {
+            // Store context data
+        }
+    }
+
+    token_id
+}
+```
+
+Cairo's compiler performs dead code elimination on `const bool` branches. When a flag is `false`, the entire branch is removed from the compiled output, reducing contract size.
+
+## Minimal vs Full Contract
+
+### Minimal (Core Only)
+
+```cairo
+pub const CORE_TOKEN_ENABLED: bool = true;
+pub const ERC721_ENABLED: bool = true;
+pub const SRC5_ENABLED: bool = true;
+pub const MINTER_ENABLED: bool = false;
+pub const MULTI_GAME_ENABLED: bool = false;
+pub const OBJECTIVES_ENABLED: bool = false;
+pub const SETTINGS_ENABLED: bool = false;
+pub const SOULBOUND_ENABLED: bool = false;
+pub const CONTEXT_ENABLED: bool = false;
+pub const RENDERER_ENABLED: bool = false;
+pub const LIFECYCLE_ENABLED: bool = false;
+pub const PLAYABILITY_ENABLED: bool = false;
+```
+
+This gives you a bare-bones ERC721 with game lifecycle - just mint, score, and game over.
+
+### Full (All Features)
+
+All flags set to `true`. This includes every extension but produces the largest contract.
+
+### Recommended (Most Games)
+
+```cairo
+pub const CORE_TOKEN_ENABLED: bool = true;
+pub const ERC721_ENABLED: bool = true;
+pub const SRC5_ENABLED: bool = true;
+pub const MINTER_ENABLED: bool = true;
+pub const MULTI_GAME_ENABLED: bool = true;
+pub const OBJECTIVES_ENABLED: bool = true;
+pub const SETTINGS_ENABLED: bool = true;
+pub const SOULBOUND_ENABLED: bool = true;
+pub const CONTEXT_ENABLED: bool = false;     // Only if using MetagameComponent
+pub const RENDERER_ENABLED: bool = false;     // Only if using custom renderers
+pub const LIFECYCLE_ENABLED: bool = true;
+pub const PLAYABILITY_ENABLED: bool = true;
+pub const COMPILE_TIME_INTERFACES: bool = true;
+```
+
+## NoOp Traits
+
+When a feature is disabled, the contract still needs to compile. Disabled features provide NoOp implementations that do nothing:
+
+```cairo
+// When SETTINGS_ENABLED = false, settings methods return defaults
+fn settings_id(self: @ContractState, token_id: felt252) -> u32 {
+    0 // No settings support
+}
+
+fn settings_id_batch(self: @ContractState, token_ids: Span<felt252>) -> Array<u32> {
+    let mut results = array![];
+    for _ in token_ids {
+        results.append(0);
+    };
+    results
+}
+```
+
+This ensures external callers always get a valid response, even if the feature isn't supported. The SRC5 interface check should be used by callers to determine if a feature is genuinely supported.
+
+## Customizing Flags
+
+To customize flags for your deployment:
+
+1. Fork or vendor the `game_components_token` package
+2. Modify `config.cairo` with your desired flags
+3. Build and deploy
+
+The Denshokan deployment uses all flags enabled (it deploys a separate Viewer contract for filtering to keep the main contract under 4MB).
