@@ -209,8 +209,16 @@ const decoded = client.decodeTokenId("0x123...");
 ### Connection Status
 
 ```typescript
-const status = client.getConnectionStatus();
-// Returns: { api: boolean, ws: boolean, rpc: boolean }
+// Check WebSocket connection
+const connected = client.wsConnected; // boolean
+
+// Listen for connection changes
+const unsub = client.onWsConnectionChange((connected) => {
+  console.log("WebSocket:", connected ? "up" : "down");
+});
+
+// Later: stop listening
+unsub();
 ```
 
 ## Error Handling

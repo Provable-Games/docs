@@ -6,14 +6,107 @@ layout: docs
 
 The SDK provides real-time event subscriptions via WebSocket. Subscribe to game events for live leaderboards, activity feeds, and instant notifications.
 
+## Architecture
+
+Events flow from the blockchain through a multi-layered pipeline:
+
+```
+Blockchain Event (e.g. score update)
+    ↓
+Apibara Indexer → writes to PostgreSQL
+    ↓
+PostgreSQL LISTEN/NOTIFY triggers
+    ↓
+API Server broadcasts to subscribed WebSocket clients
+    ↓
+denshokan-sdk WebSocketManager
+    ↓
+Event mappers (snake_case → camelCase)
+    ↓
+React hooks / callback handlers
+```
+
+The API server uses PostgreSQL triggers on the `tokens`, `games`, and `minters` tables. When data changes, triggers fire `NOTIFY` on named channels, and the API server broadcasts to all subscribed WebSocket clients.
+
 ## Channels
 
-| Channel | Events | Description |
-|---------|--------|-------------|
-| `tokens` | Token state changes | Any update to a token (score, game over, name) |
-| `scores` | Score updates | When a token's score changes |
-| `game_over` | Game completions | When a game session ends |
-| `mints` | New mints | When new game tokens are minted |
+| Channel | Event Type | Description |
+|---------|-----------|-------------|
+| `tokens` | `TokenUpdateEvent` | Any token state change (score update, game over, or mint) |
+| `scores` | `ScoreEvent` | When a token's score changes |
+| `game_over` | `GameOverEvent` | When a game session ends |
+| `mints` | `MintEvent` | When new game tokens are minted |
+| `games` | `NewGameEvent` | When a new game is registered |
+| `minters` | `NewMinterEvent` | When a new minter is registered |
+
+## Event Payloads
+
+Each channel delivers a typed event. The SDK automatically maps snake_case server data to camelCase TypeScript types.
+
+```typescript
+interface ScoreEvent {
+  tokenId: string;
+  gameId: number;
+  score: number;
+  ownerAddress: string;
+  playerName: string;
+}
+
+interface GameOverEvent {
+  tokenId: string;
+  gameId: number;
+  score: number;
+  ownerAddress: string;
+  playerName: string;
+  completedAllObjectives: boolean;
+}
+
+interface MintEvent {
+  tokenId: string;
+  gameId: number;
+  ownerAddress: string;
+  mintedBy: string;
+  settingsId: number;
+}
+
+// TokenUpdateEvent is polymorphic — it aggregates all token-related events
+interface TokenUpdateEvent {
+  type: "scoreUpdate" | "gameOver" | "minted";
+  tokenId: string;
+  gameId: number;
+  score?: number;
+  ownerAddress?: string;
+}
+
+interface NewGameEvent {
+  gameId: number;
+  contractAddress: string;
+  name: string;
+}
+
+interface NewMinterEvent {
+  minterId: number;
+  contractAddress: string;
+  name: string;
+  blockNumber: number;
+}
+```
+
+All types are exported from the SDK:
+
+```typescript
+import type {
+  WSChannel,
+  WSMessage,
+  ScoreEvent,
+  GameOverEvent,
+  MintEvent,
+  TokenUpdateEvent,
+  NewGameEvent,
+  NewMinterEvent,
+  WSChannelPayloadMap,
+} from "@provable-games/denshokan-sdk";
+```
 
 ## Using the Client
 
@@ -41,7 +134,87 @@ unsubscribe();
 client.disconnect();
 ```
 
-## React Hook
+## Typed React Hooks (Recommended)
+
+The SDK provides six typed hooks — one per channel. Each returns the last event, a buffered event history, and connection state.
+
+### useScoreUpdates
+
+```tsx
+import { useScoreUpdates } from "@provable-games/denshokan-sdk/react";
+
+function LiveScores({ gameId }: { gameId: number }) {
+  const { lastEvent, events, isConnected } = useScoreUpdates({
+    gameIds: [gameId],
+    bufferSize: 100,
+  });
+
+  return (
+    <div>
+      <p>Connected: {isConnected ? "Yes" : "No"}</p>
+      <p>Latest: {lastEvent?.playerName} scored {lastEvent?.score}</p>
+      <ul>
+        {events.map((e, i) => (
+          <li key={i}>{e.playerName}: {e.score}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### All Typed Hooks
+
+| Hook | Channel | Payload |
+|------|---------|---------|
+| `useScoreUpdates` | `scores` | `ScoreEvent` |
+| `useGameOverEvents` | `game_over` | `GameOverEvent` |
+| `useMintEvents` | `mints` | `MintEvent` |
+| `useTokenUpdates` | `tokens` | `TokenUpdateEvent` |
+| `useNewGames` | `games` | `NewGameEvent` |
+| `useNewMinters` | `minters` | `NewMinterEvent` |
+
+### Hook Options
+
+```typescript
+interface UseChannelOptions<C extends WSChannel> {
+  gameIds?: number[];       // Filter to specific game IDs (server-side)
+  bufferSize?: number;      // Max events to keep in memory (default: 50)
+  enabled?: boolean;        // Enable/disable the subscription (default: true)
+  onEvent?: (event: WSChannelPayloadMap[C]) => void;  // Callback per event
+}
+```
+
+### Hook Return Value
+
+```typescript
+interface UseChannelResult<C extends WSChannel> {
+  lastEvent: WSChannelPayloadMap[C] | null;  // Most recent event
+  events: WSChannelPayloadMap[C][];          // Buffered event history
+  isConnected: boolean;                       // WebSocket connection state
+  clear: () => void;                          // Clear event buffer
+}
+```
+
+### useChannelSubscription (Generic)
+
+All typed hooks wrap `useChannelSubscription`. You can use it directly for type-safe access to any channel:
+
+```tsx
+import { useChannelSubscription } from "@provable-games/denshokan-sdk/react";
+
+const { lastEvent, events, isConnected } = useChannelSubscription("scores", {
+  gameIds: [1, 2],
+  bufferSize: 25,
+  onEvent: (event) => {
+    console.log("New score:", event.score);
+  },
+});
+```
+
+## Low-Level Hook
+
+For raw message access, use `useSubscription`:
 
 ```tsx
 import { useSubscription } from "@provable-games/denshokan-sdk/react";
@@ -50,14 +223,14 @@ function LiveLeaderboard({ gameId }: { gameId: number }) {
   const [scores, setScores] = useState<Map<string, number>>(new Map());
 
   useSubscription(
-    ["scores", "game_over"],  // channels
+    ["scores", "game_over"],
     (message) => {
       if (message.channel === "scores") {
-        const { tokenId, score } = message.data as any;
-        setScores(prev => new Map(prev).set(tokenId, score));
+        const data = message.data as ScoreEvent;
+        setScores(prev => new Map(prev).set(data.tokenId, data.score));
       }
     },
-    [gameId],  // optional: filter by game IDs
+    [gameId],
   );
 
   return (
@@ -76,9 +249,9 @@ function LiveLeaderboard({ gameId }: { gameId: number }) {
 
 ```typescript
 function useSubscription(
-  channels: WSChannel[],      // ["tokens" | "scores" | "game_over" | "mints"]
+  channels: WSChannel[],
   handler: WSEventHandler,    // (message: WSMessage) => void
-  gameIds?: number[],         // Optional: filter by game IDs
+  gameIds?: number[],
 ): void;
 ```
 
@@ -87,14 +260,44 @@ The hook manages connection lifecycle automatically:
 - Re-subscribes if channels or gameIds change
 - Disconnects when the component unmounts
 
+## Connection Status
+
+Monitor WebSocket connection state in your UI:
+
+```tsx
+import { useConnectionStatus } from "@provable-games/denshokan-sdk/react";
+
+function ConnectionBadge() {
+  const { isConnected } = useConnectionStatus();
+
+  return (
+    <span style={{ color: isConnected ? "green" : "red" }}>
+      {isConnected ? "Live" : "Reconnecting..."}
+    </span>
+  );
+}
+```
+
+For programmatic use outside React:
+
+```typescript
+// Check current status
+const connected = client.wsConnected;
+
+// Listen for changes
+const unsub = client.onWsConnectionChange((connected) => {
+  console.log("WebSocket:", connected ? "connected" : "disconnected");
+});
+```
+
 ## Message Format
 
 ```typescript
 interface WSMessage {
-  channel: string;     // "scores", "game_over", "tokens", "mints"
-  data: unknown;       // Channel-specific payload
+  channel: string;     // "scores", "game_over", "tokens", "mints", "games", "minters"
+  data: unknown;       // Channel-specific payload (use typed hooks for automatic typing)
   _timing?: {
-    serverTs: number;  // Server timestamp
+    serverTs: number;  // Server timestamp for latency measurement
   };
 }
 ```
@@ -102,10 +305,10 @@ interface WSMessage {
 ## Connection Management
 
 The WebSocket manager handles:
-- **Auto-reconnect** with exponential backoff (1s, 2s, 4s, ... up to 30s)
+- **Auto-reconnect** with exponential backoff (1s, 2s, 4s, ... capped at 30s)
 - **Max 10 reconnect attempts** before giving up
 - **Re-subscription** on reconnect (all active subscriptions are restored)
-- **Idle disconnect** if no active subscriptions remain
+- **Smart retry** — only attempts reconnection if active subscriptions exist
 
 ### Manual Connection
 
@@ -114,7 +317,7 @@ The WebSocket manager handles:
 client.connect();
 
 // Check connection status
-const connected = client.getConnectionStatus().ws;
+const connected = client.wsConnected;
 
 // Disconnect
 client.disconnect();
@@ -122,7 +325,7 @@ client.disconnect();
 
 ## Combining with Data Hooks
 
-A common pattern is to use data hooks for initial load and WebSocket for live updates:
+A common pattern is to use data hooks for initial load and typed subscription hooks for live updates:
 
 ```tsx
 function GameDashboard({ gameAddress }: { gameAddress: string }) {
@@ -132,17 +335,26 @@ function GameDashboard({ gameAddress }: { gameAddress: string }) {
     limit: 50,
   });
 
-  // Refetch when a game completes
-  useSubscription(
-    ["game_over"],
-    () => refetch(),
-    [gameId],
-  );
+  // Automatically refetch when a game completes
+  useGameOverEvents({
+    onEvent: () => refetch(),
+  });
 
-  return <TokenList tokens={tokens?.data ?? []} />;
+  // Show live score updates
+  const { lastEvent: latestScore } = useScoreUpdates();
+
+  return (
+    <div>
+      {latestScore && (
+        <p>Latest: {latestScore.playerName} scored {latestScore.score}</p>
+      )}
+      <TokenList tokens={tokens?.data ?? []} />
+    </div>
+  );
 }
 ```
 
 This gives you:
 - Instant initial render from the API
-- Automatic updates when state changes on-chain
+- Automatic list refresh when games complete
+- Live score ticker from WebSocket

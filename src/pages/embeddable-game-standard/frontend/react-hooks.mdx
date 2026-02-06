@@ -217,9 +217,72 @@ function GameSettings({ gameAddress }: { gameAddress: string }) {
 }
 ```
 
+## Subscription Hooks
+
+Type-safe real-time event subscriptions. Each hook subscribes to a specific WebSocket channel and returns typed events with buffering.
+
+```tsx
+import {
+  useScoreUpdates,
+  useGameOverEvents,
+  useMintEvents,
+  useTokenUpdates,
+  useNewGames,
+  useNewMinters,
+  useConnectionStatus,
+} from "@provable-games/denshokan-sdk/react";
+
+function LiveDashboard({ gameId }: { gameId: number }) {
+  const { lastEvent, events, isConnected, clear } = useScoreUpdates({
+    gameIds: [gameId],
+    bufferSize: 100,
+    onEvent: (event) => console.log("Score:", event.score),
+  });
+
+  const { isConnected: wsConnected } = useConnectionStatus();
+
+  return (
+    <div>
+      <p>{wsConnected ? "Connected" : "Reconnecting..."}</p>
+      <p>Latest: {lastEvent?.playerName} — {lastEvent?.score}</p>
+      <button onClick={clear}>Clear History</button>
+    </div>
+  );
+}
+```
+
+| Hook | Channel | Payload Type |
+|------|---------|-------------|
+| `useScoreUpdates` | `scores` | `ScoreEvent` |
+| `useGameOverEvents` | `game_over` | `GameOverEvent` |
+| `useMintEvents` | `mints` | `MintEvent` |
+| `useTokenUpdates` | `tokens` | `TokenUpdateEvent` |
+| `useNewGames` | `games` | `NewGameEvent` |
+| `useNewMinters` | `minters` | `NewMinterEvent` |
+
+Options and return types:
+
+```typescript
+interface UseChannelOptions<C extends WSChannel> {
+  gameIds?: number[];       // Server-side game ID filter
+  bufferSize?: number;      // Max events in memory (default: 50)
+  enabled?: boolean;        // Enable/disable subscription (default: true)
+  onEvent?: (event: WSChannelPayloadMap[C]) => void;
+}
+
+interface UseChannelResult<C extends WSChannel> {
+  lastEvent: WSChannelPayloadMap[C] | null;
+  events: WSChannelPayloadMap[C][];
+  isConnected: boolean;
+  clear: () => void;
+}
+```
+
+For full details on channels, event payloads, and the low-level `useSubscription` hook, see [WebSocket Subscriptions](/embeddable-game-standard/frontend/websockets).
+
 ## Hook Return Type
 
-All hooks return the same shape:
+All data hooks return the same shape:
 
 ```typescript
 interface UseAsyncResult<T> {

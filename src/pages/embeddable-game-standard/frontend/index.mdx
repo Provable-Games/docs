@@ -129,7 +129,18 @@ const games = await client.getGames();
 
 ### 3. WebSocket Subscriptions
 
-Best for live dashboards, real-time leaderboards, and notifications.
+Best for live dashboards, real-time leaderboards, and notifications. Six typed hooks provide per-channel subscriptions with event buffering:
+
+```tsx
+import { useScoreUpdates } from "@provable-games/denshokan-sdk/react";
+
+const { lastEvent, events, isConnected } = useScoreUpdates({
+  gameIds: [1],
+  bufferSize: 50,
+});
+```
+
+Or use the client directly:
 
 ```typescript
 const unsub = client.subscribe(
