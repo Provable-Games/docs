@@ -189,6 +189,10 @@ export default defineConfig({
             text: "Rewards",
             link: "/summit/rewards",
           },
+          {
+            text: "Quests",
+            link: "/summit/quests",
+          },
         ],
       },
     ],
@@ -284,6 +288,14 @@ export default defineConfig({
           {
             text: "Golden Token",
             link: "/lootsurvivor/golden-token",
+          },
+          {
+            text: "Skull Token",
+            link: "/lootsurvivor/skull-token",
+          },
+          {
+            text: "Corpse Token",
+            link: "/lootsurvivor/corpse-token",
           },
           // {
           //   text: "Technical Documentation",
