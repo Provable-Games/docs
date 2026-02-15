@@ -1,0 +1,75 @@
+---
+layout: docs
+---
+
+# Embeddable Game Standard: FAQ
+
+Developer-oriented FAQ for the Embeddable Game Standard (EGS) on Starknet.
+
+## General
+
+**What is the Embeddable Game Standard?**
+
+EGS is a standard interface for Starknet games that enables interoperability across platforms. It standardizes game contract functionalities including ERC721 token minting, metadata management, score tracking, and settings — so any compliant game can be embedded in any compliant platform.
+
+**What problem does EGS solve?**
+
+Without EGS, each game needs custom integration for every platform. EGS provides a common interface so games can be listed in tournaments, embedded in other applications, and tracked on leaderboards without per-game integration work.
+
+**What games currently use EGS?**
+
+Dark Shuffle, Loot Survivor, zKube, Nums, and Dope Wars all implement the EGS interface.
+
+## Integration
+
+**How do I implement EGS in my game?**
+
+1. Add the tournaments dependency to your `Scarb.toml`: `tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }`
+2. Import and embed the `game_component` in your contract
+3. Implement required storage and events (Game, ERC721, SRC5)
+4. Expose required interfaces: ERC721, metadata, and settings
+5. Call `initializer()` during contract setup with your game's metadata
+
+See the [Implementation Guide](/embeddable-game-standard/implementation) for a full walkthrough.
+
+**What are the key functions I need to implement?**
+
+- `mint(player_name, settings_id, start, end, to)` — Mint a new game instance as an ERC721 token
+- `game_metadata()` — Return game contract metadata (name, description, developer, etc.)
+- `token_metadata(token_id)` — Return metadata for a specific game token
+- `score(game_id)` — Return a player's score for validation and leaderboards
+- `setting_exists(settings_id)` — Check if a settings profile exists
+- `emit_metadata_update(game_id)` — Emit event for offchain indexing
+
+Full reference: [Key Functions](/embeddable-game-standard/key-functions).
+
+**What is the settings system?**
+
+Settings allow custom game modes by linking a unique `settings_id` to each game instance. They enable difficulty levels, speedruns, seasonal events, and community challenges. Settings are stored onchain and are composable across games, quests, and tournaments. See: [Game Settings](/embeddable-game-standard/implementation/settings).
+
+**How do platforms embed my game?**
+
+Platforms call `mint()` on your game contract to create a game instance (an NFT) for each player. They then call `score()` to validate results for leaderboards and prizes. See: [Embedding Games](/embeddable-game-standard/implementation/embedding-games).
+
+## Platforms
+
+**What platforms support EGS games?**
+
+- **Budokan**: Permissionless tournament protocol. Any EGS game can be used in tournaments with custom entry fees and prize pools.
+- **Eternum**: MMO that embeds EGS games as quests, extending gameplay through mini-game integrations.
+
+**What are the benefits for game developers?**
+
+Reach new audiences without building platform integrations. Your game can be used in tournaments, embedded as quests, and listed across multiple applications. Focus on gameplay and innovation rather than infrastructure.
+
+**What are the benefits for platform developers?**
+
+Access a library of onchain games without building from scratch. Add new content and engagement through variety. Each game instance is a unique, verifiable NFT.
+
+## More Resources
+
+- [Overview](/embeddable-game-standard)
+- [Key Functions](/embeddable-game-standard/key-functions)
+- [Implementation Guide](/embeddable-game-standard/implementation)
+- [Games](/embeddable-game-standard/games)
+- [Applications](/embeddable-game-standard/applications)
