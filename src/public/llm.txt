@@ -37,7 +37,7 @@ Yes, you'll need a compatible wallet to play. See the [Onboarding Guide](/darksh
 
 **Is Dark Shuffle free to play?**
 
-Yes! You can start and play games for free. Some tournaments or special events may have entry requirements.
+Yes! You can start and play games for free. Some [Budokan](/budokan) tournaments or special events may have entry requirements.
 
 ## Gameplay & Progression
 
@@ -105,11 +105,11 @@ Auto-Draft skips the manual draft phase and gives you a pre-built deck. Great fo
 
 **How do I join a tournament?**
 
-There is a link to Budokan tournaments on the home page, see the [Enter Tournaments](/budokan/guide/enter) section on how to enter.
+Tournaments are hosted on [Budokan](/budokan), the permissionless tournament platform. There is a link to Budokan tournaments on the home page. See the [Enter Tournaments](/budokan/guide/enter) section on how to enter.
 
 **Are there prizes?**
 
-Yes! Many tournaments offer prizes for top players. Details are listed in each event.
+Yes! Many [Budokan](/budokan) tournaments offer prizes for top players. Details are listed in each event.
 
 ***
 
@@ -644,6 +644,87 @@ Eternum, a next-generation MMO, leverages EGS to embed mini-games directly into 
 * [Game Integration Guide](/embeddable-game-standard/implementation)
 
 If you have questions or want to feature your app here, contact the Budokan team or join the community!
+
+
+
+---
+
+file: docs/embeddable-game-standard/faq.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: FAQ
+
+Developer-oriented FAQ for the Embeddable Game Standard (EGS) on Starknet.
+
+## General
+
+**What is the Embeddable Game Standard?**
+
+EGS is a standard interface for Starknet games that enables interoperability across platforms. It standardizes game contract functionalities including ERC721 token minting, metadata management, score tracking, and settings — so any compliant game can be embedded in any compliant platform.
+
+**What problem does EGS solve?**
+
+Without EGS, each game needs custom integration for every platform. EGS provides a common interface so games can be listed in tournaments, embedded in other applications, and tracked on leaderboards without per-game integration work.
+
+**What games currently use EGS?**
+
+Dark Shuffle, Loot Survivor, zKube, Nums, and Dope Wars all implement the EGS interface.
+
+## Integration
+
+**How do I implement EGS in my game?**
+
+1. Add the tournaments dependency to your `Scarb.toml`: `tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }`
+2. Import and embed the `game_component` in your contract
+3. Implement required storage and events (Game, ERC721, SRC5)
+4. Expose required interfaces: ERC721, metadata, and settings
+5. Call `initializer()` during contract setup with your game's metadata
+
+See the [Implementation Guide](/embeddable-game-standard/implementation) for a full walkthrough.
+
+**What are the key functions I need to implement?**
+
+* `mint(player_name, settings_id, start, end, to)` — Mint a new game instance as an ERC721 token
+* `game_metadata()` — Return game contract metadata (name, description, developer, etc.)
+* `token_metadata(token_id)` — Return metadata for a specific game token
+* `score(game_id)` — Return a player's score for validation and leaderboards
+* `setting_exists(settings_id)` — Check if a settings profile exists
+* `emit_metadata_update(game_id)` — Emit event for offchain indexing
+
+Full reference: [Key Functions](/embeddable-game-standard/key-functions).
+
+**What is the settings system?**
+
+Settings allow custom game modes by linking a unique `settings_id` to each game instance. They enable difficulty levels, speedruns, seasonal events, and community challenges. Settings are stored onchain and are composable across games, quests, and tournaments. See: [Game Settings](/embeddable-game-standard/implementation/settings).
+
+**How do platforms embed my game?**
+
+Platforms call `mint()` on your game contract to create a game instance (a unique onchain token) for each player. They then call `score()` to validate results for leaderboards and prizes. See: [Embedding Games](/embeddable-game-standard/implementation/embedding-games).
+
+## Platforms
+
+**What platforms support EGS games?**
+
+* **Budokan**: Permissionless tournament protocol. Any EGS game can be used in tournaments with custom entry fees and prize pools.
+* **Eternum**: MMO that embeds EGS games as quests, extending gameplay through mini-game integrations.
+
+**What are the benefits for game developers?**
+
+Reach new audiences without building platform integrations. Your game can be used in tournaments, embedded as quests, and listed across multiple applications. Focus on gameplay and innovation rather than infrastructure.
+
+**What are the benefits for platform developers?**
+
+Access a library of onchain games without building from scratch. Add new content and engagement through variety. Each game instance is a unique, verifiable onchain token.
+
+## More Resources
+
+* [Overview](/embeddable-game-standard)
+* [Key Functions](/embeddable-game-standard/key-functions)
+* [Implementation Guide](/embeddable-game-standard/implementation)
+* [Games](/embeddable-game-standard/games)
+* [Applications](/embeddable-game-standard/applications)
 
 
 
@@ -1928,313 +2009,178 @@ meta: {
 
 # Frequently Asked Questions
 
-## General Questions
+## General
 
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0' }}>
-  ### 🎮 What is Loot Survivor?
+**What is Loot Survivor?**
 
-  Loot Survivor is a fully onchain dungeon crawler RPG built on Starknet. Every action, from combat to loot generation, happens directly on the blockchain, making the game transparent, verifiable, and permanent.
+Loot Survivor is a fully onchain dungeon crawler RPG built on Starknet. Every action, from combat to loot generation, happens directly on the blockchain, making the game transparent, verifiable, and permanent.
 
-  > **Key Point:** Your achievements live forever on the blockchain!
-</div>
+**Is Loot Survivor free to play?**
 
-### Is Loot Survivor free to play?
+Yes, Loot Survivor has a completely free game mode for players to practice their skills. For the full dungeon experience, a ticket is required which can be purchased directly through the game. No gas required.
 
-Yes Loot Survivor has a completely free game mode for players to practice their skills. For the full dungeon experience a ticket is required to enter which is purchased from an Ekubo dca pool. No gas required.
+**What do I need to play?**
 
-### 🔧 What do I need to play?
+* **Free Version:** No wallet, gas, or ticket required — just a modern browser (Chrome, Firefox, Safari, Edge).
+* **Full Version:** A Cartridge Controller wallet (for VRF support) and a dungeon ticket purchased through the game. No gas fees.
 
-<div style={{ background: '#1a2332', padding: '1rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0' }}>
-  | Requirement | Free Version | Full Version | Details                              |
-  | ----------- | ------------ | ------------ | ------------------------------------ |
-  | **Wallet**  | Not Required | Essential    | Cartridge Controller for VRF support |
-  | **Gas/ETH** | Not Required | Not Required | No gas fees for either version       |
-  | **Ticket**  | Not Required | Required     | Purchase from Ekubo for full dungeon |
-  | **Browser** | Essential    | Essential    | Chrome, Firefox, Safari, Edge        |
-  | **LORDS**   | Not Required | Optional     | For special tournament modes         |
+**Is the game mobile-friendly?**
 
-  > **Free Version:** Practice mode without wallet • **Full Version:** Complete experience with dungeon ticket
-</div>
+Yes. Loot Survivor has a fully responsive design with a dedicated mobile interface optimized for touch controls.
 
-### Is the game mobile-friendly?
+## Gameplay
 
-Yes! Loot Survivor has a fully responsive design with a dedicated mobile interface optimized for touch controls and smaller screens.
+**How do I start playing?**
 
-## Gameplay Questions
+Choose your game mode and click "New Game" to start exploring. See the [Getting Started Guide](/lootsurvivor/guide/getting-started) for detailed instructions.
 
-### How do I start playing?
+**What happens when my adventurer dies?**
 
-Just choose your game mode and click "New Game" to start exploring! See the [Getting Started Guide](/lootsurvivor/guide/getting-started) for detailed instructions.
+Death is permanent — your adventurer's journey ends but earned assets remain onchain forever. Start a new adventure anytime.
 
-### What happens when my adventurer dies?
+**Can I have multiple adventurers?**
 
-Death is permanent - your adventurer's journey ends but earned assets remain onchain forever. Start a new adventure anytime. Learn more in the [Getting Started Guide](/lootsurvivor/guide/getting-started).
+Yes. Each adventurer is a separate onchain token with unique progression.
 
-### Can I have multiple adventurers?
+**How does combat work?**
 
-Yes! Each adventurer is a separate NFT with unique progression. See [Getting Started Guide](/lootsurvivor/guide/getting-started) for details.
+Turn-based combat with rock-paper-scissors type advantages (plus or minus 50% damage). Each weapon/armor type beats one and loses to another. See: [Battle Guide](/lootsurvivor/guide/battle) and [Combat Mechanics](/lootsurvivor/combat).
 
-### ⚔️ How does combat work?
+**What are the different stats?**
 
-Turn-based combat with rock-paper-scissors type advantages (±50% damage). Each weapon/armor type beats one and loses to another.
+Seven core stats: STR (damage), DEX (flee), VIT (HP), INT (obstacles), WIS (ambush), CHA (prices), LUCK (crits). Each affects combat and exploration differently. Full details: [Stats Guide](/lootsurvivor/stats).
 
-See detailed guides: [Battle Guide](/lootsurvivor/guide/battle) • [Combat Mechanics](/lootsurvivor/combat)
+**How do items work?**
 
-### 📊 What are the different stats and what do they do?
+5 tiers (T5 common to T1 legendary). Items level up and unlock suffixes (Lv15) and prefixes (Lv19+) for bonuses. See: [Loot Guide](/lootsurvivor/loot).
 
-Seven core stats: STR (damage), DEX (flee), VIT (HP), INT (obstacles), WIS (ambush), CHA (prices), LUCK (crits). Each affects combat and exploration differently.
+**What's the best strategy?**
 
-Full details: [Stats Guide](/lootsurvivor/stats)
+No single best strategy. Focus on type advantages, stat balance, tactical decisions, and resource management. See: [Battle Guide](/lootsurvivor/guide/battle).
 
-### How do items work?
+## Technical
 
-5 tiers (T5 common → T1 legendary). Items level up and unlock suffixes (Lv15) and prefixes (Lv19+) for bonuses.
+**What blockchain is Loot Survivor on?**
 
-See: [Loot Guide](/lootsurvivor/loot)
+Loot Survivor runs on Starknet, a Layer 2 scaling solution for Ethereum. Benefits include low fees (under $0.01 per transaction), fast confirmations (1-3 seconds), and Ethereum-level security.
 
-### What's the best strategy?
-
-No single best strategy! Focus on type advantages, stat balance, tactical decisions, and resource management.
-
-Strategies covered in: [Battle Guide](/lootsurvivor/guide/battle) • [Getting Started](/lootsurvivor/guide/getting-started)
-
-## Technical Questions
-
-<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '1px solid #a855f7', margin: '1rem 0' }}>
-  ### ⛓️ What blockchain is Loot Survivor on?
-
-  Loot Survivor runs on **Starknet**, a Layer 2 scaling solution for Ethereum.
-
-  | Feature         | Benefit                  |
-  | --------------- | ------------------------ |
-  | **Low Fees**    | \< $0.01 per transaction |
-  | **High Speed**  | 1-3 second confirmations |
-  | **Security**    | Ethereum-level security  |
-  | **Scalability** | Thousands of TPS         |
-</div>
-
-### Are the game outcomes truly random?
+**Are the game outcomes truly random?**
 
 Uses VRF (Verifiable Random Function) seeds by default for true randomness. Can be configured to use deterministic seeds in settings.
 
-Technical details: [Architecture Overview](/lootsurvivor/technical/architecture)
+**Can I verify the game logic?**
 
-### Can I verify the game logic?
+Yes. All contracts are open source and verified on Starknet. You can inspect the code on [GitHub](https://github.com/Provable-Games/death-mountain) and verify any game action onchain.
 
-Yes! All contracts are open source and verified on Starknet. You can inspect the code on [GitHub](https://github.com/Provable-Games/death-mountain) and verify any game action onchain.
+**How are gas fees kept low?**
 
-### What is Dojo?
+Optimizations include packed storage, batch operations, and efficient algorithms, plus Starknet's L2 scaling benefits.
 
-Starknet game engine framework using Entity-Component-System architecture for efficient onchain state management.
+## Economic
 
-Learn more: [Technical Architecture](/lootsurvivor/technical/architecture)
+**How does the market work?**
 
-### How are gas fees kept low?
+The in-game market refreshes when you level up, uses VRF seeds for item generation, and prices decrease with Charisma. No real money transactions between players.
 
-Optimizations: packed storage, batch operations, efficient algorithms, plus Starknet's L2 scaling benefits.
-
-Details: [Technical Architecture](/lootsurvivor/technical/architecture)
-
-## Economic Questions
-
-### What are LORDS tokens?
-
-LORDS is the native token of the Realms ecosystem. In Loot Survivor, LORDS can be used for:
-
-* Entry fees for special game modes
-* Tournament entries
-
-### How does the market work?
-
-The in-game market:
-
-* Refreshes when you level up
-* Uses VRF seeds for item generation
-* Prices decrease with Charisma
-* No real money transactions between players
-
-### Can I trade items with other players?
+**Can I trade items with other players?**
 
 Currently, direct player-to-player trading is not implemented. All trading happens through the in-game market system.
 
-### 🏆 Are there rewards for playing?
+**Are there rewards for playing?**
 
-<div style={{ background: '#2a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #eab308', margin: '1rem 0' }}>
-  | Game Mode          | Rewards                            | Frequency |
-  | ------------------ | ---------------------------------- | --------- |
-  | **Standard Play**  | Leaderboard rankings, achievements | Always    |
-  | **Tournaments**    | Prize pools (100-10,000 LORDS)     | Weekly    |
-  | **Special Events** | NFTs, exclusive items              | Monthly   |
-  | **Seasonal**       | Unique titles, cosmetics           | Quarterly |
+Yes. When you kill beasts during gameplay, you collect them and earn $SURVIVOR tokens on collection. [Budokan](/budokan) tournaments with prize pools are another way to earn rewards. Check [Discord](https://discord.gg/Q36rUxS66c) for current tournament info and schedules.
 
-  > **💰 Current Prize Pool:** Check Discord for latest tournament info!
-</div>
+## Wallet & Account
 
-## Wallet & Account Questions
+**Which wallets are supported?**
 
-### Which wallets are supported?
+For VRF ([Budokan](/budokan) tournament) mode, Cartridge Controller is required. For standard mode, any Starknet-compatible wallet works (Argent X, Braavos, etc.).
 
-**For VRF (Tournament) Mode:**
-
-* Cartridge Controller (required for VRF compatibility)
-
-**For Standard Mode:**
-
-* Any Starknet-compatible wallet (Argent X, Braavos, etc.)
-
-### I lost access to my wallet. Can I recover my adventurer?
+**I lost access to my wallet. Can I recover my adventurer?**
 
 If you lose wallet access, you lose access to your adventurers. Always keep your recovery phrase secure and backed up.
 
-### Can I play on multiple devices?
+**Can I play on multiple devices?**
 
-Yes! Your adventurers are tied to your wallet address, not your device. You can play from any device where you can access your wallet.
+Yes. Your adventurers are tied to your wallet address, not your device. Play from any device where you can access your wallet.
 
-### Why do transactions sometimes fail?
+**Why do transactions sometimes fail?**
 
-Common reasons:
+Common reasons include network congestion and wallet not being properly connected.
 
-* Network congestion
-* Wallet not properly connected
+## Advanced
 
-## Advanced Questions
+**Can I build on top of Loot Survivor?**
 
-### Can I build on top of Loot Survivor?
+Yes. Loot Survivor is open source and designed to be composable. You can build custom frontends, create analytical tools, extend game mechanics, and integrate with other protocols.
 
-Yes! Loot Survivor is open source and designed to be composable. You can:
-
-* Build custom frontends
-* Create analytical tools
-* Extend game mechanics
-* Integrate with other protocols
-
-### How do I integrate Loot Survivor into my app?
+**How do I integrate Loot Survivor into my app?**
 
 See our [Integration Guide](/lootsurvivor/technical/integration) for detailed instructions on building with Loot Survivor's contracts.
 
-### What's the maximum level?
+**What's the maximum level?**
 
-There's no hard level cap. The theoretical maximum depends on your ability to survive increasingly difficult challenges.
+There is no hard level cap. The theoretical maximum depends on your ability to survive increasingly difficult challenges.
 
-### How are beasts generated?
+**How are beasts generated?**
 
-Beasts are generated from VRF seeds based on:
+Beasts are generated from VRF seeds based on your adventurer's level, a random seed value, and tier distribution tables. See: [Combat Mechanics](/lootsurvivor/combat).
 
-* Your adventurer's level
-* A random seed value
-* Tier distribution tables
+**Can I predict market items?**
 
-See: [Combat Mechanics](/lootsurvivor/combat)
-
-### Can I predict market items?
-
-No - market items use VRF seeds for true randomness (unless configured otherwise in settings).
-
-See: [Technical Architecture](/lootsurvivor/technical/architecture)
+No. Market items use VRF seeds for true randomness (unless configured otherwise in settings).
 
 ## Troubleshooting
 
-<div style={{ background: '#3e1a1a', padding: '1rem', borderRadius: '8px', border: '2px solid #dc2626', margin: '1rem 0' }}>
-  ### 🔧 The game won't load
+**The game won't load**
 
-  **Quick Fix Checklist:**
+Try these steps: clear browser cache (Ctrl+Shift+Del), disable ad blockers (most common cause of wallet connection issues), try Chrome or Firefox, check [status.starknet.io](https://status.starknet.io), and ensure JavaScript is enabled.
 
-  | Step | Action                                                 | Success Rate |
-  | ---- | ------------------------------------------------------ | ------------ |
-  | 1    | Clear browser cache (Ctrl+Shift+Del)                   | 40%          |
-  | 2    | Disable ad blockers                                    | 25%          |
-  | 3    | Try Chrome/Firefox                                     | 20%          |
-  | 4    | Check [status.starknet.io](https://status.starknet.io) | 10%          |
-  | 5    | Enable JavaScript                                      | 5%           |
+**Transactions are stuck**
 
-  > **💡 Most Common:** Ad blockers interfere with wallet connection!
-</div>
+Wait for network congestion to clear, check block explorer, refresh page, or reconnect wallet. More help: [Getting Started Guide](/lootsurvivor/guide/getting-started).
 
-### Transactions are stuck
+**I can't connect my wallet**
 
-Wait for network congestion to clear, check block explorer, refresh page, or reconnect wallet.
+Ensure correct controller login details, check network, refresh page, or try a different browser. Setup help: [Getting Started Guide](/lootsurvivor/guide/getting-started).
 
-More help: [Getting Started Guide](/lootsurvivor/guide/getting-started)
+**The game shows incorrect data**
 
-### I can't connect my wallet
+This is a sync issue. Refresh the page, clear cache, reconnect wallet, or wait for the indexer.
 
-Ensure correct controller login details, check network, refresh page, try different browser.
+## Community
 
-Setup help: [Getting Started Guide](/lootsurvivor/guide/getting-started)
+**How can I contribute?**
 
-### The game shows incorrect data
+Report bugs on [GitHub](https://github.com/Provable-Games/death-mountain/issues), suggest features in Discord, build tools and integrations, or create content and guides.
 
-Sync issue - refresh page, clear cache, reconnect wallet, or wait for indexer.
-
-Troubleshooting: [Getting Started Guide](/lootsurvivor/guide/getting-started)
-
-## Community Questions
-
-### How can I contribute?
-
-* Report bugs on [GitHub](https://github.com/Provable-Games/death-mountain/issues)
-* Suggest features in Discord
-* Build tools and integrations
-* Create content and guides
-
-### Where can I get help?
+**Where can I get help?**
 
 * [Discord Community](https://discord.gg/Q36rUxS66c)
 * [Twitter](https://twitter.com/lootsurvivor)
 * [GitHub Discussions](https://github.com/Provable-Games/death-mountain/discussions)
 
-### Are there tournaments?
+**Are there tournaments?**
 
-Yes! Regular tournaments with prize pools are held. Check Discord for announcements and schedules.
-
-### Can I stream or create content about Loot Survivor?
-
-Absolutely! We encourage content creation. Tag us on social media so we can share your content with the community.
-
-## Future Development
-
-### What features are coming?
-
-Planned features include:
-
-* Custom dungeons
-* Campaign system
-* Quest system
-* Achievements
-
-### Will there be a mobile app?
-
-While the web version is mobile-optimized, native mobile apps may be developed in the future based on community demand.
-
-### Are there plans for other chains?
-
-Currently focused on Starknet, but the architecture allows for potential multi-chain deployment in the future.
-
-### How can I stay updated?
-
-Follow us on:
-
-* [Twitter](https://twitter.com/lootsurvivor)
-* [Discord](https://discord.gg/Q36rUxS66c)
-* [GitHub](https://github.com/Provable-Games/death-mountain)
+Yes. Regular tournaments with prize pools are held on [Budokan](/budokan), the permissionless tournament platform. Check Discord for announcements and schedules.
 
 ## Legal & Safety
 
-### Is Loot Survivor audited?
+**Is Loot Survivor audited?**
 
-The smart contracts have not udergone an official audit yet. As with all blockchain applications, use at your own risk.
+The smart contracts have not undergone an official audit yet. As with all blockchain applications, use at your own risk.
 
-### Is this gambling?
+**Is this gambling?**
 
 Loot Survivor is a skill-based game with random elements. The outcome depends on player decisions and strategy, not purely chance.
 
-### What data is collected?
+**What data is collected?**
 
 Only onchain data (transactions, game actions) is recorded. No personal information is collected or stored off-chain.
 
-### Can I lose money playing?
+**Can I lose money playing?**
 
-You pay entry fees for certain game modes. Never spend more than you can afford to lose.
+You pay entry fees for certain game modes. Entry fees can be paid in any supported token. Never spend more than you can afford to lose.
 
 ## Getting More Help
 
@@ -2244,8 +2190,6 @@ If your question isn't answered here:
 2. Read the [technical documentation](/lootsurvivor/technical/architecture)
 3. Ask in [Discord](https://discord.gg/Q36rUxS66c)
 4. Open a [GitHub issue](https://github.com/Provable-Games/death-mountain/issues)
-
-Remember: The community is here to help! Don't hesitate to ask questions and share your experiences.
 
 
 
@@ -3872,6 +3816,142 @@ Potions are consumables designed exclusively for Summit gameplay. Once the game 
 
 ---
 
+file: docs/summit/faq.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Summit: FAQ
+
+Find answers to common questions about Summit. Summit is currently in alpha and details may change.
+
+## General
+
+**What is Summit?**
+
+Summit is an all-against-all, king-of-the-hill PvP arena where players use Loot Survivor Beasts to battle for control of the Summit and earn $SURVIVOR rewards.
+
+**Is Summit still in alpha?**
+
+Yes. Summit is currently in alpha. Game mechanics, rewards, and features are subject to change.
+
+**How long does a Summit game last?**
+
+Each Summit game lasts 8 million seconds (approximately 93 days).
+
+**What is the total reward pool?**
+
+100,000 $SURVIVOR total: 60,000 (60%) for holding the Summit and 40,000 (40%) for quest completion.
+
+## Getting Started
+
+**What do I need to play?**
+
+You need Beasts from Loot Survivor. Beasts are earned by killing monsters during Loot Survivor gameplay or can be purchased on secondary markets.
+
+**How do I get Beasts?**
+
+Play Loot Survivor and kill beasts during your adventure — each beast kill mints a collectible Beast. You can also buy them on secondary markets.
+
+**How do I start?**
+
+Select one of your Beasts and attack the current Summit holder. Your first attack unlocks quests for that beast.
+
+## Battle System
+
+**How do battles work?**
+
+Battles are turn-based: the attacker strikes first, then the defender counter-attacks. Damage is calculated using Base Power = Beast Level x (6 - Beast Tier), modified by type advantages and upgrades.
+
+**What are the type advantages?**
+
+Rock-paper-scissors system: Brute beats Hunter, Hunter beats Magical, Magical beats Brute. Having type advantage gives +50% damage; disadvantage gives -50% damage.
+
+**What is multi-attack?**
+
+You can attack the Summit multiple times in a single transaction using revival potions. The cost increases per use (1st costs 1 potion, 2nd costs 2, etc., up to a max cost of 64). All attacks happen atomically, preventing the defender from making changes mid-battle.
+
+**How do critical hits work?**
+
+Critical hits deal +100% base damage. The chance depends on your beast's Luck stat, ranging from 0% at Luck 0 to 100% at Luck 100.
+
+**How does XP work?**
+
+Attackers earn 10 XP base + 1 XP per consecutive attack (max +10 bonus). Attackers can gain up to 40 bonus levels. Defenders earn XP only if they have the Wisdom upgrade (XP = attacker's power / 100).
+
+## Beast Upgrades
+
+**What are $SKULL and $CORPSE tokens?**
+
+$SKULL tokens are earned by killing beasts in Loot Survivor (1 per kill) and used for attribute and ability upgrades. $CORPSE tokens are earned from dead adventurers in Loot Survivor (1 per adventurer level) and used for health upgrades.
+
+**What attributes can I upgrade?**
+
+* **Luck**: 1 $SKULL per level (up to 100 levels). Increases critical hit chance.
+* **Spirit**: 1 $SKULL per level (up to 100 levels). Reduces revival cooldown from 24 hours down to 4 hours at max level.
+
+**What abilities can I unlock?**
+
+* **Specials** (10 $SKULL): Activates prefix (8x) and suffix (2x) damage bonuses when beast names match.
+* **Diplomacy** (15 $SKULL): Share rewards with other beasts that have matching names.
+* **Wisdom** (20 $SKULL): Gain XP when defending (XP = attacker power / 100).
+* **Vitality** (1 $CORPSE per point): Add bonus health, up to 2,000 extra HP.
+
+## Consumables
+
+**What potions are available?**
+
+* **Revival Potions**: Skip the 24-hour death cooldown. Cost increases per use (1, 2, 3... up to 64).
+* **Attack Potions**: +10% bonus damage per potion (max 255 per beast). Attackers only.
+* **Extra Life Potions**: Give defenders multiple lives (max 4,000). Restores full health when consumed.
+* **Poison Potions**: Deal 1 damage per second to the Summit holder. Multiple stack. Cannot kill (stops at 1 HP with 0 extra lives).
+
+**How does the potion market work?**
+
+Potions are sold through a Continuous Clearing Auction (CCA) via Ekubo liquidity pool. Prices start high and decrease over time. 100% of proceeds go to buy back $SURVIVOR for the DAO treasury.
+
+## Rewards & Quests
+
+**How do I earn $SURVIVOR from holding the Summit?**
+
+The Summit holder earns 0.0075 $SURVIVOR per second. You must hold for at least one full block (approximately 2-3 seconds) to earn anything. Rewards are claimed when your beast is dethroned.
+
+**How does Diplomacy reward sharing work?**
+
+Each beast with the Diplomacy upgrade and a matching name earns 0.00005 $SURVIVOR per second while a matching beast holds the Summit. Up to 75 matching beasts can earn simultaneously.
+
+**What quests are available?**
+
+Quests include: First Blood (attack the Summit), Consistency is Key (10-attack streak), level-up milestones (1/3/5/10 levels), Summit Conqueror (capture the Summit), Iron Grip (hold for 10+ seconds), Second Wind (revive and attack), and A Vital Boost (use attack potion). Each beast can earn up to 0.95 $SURVIVOR from quests. The 40,000 $SURVIVOR quest pool is first come, first serve.
+
+## Strategy
+
+**How should I choose which beast to use?**
+
+Check the current Summit holder's type. Use a beast with type advantage for +50% damage. Higher level and lower tier beasts deal more base damage.
+
+**When is the best time to attack?**
+
+Attack during low-activity periods or when top beasts are on cooldown (24 hours after death, reduced by Spirit upgrades). Early in the game, there are fewer beasts competing and lower upgrade costs.
+
+**Should I focus on offense or defense?**
+
+Offensive builds (Attack Potions, Luck for crits) are good for capturing the Summit. Defensive builds (Extra Lives, Vitality) help hold it longer to earn more $SURVIVOR per second.
+
+## After the Game Ends
+
+**Will there be another Summit season?**
+
+There are no planned additional seasons at this time.
+
+**Do my beast upgrades carry over?**
+
+Upgrades are designed for the current Summit. While upgrades may carry over to future events, this is not guaranteed.
+
+
+
+---
+
 file: docs/summit/index.mdx
 meta: {
   "title": "Summit Overview",
@@ -4612,6 +4692,290 @@ If you have questions or need help, check the FAQ or contact support through the
 
 ---
 
+file: docs/embeddable-game-standard/implementation/embedding-games.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Embedding Games
+
+Easily integrate onchain games into your own application or platform using the Embeddable Game Standard (EGS). This guide walks you through the process of minting a game instance for a player and validating their results, with code examples and best practices.
+
+## What Does "Embedding" Mean?
+
+Embedding a game means allowing your users to launch, play, and track progress in a provable onchain game—directly from your app. You can mint new game instances, monitor scores, and even run tournaments or quests using these standards.
+
+## 1. Mint a Game Instance
+
+To let a user start a new game, call the mint function on the game's contract. This creates a unique game token (NFT) for the player, with the desired settings and timing.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameTokenDispatcher, IGameTokenDispatcherTrait,
+};
+
+let game_dispatcher = IGameTokenDispatcher { contract_address: quest_tile.game_address };
+let game_token_id: u64 = game_dispatcher
+    .mint(player_name, config.settings_id, game_start_delay, game_expiration, to_address);
+```
+
+* `player_name`: The player's display name or identifier.
+* `settings_id`: The ID of the game settings profile to use (see [Settings](/embeddable-game-standard/implementation/settings)).
+* `game_start_delay`: Optional delay before the game can be started.
+* `game_expiration`: When the game expires (for time-limited quests or tournaments).
+* `to_address`: The wallet address to receive the game token.
+
+> **Tip:** Each minted game is a unique NFT, making it easy to track, transfer, or verify ownership and results.
+
+## 2. Validate Game Results
+
+To check a player's score or progress, use the `score` view function. This is enforced by the EGS and available on all compliant games.
+
+```cairo
+use tournaments::components::interfaces::{
+    IGameDetailsDispatcher, IGameDetailsDispatcherTrait
+};
+
+let game_dispatcher = IGameDetailsDispatcher { contract_address: quest_tile.game_address };
+let score: u32 = game_dispatcher.score(quest.game_token_id);
+```
+
+* `quest.game_token_id`: The unique token ID for the player's game instance.
+* Returns the player's score or result, which you can use for leaderboards, rewards, or validation.
+
+> **Info:** You can also query other view functions (like player stats, completion status, etc.) depending on the game's implementation. See the [View Functions](/embeddable-game-standard/implementation#6-add-view-functions) section for more.
+
+## Best Practices & Next Steps
+
+* Use the [Settings](/embeddable-game-standard/implementation/settings) standard to offer custom game modes or difficulty levels.
+* Integrate with [Budokan](/budokan) for tournament management, prize distribution, and more.
+* For advanced integrations, see the [Key Functions](/embeddable-game-standard/key-functions) and [Implementation Guide](/embeddable-game-standard/implementation).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
+
+
+
+---
+
+file: docs/embeddable-game-standard/implementation/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Implementation
+
+This guide walks through the steps required for a game developer to implement the
+Embeddable Game Standard and integrate with Budokan tournaments as well as any other meta apps.
+
+## 1. Add EGS library
+
+Start by adding the EGS library in your `Scarb.toml`. You will also need to build the external models to be included
+
+```cairo
+tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }
+```
+
+```cairo
+build-external-contracts = [
+    "tournaments::components::models::game::m_GameMetadata",
+    "tournaments::components::models::game::m_TokenMetadata",
+    "tournaments::components::models::game::m_GameCounter",
+    "tournaments::components::models::game::m_Score",
+    "tournaments::components::models::game::m_Settings",
+    "tournaments::components::models::game::m_SettingsDetails",
+    "tournaments::components::models::game::m_SettingsCounter",
+]
+```
+
+## 2. Import Component
+
+Import and use the `game_component` module from EGS.
+
+```cairo
+use tournaments::components::game::game_component;
+
+#[dojo::contract]
+pub mod MyGame {
+    component!(path: game_component, storage: game, event: GameEvent);
+    #[abi(embed_v0)]
+    impl GameComponentImpl = game_component::GameImpl<ContractState>;
+    impl GameComponentInternalImpl = game_component::InternalImpl<ContractState>;
+    // ... additional game logic ...
+}
+```
+
+## 3. Implement Required Storage and Events
+
+Define the required storage fields and events as specified in the standard.
+
+```cairo
+#[storage]
+struct Storage {
+    #[substorage(v0)]
+    game: game_component::Storage,
+    #[substorage(v0)]
+    erc721: ERC721Component::Storage,
+    #[substorage(v0)]
+    src5: SRC5Component::Storage,
+}
+
+#[event]
+#[derive(Drop, starknet::Event)]
+enum Event {
+    #[flat]
+    GameEvent: game_component::Event,
+    #[flat]
+    ERC721Event: ERC721Component::Event,
+    #[flat]
+    SRC5Event: SRC5Component::Event,
+}
+```
+
+## 4. Expose Required Interfaces
+
+Ensure your contract exposes the following:
+
+* ERC721 interface for game tokens
+* Metadata and settings interfaces
+* Functions for minting, metadata retrieval, and event emission
+
+## 5. Implement Initialization Logic
+
+Implement the `initializer` function to set up game metadata, settings, and storage configuration.
+
+```cairo
+fn initializer(
+    ref self: ComponentState<TContractState>,
+    creator_address: ContractAddress,
+    name: felt252,
+    description: ByteArray,
+    developer: felt252,
+    publisher: felt252,
+    genre: felt252,
+    image: ByteArray,
+    namespace: ByteArray,
+    score_model: ByteArray,
+    score_attribute: ByteArray,
+    settings_model: ByteArray,
+) {
+    // ... initialization logic ...
+}
+```
+
+## 6. Add View Functions
+
+Add Contract view function to return the following:
+
+* The score of a game id
+* Whether a particular settings id exists
+
+```cairo
+use tournaments::components::interfaces::{IGameDetails, ISettings};
+
+#[abi(embed_v0)]
+impl GameDetailsImpl of IGameDetails<ContractState> {
+    fn score(self: @ContractState, game_id: u64) -> u32 {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let game: Game = world.read_model(game_id);
+        game.score.into()
+    }
+}
+
+#[abi(embed_v0)]
+impl SettingsImpl of ISettings<ContractState> {
+    fn setting_exists(self: @ContractState, settings_id: u32) -> bool {
+        let world: WorldStorage = self.world(@DEFAULT_NS());
+        let settings: GameSettings = world.read_model(settings_id);
+        settings.exists()
+    }
+}
+```
+
+## 7. Check Lifecycle
+
+In each game interaction ensure that the following lifecycle check is made
+
+```cairo
+use tournaments::components::libs::lifecycle::{
+    LifecycleAssertionsImpl, LifecycleAssertionsTrait
+};
+
+let token_metadata: TokenMetadata = world.read_model(game_id);
+token_metadata.lifecycle.assert_is_playable(game_id, get_block_timestamp());
+```
+
+By following these steps, your game will be fully compatible with [Budokan](/budokan) and any other application using the Embeddable Game Standard.
+
+
+
+---
+
+file: docs/embeddable-game-standard/implementation/settings.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Embeddable Game Standard: Settings
+
+Settings are a core feature of the Embeddable Game Standard (EGS), enabling games to be highly customizable and composable. By associating a game instance with a specific set of settings, you can create unique game modes, difficulty levels, or event rules—all onchain and provable.
+
+## Why Use Settings?
+
+* **Custom Game Modes:** Offer players or tournament organizers the ability to define special rules, deck sizes, or win conditions.
+* **Composability:** Settings can be reused across games, quests, or tournaments, making it easy to launch new experiences.
+* **Transparency:** All settings are stored onchain, so anyone can verify the rules for a given game instance.
+
+> **Tip:** Use settings to power seasonal events, speedruns, or community challenges—just stamp a new settings profile and share the ID!
+
+## How Settings Work in EGS
+
+Each game instance can be linked to a settings profile via a unique `settings_id`. The settings metadata is stored onchain and can be queried or updated as needed.
+
+### Storing Settings Metadata
+
+Within the EGS component, the `SettingsDetails` model is used to store metadata for each settings profile. Here's how you can set or update a settings profile:
+
+```cairo
+fn set_settings(
+    ref self: ComponentState<TContractState>,
+    settings_id: u32,
+    name: felt252,
+    description: ByteArray,
+) {
+    let mut world = WorldTrait::storage(
+        self.get_contract().world_dispatcher(), @self.namespace.read(),
+    );
+    let mut store: Store = StoreTrait::new(world);
+    store
+        .set_settings_details(
+            @SettingsDetails { id: settings_id, name, description, exists: true },
+        );
+}
+```
+
+* `settings_id`: Unique identifier for the settings profile.
+* `name`: Human-readable name for the settings.
+* `description`: Description or metadata for the settings profile.
+
+> **Info:** The `SettingsDetails` model can be extended to include more fields (e.g., difficulty, allowed cards, etc.) depending on your game's needs.
+
+## Creating Settings in Your Game
+
+Within the Game contract, you will store the settings for a particular id in the model you defined as `settings_model` on [initialization](/embeddable-game-standard/implementation#5-implement-initialization-logic). Here's how you can set or update a settings profile:
+
+## Best Practices & Next Steps
+
+* Use clear names and descriptions for each settings profile.
+* Store all relevant game rules in the settings metadata for transparency.
+* Encourage your community to create and share custom settings for new challenges.
+* For more on minting and using settings, see [Embedding Games](/embeddable-game-standard/implementation/embedding-games) and [Key Functions](/embeddable-game-standard/key-functions).
+
+If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
+
+
+
+---
+
 file: docs/budokan/guide/enter.mdx
 meta: {
   "layout": "docs"
@@ -4988,926 +5352,6 @@ You can find the code and instructions for running your own submission bot here:
 * [FAQ](/budokan/faq)
 
 If you have questions or need help, check the FAQ or contact support through the app.
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/embedding-games.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Embedding Games
-
-Easily integrate onchain games into your own application or platform using the Embeddable Game Standard (EGS). This guide walks you through the process of minting a game instance for a player and validating their results, with code examples and best practices.
-
-## What Does "Embedding" Mean?
-
-Embedding a game means allowing your users to launch, play, and track progress in a provable onchain game—directly from your app. You can mint new game instances, monitor scores, and even run tournaments or quests using these standards.
-
-## 1. Mint a Game Instance
-
-To let a user start a new game, call the mint function on the game's contract. This creates a unique game token (NFT) for the player, with the desired settings and timing.
-
-```cairo
-use tournaments::components::interfaces::{
-    IGameTokenDispatcher, IGameTokenDispatcherTrait,
-};
-
-let game_dispatcher = IGameTokenDispatcher { contract_address: quest_tile.game_address };
-let game_token_id: u64 = game_dispatcher
-    .mint(player_name, config.settings_id, game_start_delay, game_expiration, to_address);
-```
-
-* `player_name`: The player's display name or identifier.
-* `settings_id`: The ID of the game settings profile to use (see [Settings](/embeddable-game-standard/implementation/settings)).
-* `game_start_delay`: Optional delay before the game can be started.
-* `game_expiration`: When the game expires (for time-limited quests or tournaments).
-* `to_address`: The wallet address to receive the game token.
-
-> **Tip:** Each minted game is a unique NFT, making it easy to track, transfer, or verify ownership and results.
-
-## 2. Validate Game Results
-
-To check a player's score or progress, use the `score` view function. This is enforced by the EGS and available on all compliant games.
-
-```cairo
-use tournaments::components::interfaces::{
-    IGameDetailsDispatcher, IGameDetailsDispatcherTrait
-};
-
-let game_dispatcher = IGameDetailsDispatcher { contract_address: quest_tile.game_address };
-let score: u32 = game_dispatcher.score(quest.game_token_id);
-```
-
-* `quest.game_token_id`: The unique token ID for the player's game instance.
-* Returns the player's score or result, which you can use for leaderboards, rewards, or validation.
-
-> **Info:** You can also query other view functions (like player stats, completion status, etc.) depending on the game's implementation. See the [View Functions](/embeddable-game-standard/implementation#6-add-view-functions) section for more.
-
-## Best Practices & Next Steps
-
-* Use the [Settings](/embeddable-game-standard/implementation/settings) standard to offer custom game modes or difficulty levels.
-* Integrate with [Budokan](/budokan) for tournament management, prize distribution, and more.
-* For advanced integrations, see the [Key Functions](/embeddable-game-standard/key-functions) and [Implementation Guide](/embeddable-game-standard/implementation).
-
-If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Implementation
-
-This guide walks through the steps required for a game developer to implement the
-Embeddable Game Standard and integrate with Budokan tournaments as well as any other meta apps.
-
-## 1. Add EGS library
-
-Start by adding the EGS library in your `Scarb.toml`. You will also need to build the external models to be included
-
-```cairo
-tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }
-```
-
-```cairo
-build-external-contracts = [
-    "tournaments::components::models::game::m_GameMetadata",
-    "tournaments::components::models::game::m_TokenMetadata",
-    "tournaments::components::models::game::m_GameCounter",
-    "tournaments::components::models::game::m_Score",
-    "tournaments::components::models::game::m_Settings",
-    "tournaments::components::models::game::m_SettingsDetails",
-    "tournaments::components::models::game::m_SettingsCounter",
-]
-```
-
-## 2. Import Component
-
-Import and use the `game_component` module from EGS.
-
-```cairo
-use tournaments::components::game::game_component;
-
-#[dojo::contract]
-pub mod MyGame {
-    component!(path: game_component, storage: game, event: GameEvent);
-    #[abi(embed_v0)]
-    impl GameComponentImpl = game_component::GameImpl<ContractState>;
-    impl GameComponentInternalImpl = game_component::InternalImpl<ContractState>;
-    // ... additional game logic ...
-}
-```
-
-## 3. Implement Required Storage and Events
-
-Define the required storage fields and events as specified in the standard.
-
-```cairo
-#[storage]
-struct Storage {
-    #[substorage(v0)]
-    game: game_component::Storage,
-    #[substorage(v0)]
-    erc721: ERC721Component::Storage,
-    #[substorage(v0)]
-    src5: SRC5Component::Storage,
-}
-
-#[event]
-#[derive(Drop, starknet::Event)]
-enum Event {
-    #[flat]
-    GameEvent: game_component::Event,
-    #[flat]
-    ERC721Event: ERC721Component::Event,
-    #[flat]
-    SRC5Event: SRC5Component::Event,
-}
-```
-
-## 4. Expose Required Interfaces
-
-Ensure your contract exposes the following:
-
-* ERC721 interface for game tokens
-* Metadata and settings interfaces
-* Functions for minting, metadata retrieval, and event emission
-
-## 5. Implement Initialization Logic
-
-Implement the `initializer` function to set up game metadata, settings, and storage configuration.
-
-```cairo
-fn initializer(
-    ref self: ComponentState<TContractState>,
-    creator_address: ContractAddress,
-    name: felt252,
-    description: ByteArray,
-    developer: felt252,
-    publisher: felt252,
-    genre: felt252,
-    image: ByteArray,
-    namespace: ByteArray,
-    score_model: ByteArray,
-    score_attribute: ByteArray,
-    settings_model: ByteArray,
-) {
-    // ... initialization logic ...
-}
-```
-
-## 6. Add View Functions
-
-Add Contract view function to return the following:
-
-* The score of a game id
-* Whether a particular settings id exists
-
-```cairo
-use tournaments::components::interfaces::{IGameDetails, ISettings};
-
-#[abi(embed_v0)]
-impl GameDetailsImpl of IGameDetails<ContractState> {
-    fn score(self: @ContractState, game_id: u64) -> u32 {
-        let world: WorldStorage = self.world(@DEFAULT_NS());
-        let game: Game = world.read_model(game_id);
-        game.score.into()
-    }
-}
-
-#[abi(embed_v0)]
-impl SettingsImpl of ISettings<ContractState> {
-    fn setting_exists(self: @ContractState, settings_id: u32) -> bool {
-        let world: WorldStorage = self.world(@DEFAULT_NS());
-        let settings: GameSettings = world.read_model(settings_id);
-        settings.exists()
-    }
-}
-```
-
-## 7. Check Lifecycle
-
-In each game interaction ensure that the following lifecycle check is made
-
-```cairo
-use tournaments::components::libs::lifecycle::{
-    LifecycleAssertionsImpl, LifecycleAssertionsTrait
-};
-
-let token_metadata: TokenMetadata = world.read_model(game_id);
-token_metadata.lifecycle.assert_is_playable(game_id, get_block_timestamp());
-```
-
-By following these steps, your game will be fully compatible with [Budokan](/budokan) and any other application using the Embeddable Game Standard.
-
-
-
----
-
-file: docs/embeddable-game-standard/implementation/settings.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Embeddable Game Standard: Settings
-
-Settings are a core feature of the Embeddable Game Standard (EGS), enabling games to be highly customizable and composable. By associating a game instance with a specific set of settings, you can create unique game modes, difficulty levels, or event rules—all onchain and provable.
-
-## Why Use Settings?
-
-* **Custom Game Modes:** Offer players or tournament organizers the ability to define special rules, deck sizes, or win conditions.
-* **Composability:** Settings can be reused across games, quests, or tournaments, making it easy to launch new experiences.
-* **Transparency:** All settings are stored onchain, so anyone can verify the rules for a given game instance.
-
-> **Tip:** Use settings to power seasonal events, speedruns, or community challenges—just stamp a new settings profile and share the ID!
-
-## How Settings Work in EGS
-
-Each game instance can be linked to a settings profile via a unique `settings_id`. The settings metadata is stored onchain and can be queried or updated as needed.
-
-### Storing Settings Metadata
-
-Within the EGS component, the `SettingsDetails` model is used to store metadata for each settings profile. Here's how you can set or update a settings profile:
-
-```cairo
-fn set_settings(
-    ref self: ComponentState<TContractState>,
-    settings_id: u32,
-    name: felt252,
-    description: ByteArray,
-) {
-    let mut world = WorldTrait::storage(
-        self.get_contract().world_dispatcher(), @self.namespace.read(),
-    );
-    let mut store: Store = StoreTrait::new(world);
-    store
-        .set_settings_details(
-            @SettingsDetails { id: settings_id, name, description, exists: true },
-        );
-}
-```
-
-* `settings_id`: Unique identifier for the settings profile.
-* `name`: Human-readable name for the settings.
-* `description`: Description or metadata for the settings profile.
-
-> **Info:** The `SettingsDetails` model can be extended to include more fields (e.g., difficulty, allowed cards, etc.) depending on your game's needs.
-
-## Creating Settings in Your Game
-
-Within the Game contract, you will store the settings for a particular id in the model you defined as `settings_model` on [initialization](/embeddable-game-standard/implementation#5-implement-initialization-logic). Here's how you can set or update a settings profile:
-
-## Best Practices & Next Steps
-
-* Use clear names and descriptions for each settings profile.
-* Store all relevant game rules in the settings metadata for transparency.
-* Encourage your community to create and share custom settings for new challenges.
-* For more on minting and using settings, see [Embedding Games](/embeddable-game-standard/implementation/embedding-games) and [Key Functions](/embeddable-game-standard/key-functions).
-
-If you have questions or want to see more examples, check the rest of the EGS docs or reach out to the community!
-
-
-
----
-
-file: docs/lootsurvivor/loot/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Loot System
-
-<div style={{ display: 'flex', gap: '2rem', alignItems: 'start', margin: '2rem 0', flexWrap: 'wrap' }}>
-  <div
-    style={{ 
-fontSize: '1.1rem', 
-lineHeight: '1.8', 
-paddingRight: '2rem',
-color: '#e5e5e5',
-flex: '2',
-minWidth: '300px'
-}}
-  >
-    <p style={{ marginBottom: "1.2rem", fontWeight: "400" }}>
-      The loot system in Loot Survivor is inspired by the original <a href="https://docs.loot.foundation/" style={{ color: "#3b82f6" }}>Loot collection</a> and forms the backbone of your adventurer's power progression.
-    </p>
-
-    <p style={{ marginBottom: "0", fontWeight: "400" }}>
-      Understanding how items work, their tiers, and special properties is essential
-      for survival in Death Mountain. Each piece of equipment can evolve and gain
-      powerful bonuses as you progress through the dangerous depths.
-    </p>
-  </div>
-
-  <div style={{ flex: '1', minWidth: '250px' }}>
-    <img
-      src="/docs/lootsurvivor/loot.png"
-      alt="Loot Survivor Items Display"
-      style={{
-    width: "100%",
-    display: "block",
-    borderRadius: "8px",
-    border: "2px solid #333",
-  }}
-    />
-
-    <em
-      style={{
-    display: "block",
-    textAlign: "center",
-    marginTop: "0.5rem",
-    fontSize: "0.9rem",
-    opacity: "0.8",
-  }}
-    >
-      Loot item display showing tier and special properties
-    </em>
-  </div>
-</div>
-
-## Item Properties
-
-Each item has several key properties that determine its effectiveness:
-
-* **Tier** - Base power level (T1-T5)
-* **Greatness** - Special enhancement level (0-20)
-* **Suffix** - Name suffix at Greatness 15+
-* **Prefixes** - Additional bonuses at Greatness 19+
-* **+1 Modifier** - +1 modifier at Greatness 20
-
-## Item Tiers
-
-Items in Loot Survivor are categorized into 5 tiers, with T1 being the most powerful:
-
-| Tier   | Name      | Rarity    | Base Power    | Drop Rate | Description                                |
-| ------ | --------- | --------- | ------------- | --------- | ------------------------------------------ |
-| **T1** | Legendary | Highest   | 5× multiplier | \~0.066%  | Best-in-slot items with maximum base stats |
-| **T2** | Epic      | Very High | 4× multiplier | \~0.2%    | Powerful items with excellent stats        |
-| **T3** | Rare      | High      | 3× multiplier | \~0.4%    | Good equipment with solid performance      |
-| **T4** | Uncommon  | Medium    | 2× multiplier | \~1.0%    | Decent upgrades over starting gear         |
-| **T5** | Common    | Low       | 1× multiplier | \~1.65%   | Basic gear and starting equipment          |
-
-**Tier Effects:**
-
-* Higher tiers provide better base damage/protection
-* Tier multiplier affects combat calculations
-* Better tiers are more likely to have special properties
-* All tiers can potentially have suffixes and prefixes
-
-***
-
-<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7', margin: '2rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **🎮 Loot Survivor Implementation Note:**
-  </div>
-
-  <div style={{ marginBottom: '0' }}>
-    Everything below this point represents **Loot Survivor's unique interpretation** of the original Loot collection. The Greatness System, combat types, materials, and their gameplay mechanics are specific to this game's implementation and not part of the base Loot specification.
-  </div>
-</div>
-
-# Greatness System
-
-Greatness is a special property that enhances items beyond their base tier:
-
-## Greatness Levels
-
-| Greatness | Enhancement     | Special Property           |
-| --------- | --------------- | -------------------------- |
-| **1-14**  | Base item       | Standard tier bonuses only |
-| **15**    | Suffix unlocked | +3 stat bonus from suffix  |
-| **16-18** | Enhanced suffix | Suffix bonuses continue    |
-| **19**    | Prefix unlocked | Additional stat bonuses    |
-| **20**    | Stat Bonus      | +1 assignable stat bonus   |
-
-## How Greatness Works
-
-* Items always start at greatness 1
-* Greatness increases the item's overall power
-* Greatness 15+ items gain [suffix bonuses](/lootsurvivor/loot/suffix-boost)
-* Greatness 19+ items gain additional prefix [prefixes](/lootsurvivor/loot/prefixes)
-* Greatness 20 items get a +1 stat modifier
-
-***
-
-# Equipment Types
-
-Loot Survivor features 8 equipment slots for different item types:
-
-| Equipment Slot | Item Types                            | Function |
-| -------------- | ------------------------------------- | -------- |
-| **Weapon**     | Katana, Wand, Club, Short Sword       | Weapon   |
-| **Chest**      | Divine Robe, Shirt, Demon Husk        | Armor    |
-| **Head**       | Crown, Cap, Helm                      | Armor    |
-| **Waist**      | Ornate Belt, Sash, Heavy Belt         | Armor    |
-| **Foot**       | Divine Slippers, Boots, Shoes         | Armor    |
-| **Hand**       | Divine Gloves, Gloves, Gauntlets      | Armor    |
-| **Neck**       | Amulet, Pendant, Necklace             | Jewelry  |
-| **Ring**       | Platinum Ring, Gold Ring, Silver Ring | Jewelry  |
-
-***
-
-# Combat Types & Materials
-
-Items have dual classifications that affect combat performance:
-
-## Weapon Types
-
-**⚔️ Blade Weapons**
-
-* Strong vs Hide armor
-* Weak vs Metal armor
-* Examples: Katana, Short Sword, Scimitar
-
-**🔨 Bludgeon Weapons**
-
-* Strong vs Metal armor
-* Weak vs Cloth armor
-* Examples: Club, Mace, Warhammer
-
-**✨ Magic Weapons**
-
-* Strong vs Cloth armor
-* Weak vs Hide armor
-* Examples: Wand, Book, Ghost Wand
-
-## Armor Materials
-
-**🛡️ Hide Armor**
-
-* Resists Blade attacks
-* Weak to Magic attacks
-* Examples: Leather armor, Dragon skin
-
-**⚡ Metal Armor**
-
-* Resists Bludgeon attacks
-* Weak to Blade attacks
-* Examples: Chain mail, Plate armor
-
-**🧙 Cloth Armor**
-
-* Resists Magic attacks
-* Weak to Bludgeon attacks
-* Examples: Robes, Shirts
-
-***
-
-# Item Acquisition
-
-## Discovery Methods
-
-Items can be obtained through several methods:
-
-| Method                 | Rate                | Quality     | Notes                           |
-| ---------------------- | ------------------- | ----------- | ------------------------------- |
-| **Exploration**        | 3.3% of explores    | Random tier | Primary acquisition method      |
-| **Market Purchase**    | Level-dependent     | Variable    | Costs gold, refresh on level up |
-| **Starting Equipment** | 1 weapon guaranteed | T5 only     | Random weapon type              |
-
-## Market System
-
-* Market refreshes completely on each level up
-* Available items are randomly generated
-* Item count increases with adventurer level
-* CHA stat reduces purchase prices
-* Market items follow same tier distribution as drops
-
-***
-
-# Item Management
-
-## Inventory System
-
-* **8 Equipment Slots** - One for each equipment type
-* **15 Bag Slots** - Additional storage for backup items
-* **Auto-equip** - New items automatically equip if slots are empty
-* **Gold Conversion** - Duplicate items convert to gold if no space
-
-## Item Usage
-
-**Equipping Items:**
-
-* Drag from bag to equipment slot
-* Items provide immediate stat bonuses
-* Combat type/material affects battle performance
-* Can switch equipment during exploration (not in combat)
-
-**Item Stacking:**
-
-* Only one item per equipment slot
-* Identical items convert to gold
-* Higher tier items typically replace lower tier
-* Consider suffix/prefix bonuses when deciding
-
-***
-
-# Special Properties
-
-## Suffixes
-
-Items with Greatness 15+ gain powerful suffix bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for complete details.
-
-## Prefixes
-
-Items with Greatness 19+ gain additional prefix bonuses that stack with suffix effects. These same prefixes are also used for named beasts in Beast Mode NFTs.
-
-**Complete Prefix & Suffix Reference:** See [Prefixes Guide](/lootsurvivor/loot/prefixes) for the full library of all 69 prefixes and 18 suffixes.
-
-***
-
-# Summary
-
-The loot system provides deep character customization through equipment choices, tier progression, and special properties. Understanding how tiers, greatness, suffixes, and prefixes work together allows you to build powerful adventurers capable of surviving Death Mountain's greatest challenges.
-
-**Key Loot Principles:**
-
-* Higher tiers provide better base power
-* Greatness 15+ items gain significant suffix bonuses
-* Greatness 19+ items gain additional prefix bonuses
-* Combat type and material matter for battle effectiveness
-* Market refreshes provide new acquisition opportunities each level
-
-
-
----
-
-file: docs/lootsurvivor/loot/jewelry.mdx
-meta: {}
-
-# Jewelry Items
-
-Jewelry items increase the Adventurer's Luck, which is directly proportional to their critical hit chance.
-20 Luck = 20% chance of a critical hit.
-100 Luck = 100% chance of a critical hit.
-
-The total Luck the Adventurer receives from their jewelry is equal to the total level of all their jewelry, both equipped and in their bag. For example, if you have a level 20 Bronze Ring in your bag and a level 20 Gold Ring equipped, your Luck will be 40.
-
-It is possible to achieve 100 Luck and therefore a 100% critical hit chance with enough jewelry items.
-
-Jewelry items also provide special abilities, but those only apply when they are equipped. Those special abilities are:
-
-| Item          | Boost                                      |
-| ------------- | ------------------------------------------ |
-| Pendant       | 3% increase per level hide armor defence.  |
-| Necklace      | 3% increase per level metal armor defence. |
-| Amulet        | 3% increase per level cloth armor defence. |
-| Bronze Ring   | No special ability (economy option).       |
-| Silver Ring   | +1 bonus luck per level.                   |
-| Gold Ring     | 3% per level in gold rewards from beasts.  |
-| Platinum Ring | 3% per level in name match damage bonus.   |
-| Titanium Ring | 3% per level in critical hit damage bonus. |
-
-
-
----
-
-file: docs/lootsurvivor/loot/prefixes.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Item & Beast Prefixes
-
-Prefixes are special name modifiers that appear on high-greatness items (Level 19+) and named beasts. This comprehensive reference covers all 69 prefixes and 18 suffixes used throughout Loot Survivor.
-
-## Prefix System Overview
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **Dual Usage:** Prefixes serve two important functions in the game:
-  </div>
-
-  <div style={{ marginBottom: '1rem' }}>
-    * **Item Enhancement**: High-greatness items (19+) gain prefix bonuses for additional stats
-    * **Beast Names**: Named beasts (Level 19+) use these same prefixes for unique identities
-    * **NFT Collection**: Beast Mode NFTs mint with prefix names for collectible variety
-  </div>
-
-  > **Cross-System Integration:** The same 69 prefixes create both powerful equipment and collectible named beasts!
-</div>
-
-## Complete Prefix Library (69 Total)
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
-    <div style={{ background: '#2a1a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #dc2626' }}>
-      ### 🌑 Dark Themes (17)
-
-      1. Agony
-      2. Apocalypse
-      3. Armageddon
-      4. Blight
-      5. Blood
-      6. Corruption
-      7. Damnation
-      8. Death
-      9. Demon
-      10. Dire
-      11. Doom
-      12. Dread
-      13. Ghoul
-      14. Gloom
-      15. Grim
-      16. Hate
-      17. Horror
-    </div>
-
-    <div style={{ background: '#2a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #eab308' }}>
-      ### 🏆 Power & Creatures (17)
-
-      18. Beast
-      19. Behemoth
-      20. Dragon
-      21. Empyrean
-      22. Fate
-      23. Golem
-      24. Honour
-      25. Kraken
-      26. Miracle
-      27. Phoenix
-      28. Skull
-      29. Soul
-      30. Spirit
-      31. Victory
-      32. Viper
-      33. Brood
-      34. Chimeric
-    </div>
-
-    <div style={{ background: '#1a2a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #10b981' }}>
-      ### 🌊 Elemental & Nature (17)
-
-      35. Bramble
-      36. Brimstone
-      37. Carrion
-      38. Corpse
-      39. Dusk
-      40. Eagle
-      41. Gale
-      42. Maelstrom
-      43. Sol
-      44. Storm
-      45. Tempest
-      46. Vortex
-      47. Cataclysm
-      48. Foe
-      49. Havoc
-      50. Onslaught
-      51. Plague
-    </div>
-
-    <div style={{ background: '#2a1a3a', padding: '1rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
-      ### ✨ Mystical & Abstract (18)
-
-      52. Glyph
-      53. Hypnotic
-      54. Loath
-      55. Mind
-      56. Morbid
-      57. Oblivion
-      58. Pain
-      59. Pandemonium
-      60. Rage
-      61. Rapture
-      62. Rune
-      63. Sorrow
-      64. Torment
-      65. Vengeance
-      66. Woe
-      67. Wrath
-      68. **Lights** ⭐
-      69. **Shimmering** ⭐
-    </div>
-  </div>
-
-  ### Ultra Rare Prefixes
-
-  **Lights (#68)** and **Shimmering (#69)** are considered the most valuable and rare prefixes in the entire system, making items or beast NFTs with these names extremely sought after by collectors.
-</div>
-
-## Complete Suffix Library (18 Total)
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-    <div>
-      | ID | Suffix     |
-      | -- | ---------- |
-      | 1. | Bane       |
-      | 2. | Root       |
-      | 3. | Bite       |
-      | 4. | Song       |
-      | 5. | Roar       |
-      | 6. | Grasp      |
-      | 7. | Instrument |
-      | 8. | Glow       |
-      | 9. | Bender     |
-    </div>
-
-    <div>
-      | ID  | Suffix  |
-      | --- | ------- |
-      | 10. | Shadow  |
-      | 11. | Whisper |
-      | 12. | Shout   |
-      | 13. | Growl   |
-      | 14. | Tear    |
-      | 15. | Peak    |
-      | 16. | Form    |
-      | 17. | Sun     |
-      | 18. | Moon    |
-    </div>
-  </div>
-
-  **Suffix Usage:** Only applies to items with Greatness 15+ for stat bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for detailed stat effects.
-</div>
-
-## Usage Examples
-
-### Item Naming Examples
-
-<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.8' }}>
-  <div style={{ marginBottom: '1rem' }}>
-    **High-Greatness Item Examples:**
-  </div>
-
-  <div style={{ marginBottom: '1rem' }}>
-    * **"Doom Katana of Power"** - Prefix: Doom, Base: Katana, Suffix: of Power
-    * **"Shimmering Divine Robe of Giants"** - Prefix: Shimmering, Base: Divine Robe, Suffix: of Giants
-    * **"Blood Wand of Skill"** - Prefix: Blood, Base: Wand, Suffix: of Skill
-  </div>
-
-  **Beast Naming Examples:**
-
-  <div style={{ marginBottom: '0' }}>
-    * **"Apocalypse Dragon"** - Prefix: Apocalypse, Beast: Dragon
-    * **"Lights Kraken"** - Prefix: Lights, Beast: Kraken
-    * **"Storm Phoenix"** - Prefix: Storm, Beast: Phoenix
-  </div>
-</div>
-
-## Cross-Reference Usage
-
-### When to Use This Page
-
-<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0', lineHeight: '1.6' }}>
-  **Reference Scenarios:**
-
-  1. **Item Identification**: Understanding what prefix names mean on your equipment
-  2. **Beast NFT Hunting**: Identifying valuable prefix combinations for collection
-  3. **Market Evaluation**: Determining item value based on prefix rarity
-  4. **Collection Planning**: Targeting specific prefixes for complete sets
-  5. **Cross-Game Integration**: Understanding naming for Summit game access
-
-  **Documentation Links:**
-
-  * Items with prefixes: Reference this page from item evaluation
-  * Named beasts: Reference this page from beast documentation
-  * NFT collecting: Use for understanding collectible variety
-</div>
-
-## See Also
-
-* [Loot System](/lootsurvivor/loot) - Main equipment and tier information
-* [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) - Detailed suffix stat effects
-* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Named beast NFT system
-* [Beast Overview](/lootsurvivor/beasts) - Combat types and beast information
-
-
-
----
-
-file: docs/lootsurvivor/loot/suffix-boost.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Suffix Boosts
-
-When an item reaches Greatness 15, it gains a powerful suffix that provides significant stat bonuses. These suffixes are based on the [16 Orders of Divinity](https://docs.loot.foundation/canonical-principles/loot/the-16-orders) from the original Loot collection and follow canonical loot lore.
-
-> **⚡ Power Boost:** Suffix bonuses can make a T3 item with the right suffix more powerful than a base T1 item!
-
-## How Suffixes Work
-
-* **Greatness Requirement:** Items must reach Greatness 15 to unlock suffix bonuses
-* **Random Assignment:** Suffixes are randomly assigned based on the Orders of Divinity
-* **Permanent Bonuses:** Suffix bonuses are permanent and stack with base item stats
-* **Lore Integration:** Each suffix follows canonical Loot Foundation principles
-
-***
-
-# Complete Suffix List
-
-## Suffix Bonuses by Order
-
-| Item Suffix          | Stat Bonuses                              | Total Bonus | Order Association                 |
-| -------------------- | ----------------------------------------- | ----------- | --------------------------------- |
-| **Of Power**         | Strength +3                               | +3          | Power-focused enhancement         |
-| **Of Giant**         | Vitality +3                               | +3          | Health and endurance boost        |
-| **Of Titans**        | Strength +2, Charisma +1                  | +3          | Balanced physical prowess         |
-| **Of Skill**         | Dexterity +3                              | +3          | Agility and precision enhancement |
-| **Of Perfection**    | Strength +1, Dexterity +1, Vitality +1    | +3          | Balanced all-around improvement   |
-| **Of Brilliance**    | Intelligence +3                           | +3          | Mental acuity enhancement         |
-| **Of Enlightenment** | Wisdom +3                                 | +3          | Spiritual awareness boost         |
-| **Of Protection**    | Vitality +2, Dexterity +1                 | +3          | Defensive-focused bonuses         |
-| **Of Anger**         | Strength +2, Dexterity +1                 | +3          | Aggressive combat enhancement     |
-| **Of Rage**          | Wisdom +1, Strength +1, Charisma +1       | +3          | Controlled fury bonuses           |
-| **Of Fury**          | Vitality +1, Charisma +1, Intelligence +1 | +3          | Passionate intensity boost        |
-| **Of Vitriol**       | Intelligence +2, Wisdom +1                | +3          | Sharp mental enhancement          |
-| **Of the Fox**       | Dexterity +2, Charisma +1                 | +3          | Cunning and agility boost         |
-| **Of Detection**     | Wisdom +2, Dexterity +1                   | +3          | Awareness and reflexes            |
-| **Of Reflection**    | Wisdom +2, Intelligence +1                | +3          | Contemplative wisdom boost        |
-| **Of the Twins**     | Charisma +3                               | +3          | Social influence enhancement      |
-
-***
-
-# Suffix Categories
-
-## Single Stat Focus
-
-These suffixes provide maximum bonuses to one primary stat:
-
-* **Of Power** - Pure Strength focus for maximum damage
-* **Of Giant** - Pure Vitality focus for maximum health
-* **Of Skill** - Pure Dexterity focus for escape mastery
-* **Of Brilliance** - Pure Intelligence focus for obstacle avoidance
-* **Of Enlightenment** - Pure Wisdom focus for ambush prevention
-* **Of the Twins** - Pure Charisma focus for market optimization
-
-## Balanced Combinations
-
-These suffixes provide balanced stat distributions:
-
-* **Of Perfection** - Equal bonuses across STR/DEX/VIT
-* **Of Rage** - Equal bonuses across WIS/STR/CHA
-* **Of Fury** - Equal bonuses across VIT/CHA/INT
-
-## Specialized Builds
-
-These suffixes target specific build archetypes:
-
-* **Of Titans** - Combat-focused (STR+CHA)
-* **Of Protection** - Defense-focused (VIT+DEX)
-* **Of Anger** - Aggressive melee (STR+DEX)
-* **Of Vitriol** - Mental mastery (INT+WIS)
-* **Of the Fox** - Agile trader (DEX+CHA)
-* **Of Detection** - Alert explorer (WIS+DEX)
-* **Of Reflection** - Wise scholar (WIS+INT)
-
-***
-
-# Suffix Strategy
-
-## Evaluating Suffix Value
-
-When comparing items with suffixes, consider:
-
-1. **Your Build Focus** - Does the suffix support your stat priorities?
-2. **Current Weaknesses** - Does the suffix shore up weak areas?
-3. **Base Tier vs Suffix** - A T3+suffix might beat a base T1
-4. **Total Stat Impact** - All +3 bonuses are equally valuable mathematically
-
-## Suffix Synergies
-
-**Combat Builds:**
-
-* **Of Power** - Maximum damage output
-* **Of Titans** - Damage + market efficiency
-* **Of Anger** - Damage + escape capability
-
-**Survival Builds:**
-
-* **Of Giant** - Maximum health pool
-* **Of Protection** - Health + escape ability
-* **Of Perfection** - Balanced survivability
-
-**Utility Builds:**
-
-* **Of the Fox** - Escape + market efficiency
-* **Of Detection** - Awareness + agility
-* **Of Reflection** - Mental mastery
-
-***
-
-# Summary
-
-Suffix bonuses transform the loot system from simple tier progression to complex item evaluation. A well-rolled suffix can make any item tier competitive, while the wrong suffix might make you overlook a potentially powerful piece of equipment.
-
-**Key Suffix Principles:**
-
-* All suffixes provide exactly +3 total stat points
-* Suffixes unlock at Greatness 15
-* Suffix distribution matters more than individual bonuses
-* Consider your build when evaluating suffix value
-* Don't automatically dismiss lower tiers with good suffixes
 
 
 
@@ -7735,1109 +7179,637 @@ Markets can contain:
 
 ---
 
-file: docs/lootsurvivor/token/airdrop.mdx
-meta: {}
-
-# Free Games Airdrop
-
-## Overview
-
-The Loot Survivor airdrop provides **free game entries** to eligible NFT holders and community members. These free games give players access to the LS2 Dungeon, which contains **2,258,100 SURVIVOR tokens** distributed as rewards based on gameplay performance.
-
-## How It Works
-
-### Game-Based Distribution
-
-Instead of receiving SURVIVOR tokens directly, eligible participants receive free game entries to play Loot Survivor. The LS2 Dungeon holds 2,258,100 SURVIVOR tokens that are distributed to players based on their performance:
-
-* **Minimum Level 3**: Must reach at least level 3 to earn tokens
-* **Tokens = Level Reached**: Starting at level 3, tokens equal to the level reached
-* **Promotion Periods**: 4X tokens during weeks 2-4, 2X tokens after week 4
-* **Performance-based rewards**: Higher levels mean more tokens
-* **Multiple attempts**: Each free game entry is a new opportunity to earn tokens
-
-### Example Rewards
-
-**Standard Rate (Week 1):**
-
-* Level 3: 3 tokens
-* Level 10: 10 tokens
-* Level 25: 25 tokens
-
-**4X Promotion (Weeks 2-4):**
-
-* Level 10: 40 tokens
-* Level 25: 100 tokens
-
-**2X Promotion (After Week 4):**
-
-* Level 10: 20 tokens
-* Level 25: 50 tokens
-
-## Eligibility Categories
-
-### NFT Collection Holders
-
-Holders of eligible NFT collections receive free game entries based on their holdings at the snapshot date (August 18th, 2025 at 00:00 UTC). The number of free games is determined by:
-
-* Collection
-* Number of NFTs held
-* Games Amount multiplier for each collection
-
-[View all eligible collections →](/lootsurvivor/token/eligible-collections)
-
-### Community Contributors
-
-Active community members earn free games through:
-
-* Early participation in Loot Survivor v1
-* Community building and content creation
-* Bug reporting and testing
-* Protocol development contributions
-
-## Claiming Your Free Games
-
-To claim your free game entries and start earning SURVIVOR tokens:
-
-### Visit the Claims Portal
-
-Navigate to [claims.lootsurvivor.io](https://claims.lootsurvivor.io) to begin the claim process.
-
-![Eligibility Checker Interface](/docs/lootsurvivor/eligibility-checker.png)
-*Enter your wallet address to check your free games allocation*
-
-### What to Expect
-
-1. **Enter Your Wallet Address** - Input your EVM or Starknet wallet address
-2. **View Your Allocation** - See your total free games based on NFT holdings
-3. **Connect/Create Controller** - Set up a controller for smooth claims process (can claim for multiple wallets)
-4. **Claim Your Games** - Complete the claim for all eligible free games
-5. **Start Playing** - Begin your adventure and earn SURVIVOR tokens (within 2 weeks)
-
-![Eligibility Results](/docs/lootsurvivor/eligibility-results.png)
-*View your allocation and claim your free games*
-
-<img src="/docs/lootsurvivor/controller-wallets.png" alt="Controller Wallets" style={{width: "50%", margin: "0 auto", display: "block"}} />
-
-*Connect multiple wallets to claim games from different eligible addresses*
-
-### Wallet Ownership Verification
-
-For wallets that are not controllers (such as hardware wallets or EOA wallets):
-
-1. **Sign a Message** - You'll be prompted to sign a message to prove ownership of your wallet
-2. **Verification** - The signature verifies you own the NFTs from the snapshot
-3. **Games Sent to Controller** - Once verified, your free games are sent to your controller wallet
-4. **Play on Controller** - Use your controller wallet to play and earn SURVIVOR tokens
-
-![Wallet Verification](/docs/lootsurvivor/argent-claim.png)
-*Sign a message to verify ownership and claim games to your controller*
-
-The claims portal automatically:
-
-* Verifies your eligibility based on the August 18th, 2025 snapshot
-* Calculates your total free games across all eligible collections
-* Handles the entire claim process securely
-* Provides access to start playing immediately
-
-## Free Games Allocation
-
-### Calculation Method
-
-Free games are allocated based on:
-
-* **NFT Holdings**: Each eligible NFT grants games based on its collection's multiplier
-* **Games Amount**: Collections have different game allocations
-* **Total Cap**: Maximum 50 free games per eligible address
-
-### Distribution Examples
-
-* **Loot Holder**: 5 free games per Loot NFT (capped at 50 total)
-* **Pudgy Penguin Holder**: 10 free games per Penguin (capped at 50 total)
-* **OGS Discord Role**: 10 free games for verified members
-* **Multiple Collections**: Games stack across all eligible holdings (up to 50 max)
-
-## Playing Your Free Games
-
-### Getting Started
-
-1. Claim your free games at [claims.lootsurvivor.io](https://claims.lootsurvivor.io)
-2. Access Loot Survivor gameplay interface
-3. Start a new game using a free entry
-4. Progress through levels to earn SURVIVOR tokens
-
-### Earning Tokens
-
-* **Level 1-2**: No token rewards
-* **Level 3+**: Earn tokens equal to the level reached (e.g., Level 3 = 3 tokens, Level 20 = 20 tokens)
-* **Death**: Game ends, tokens earned are credited based on highest level reached
-* **Strategy**: Plan your builds to maximize level progression for more tokens
-
-### Token Distribution
-
-* When a game ends, a claim button appears
-* Click the claim button to receive your earned tokens
-* Track your total earnings across all games played
-
-## Important Notes
-
-### 2-Week Expiration Period
-
-* **Free games expire 2 weeks after the claim window opens**
-* Plan your gameplay strategy within this timeframe
-* Expired games cannot be recovered or extended
-* All eligible addresses have the same expiration deadline
-
-### Gas Fees
-
-* **All gas fees are covered** through our paymaster
-* No ETH required for claiming free games
-* No transaction fees for playing games
-* Completely free experience from claim to gameplay
-
-### Fair Play
-
-* Protected by onchain VRF (Verifiable Random Function)
-* Anti-bot measures built into the smart contract
-* Fully transparent and verifiable gameplay
-
-## Strategy Tips
-
-### Maximize Your Earnings
-
-* Study optimal builds before playing
-* Join community discussions for strategies
-* Use your free games before the 2-week window expires
-
-### Resource Management
-
-* Free games are valuable opportunities
-* Each game is a chance at significant token earnings
-* Token rewards scale directly with level reached
-* Community guides available for gameplay optimization
-
-## Support
-
-For assistance with free games:
-
-* Visit the official documentation
-* Join Discord for community strategies
-* Check FAQs for common questions
-* Submit support tickets for technical issues
-
-## Disclaimer
-
-Free game entries are distributed to reward early supporters and community members. The 2,258,100 SURVIVOR tokens in the LS2 Dungeon are distributed solely based on gameplay performance. Token earnings depend on individual skill and game progression.
-
-
-
----
-
-file: docs/lootsurvivor/token/eligible-collections.mdx
-meta: {}
-
-# Eligible Collections for Free Games
-
-The following NFT collections are eligible for **free game entries** to Loot Survivor, where players can earn SURVIVOR tokens through gameplay.
-
-## Free Games Distribution
-
-Eligible NFT holders receive free game entries based on their collection holdings at the snapshot date. These free games provide access to the LS2 Dungeon containing 2,000,000 SURVIVOR tokens. Players earn tokens equal to the level they reach (minimum level 3 required).
-
-## Eligible Collections List
-
-| Collection              | Network  | Collection Size | Free Games per NFT | View Contract                                                                                                 |
-| ----------------------- | -------- | --------------- | ------------------ | ------------------------------------------------------------------------------------------------------------- |
-| 1337 Skulls             | Ethereum | 7,331           | 5                  | [Etherscan](https://etherscan.io/address/0x9251dec8df720c2adf3b6f46d968107cbbadf4d4)                          |
-| Loot                    | Ethereum | 7,779           | 5                  | [Etherscan](https://etherscan.io/address/0xff9c1b15b16263c61d017ee9f65c50e4ae0113d7)                          |
-| Loot Explorers          | Ethereum | 7,998           | 2                  | [Etherscan](https://etherscan.io/address/0x508d06b8f3a4b0fd363239ce61e0c4b0b82f3626)                          |
-| The Wild Bunch          | Ethereum | 3,997           | 2                  | [Etherscan](https://etherscan.io/address/0xe9a1a323b4c8fd5ce6842edaa0cd8af943cbdf22)                          |
-| BAYC                    | Ethereum | 9,998           | 5                  | [Etherscan](https://etherscan.io/address/0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d)                          |
-| Dizzy Dragons           | Ethereum | 9,401           | 2                  | [Etherscan](https://etherscan.io/address/0x882A47e6070acA3f38Ce6929501F4787803A072b)                          |
-| Hyperloot               | Ethereum | 8,585           | 2                  | [Etherscan](https://etherscan.io/address/0x0290d49f53a8d186973b82faafdafe696b29acbb)                          |
-| LobsterDAO              | Ethereum | 3,546           | 4                  | [Etherscan](https://etherscan.io/address/0x026224a2940bfe258d0dbe947919b62fe321f042)                          |
-| Moonbirds               | Ethereum | 9,999           | 4                  | [Etherscan](https://etherscan.io/address/0x23581767a106ae21c074b2276d25e5c3e136a68b)                          |
-| Foxy PFP                | Linea    | 10,000          | 2                  | [Lineascan](https://lineascan.build/address/0xe46c02315c4a991d061a06f165028f8c9167249b)                       |
-| The Birth Lottery       | Linea    | 666             | 2                  | [Lineascan](https://lineascan.build/address/0xc7e1c28dc11e43ebe93f2664a53ae3775eba68cc)                       |
-| Genesis Mana            | Ethereum | 11,535          | 2                  | [Etherscan](https://etherscan.io/address/0xf4b6040a4b1b30f1d1691699a8f3bf957b03e463)                          |
-| The Eye for Adventurers | Ethereum | 1,614           | 3                  | [Etherscan](https://etherscan.io/address/0xb8a51862964f77025abb65e2c6a39ee8070c8ed4)                          |
-| Genesis Adventurers     | Ethereum | 633             | 5                  | [Etherscan](https://etherscan.io/address/0x8db687aceb92c66f013e1d614137238cc698fedb)                          |
-| Terraforms              | Ethereum | 9,911           | 5                  | [Etherscan](https://etherscan.io/address/0x4e1f41613c9084fdb9e34e11fae9412427480e56)                          |
-| The Dudes               | Ethereum | 512             | 3                  | [Etherscan](https://etherscan.io/address/0xb0cf7da8dc482997525be8488b9cad4f44315422)                          |
-| Crypts and Caverns      | Ethereum | 8,785           | 2                  | [Etherscan](https://etherscan.io/address/0x86f7692569914B5060Ef39aAb99e62eC96A6Ed45)                          |
-| Trusta OG Dragons       | Ethereum | 3,707           | 2                  | [Etherscan](https://etherscan.io/address/0xe0e126ce63becbecd72bee4f7673b4e50d5a9965)                          |
-| Wandernauts             | Ethereum | 8,887           | 2                  | [Etherscan](https://etherscan.io/address/0x793daf78b74aadf1eda5cc07a558fed932360a60)                          |
-| Based Ghouls            | Ethereum | 6,667           | 2                  | [Etherscan](https://etherscan.io/address/0xef1a89cbfabe59397ffda11fc5df293e9bc5db90)                          |
-| Pirate Nation           | Ethereum | 9,999           | 3                  | [Etherscan](https://etherscan.io/address/0x1b41d54b3f8de13d58102c50d7431fd6aa1a2c48)                          |
-| Grugs Lair              | Ethereum | 1,000           | 1                  | [Etherscan](https://etherscan.io/address/0xfa9ed22ca5d329ecaee9347f72e18c1fc291471b)                          |
-| Dope Wars               | Ethereum | 7,999           | 3                  | [Etherscan](https://etherscan.io/address/0x8707276df042e89669d69a177d3da7dc78bd8723)                          |
-| Blobert                 | Starknet | 4,844           | 2                  | [Voyager](https://voyager.online/contract/0x00539f522b29ae9251dbf7443c7a950cf260372e69efab3710a11bf17a9599f1) |
-| Schizoid                | Starknet | 999             | 3                  | [Voyager](https://voyager.online/contract/0x077485a949c130cf0d98819d2b0749f5860b0734ea28cb678dd3f39379131bfa) |
-| FOCG Boi Hands          | Starknet | 39              | 2                  | [Voyager](https://voyager.online/contract/0x02ef78f4031b4250e4ae8c4f0b18af4ef0cbbb405cdb20f80d1041b53aa2f1a1) |
-| Brother ID              | Starknet | 2,265           | 2                  | [Voyager](https://voyager.online/contract/0x0212f1c57700f5a3913dd11efba540196aad4cf67772f7090c62709dd804fa74) |
-| Realms                  | Starknet | 5,099           | 3                  | [Voyager](https://voyager.online/contract/0x07ae27a31bb6526e3de9cf02f081f6ce0615ac12a6d7b85ee58b8ad7947a2809) |
-| Banners (Ethereum)      | Ethereum | 1,785           | 3                  | [Etherscan](https://etherscan.io/address/0x527a4206ac04c2017295cf32f1fc2f9e034a7c40)                          |
-| Banners (Starknet)      | Starknet | 9,170           | 2                  | [Voyager](https://voyager.online/contract/0x02d66679de61a5c6d57afd21e005a8c96118bd60315fd79a4521d68f5e5430d1) |
-| Wolf Nation             | Starknet | 333             | 3                  | [Voyager](https://voyager.online/contract/0x0413485dbeccec6320d35dcba14375e7ca973f021486496a61286edb958fd861) |
-| zKube                   | Starknet | 11,326          | 1                  | [Voyager](https://voyager.online/contract/0x04fd5df500e6c6615e4423258639f189455672bc841ba58f1c781ac7c5ff4bd8) |
-| Karats                  | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x07d8ea58612a5de25f29281199a4fc1f2ce42f0f207f93c3a35280605f3b8e68) |
-| Karats 2                | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x030f694df2a04e04cf3e1d3e79dd5aadfdaa77295bb007696222fc60a5e8730d) |
-| Ducks Everywhere        | Starknet | 300             | 10                 | [Voyager](https://voyager.online/contract/0x04fa864a706e3403fd17ac8df307f22eafa21b778b73353abf69a622e47a2003) |
-| Pistols                 | Starknet | 126             | 5                  | [Voyager](https://voyager.online/contract/0x014aa76e6c6f11e3f657ee2c213a62006c78ff2c6f8ed40b92c42fd554c246f2) |
-| Influence Asteroids     | Starknet | 11,726          | 1                  | [Voyager](https://voyager.online/contract/0x0603cf837055c64d026a3c5a9e3a83036cea6c4a3f68a9e19f7a687d726fe817) |
-| Starkurabu              | Starknet | 10,000          | 1                  | [Voyager](https://voyager.online/contract/0x03ab1124ef9ec3a2f2b1d9838f9066f9a894483d40b33390dda8d85c01a315a3) |
-| Jokers Of Neon Beasts   | Starknet | 104             | 5                  | [Voyager](https://voyager.online/contract/0x07268fcf96383f8691b91ba758cc8fefe0844146f0557909345b841fb1de042f) |
-| Based Punks             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xcB28749c24AF4797808364D71d71539bc01E76d4)                           |
-| OK Computer             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xCE2830932889C7fB5e5206287C43554E673dCc88)                           |
-| Blackmirror Experience  | Base     | 7,078           | 2                  | [Basescan](https://basescan.org/address/0x108dB2038C6e8Bc1A0b058c70e752b14d08648BF)                           |
-| re:generates            | Base     | 6,665           | 2                  | [Basescan](https://basescan.org/address/0x56dFE6ae26bf3043DC8Fdf33bF739B4fF4B3BC4A)                           |
-| Writ of Passage         | Arbitrum | 10,000          | 2                  | [Arbiscan](https://arbiscan.io/address/0x5d541B55763A9277f61a739f40B6021A16C2d3d8)                            |
-| Liberty Cats            | Polygon  | 7,777           | 2                  | [Polygonscan](https://polygonscan.com/address/0x0030F47D6a73Bc518CF18fE027Ea91DD6B2b6003)                     |
-| Billions Genesis        | Polygon  | 2,999           | 2                  | [Polygonscan](https://polygonscan.com/address/0xeCb63be05886749De33709835e824AEFcFd74f8F)                     |
-| Pudgy Penguins          | Ethereum | 8,888           | 10                 | [Etherscan](https://etherscan.io/address/0xBd3531dA5CF5857e7CfAA92426877b022e612cf8)                          |
-| The Larp Collective     | Arbitrum | 420             | 2                  | [Arbiscan](https://arbiscan.io/address/0x48D2c1716DFDF8aDd5a5EA658c460e7257448660)                            |
-| ZTX Genesis Homes       | Arbitrum | 3,999           | 2                  | [Arbiscan](https://arbiscan.io/address/0x35373efc2FD7D852729cae869Cc32acc979100bD)                            |
-| Forgotten Runes         | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42)                          |
-| Cool Cats               | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x1a92f7381b9f03921564a437210bb9396471050c)                          |
-| Bankr                   | Base     | 1,000           | 10                 | [Basescan](https://basescan.org/address/0x9fab8c51f911f0ba6dab64fd6e979bcf6424ce82)                           |
-| Mee6 Genesis Pass       | Ethereum | 4,444           | 3                  | [Etherscan](https://etherscan.io/address/0xe9ab13482aeab3727e976257d8e1f026e12e9ecd)                          |
-| Adventurers             | Starknet | 10,638          | 1                  | [Voyager](https://voyager.online/contract/0x018108b32cea514a78ef1b0e4a0753e855cdf620bc0565202c02456f618c4dc4) |
-| OGS Discord Role        | Starknet | -               | 10                 | Discord Verified                                                                                              |
-
-## Understanding Free Games
-
-### How Free Games Work
-
-The "Free Games per NFT" column shows how many free game entries each NFT from that collection grants. For example:
-
-* Owning 1 Loot NFT = 5 free games
-* Owning 2 Pudgy Penguins = 20 free games (10 per NFT)
-* Holding multiple eligible NFTs = Games stack across all collections
-* **Maximum 50 free games per address** regardless of total holdings
-
-### Token Earning Potential
-
-Each free game is an opportunity to earn SURVIVOR tokens through gameplay:
-
-* **Level 1-2**: No rewards (warm-up levels)
-* **Level 3+**: Earn tokens equal to the level reached
-* **Example**: Reaching level 3 earns 3 tokens, level 25 earns 25 tokens, level 50 earns 50 tokens
-
-### Multi-Chain Support
-
-Eligible collections span multiple networks:
-
-* **Ethereum** - The majority of legacy collections
-* **Starknet** - Native Loot Survivor ecosystem collections
-* **Base** - Emerging gaming communities
-* **Arbitrum** - L2 gaming collections
-* **Polygon** - Alternative L2 collections
-* **Linea** - Next-generation gaming projects
-
-## Collection Categories
-
-### Premium Allocations (10+ games)
-
-Collections receiving the highest free game allocations:
-
-* **Pudgy Penguins**: 10 games per NFT
-* **Ducks Everywhere**: 10 games per NFT
-* **Bankr**: 10 games per NFT
-* **OGS Discord Role**: 10 games for verified members
-
-### Loot Ecosystem (5 games)
-
-Original Loot-related collections with enhanced allocations:
-
-* **Loot**: 5 games per NFT
-* **Genesis Adventurers**: 5 games per NFT
-* **1337 Skulls**: 5 games per NFT
-* **BAYC**: 5 games per NFT
-* **Terraforms**: 5 games per NFT
-
-### Standard Gaming Collections (2-4 games)
-
-Most collections receive standard allocations:
-
-* **2 games**: Common allocation for gaming NFTs
-* **3 games**: Enhanced allocation for active communities
-* **4 games**: Premium allocation for key partners
-
-### Entry Level (1 game)
-
-Collections with base-level allocations:
-
-* **Grugs Lair**: 1 game per NFT
-* **Influence Asteroids**: 1 game per NFT
-* **Starkurabu**: 1 game per NFT
-* **Adventurers**: 1 game per NFT
-* **zKube**: 1 game per NFT
-
-## Snapshot Details
-
-The eligibility snapshot was taken on **August 18th, 2025 at 00:00 UTC**. All NFT holdings and free game allocations are based on ownership at this specific point in time.
-
-## Verification Process
-
-To verify your free games allocation:
-
-1. Check your NFT holdings as of August 18th, 2025 at 00:00 UTC
-2. Calculate total free games: (NFTs held × Free Games per NFT)
-3. Sum across all eligible collections you held
-4. Apply the 50 free games per address maximum cap
-5. Connect wallet to claim interface for automatic calculation
-
-## Important Notes
-
-* **Maximum 50 free games per eligible address**
-* **Free games expire 2 weeks after the claim window opens** - Same deadline for all players
-* Multiple NFTs from the same collection grant cumulative games (up to the 50 game cap)
-* Transfers after the snapshot do not affect eligibility
-* The OGS Discord Role requires Discord verification, not on-chain holdings
-* Strategic gameplay can maximize token earnings from free games
-
-
-
----
-
-file: docs/lootsurvivor/token/index.mdx
-meta: {}
-
-# SURVIVOR Token
-
-The SURVIVOR token is the native governance and economic coordination token for Loot Survivor, designed to decentralize the ownership role of the game contracts and promote the growth of the Loot Survivor ecosystem.
-
-## Overview
-
-* Total Supply: 10,000,000
-* Distribution: 75% Community; 25% Team
-* Lockups: None
-* Contract: [`0x042dd777885ad2c116be96d4d634abc90a26a790ffb5871e037dd5ae7d2ec86b`](/lootsurvivor/contracts#governance-contracts)
-
-## Purpose
-
-SURVIVOR is the governance and economic coordination token for Loot Survivor 2.
-
-Governance: SURVIVOR lets holders propose and vote on specific onchain parameters (e.g., which Dungeon the Beasts inhabit, royalty settings for the Beast NFT collection, Beast Mode settings, which ERC‑20s the Dungeon accepts, and the Dungeon’s payment token).
-
-Autonomous treasury growth: When a player buys a Dungeon Ticket, immutable code automatically uses 80% of that payment to purchase SURVIVOR on a decentralized exchange and deposits the purchased tokens into the Survivor Treasury, which is governed by SURVIVOR holders.
-
-No promises / no rights to payouts: SURVIVOR does not grant rights to profits, revenue, dividends, or distributions. The automated purchases are a mechanical feature of the contracts, not a commitment to support price or provide returns.
-
-## Key Features
-
-### Decentralized Ownership Role
-
-The SURVIVOR token ships with a fully onchain governance system, built on top of [OpenZeppelin’s audited governance components](https://docs.openzeppelin.com/contracts-cairo/2.0.0/governance). The governance system enables SURVIVOR token holders to express their will onchain and for their shared will to execute as an onchain transaction. This allows sensitive, configurable game settings,such as which Dungeon the Beasts are in, to be truly owned and controllable by the community instead of the developers.
-
-The Survivor Governance Contract will control the following settings:
-
-* [Beast NFT](https://voyager.online/nft-contract/0x0280ace0b2171106eaebef91ca9b097a566108e9452c45b94a7924a9f794ae80):
-  * Move Beasts to a new Dungeon
-  * Change royalty information (default: 5% distributed to the Survivor Treasury)
-* [LS2 Beast Mode](https://voyager.online/contract/0x02fb722c25768e4a9994258754e7103895fd2f33cbcc1edc8711807950830cb5):
-  * Change Beast Mode settings
-  * Add and remove ERC‑20s from the Dungeon
-  * Change the payment token for the Dungeon
-
-### Economic Coordination
-
-To support the sustainable growth of the Loot Survivor ecosystem, Loot Survivor 2 ships with an autonomous and immutable SURVIVOR buy‑back mechanism. 80% of the proceeds from the sale of Dungeon Tickets, which are required to enter the Dungeon and collect Beasts, are used to purchase SURVIVOR tokens using Ekubo’s TWAMM and to deposit them into the Survivor Treasury. The remaining 20% is distributed to $veLORDS holders for the benefit of Bibliotheca DAO, the original incubator of Loot Survivor.
-
-### Treasury Bootstrap
-
-The treasury is initially seeded with 1M SURVIVOR and approximately 3M LORDS at genesis.
-
-### SURVIVOR Sale (Programmatic DCA via TWAMM):
-
-* Supply: 15% of total supply.
-* Method: A 3‑month programmatic DCA order via TWAMM (Oct 15 – Jan 15).
-* Proceeds: 100% contributed to the community treasury for ecosystem growth as governed onchain.
-
-DISCLAIMERS: This sale is programmatic, there are no allocations, discounts, or price/return statements.
-
-### Community Allocation
-
-75% of the total supply is allocated to the community through various distribution mechanisms, ensuring broad ownership and aligned incentives. Allocations include:
-
-* 22.5% LS2 Dungeon claim allocations (FCFS)
-  * 1 Token per level starting at level 3
-  * 4X Promotion for games played during weeks 2-4
-  * 2X Promotion after week 4 till all tokens are claimed.
-* 15% treasury bootstrap DCA
-* 10% Survivor Treasury
-* 9.3% Beast Entitlements (claim at mint)
-* 6.6% LS1/LS1.5 Players
-* 5% Loot Realms; 2.5% Loot; 1.5% 1337 Skulls; 1% Genesis Project; 1% Tournaments; 1% Beast Games
-
-Note: NFT royalties, if any, are not guaranteed across marketplaces.
-
-### Free Games Airdrop
-
-Loot Survivor 2 launches with a two‑week launch promotion that makes \~500k free games available to \~80k addresses across Ethereum, Arbitrum, Base, Starknet, Abstract, Linea, and Polygon. Those holding select NFTs on these platforms will be able to claim free games (including gas), allowing them to play Loot Survivor 2 and collect Beasts and SURVIVOR tokens.
-
-## Quick Links
-
-* [Tokenomics](/lootsurvivor/token/tokenomics) - Detailed breakdown of token distribution and allocations
-* [Airdrop](/lootsurvivor/token/airdrop) - How to claim your SURVIVOR tokens and eligibility criteria
-* [Eligible Collections](/lootsurvivor/token/eligible-collections) - NFT collections eligible for free games
-
-## Security
-
-Governance contracts use well‑known OpenZeppelin components. This is not a security audit; no system is risk‑free.
-Game contracts are cutting‑edge and unaudited; use at your own risk.
-
-## Disclaimers
-
-The SURVIVOR token is designed to decentralize ownership and governance of the Loot Survivor protocol. It represents participation rights in the ecosystem and should not be considered a financial investment.
-
-What SURVIVOR is not: SURVIVOR is not equity or debt. Automated purchases into the treasury are mechanical contract behavior, not price support or an offer of returns. Participation involves smart‑contract risk, market volatility, and governance outcomes that may not align with your preferences. Users should understand these risks before participating. Nothing here is investment advice.
-
-
-
----
-
-file: docs/lootsurvivor/token/tokenomics.mdx
-meta: {}
-
-# Tokenomics
-
-## Total Supply
-
-The total supply of the SURVIVOR token is **10,000,000** tokens, distributed between community and team allocations to ensure sustainable growth and development of the Loot Survivor ecosystem.
-
-## Distribution Overview
-
-| Category             | Tokens         | Percentage | Description                         |
-| -------------------- | -------------- | ---------- | ----------------------------------- |
-| **Community**        | **7,500,000**  | **75%**    |                                     |
-| LS2 Dungeon          | 2,258,100      | 22.58%     | Gameplay rewards                    |
-| Treasury DCA         | 1,500,000      | 15%        | 3-month programmatic sale via TWAMM |
-| Survivor Treasury    | 1,002,222      | 10.02%     | DAO-controlled treasury             |
-| Beast Entitlements   | 931,500        | 9.32%      | Claim at Beast mint                 |
-| Biblio (Loot Realms) | 500,000        | 5%         | DAO Sponsor                         |
-| Legacy Beast Bonus   | 332,028        | 3.32%      | LS1 Beast holder rewards            |
-| Top 1k LS1.5 Players | 326,150        | 3.26%      | Top player rewards                  |
-| Loot                 | 250,000        | 2.5%       | DAO Sponsor                         |
-| 1337 Skulls          | 150,000        | 1.5%       | 1337 Skulls                         |
-| Genesis Project      | 100,000        | 1%         | DAO Sponsor                         |
-| Budokan              | 100,000        | 1%         | Tournament Rewards                  |
-| Summit               | 100,000        | 1%         | Beast Game Rewards                  |
-| **Team**             | **2,500,000**  | **25%**    | No lockups                          |
-| **Total**            | **10,000,000** | **100%**   |                                     |
-
-## Distribution Breakdown
-
-### Community Allocation: 7,500,000 (75%)
-
-The majority of SURVIVOR tokens are allocated to the community through various mechanisms designed to reward participation, contribution, and loyalty to the ecosystem.
-
-#### LS2 Dungeon Rewards: 2,258,100 (22.58%)
-
-* First-come, first-served distribution through gameplay
-* Tokens equal to the level reached (starting at level 3)
-* **4X Promotion**: Weeks 2-4 (multiply token rewards by 4)
-* **2X Promotion**: After week 4 until all tokens claimed (multiply token rewards by 2)
-
-#### Treasury Bootstrap DCA: 1,500,000 (15%)
-
-* 3-month programmatic DCA order via TWAMM (Oct 15 - Jan 15)
-* 100% of proceeds contributed to community treasury
-* Ensures fair price discovery and broad distribution
-
-#### Survivor Treasury: 1,002,222 (10.02%)
-
-* DAO-controlled treasury for ecosystem development
-* Initial seed funding at genesis
-* Governed by SURVIVOR token holders
-
-#### Beast Entitlements: 931,500 (9.32%)
-
-* Auto-claimed with each Beast mint (average 10 tokens per Beast)
-* Tier-based distribution:
-  * T1 Beasts: 14 tokens per mint
-  * T2 Beasts: 12 tokens per mint
-  * T3 Beasts: 10 tokens per mint
-  * T4 Beasts: 8 tokens per mint
-  * T5 Beasts: 6 tokens per mint
-
-#### Legacy Players: 658,178 (6.58%)
-
-* **Legacy Beast Bonus**: 332,028 (3.32%)
-  * LS1 Beasts (2,306 total): 249,048 tokens (108 per Beast)
-  * LS1.5 Beasts: 82,980 tokens (36 per Beast)
-* **Top 1k LS1.5 Players**: 326,150 (3.26%) - Top player rewards
-
-#### Ecosystem Allocations: 1,150,000 (11.5%)
-
-* **Biblio (Loot Realms)**: 500,000 (5%) - Realms ecosystem development
-* **Loot**: 250,000 (2.5%) - Distributed to multisig of trusted Loot ecosystem entities
-* **1337 Skulls**: 150,000 (1.5%) - Distributed to multisig of trusted Skulls ecosystem entities
-* **Genesis Project**: 100,000 (1%) - Distributed to multisig of trusted Genesis ecosystem entities
-* **Budokan**: 100,000 (1%) - Player incentives for game-agnostic tournament platform
-* **Summit**: 100,000 (1%) - Player incentives and utility for Beasts collected in Loot Survivor
-
-### Team Allocation: 2,500,000 (25%)
-
-Reserved for the Loot Survivor team. This allocation aligns long-term incentives between the team and the ecosystem's success.
-
-## Value Accrual Mechanisms
-
-### Governance Treasury
-
-SURVIVOR token holders control the governance treasury, which consists of:
-
-* Proceeds from the Treasury Bootstrap DCA (1.5M tokens sold over 3 months)
-* 80% of proceeds from dungeon ticket purchases
-* 1,002,222 SURVIVOR tokens from the Survivor Treasury allocation
-* Initial seed of \~3M LORDS at genesis
-
-These funds can be directed towards:
-
-* Buyback and burns to distribute game revenue to token holders
-* Development funding for new features
-* Liquidity provision incentives
-* Ecosystem partnerships and growth initiatives
-
-### Governance Rights
-
-SURVIVOR token holders control:
-
-* **Beast NFT Settings**:
-  * Move Beasts to new Dungeons
-  * Royalty settings (default 5% to Survivor Treasury)
-* **LS2 Beast Mode**:
-  * Beast Mode configuration
-  * ERC-20 acceptance in Dungeons
-  * Dungeon payment token selection
-* **Treasury Management**:
-  * Allocation of treasury funds
-  * Partnership approvals and funding
-  * Community initiative funding
-
-## Distribution Schedule
-
-### Launch Distributions
-
-* **Free Games Airdrop**: \~500k games to \~80k addresses (2-week claim window)
-* **Beast Entitlements**: Claimable at Beast mint
-* **LS1/LS1.5 Players**: Based on historical participation
-
-### Ongoing Distributions
-
-* **LS2 Dungeon**: First-come, first-served through gameplay
-  * Week 1: Standard rate (tokens = level reached, starting at L3)
-  * Weeks 2-4: 4X promotion (standard rate × 4)
-  * After Week 4: 2X promotion until exhausted (standard rate × 2)
-* **Treasury Bootstrap DCA**: 3-month programmatic sale (Oct 15 - Jan 15)
-
-### No Lockups
-
-* All allocations are immediately liquid upon receipt
-* No vesting schedules or lockup periods
-* Team tokens have no restrictions
-
-## Economic Sustainability
-
-The tokenomics model is designed to create a self-sustaining ecosystem where:
-
-* Players are rewarded for skill and participation
-* Developers are incentivized to build on the platform
-* Token holders benefit from ecosystem growth
-* Protocol revenue supports ongoing development
-
-This balanced approach ensures long-term viability while maintaining decentralization and community ownership.
-
-
-
----
-
-file: docs/budokan/guide/create/best-practices.mdx
+file: docs/lootsurvivor/loot/index.mdx
 meta: {
   "layout": "docs"
 }
 
-# Best Practices
-
-This guide covers recommended practices for creating successful tournaments on Budokan. Following these guidelines will help protect your prize pools, attract genuine participants, and ensure a smooth experience for everyone.
-
-## Sybil Resistance
-
-### Always Charge Entry Fees for Open Tournaments
-
-If your tournament is open to everyone and has no entry requirements (token gating, qualification, or whitelist), **always charge a small entry fee**. This is critical for protecting your prize pool.
-
-**Why this matters:**
-
-* Without barriers to entry, bots and farmers can create unlimited wallets and play an infinite number of games to exploit prize distributions
-* Even a small fee (e.g., $0.10–$1.00) creates enough friction to make mass exploitation unprofitable
-* The fee doesn't need to be large—just enough to make the cost of running many accounts exceed potential rewards
-
-**Recommended approaches:**
-
-| Tournament Type        | Recommendation                                               |
-| ---------------------- | ------------------------------------------------------------ |
-| Open + Prize Pool      | Charge entry fee (required)                                  |
-| Open + No Prizes       | Entry fee optional                                           |
-| Token Gated            | Entry fee optional (token requirement provides protection)   |
-| Qualification Required | Entry fee optional (prior tournament provides protection)    |
-| Whitelisted            | Entry fee optional (address restriction provides protection) |
-
-> **Rule of thumb:** If anyone can join and there's money to win, require an entry fee.
-
-### Combine Multiple Protections
-
-For high-value prize pools, consider layering protections:
-
-* Entry fee + token gating
-* Entry fee + qualification from a previous tournament
-* Token gating + whitelist for invite-only events
-
-## Submission Period
-
-### Set Realistic Deadlines
-
-The submission period determines how long players have to submit their final scores after the tournament ends. If no scores are submitted before the deadline, **the prize pool will go to the tournament creator**.
-
-**Recommendations:**
-
-* Set submission periods of at least 24–48 hours for casual tournaments
-* For competitive events, 1–7 days gives players flexibility across time zones
-* Monitor your tournament as the deadline approaches
-
-### Use Auto-Submit Infrastructure
-
-Budokan provides infrastructure to help monitor and auto-submit scores. Take advantage of this:
-
-* Bookmark your tournament page
-* Set calendar reminders for the submission deadline
-* Consider enabling auto-submission if available
-
-## Prize Distribution
-
-### Plan Your Winner Distribution
-
-Before creating a tournament, decide how you want to distribute prizes:
-
-* **Top-heavy:** Rewards the best players heavily (e.g., 70/20/10 split)
-* **Flat:** Spreads rewards more evenly across winners
-* **Participation-focused:** Smaller prizes for more positions
-
-Consider your goals:
-
-* Competitive prestige → top-heavy
-* Community engagement → flatter distribution
-* Encouraging new players → participation rewards
-
-## Timing and Scheduling
-
-### Avoid Overlapping with Major Events
-
-Check for other tournaments, game updates, or community events that might compete for attention. Timing your tournament well can significantly impact participation.
-
-### Consider Time Zones
-
-If your community is global, consider:
-
-* Longer tournament durations (days rather than hours)
-* Start times that work for multiple regions
-* Extended submission periods
-
-## Communication
-
-### Write Clear Descriptions
-
-Use the tournament description to communicate:
-
-* Any special rules or expectations
-* The theme or purpose of the tournament
-* Links to community channels for questions
-
-### Announce Your Tournament
-
-After creation, share your tournament:
-
-* In relevant Discord channels
-* On social media
-* Through community newsletters
-
-## Pre-Launch Checklist
-
-Before confirming your tournament, verify:
-
-* [ ] Entry requirements match your intended audience
-* [ ] Entry fee is set (if tournament is open with prizes)
-* [ ] Prize distribution percentages total 100%
-* [ ] Start and end times are correct
-* [ ] Submission period gives players enough time
-* [ ] Game settings are configured correctly
-* [ ] Description clearly explains the tournament
-
-> **Remember:** Once created, some tournament settings cannot be changed. Double-check everything before confirming.
-
-## Related Guides
-
-* [Creating a Tournament](/budokan/guide/create)
-* [Entry Fees](/budokan/guide/create/entry-fees)
-* [Entry Requirements](/budokan/guide/create/entry-requirements)
-* [FAQ](/budokan/faq)
-
-If you have questions or need help, check the FAQ or contact support through the app.
-
-
-
----
-
-file: docs/budokan/guide/create/entry-fees.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Entry Fees
-
-Budokan allows you to set entry fees for your tournaments using any supported token on Starknet. This feature lets communities leverage their own ecosystem tokens as payment for games on the platform, adding flexibility and value.
-
-## Supported Tokens
-
-<div className="flex flex-row">
-  <p>
-    For security, Budokan currently uses a whitelist of tokens for tournament entry fees. In the future, any token supported on Ekubo will be available for use. Support for ERC721 (NFT) entry fees is also coming soon.
-  </p>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/erc20-tokens.png" alt="Entry Fee Tokens" width="300" height="600" />
-
-    <em>Figure 1: Entry fee tokens currently supported.</em>
-  </div>
-</div>
-
-## Customizing Entry Fee Distribution
-
-The entry fee form offers flexible options for setting the price of entry and how fees are split among different parties. To make things simple, values are converted to USD where possible, so both players and creators can easily compare amounts—even if they're unfamiliar with the token.
-
-![Entry Fees](/docs/entry-fees.png)
-*Figure 2: Entry Fees Form.*
-
-### How Entry Fees Are Split
-
-* **Creator Fee:**
-  * The percentage of each entry fee that goes to the tournament creator. This is automatically distributed to the creator's account (`Entry #0`) when a player enters.
-
-* **Game Fee:**
-  * The percentage of each entry fee that goes to the game developer. The creator sets this percentage, though a minimum base fee may be enforced in the future. The game developer receives this cut via the account holding `Game #0`.
-
-* **Player Distribution (Prize Pool):**
-  * The remaining amount is added to the tournament's prize pool. The creator decides how the prize is split among winners, based on the leaderboard size. Use the slider to adjust distribution weights, or manually enter the splits (they must total 100%).
-
-> **Tip:** Use familiar tokens for your audience to encourage participation. Double-check your fee splits before confirming, as they can't be changed after creation.
-
-***
-
-## Related Guides
-
-* [Creating a Tournament](/budokan/guide/create)
-* [Prize Structure](/budokan/guide/prizes)
-* [Onboarding](/budokan/guide/onboarding)
-* [FAQ](/budokan/faq)
-
-If you have questions or need help, check the FAQ or contact support through the app.
-
-
-
----
-
-file: docs/budokan/guide/create/entry-requirements.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Entry Requirements
-
-Entry requirements let you control who can join your tournament, adding exclusivity and enabling unique playing conditions. Use these features to target specific communities, create multi-stage events, or restrict access as needed.
-
-## Token Gating
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      You can require participants to own specific NFTs or tokens to enter your tournament. This is a great way to host exclusive events for certain communities without manually tracking eligible accounts.<br /><br />
-      Currently, Budokan uses a whitelist of supported tokens for gating, similar to entry fee tokens. In the future, all tokens will be supported.
+# Loot System
+
+<div style={{ display: 'flex', gap: '2rem', alignItems: 'start', margin: '2rem 0', flexWrap: 'wrap' }}>
+  <div
+    style={{ 
+fontSize: '1.1rem', 
+lineHeight: '1.8', 
+paddingRight: '2rem',
+color: '#e5e5e5',
+flex: '2',
+minWidth: '300px'
+}}
+  >
+    <p style={{ marginBottom: "1.2rem", fontWeight: "400" }}>
+      The loot system in Loot Survivor is inspired by the original <a href="https://docs.loot.foundation/" style={{ color: "#3b82f6" }}>Loot collection</a> and forms the backbone of your adventurer's power progression.
+    </p>
+
+    <p style={{ marginBottom: "0", fontWeight: "400" }}>
+      Understanding how items work, their tiers, and special properties is essential
+      for survival in Death Mountain. Each piece of equipment can evolve and gain
+      powerful bonuses as you progress through the dangerous depths.
     </p>
   </div>
 
-  <div className="flex-shrink-0">
-    <img src="/docs/erc20-tokens.png" alt="Entry Requirement Tokens" width="300" height="600" />
+  <div style={{ flex: '1', minWidth: '250px' }}>
+    <img
+      src="/docs/lootsurvivor/loot.png"
+      alt="Loot Survivor Items Display"
+      style={{
+    width: "100%",
+    display: "block",
+    borderRadius: "8px",
+    border: "2px solid #333",
+  }}
+    />
 
-    <br />
-
-    <em>Figure 1: Gated tokens currently supported.</em>
+    <em
+      style={{
+    display: "block",
+    textAlign: "center",
+    marginTop: "0.5rem",
+    fontSize: "0.9rem",
+    opacity: "0.8",
+  }}
+    >
+      Loot item display showing tier and special properties
+    </em>
   </div>
 </div>
 
-![Token Gating](/docs/entry-requirements-token.png)
-*Figure 2: Token Entry Requirements Form.*
+## Item Properties
 
-> **Tip:** Use token gating to reward loyal holders or run special events for your community.
+Each item has several key properties that determine its effectiveness:
 
-## Tournament Qualification
+* **Tier** - Base power level (T1-T5)
+* **Greatness** - Special enhancement level (0-20)
+* **Suffix** - Name suffix at Greatness 15+
+* **Prefixes** - Additional bonuses at Greatness 19+
+* **+1 Modifier** - +1 modifier at Greatness 20
 
-Budokan allows you to chain tournaments together, unlocking advanced formats such as:
+## Item Tiers
 
-* Multi-round tournaments
-* Multi-game tournaments
-* Multi-game, multi-round tournaments
+Items in Loot Survivor are categorized into 5 tiers, with T1 being the most powerful:
 
-![Tournament Qualification](/docs/entry-requirements-tournament-2.png)
-*Figure 3: Selecting participants of a previous tournament.*
+| Tier   | Name      | Rarity    | Base Power    | Drop Rate | Description                                |
+| ------ | --------- | --------- | ------------- | --------- | ------------------------------------------ |
+| **T1** | Legendary | Highest   | 5× multiplier | \~0.066%  | Best-in-slot items with maximum base stats |
+| **T2** | Epic      | Very High | 4× multiplier | \~0.2%    | Powerful items with excellent stats        |
+| **T3** | Rare      | High      | 3× multiplier | \~0.4%    | Good equipment with solid performance      |
+| **T4** | Uncommon  | Medium    | 2× multiplier | \~1.0%    | Decent upgrades over starting gear         |
+| **T5** | Common    | Low       | 1× multiplier | \~1.65%   | Basic gear and starting equipment          |
 
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      By leveraging Starknet and Dojo interoperability, you can create tournament structures that were not possible before. For example, you can require players to qualify in one tournament before entering another, or combine results across multiple games.
-    </p>
+**Tier Effects:**
+
+* Higher tiers provide better base damage/protection
+* Tier multiplier affects combat calculations
+* Better tiers are more likely to have special properties
+* All tiers can potentially have suffixes and prefixes
+
+***
+
+<div style={{ background: '#2a1a3e', padding: '1.5rem', borderRadius: '8px', border: '2px solid #a855f7', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **🎮 Loot Survivor Implementation Note:**
   </div>
 
-  <div className="flex-shrink-0">
-    <img src="/docs/championship-tweet.png" alt="Dark Shuffle World Championship" width="300" height="600" />
-
-    <br />
-
-    <em>Figure 4: Dark Shuffle World Championship.</em>
+  <div style={{ marginBottom: '0' }}>
+    Everything below this point represents **Loot Survivor's unique interpretation** of the original Loot collection. The Greatness System, combat types, materials, and their gameplay mechanics are specific to this game's implementation and not part of the base Loot specification.
   </div>
 </div>
 
-> **Note:** Chaining tournaments is a powerful way to build leagues, championships, or community-driven series.
+# Greatness System
 
-## Whitelisting Addresses
+Greatness is a special property that enhances items beyond their base tier:
 
-You can also restrict tournament access by whitelisting specific wallet addresses. Only those on the list will be able to join.
+## Greatness Levels
 
-![Whitelisting](/docs/entry-requirements-whitelist.png)
-*Figure 5: Whitelisting addresses for tournament entry.*
+| Greatness | Enhancement     | Special Property           |
+| --------- | --------------- | -------------------------- |
+| **1-14**  | Base item       | Standard tier bonuses only |
+| **15**    | Suffix unlocked | +3 stat bonus from suffix  |
+| **16-18** | Enhanced suffix | Suffix bonuses continue    |
+| **19**    | Prefix unlocked | Additional stat bonuses    |
+| **20**    | Stat Bonus      | +1 assignable stat bonus   |
 
-> **Tip:** Use whitelisting for invitation-only events or to reward select players.
+## How Greatness Works
 
-## Related Guides
+* Items always start at greatness 1
+* Greatness increases the item's overall power
+* Greatness 15+ items gain [suffix bonuses](/lootsurvivor/loot/suffix-boost)
+* Greatness 19+ items gain additional prefix [prefixes](/lootsurvivor/loot/prefixes)
+* Greatness 20 items get a +1 stat modifier
 
-* [Creating a Tournament](/budokan/guide/create)
-* [Entry Fees](/budokan/guide/create/entry-fees)
-* [Onboarding](/budokan/guide/onboarding)
-* [FAQ](/budokan/faq)
+***
 
-If you have questions or need help, check the FAQ or contact support through the app.
+# Equipment Types
+
+Loot Survivor features 8 equipment slots for different item types:
+
+| Equipment Slot | Item Types                            | Function |
+| -------------- | ------------------------------------- | -------- |
+| **Weapon**     | Katana, Wand, Club, Short Sword       | Weapon   |
+| **Chest**      | Divine Robe, Shirt, Demon Husk        | Armor    |
+| **Head**       | Crown, Cap, Helm                      | Armor    |
+| **Waist**      | Ornate Belt, Sash, Heavy Belt         | Armor    |
+| **Foot**       | Divine Slippers, Boots, Shoes         | Armor    |
+| **Hand**       | Divine Gloves, Gloves, Gauntlets      | Armor    |
+| **Neck**       | Amulet, Pendant, Necklace             | Jewelry  |
+| **Ring**       | Platinum Ring, Gold Ring, Silver Ring | Jewelry  |
+
+***
+
+# Combat Types & Materials
+
+Items have dual classifications that affect combat performance:
+
+## Weapon Types
+
+**⚔️ Blade Weapons**
+
+* Strong vs Hide armor
+* Weak vs Metal armor
+* Examples: Katana, Short Sword, Scimitar
+
+**🔨 Bludgeon Weapons**
+
+* Strong vs Metal armor
+* Weak vs Cloth armor
+* Examples: Club, Mace, Warhammer
+
+**✨ Magic Weapons**
+
+* Strong vs Cloth armor
+* Weak vs Hide armor
+* Examples: Wand, Book, Ghost Wand
+
+## Armor Materials
+
+**🛡️ Hide Armor**
+
+* Resists Blade attacks
+* Weak to Magic attacks
+* Examples: Leather armor, Dragon skin
+
+**⚡ Metal Armor**
+
+* Resists Bludgeon attacks
+* Weak to Blade attacks
+* Examples: Chain mail, Plate armor
+
+**🧙 Cloth Armor**
+
+* Resists Magic attacks
+* Weak to Bludgeon attacks
+* Examples: Robes, Shirts
+
+***
+
+# Item Acquisition
+
+## Discovery Methods
+
+Items can be obtained through several methods:
+
+| Method                 | Rate                | Quality     | Notes                           |
+| ---------------------- | ------------------- | ----------- | ------------------------------- |
+| **Exploration**        | 3.3% of explores    | Random tier | Primary acquisition method      |
+| **Market Purchase**    | Level-dependent     | Variable    | Costs gold, refresh on level up |
+| **Starting Equipment** | 1 weapon guaranteed | T5 only     | Random weapon type              |
+
+## Market System
+
+* Market refreshes completely on each level up
+* Available items are randomly generated
+* Item count increases with adventurer level
+* CHA stat reduces purchase prices
+* Market items follow same tier distribution as drops
+
+***
+
+# Item Management
+
+## Inventory System
+
+* **8 Equipment Slots** - One for each equipment type
+* **15 Bag Slots** - Additional storage for backup items
+* **Auto-equip** - New items automatically equip if slots are empty
+* **Gold Conversion** - Duplicate items convert to gold if no space
+
+## Item Usage
+
+**Equipping Items:**
+
+* Drag from bag to equipment slot
+* Items provide immediate stat bonuses
+* Combat type/material affects battle performance
+* Can switch equipment during exploration (not in combat)
+
+**Item Stacking:**
+
+* Only one item per equipment slot
+* Identical items convert to gold
+* Higher tier items typically replace lower tier
+* Consider suffix/prefix bonuses when deciding
+
+***
+
+# Special Properties
+
+## Suffixes
+
+Items with Greatness 15+ gain powerful suffix bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for complete details.
+
+## Prefixes
+
+Items with Greatness 19+ gain additional prefix bonuses that stack with suffix effects. These same prefixes are also used for named beasts in Beast Mode NFTs.
+
+**Complete Prefix & Suffix Reference:** See [Prefixes Guide](/lootsurvivor/loot/prefixes) for the full library of all 69 prefixes and 18 suffixes.
+
+***
+
+# Summary
+
+The loot system provides deep character customization through equipment choices, tier progression, and special properties. Understanding how tiers, greatness, suffixes, and prefixes work together allows you to build powerful adventurers capable of surviving Death Mountain's greatest challenges.
+
+**Key Loot Principles:**
+
+* Higher tiers provide better base power
+* Greatness 15+ items gain significant suffix bonuses
+* Greatness 19+ items gain additional prefix bonuses
+* Combat type and material matter for battle effectiveness
+* Market refreshes provide new acquisition opportunities each level
 
 
 
 ---
 
-file: docs/budokan/guide/create/game-settings.mdx
-meta: {
-  "layout": "docs"
-}
+file: docs/lootsurvivor/loot/jewelry.mdx
+meta: {}
 
-# Game Settings
+# Jewelry Items
 
-Budokan supports fully customizable game settings for all games that implement the [Embeddable Game Standard (EGS)](/embeddable-game-standard). This allows tournament creators to experiment with new game modes, tailor experiences for their communities, and offer a wide variety of play styles.
+Jewelry items increase the Adventurer's Luck, which is directly proportional to their critical hit chance.
+20 Luck = 20% chance of a critical hit.
+100 Luck = 100% chance of a critical hit.
 
-## Why Customize Game Settings?
+The total Luck the Adventurer receives from their jewelry is equal to the total level of all their jewelry, both equipped and in their bag. For example, if you have a level 20 Bronze Ring in your bag and a level 20 Gold Ring equipped, your Luck will be 40.
 
-Custom game settings let you:
+It is possible to achieve 100 Luck and therefore a 100% critical hit chance with enough jewelry items.
 
-* Create unique tournament experiences
-* Enable or disable specific game features
-* Adjust difficulty, rules, or other parameters
-* Encourage new strategies and community engagement
+Jewelry items also provide special abilities, but those only apply when they are equipped. Those special abilities are:
 
-> **Tip:** Experimenting with different settings can help you discover popular new game modes and keep your tournaments fresh.
-
-***
-
-## How to Select and Customize Settings
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      When creating a tournament, you can choose to customize the game settings. These settings are displayed as key-value pairs, read directly from the game contract on-chain. Click <strong>Select Settings</strong> to open the customization dialog.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/game-settings.png" alt="Game Settings" width="400" height="200" />
-
-    <br />
-
-    <em>Figure 1: Customizing Game Settings in Budokan.</em>
-  </div>
-</div>
-
-***
-
-## Creating and Using Custom Settings
-
-* Settings can be created permissionlessly through the games themselves.
-* Any custom settings you create will be displayed and available for play within Budokan.
-* You can select from existing settings or define new ones for your tournament.
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-shrink-0">
-    <img src="/docs/game-settings-modal.png" alt="Game Settings Modal" width="300" height="200" />
-
-    <br />
-
-    <em>Figure 2: Selecting Specific Settings.</em>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/view-settings.png" alt="Game Settings View" width="300" height="200" />
-
-    <br />
-
-    <em>Figure 3: Viewing a selected setting.</em>
-  </div>
-</div>
-
-> **Note:** All custom settings are transparent and visible to players, ensuring a fair and open tournament environment.
-
-***
-
-## Related Guides
-
-* [Creating a Tournament](/budokan/guide/create)
-* [Prizes](/budokan/guide/prizes)
-* [FAQ](/budokan/faq)
-
-If you have questions or need help, check the FAQ or contact support through the app.
+| Item          | Boost                                      |
+| ------------- | ------------------------------------------ |
+| Pendant       | 3% increase per level hide armor defence.  |
+| Necklace      | 3% increase per level metal armor defence. |
+| Amulet        | 3% increase per level cloth armor defence. |
+| Bronze Ring   | No special ability (economy option).       |
+| Silver Ring   | +1 bonus luck per level.                   |
+| Gold Ring     | 3% per level in gold rewards from beasts.  |
+| Platinum Ring | 3% per level in name match damage bonus.   |
+| Titanium Ring | 3% per level in critical hit damage bonus. |
 
 
 
 ---
 
-file: docs/budokan/guide/create/index.mdx
+file: docs/lootsurvivor/loot/prefixes.mdx
 meta: {
   "layout": "docs"
 }
 
-# Creating a Tournament
+# Item & Beast Prefixes
 
-Budokan lets anyone create tournaments for any game that supports the [Emedabble Game Standard](/embeddable-game-standard/index) (EGS). This guide walks you through the process, highlights customization options, and shares best practices for a successful tournament.
+Prefixes are special name modifiers that appear on high-greatness items (Level 19+) and named beasts. This comprehensive reference covers all 69 prefixes and 18 suffixes used throughout Loot Survivor.
 
-## Prerequisites
+## Prefix System Overview
 
-* A Starknet wallet ([see Onboarding](../onboarding))
-* Prize tokens (if you want to offer custom prizes)
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **Dual Usage:** Prefixes serve two important functions in the game:
+  </div>
 
-## How to Create a Tournament
+  <div style={{ marginBottom: '1rem' }}>
+    * **Item Enhancement**: High-greatness items (19+) gain prefix bonuses for additional stats
+    * **Beast Names**: Named beasts (Level 19+) use these same prefixes for unique identities
+    * **NFT Collection**: Beast Mode NFTs mint with prefix names for collectible variety
+  </div>
 
-### 1. Open the Create Tournament Page
+  > **Cross-System Integration:** The same 69 prefixes create both powerful equipment and collectible named beasts!
+</div>
 
-* Click the **Create Tournament** button in the navigation menu.
+## Complete Prefix Library (69 Total)
 
-![Create Tournament Button](/docs/navigation.png)
-*Figure 1: Create Tournament Button.*
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+    <div style={{ background: '#2a1a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #dc2626' }}>
+      ### 🌑 Dark Themes (17)
 
-This opens the Create Tournament page, where you can configure all aspects of your tournament.
+      1. Agony
+      2. Apocalypse
+      3. Armageddon
+      4. Blight
+      5. Blood
+      6. Corruption
+      7. Damnation
+      8. Death
+      9. Demon
+      10. Dire
+      11. Doom
+      12. Dread
+      13. Ghoul
+      14. Gloom
+      15. Grim
+      16. Hate
+      17. Horror
+    </div>
 
-![Create Tournament Page](/docs/create-tournament.png)
-*Figure 2: Create Tournament Page.*
+    <div style={{ background: '#2a2a1a', padding: '1rem', borderRadius: '8px', border: '1px solid #eab308' }}>
+      ### 🏆 Power & Creatures (17)
 
-***
+      18. Beast
+      19. Behemoth
+      20. Dragon
+      21. Empyrean
+      22. Fate
+      23. Golem
+      24. Honour
+      25. Kraken
+      26. Miracle
+      27. Phoenix
+      28. Skull
+      29. Soul
+      30. Spirit
+      31. Victory
+      32. Viper
+      33. Brood
+      34. Chimeric
+    </div>
 
-### 2. Configure Tournament Details
+    <div style={{ background: '#1a2a2a', padding: '1rem', borderRadius: '8px', border: '1px solid #10b981' }}>
+      ### 🌊 Elemental & Nature (17)
 
-* Select the game
-* Adjust game settings ([see Game Settings](../create/entry-requirements))
-* Enter a name and description
-* Set the leaderboard size (number of winners)
+      35. Bramble
+      36. Brimstone
+      37. Carrion
+      38. Corpse
+      39. Dusk
+      40. Eagle
+      41. Gale
+      42. Maelstrom
+      43. Sol
+      44. Storm
+      45. Tempest
+      46. Vortex
+      47. Cataclysm
+      48. Foe
+      49. Havoc
+      50. Onslaught
+      51. Plague
+    </div>
 
-***
+    <div style={{ background: '#2a1a3a', padding: '1rem', borderRadius: '8px', border: '1px solid #a855f7' }}>
+      ### ✨ Mystical & Abstract (18)
 
-### 3. Set the Tournament Schedule
+      52. Glyph
+      53. Hypnotic
+      54. Loath
+      55. Mind
+      56. Morbid
+      57. Oblivion
+      58. Pain
+      59. Pandemonium
+      60. Rage
+      61. Rapture
+      62. Rune
+      63. Sorrow
+      64. Torment
+      65. Vengeance
+      66. Woe
+      67. Wrath
+      68. **Lights** ⭐
+      69. **Shimmering** ⭐
+    </div>
+  </div>
 
-* Choose start and end times
-* Set the submission period
-* Select registration type:
-  * Open (anyone can join)
-  * Fixed (limited registration)
+  ### Ultra Rare Prefixes
 
-![Tournament Schedule](/docs/schedule.png)
-*Figure 3: Tournament Schedule Form.*
+  **Lights (#68)** and **Shimmering (#69)** are considered the most valuable and rare prefixes in the entire system, making items or beast NFTs with these names extremely sought after by collectors.
+</div>
 
-***
+## Complete Suffix Library (18 Total)
 
-### 4. (Optional) Configure Entry Requirements
+<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+    <div>
+      | ID | Suffix     |
+      | -- | ---------- |
+      | 1. | Bane       |
+      | 2. | Root       |
+      | 3. | Bite       |
+      | 4. | Song       |
+      | 5. | Roar       |
+      | 6. | Grasp      |
+      | 7. | Instrument |
+      | 8. | Glow       |
+      | 9. | Bender     |
+    </div>
 
-* Set qualification requirements
-* Limit the number of players
+    <div>
+      | ID  | Suffix  |
+      | --- | ------- |
+      | 10. | Shadow  |
+      | 11. | Whisper |
+      | 12. | Shout   |
+      | 13. | Growl   |
+      | 14. | Tear    |
+      | 15. | Peak    |
+      | 16. | Form    |
+      | 17. | Sun     |
+      | 18. | Moon    |
+    </div>
+  </div>
 
-![Tournament Entry Requirements](/docs/entry-requirements-tournament.png)
-*Figure 4: Entry Requirements Form.*
+  **Suffix Usage:** Only applies to items with Greatness 15+ for stat bonuses. See [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) for detailed stat effects.
+</div>
 
-For more details, see [Entry Requirements](../create/entry-requirements).
+## Usage Examples
 
-***
+### Item Naming Examples
 
-### 5. (Optional) Set Entry Fees
+<div style={{ background: '#1a2332', padding: '1.5rem', borderRadius: '8px', border: '1px solid #3b82f6', margin: '1rem 0', lineHeight: '1.8' }}>
+  <div style={{ marginBottom: '1rem' }}>
+    **High-Greatness Item Examples:**
+  </div>
 
-* Choose entry fee tokens
-* Define fee distribution
-  * Tournament Creator %
-  * Game %
-  * Winner distribution
+  <div style={{ marginBottom: '1rem' }}>
+    * **"Doom Katana of Power"** - Prefix: Doom, Base: Katana, Suffix: of Power
+    * **"Shimmering Divine Robe of Giants"** - Prefix: Shimmering, Base: Divine Robe, Suffix: of Giants
+    * **"Blood Wand of Skill"** - Prefix: Blood, Base: Wand, Suffix: of Skill
+  </div>
 
-![Entry Fees](/docs/entry-fees.png)
-*Figure 5: Entry Fees Form.*
+  **Beast Naming Examples:**
 
-For more details, see [Entry Fees](../create/entry-fees).
-
-***
-
-### 6. (Optional) Set Up Prize Structure
-
-* Choose prize types (ERC20s, ERC721s)
-* Define how prizes are distributed
-* Set winner positions
-
-![Prizes](/docs/prizes.png)
-*Figure 6: Tournament Prizes Form.*
-
-***
-
-### 7. Review and Confirm
-
-After completing the form, you'll see a tournament confirmation page. Review all details and confirm before submitting the transaction. This is your chance to double-check the structure and any prizes.
-
-<div className="flex flex-row">
-  <p>
-    Once you confirm, your tournament will be created and visible to other players. Make sure you are happy with all settings before finalizing.
-  </p>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/tournament-confirmation.png" alt="Tournament Confirmation" width="300" height="600" />
-
-    <em>Figure 7: Tournament confirmation dialog.</em>
+  <div style={{ marginBottom: '0' }}>
+    * **"Apocalypse Dragon"** - Prefix: Apocalypse, Beast: Dragon
+    * **"Lights Kraken"** - Prefix: Lights, Beast: Kraken
+    * **"Storm Phoenix"** - Prefix: Storm, Beast: Phoenix
   </div>
 </div>
 
-## Best Practices
+## Cross-Reference Usage
 
-* **Sybil Resistance:**
-  * Avoid making tournaments with open, free entry and a prize pool, as this can lead to abuse (multiple entries per wallet). Consider qualification requirements or entry fees to protect your tournament.
+### When to Use This Page
 
-* **Submission Period:**
-  * Always note the submission period. If no scores are submitted before the deadline, the prize pool will be forfeited.
-  * Budokan provides infrastructure to help monitor and auto-submit, but it's wise to bookmark your tournament and set reminders.
+<div style={{ background: '#0a0a0a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #333', margin: '1rem 0', lineHeight: '1.6' }}>
+  **Reference Scenarios:**
 
-> **Tip:** Double-check all tournament settings before confirming. Once created, some options cannot be changed.
+  1. **Item Identification**: Understanding what prefix names mean on your equipment
+  2. **Beast NFT Hunting**: Identifying valuable prefix combinations for collection
+  3. **Market Evaluation**: Determining item value based on prefix rarity
+  4. **Collection Planning**: Targeting specific prefixes for complete sets
+  5. **Cross-Game Integration**: Understanding naming for Summit game access
 
-## Related Guides
+  **Documentation Links:**
 
-* [Onboarding](/budokan/guide/onboarding)
-* [Entry Requirements](/budokan/guide/create/entry-requirements)
-* [Entry Fees](/budokan/guide/create/entry-fees)
-* [Submitting Scores](/budokan/guide/submission)
-* [FAQ](/budokan/faq)
+  * Items with prefixes: Reference this page from item evaluation
+  * Named beasts: Reference this page from beast documentation
+  * NFT collecting: Use for understanding collectible variety
+</div>
 
-If you have questions or need help, check the FAQ or contact support through the app.
+## See Also
+
+* [Loot System](/lootsurvivor/loot) - Main equipment and tier information
+* [Suffix Boost Guide](/lootsurvivor/loot/suffix-boost) - Detailed suffix stat effects
+* [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Named beast NFT system
+* [Beast Overview](/lootsurvivor/beasts) - Combat types and beast information
+
+
+
+---
+
+file: docs/lootsurvivor/loot/suffix-boost.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Suffix Boosts
+
+When an item reaches Greatness 15, it gains a powerful suffix that provides significant stat bonuses. These suffixes are based on the [16 Orders of Divinity](https://docs.loot.foundation/canonical-principles/loot/the-16-orders) from the original Loot collection and follow canonical loot lore.
+
+> **⚡ Power Boost:** Suffix bonuses can make a T3 item with the right suffix more powerful than a base T1 item!
+
+## How Suffixes Work
+
+* **Greatness Requirement:** Items must reach Greatness 15 to unlock suffix bonuses
+* **Random Assignment:** Suffixes are randomly assigned based on the Orders of Divinity
+* **Permanent Bonuses:** Suffix bonuses are permanent and stack with base item stats
+* **Lore Integration:** Each suffix follows canonical Loot Foundation principles
+
+***
+
+# Complete Suffix List
+
+## Suffix Bonuses by Order
+
+| Item Suffix          | Stat Bonuses                              | Total Bonus | Order Association                 |
+| -------------------- | ----------------------------------------- | ----------- | --------------------------------- |
+| **Of Power**         | Strength +3                               | +3          | Power-focused enhancement         |
+| **Of Giant**         | Vitality +3                               | +3          | Health and endurance boost        |
+| **Of Titans**        | Strength +2, Charisma +1                  | +3          | Balanced physical prowess         |
+| **Of Skill**         | Dexterity +3                              | +3          | Agility and precision enhancement |
+| **Of Perfection**    | Strength +1, Dexterity +1, Vitality +1    | +3          | Balanced all-around improvement   |
+| **Of Brilliance**    | Intelligence +3                           | +3          | Mental acuity enhancement         |
+| **Of Enlightenment** | Wisdom +3                                 | +3          | Spiritual awareness boost         |
+| **Of Protection**    | Vitality +2, Dexterity +1                 | +3          | Defensive-focused bonuses         |
+| **Of Anger**         | Strength +2, Dexterity +1                 | +3          | Aggressive combat enhancement     |
+| **Of Rage**          | Wisdom +1, Strength +1, Charisma +1       | +3          | Controlled fury bonuses           |
+| **Of Fury**          | Vitality +1, Charisma +1, Intelligence +1 | +3          | Passionate intensity boost        |
+| **Of Vitriol**       | Intelligence +2, Wisdom +1                | +3          | Sharp mental enhancement          |
+| **Of the Fox**       | Dexterity +2, Charisma +1                 | +3          | Cunning and agility boost         |
+| **Of Detection**     | Wisdom +2, Dexterity +1                   | +3          | Awareness and reflexes            |
+| **Of Reflection**    | Wisdom +2, Intelligence +1                | +3          | Contemplative wisdom boost        |
+| **Of the Twins**     | Charisma +3                               | +3          | Social influence enhancement      |
+
+***
+
+# Suffix Categories
+
+## Single Stat Focus
+
+These suffixes provide maximum bonuses to one primary stat:
+
+* **Of Power** - Pure Strength focus for maximum damage
+* **Of Giant** - Pure Vitality focus for maximum health
+* **Of Skill** - Pure Dexterity focus for escape mastery
+* **Of Brilliance** - Pure Intelligence focus for obstacle avoidance
+* **Of Enlightenment** - Pure Wisdom focus for ambush prevention
+* **Of the Twins** - Pure Charisma focus for market optimization
+
+## Balanced Combinations
+
+These suffixes provide balanced stat distributions:
+
+* **Of Perfection** - Equal bonuses across STR/DEX/VIT
+* **Of Rage** - Equal bonuses across WIS/STR/CHA
+* **Of Fury** - Equal bonuses across VIT/CHA/INT
+
+## Specialized Builds
+
+These suffixes target specific build archetypes:
+
+* **Of Titans** - Combat-focused (STR+CHA)
+* **Of Protection** - Defense-focused (VIT+DEX)
+* **Of Anger** - Aggressive melee (STR+DEX)
+* **Of Vitriol** - Mental mastery (INT+WIS)
+* **Of the Fox** - Agile trader (DEX+CHA)
+* **Of Detection** - Alert explorer (WIS+DEX)
+* **Of Reflection** - Wise scholar (WIS+INT)
+
+***
+
+# Suffix Strategy
+
+## Evaluating Suffix Value
+
+When comparing items with suffixes, consider:
+
+1. **Your Build Focus** - Does the suffix support your stat priorities?
+2. **Current Weaknesses** - Does the suffix shore up weak areas?
+3. **Base Tier vs Suffix** - A T3+suffix might beat a base T1
+4. **Total Stat Impact** - All +3 bonuses are equally valuable mathematically
+
+## Suffix Synergies
+
+**Combat Builds:**
+
+* **Of Power** - Maximum damage output
+* **Of Titans** - Damage + market efficiency
+* **Of Anger** - Damage + escape capability
+
+**Survival Builds:**
+
+* **Of Giant** - Maximum health pool
+* **Of Protection** - Health + escape ability
+* **Of Perfection** - Balanced survivability
+
+**Utility Builds:**
+
+* **Of the Fox** - Escape + market efficiency
+* **Of Detection** - Awareness + agility
+* **Of Reflection** - Mental mastery
+
+***
+
+# Summary
+
+Suffix bonuses transform the loot system from simple tier progression to complex item evaluation. A well-rolled suffix can make any item tier competitive, while the wrong suffix might make you overlook a potentially powerful piece of equipment.
+
+**Key Suffix Principles:**
+
+* All suffixes provide exactly +3 total stat points
+* Suffixes unlock at Greatness 15
+* Suffix distribution matters more than individual bonuses
+* Consider your build when evaluating suffix value
+* Don't automatically dismiss lower tiers with good suffixes
 
 
 
@@ -11016,4 +9988,1112 @@ class RateLimiter {
 ## Conclusion
 
 This integration guide provides the foundation for building applications that interact with Loot Survivor. Whether you're creating a custom frontend, building tools, or extending the game, these patterns and examples will help you get started quickly and build robust integrations.
+
+
+
+---
+
+file: docs/lootsurvivor/token/airdrop.mdx
+meta: {}
+
+# Free Games Airdrop
+
+## Overview
+
+The Loot Survivor airdrop provides **free game entries** to eligible NFT holders and community members. These free games give players access to the LS2 Dungeon, which contains **2,258,100 SURVIVOR tokens** distributed as rewards based on gameplay performance.
+
+## How It Works
+
+### Game-Based Distribution
+
+Instead of receiving SURVIVOR tokens directly, eligible participants receive free game entries to play Loot Survivor. The LS2 Dungeon holds 2,258,100 SURVIVOR tokens that are distributed to players based on their performance:
+
+* **Minimum Level 3**: Must reach at least level 3 to earn tokens
+* **Tokens = Level Reached**: Starting at level 3, tokens equal to the level reached
+* **Promotion Periods**: 4X tokens during weeks 2-4, 2X tokens after week 4
+* **Performance-based rewards**: Higher levels mean more tokens
+* **Multiple attempts**: Each free game entry is a new opportunity to earn tokens
+
+### Example Rewards
+
+**Standard Rate (Week 1):**
+
+* Level 3: 3 tokens
+* Level 10: 10 tokens
+* Level 25: 25 tokens
+
+**4X Promotion (Weeks 2-4):**
+
+* Level 10: 40 tokens
+* Level 25: 100 tokens
+
+**2X Promotion (After Week 4):**
+
+* Level 10: 20 tokens
+* Level 25: 50 tokens
+
+## Eligibility Categories
+
+### NFT Collection Holders
+
+Holders of eligible NFT collections receive free game entries based on their holdings at the snapshot date (August 18th, 2025 at 00:00 UTC). The number of free games is determined by:
+
+* Collection
+* Number of NFTs held
+* Games Amount multiplier for each collection
+
+[View all eligible collections →](/lootsurvivor/token/eligible-collections)
+
+### Community Contributors
+
+Active community members earn free games through:
+
+* Early participation in Loot Survivor v1
+* Community building and content creation
+* Bug reporting and testing
+* Protocol development contributions
+
+## Claiming Your Free Games
+
+To claim your free game entries and start earning SURVIVOR tokens:
+
+### Visit the Claims Portal
+
+Navigate to [claims.lootsurvivor.io](https://claims.lootsurvivor.io) to begin the claim process.
+
+![Eligibility Checker Interface](/docs/lootsurvivor/eligibility-checker.png)
+*Enter your wallet address to check your free games allocation*
+
+### What to Expect
+
+1. **Enter Your Wallet Address** - Input your EVM or Starknet wallet address
+2. **View Your Allocation** - See your total free games based on NFT holdings
+3. **Connect/Create Controller** - Set up a controller for smooth claims process (can claim for multiple wallets)
+4. **Claim Your Games** - Complete the claim for all eligible free games
+5. **Start Playing** - Begin your adventure and earn SURVIVOR tokens (within 2 weeks)
+
+![Eligibility Results](/docs/lootsurvivor/eligibility-results.png)
+*View your allocation and claim your free games*
+
+<img src="/docs/lootsurvivor/controller-wallets.png" alt="Controller Wallets" style={{width: "50%", margin: "0 auto", display: "block"}} />
+
+*Connect multiple wallets to claim games from different eligible addresses*
+
+### Wallet Ownership Verification
+
+For wallets that are not controllers (such as hardware wallets or EOA wallets):
+
+1. **Sign a Message** - You'll be prompted to sign a message to prove ownership of your wallet
+2. **Verification** - The signature verifies you own the NFTs from the snapshot
+3. **Games Sent to Controller** - Once verified, your free games are sent to your controller wallet
+4. **Play on Controller** - Use your controller wallet to play and earn SURVIVOR tokens
+
+![Wallet Verification](/docs/lootsurvivor/argent-claim.png)
+*Sign a message to verify ownership and claim games to your controller*
+
+The claims portal automatically:
+
+* Verifies your eligibility based on the August 18th, 2025 snapshot
+* Calculates your total free games across all eligible collections
+* Handles the entire claim process securely
+* Provides access to start playing immediately
+
+## Free Games Allocation
+
+### Calculation Method
+
+Free games are allocated based on:
+
+* **NFT Holdings**: Each eligible NFT grants games based on its collection's multiplier
+* **Games Amount**: Collections have different game allocations
+* **Total Cap**: Maximum 50 free games per eligible address
+
+### Distribution Examples
+
+* **Loot Holder**: 5 free games per Loot NFT (capped at 50 total)
+* **Pudgy Penguin Holder**: 10 free games per Penguin (capped at 50 total)
+* **OGS Discord Role**: 10 free games for verified members
+* **Multiple Collections**: Games stack across all eligible holdings (up to 50 max)
+
+## Playing Your Free Games
+
+### Getting Started
+
+1. Claim your free games at [claims.lootsurvivor.io](https://claims.lootsurvivor.io)
+2. Access Loot Survivor gameplay interface
+3. Start a new game using a free entry
+4. Progress through levels to earn SURVIVOR tokens
+
+### Earning Tokens
+
+* **Level 1-2**: No token rewards
+* **Level 3+**: Earn tokens equal to the level reached (e.g., Level 3 = 3 tokens, Level 20 = 20 tokens)
+* **Death**: Game ends, tokens earned are credited based on highest level reached
+* **Strategy**: Plan your builds to maximize level progression for more tokens
+
+### Token Distribution
+
+* When a game ends, a claim button appears
+* Click the claim button to receive your earned tokens
+* Track your total earnings across all games played
+
+## Important Notes
+
+### 2-Week Expiration Period
+
+* **Free games expire 2 weeks after the claim window opens**
+* Plan your gameplay strategy within this timeframe
+* Expired games cannot be recovered or extended
+* All eligible addresses have the same expiration deadline
+
+### Gas Fees
+
+* **All gas fees are covered** through our paymaster
+* No ETH required for claiming free games
+* No transaction fees for playing games
+* Completely free experience from claim to gameplay
+
+### Fair Play
+
+* Protected by onchain VRF (Verifiable Random Function)
+* Anti-bot measures built into the smart contract
+* Fully transparent and verifiable gameplay
+
+## Strategy Tips
+
+### Maximize Your Earnings
+
+* Study optimal builds before playing
+* Join community discussions for strategies
+* Use your free games before the 2-week window expires
+
+### Resource Management
+
+* Free games are valuable opportunities
+* Each game is a chance at significant token earnings
+* Token rewards scale directly with level reached
+* Community guides available for gameplay optimization
+
+## Support
+
+For assistance with free games:
+
+* Visit the official documentation
+* Join Discord for community strategies
+* Check FAQs for common questions
+* Submit support tickets for technical issues
+
+## Disclaimer
+
+Free game entries are distributed to reward early supporters and community members. The 2,258,100 SURVIVOR tokens in the LS2 Dungeon are distributed solely based on gameplay performance. Token earnings depend on individual skill and game progression.
+
+
+
+---
+
+file: docs/lootsurvivor/token/eligible-collections.mdx
+meta: {}
+
+# Eligible Collections for Free Games
+
+The following NFT collections are eligible for **free game entries** to Loot Survivor, where players can earn SURVIVOR tokens through gameplay.
+
+## Free Games Distribution
+
+Eligible NFT holders receive free game entries based on their collection holdings at the snapshot date. These free games provide access to the LS2 Dungeon containing 2,000,000 SURVIVOR tokens. Players earn tokens equal to the level they reach (minimum level 3 required).
+
+## Eligible Collections List
+
+| Collection              | Network  | Collection Size | Free Games per NFT | View Contract                                                                                                 |
+| ----------------------- | -------- | --------------- | ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| 1337 Skulls             | Ethereum | 7,331           | 5                  | [Etherscan](https://etherscan.io/address/0x9251dec8df720c2adf3b6f46d968107cbbadf4d4)                          |
+| Loot                    | Ethereum | 7,779           | 5                  | [Etherscan](https://etherscan.io/address/0xff9c1b15b16263c61d017ee9f65c50e4ae0113d7)                          |
+| Loot Explorers          | Ethereum | 7,998           | 2                  | [Etherscan](https://etherscan.io/address/0x508d06b8f3a4b0fd363239ce61e0c4b0b82f3626)                          |
+| The Wild Bunch          | Ethereum | 3,997           | 2                  | [Etherscan](https://etherscan.io/address/0xe9a1a323b4c8fd5ce6842edaa0cd8af943cbdf22)                          |
+| BAYC                    | Ethereum | 9,998           | 5                  | [Etherscan](https://etherscan.io/address/0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d)                          |
+| Dizzy Dragons           | Ethereum | 9,401           | 2                  | [Etherscan](https://etherscan.io/address/0x882A47e6070acA3f38Ce6929501F4787803A072b)                          |
+| Hyperloot               | Ethereum | 8,585           | 2                  | [Etherscan](https://etherscan.io/address/0x0290d49f53a8d186973b82faafdafe696b29acbb)                          |
+| LobsterDAO              | Ethereum | 3,546           | 4                  | [Etherscan](https://etherscan.io/address/0x026224a2940bfe258d0dbe947919b62fe321f042)                          |
+| Moonbirds               | Ethereum | 9,999           | 4                  | [Etherscan](https://etherscan.io/address/0x23581767a106ae21c074b2276d25e5c3e136a68b)                          |
+| Foxy PFP                | Linea    | 10,000          | 2                  | [Lineascan](https://lineascan.build/address/0xe46c02315c4a991d061a06f165028f8c9167249b)                       |
+| The Birth Lottery       | Linea    | 666             | 2                  | [Lineascan](https://lineascan.build/address/0xc7e1c28dc11e43ebe93f2664a53ae3775eba68cc)                       |
+| Genesis Mana            | Ethereum | 11,535          | 2                  | [Etherscan](https://etherscan.io/address/0xf4b6040a4b1b30f1d1691699a8f3bf957b03e463)                          |
+| The Eye for Adventurers | Ethereum | 1,614           | 3                  | [Etherscan](https://etherscan.io/address/0xb8a51862964f77025abb65e2c6a39ee8070c8ed4)                          |
+| Genesis Adventurers     | Ethereum | 633             | 5                  | [Etherscan](https://etherscan.io/address/0x8db687aceb92c66f013e1d614137238cc698fedb)                          |
+| Terraforms              | Ethereum | 9,911           | 5                  | [Etherscan](https://etherscan.io/address/0x4e1f41613c9084fdb9e34e11fae9412427480e56)                          |
+| The Dudes               | Ethereum | 512             | 3                  | [Etherscan](https://etherscan.io/address/0xb0cf7da8dc482997525be8488b9cad4f44315422)                          |
+| Crypts and Caverns      | Ethereum | 8,785           | 2                  | [Etherscan](https://etherscan.io/address/0x86f7692569914B5060Ef39aAb99e62eC96A6Ed45)                          |
+| Trusta OG Dragons       | Ethereum | 3,707           | 2                  | [Etherscan](https://etherscan.io/address/0xe0e126ce63becbecd72bee4f7673b4e50d5a9965)                          |
+| Wandernauts             | Ethereum | 8,887           | 2                  | [Etherscan](https://etherscan.io/address/0x793daf78b74aadf1eda5cc07a558fed932360a60)                          |
+| Based Ghouls            | Ethereum | 6,667           | 2                  | [Etherscan](https://etherscan.io/address/0xef1a89cbfabe59397ffda11fc5df293e9bc5db90)                          |
+| Pirate Nation           | Ethereum | 9,999           | 3                  | [Etherscan](https://etherscan.io/address/0x1b41d54b3f8de13d58102c50d7431fd6aa1a2c48)                          |
+| Grugs Lair              | Ethereum | 1,000           | 1                  | [Etherscan](https://etherscan.io/address/0xfa9ed22ca5d329ecaee9347f72e18c1fc291471b)                          |
+| Dope Wars               | Ethereum | 7,999           | 3                  | [Etherscan](https://etherscan.io/address/0x8707276df042e89669d69a177d3da7dc78bd8723)                          |
+| Blobert                 | Starknet | 4,844           | 2                  | [Voyager](https://voyager.online/contract/0x00539f522b29ae9251dbf7443c7a950cf260372e69efab3710a11bf17a9599f1) |
+| Schizoid                | Starknet | 999             | 3                  | [Voyager](https://voyager.online/contract/0x077485a949c130cf0d98819d2b0749f5860b0734ea28cb678dd3f39379131bfa) |
+| FOCG Boi Hands          | Starknet | 39              | 2                  | [Voyager](https://voyager.online/contract/0x02ef78f4031b4250e4ae8c4f0b18af4ef0cbbb405cdb20f80d1041b53aa2f1a1) |
+| Brother ID              | Starknet | 2,265           | 2                  | [Voyager](https://voyager.online/contract/0x0212f1c57700f5a3913dd11efba540196aad4cf67772f7090c62709dd804fa74) |
+| Realms                  | Starknet | 5,099           | 3                  | [Voyager](https://voyager.online/contract/0x07ae27a31bb6526e3de9cf02f081f6ce0615ac12a6d7b85ee58b8ad7947a2809) |
+| Banners (Ethereum)      | Ethereum | 1,785           | 3                  | [Etherscan](https://etherscan.io/address/0x527a4206ac04c2017295cf32f1fc2f9e034a7c40)                          |
+| Banners (Starknet)      | Starknet | 9,170           | 2                  | [Voyager](https://voyager.online/contract/0x02d66679de61a5c6d57afd21e005a8c96118bd60315fd79a4521d68f5e5430d1) |
+| Wolf Nation             | Starknet | 333             | 3                  | [Voyager](https://voyager.online/contract/0x0413485dbeccec6320d35dcba14375e7ca973f021486496a61286edb958fd861) |
+| zKube                   | Starknet | 11,326          | 1                  | [Voyager](https://voyager.online/contract/0x04fd5df500e6c6615e4423258639f189455672bc841ba58f1c781ac7c5ff4bd8) |
+| Karats                  | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x07d8ea58612a5de25f29281199a4fc1f2ce42f0f207f93c3a35280605f3b8e68) |
+| Karats 2                | Starknet | 512             | 2                  | [Voyager](https://voyager.online/contract/0x030f694df2a04e04cf3e1d3e79dd5aadfdaa77295bb007696222fc60a5e8730d) |
+| Ducks Everywhere        | Starknet | 300             | 10                 | [Voyager](https://voyager.online/contract/0x04fa864a706e3403fd17ac8df307f22eafa21b778b73353abf69a622e47a2003) |
+| Pistols                 | Starknet | 126             | 5                  | [Voyager](https://voyager.online/contract/0x014aa76e6c6f11e3f657ee2c213a62006c78ff2c6f8ed40b92c42fd554c246f2) |
+| Influence Asteroids     | Starknet | 11,726          | 1                  | [Voyager](https://voyager.online/contract/0x0603cf837055c64d026a3c5a9e3a83036cea6c4a3f68a9e19f7a687d726fe817) |
+| Starkurabu              | Starknet | 10,000          | 1                  | [Voyager](https://voyager.online/contract/0x03ab1124ef9ec3a2f2b1d9838f9066f9a894483d40b33390dda8d85c01a315a3) |
+| Jokers Of Neon Beasts   | Starknet | 104             | 5                  | [Voyager](https://voyager.online/contract/0x07268fcf96383f8691b91ba758cc8fefe0844146f0557909345b841fb1de042f) |
+| Based Punks             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xcB28749c24AF4797808364D71d71539bc01E76d4)                           |
+| OK Computer             | Base     | 5,000           | 2                  | [Basescan](https://basescan.org/address/0xCE2830932889C7fB5e5206287C43554E673dCc88)                           |
+| Blackmirror Experience  | Base     | 7,078           | 2                  | [Basescan](https://basescan.org/address/0x108dB2038C6e8Bc1A0b058c70e752b14d08648BF)                           |
+| re:generates            | Base     | 6,665           | 2                  | [Basescan](https://basescan.org/address/0x56dFE6ae26bf3043DC8Fdf33bF739B4fF4B3BC4A)                           |
+| Writ of Passage         | Arbitrum | 10,000          | 2                  | [Arbiscan](https://arbiscan.io/address/0x5d541B55763A9277f61a739f40B6021A16C2d3d8)                            |
+| Liberty Cats            | Polygon  | 7,777           | 2                  | [Polygonscan](https://polygonscan.com/address/0x0030F47D6a73Bc518CF18fE027Ea91DD6B2b6003)                     |
+| Billions Genesis        | Polygon  | 2,999           | 2                  | [Polygonscan](https://polygonscan.com/address/0xeCb63be05886749De33709835e824AEFcFd74f8F)                     |
+| Pudgy Penguins          | Ethereum | 8,888           | 10                 | [Etherscan](https://etherscan.io/address/0xBd3531dA5CF5857e7CfAA92426877b022e612cf8)                          |
+| The Larp Collective     | Arbitrum | 420             | 2                  | [Arbiscan](https://arbiscan.io/address/0x48D2c1716DFDF8aDd5a5EA658c460e7257448660)                            |
+| ZTX Genesis Homes       | Arbitrum | 3,999           | 2                  | [Arbiscan](https://arbiscan.io/address/0x35373efc2FD7D852729cae869Cc32acc979100bD)                            |
+| Forgotten Runes         | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42)                          |
+| Cool Cats               | Ethereum | 10,000          | 3                  | [Etherscan](https://etherscan.io/address/0x1a92f7381b9f03921564a437210bb9396471050c)                          |
+| Bankr                   | Base     | 1,000           | 10                 | [Basescan](https://basescan.org/address/0x9fab8c51f911f0ba6dab64fd6e979bcf6424ce82)                           |
+| Mee6 Genesis Pass       | Ethereum | 4,444           | 3                  | [Etherscan](https://etherscan.io/address/0xe9ab13482aeab3727e976257d8e1f026e12e9ecd)                          |
+| Adventurers             | Starknet | 10,638          | 1                  | [Voyager](https://voyager.online/contract/0x018108b32cea514a78ef1b0e4a0753e855cdf620bc0565202c02456f618c4dc4) |
+| OGS Discord Role        | Starknet | -               | 10                 | Discord Verified                                                                                              |
+
+## Understanding Free Games
+
+### How Free Games Work
+
+The "Free Games per NFT" column shows how many free game entries each NFT from that collection grants. For example:
+
+* Owning 1 Loot NFT = 5 free games
+* Owning 2 Pudgy Penguins = 20 free games (10 per NFT)
+* Holding multiple eligible NFTs = Games stack across all collections
+* **Maximum 50 free games per address** regardless of total holdings
+
+### Token Earning Potential
+
+Each free game is an opportunity to earn SURVIVOR tokens through gameplay:
+
+* **Level 1-2**: No rewards (warm-up levels)
+* **Level 3+**: Earn tokens equal to the level reached
+* **Example**: Reaching level 3 earns 3 tokens, level 25 earns 25 tokens, level 50 earns 50 tokens
+
+### Multi-Chain Support
+
+Eligible collections span multiple networks:
+
+* **Ethereum** - The majority of legacy collections
+* **Starknet** - Native Loot Survivor ecosystem collections
+* **Base** - Emerging gaming communities
+* **Arbitrum** - L2 gaming collections
+* **Polygon** - Alternative L2 collections
+* **Linea** - Next-generation gaming projects
+
+## Collection Categories
+
+### Premium Allocations (10+ games)
+
+Collections receiving the highest free game allocations:
+
+* **Pudgy Penguins**: 10 games per NFT
+* **Ducks Everywhere**: 10 games per NFT
+* **Bankr**: 10 games per NFT
+* **OGS Discord Role**: 10 games for verified members
+
+### Loot Ecosystem (5 games)
+
+Original Loot-related collections with enhanced allocations:
+
+* **Loot**: 5 games per NFT
+* **Genesis Adventurers**: 5 games per NFT
+* **1337 Skulls**: 5 games per NFT
+* **BAYC**: 5 games per NFT
+* **Terraforms**: 5 games per NFT
+
+### Standard Gaming Collections (2-4 games)
+
+Most collections receive standard allocations:
+
+* **2 games**: Common allocation for gaming NFTs
+* **3 games**: Enhanced allocation for active communities
+* **4 games**: Premium allocation for key partners
+
+### Entry Level (1 game)
+
+Collections with base-level allocations:
+
+* **Grugs Lair**: 1 game per NFT
+* **Influence Asteroids**: 1 game per NFT
+* **Starkurabu**: 1 game per NFT
+* **Adventurers**: 1 game per NFT
+* **zKube**: 1 game per NFT
+
+## Snapshot Details
+
+The eligibility snapshot was taken on **August 18th, 2025 at 00:00 UTC**. All NFT holdings and free game allocations are based on ownership at this specific point in time.
+
+## Verification Process
+
+To verify your free games allocation:
+
+1. Check your NFT holdings as of August 18th, 2025 at 00:00 UTC
+2. Calculate total free games: (NFTs held × Free Games per NFT)
+3. Sum across all eligible collections you held
+4. Apply the 50 free games per address maximum cap
+5. Connect wallet to claim interface for automatic calculation
+
+## Important Notes
+
+* **Maximum 50 free games per eligible address**
+* **Free games expire 2 weeks after the claim window opens** - Same deadline for all players
+* Multiple NFTs from the same collection grant cumulative games (up to the 50 game cap)
+* Transfers after the snapshot do not affect eligibility
+* The OGS Discord Role requires Discord verification, not on-chain holdings
+* Strategic gameplay can maximize token earnings from free games
+
+
+
+---
+
+file: docs/lootsurvivor/token/index.mdx
+meta: {}
+
+# SURVIVOR Token
+
+The SURVIVOR token is the native governance and economic coordination token for Loot Survivor, designed to decentralize the ownership role of the game contracts and promote the growth of the Loot Survivor ecosystem.
+
+## Overview
+
+* Total Supply: 10,000,000
+* Distribution: 75% Community; 25% Team
+* Lockups: None
+* Contract: [`0x042dd777885ad2c116be96d4d634abc90a26a790ffb5871e037dd5ae7d2ec86b`](/lootsurvivor/contracts#governance-contracts)
+
+## Purpose
+
+SURVIVOR is the governance and economic coordination token for Loot Survivor 2.
+
+Governance: SURVIVOR lets holders propose and vote on specific onchain parameters (e.g., which Dungeon the Beasts inhabit, royalty settings for the Beast NFT collection, Beast Mode settings, which ERC‑20s the Dungeon accepts, and the Dungeon’s payment token).
+
+Autonomous treasury growth: When a player buys a Dungeon Ticket, immutable code automatically uses 80% of that payment to purchase SURVIVOR on a decentralized exchange and deposits the purchased tokens into the Survivor Treasury, which is governed by SURVIVOR holders.
+
+No promises / no rights to payouts: SURVIVOR does not grant rights to profits, revenue, dividends, or distributions. The automated purchases are a mechanical feature of the contracts, not a commitment to support price or provide returns.
+
+## Key Features
+
+### Decentralized Ownership Role
+
+The SURVIVOR token ships with a fully onchain governance system, built on top of [OpenZeppelin’s audited governance components](https://docs.openzeppelin.com/contracts-cairo/2.0.0/governance). The governance system enables SURVIVOR token holders to express their will onchain and for their shared will to execute as an onchain transaction. This allows sensitive, configurable game settings,such as which Dungeon the Beasts are in, to be truly owned and controllable by the community instead of the developers.
+
+The Survivor Governance Contract will control the following settings:
+
+* [Beast NFT](https://voyager.online/nft-contract/0x0280ace0b2171106eaebef91ca9b097a566108e9452c45b94a7924a9f794ae80):
+  * Move Beasts to a new Dungeon
+  * Change royalty information (default: 5% distributed to the Survivor Treasury)
+* [LS2 Beast Mode](https://voyager.online/contract/0x02fb722c25768e4a9994258754e7103895fd2f33cbcc1edc8711807950830cb5):
+  * Change Beast Mode settings
+  * Add and remove ERC‑20s from the Dungeon
+  * Change the payment token for the Dungeon
+
+### Economic Coordination
+
+To support the sustainable growth of the Loot Survivor ecosystem, Loot Survivor 2 ships with an autonomous and immutable SURVIVOR buy‑back mechanism. 80% of the proceeds from the sale of Dungeon Tickets, which are required to enter the Dungeon and collect Beasts, are used to purchase SURVIVOR tokens using Ekubo’s TWAMM and to deposit them into the Survivor Treasury. The remaining 20% is distributed to $veLORDS holders for the benefit of Bibliotheca DAO, the original incubator of Loot Survivor.
+
+### Treasury Bootstrap
+
+The treasury is initially seeded with 1M SURVIVOR and approximately 3M LORDS at genesis.
+
+### SURVIVOR Sale (Programmatic DCA via TWAMM):
+
+* Supply: 15% of total supply.
+* Method: A 3‑month programmatic DCA order via TWAMM (Oct 15 – Jan 15).
+* Proceeds: 100% contributed to the community treasury for ecosystem growth as governed onchain.
+
+DISCLAIMERS: This sale is programmatic, there are no allocations, discounts, or price/return statements.
+
+### Community Allocation
+
+75% of the total supply is allocated to the community through various distribution mechanisms, ensuring broad ownership and aligned incentives. Allocations include:
+
+* 22.5% LS2 Dungeon claim allocations (FCFS)
+  * 1 Token per level starting at level 3
+  * 4X Promotion for games played during weeks 2-4
+  * 2X Promotion after week 4 till all tokens are claimed.
+* 15% treasury bootstrap DCA
+* 10% Survivor Treasury
+* 9.3% Beast Entitlements (claim at mint)
+* 6.6% LS1/LS1.5 Players
+* 5% Loot Realms; 2.5% Loot; 1.5% 1337 Skulls; 1% Genesis Project; 1% Tournaments; 1% Beast Games
+
+Note: NFT royalties, if any, are not guaranteed across marketplaces.
+
+### Free Games Airdrop
+
+Loot Survivor 2 launches with a two‑week launch promotion that makes \~500k free games available to \~80k addresses across Ethereum, Arbitrum, Base, Starknet, Abstract, Linea, and Polygon. Those holding select NFTs on these platforms will be able to claim free games (including gas), allowing them to play Loot Survivor 2 and collect Beasts and SURVIVOR tokens.
+
+## Quick Links
+
+* [Tokenomics](/lootsurvivor/token/tokenomics) - Detailed breakdown of token distribution and allocations
+* [Airdrop](/lootsurvivor/token/airdrop) - How to claim your SURVIVOR tokens and eligibility criteria
+* [Eligible Collections](/lootsurvivor/token/eligible-collections) - NFT collections eligible for free games
+
+## Security
+
+Governance contracts use well‑known OpenZeppelin components. This is not a security audit; no system is risk‑free.
+Game contracts are cutting‑edge and unaudited; use at your own risk.
+
+## Disclaimers
+
+The SURVIVOR token is designed to decentralize ownership and governance of the Loot Survivor protocol. It represents participation rights in the ecosystem and should not be considered a financial investment.
+
+What SURVIVOR is not: SURVIVOR is not equity or debt. Automated purchases into the treasury are mechanical contract behavior, not price support or an offer of returns. Participation involves smart‑contract risk, market volatility, and governance outcomes that may not align with your preferences. Users should understand these risks before participating. Nothing here is investment advice.
+
+
+
+---
+
+file: docs/lootsurvivor/token/tokenomics.mdx
+meta: {}
+
+# Tokenomics
+
+## Total Supply
+
+The total supply of the SURVIVOR token is **10,000,000** tokens, distributed between community and team allocations to ensure sustainable growth and development of the Loot Survivor ecosystem.
+
+## Distribution Overview
+
+| Category             | Tokens         | Percentage | Description                         |
+| -------------------- | -------------- | ---------- | ----------------------------------- |
+| **Community**        | **7,500,000**  | **75%**    |                                     |
+| LS2 Dungeon          | 2,258,100      | 22.58%     | Gameplay rewards                    |
+| Treasury DCA         | 1,500,000      | 15%        | 3-month programmatic sale via TWAMM |
+| Survivor Treasury    | 1,002,222      | 10.02%     | DAO-controlled treasury             |
+| Beast Entitlements   | 931,500        | 9.32%      | Claim at Beast mint                 |
+| Biblio (Loot Realms) | 500,000        | 5%         | DAO Sponsor                         |
+| Legacy Beast Bonus   | 332,028        | 3.32%      | LS1 Beast holder rewards            |
+| Top 1k LS1.5 Players | 326,150        | 3.26%      | Top player rewards                  |
+| Loot                 | 250,000        | 2.5%       | DAO Sponsor                         |
+| 1337 Skulls          | 150,000        | 1.5%       | 1337 Skulls                         |
+| Genesis Project      | 100,000        | 1%         | DAO Sponsor                         |
+| Budokan              | 100,000        | 1%         | Tournament Rewards                  |
+| Summit               | 100,000        | 1%         | Beast Game Rewards                  |
+| **Team**             | **2,500,000**  | **25%**    | No lockups                          |
+| **Total**            | **10,000,000** | **100%**   |                                     |
+
+## Distribution Breakdown
+
+### Community Allocation: 7,500,000 (75%)
+
+The majority of SURVIVOR tokens are allocated to the community through various mechanisms designed to reward participation, contribution, and loyalty to the ecosystem.
+
+#### LS2 Dungeon Rewards: 2,258,100 (22.58%)
+
+* First-come, first-served distribution through gameplay
+* Tokens equal to the level reached (starting at level 3)
+* **4X Promotion**: Weeks 2-4 (multiply token rewards by 4)
+* **2X Promotion**: After week 4 until all tokens claimed (multiply token rewards by 2)
+
+#### Treasury Bootstrap DCA: 1,500,000 (15%)
+
+* 3-month programmatic DCA order via TWAMM (Oct 15 - Jan 15)
+* 100% of proceeds contributed to community treasury
+* Ensures fair price discovery and broad distribution
+
+#### Survivor Treasury: 1,002,222 (10.02%)
+
+* DAO-controlled treasury for ecosystem development
+* Initial seed funding at genesis
+* Governed by SURVIVOR token holders
+
+#### Beast Entitlements: 931,500 (9.32%)
+
+* Auto-claimed with each Beast mint (average 10 tokens per Beast)
+* Tier-based distribution:
+  * T1 Beasts: 14 tokens per mint
+  * T2 Beasts: 12 tokens per mint
+  * T3 Beasts: 10 tokens per mint
+  * T4 Beasts: 8 tokens per mint
+  * T5 Beasts: 6 tokens per mint
+
+#### Legacy Players: 658,178 (6.58%)
+
+* **Legacy Beast Bonus**: 332,028 (3.32%)
+  * LS1 Beasts (2,306 total): 249,048 tokens (108 per Beast)
+  * LS1.5 Beasts: 82,980 tokens (36 per Beast)
+* **Top 1k LS1.5 Players**: 326,150 (3.26%) - Top player rewards
+
+#### Ecosystem Allocations: 1,150,000 (11.5%)
+
+* **Biblio (Loot Realms)**: 500,000 (5%) - Realms ecosystem development
+* **Loot**: 250,000 (2.5%) - Distributed to multisig of trusted Loot ecosystem entities
+* **1337 Skulls**: 150,000 (1.5%) - Distributed to multisig of trusted Skulls ecosystem entities
+* **Genesis Project**: 100,000 (1%) - Distributed to multisig of trusted Genesis ecosystem entities
+* **Budokan**: 100,000 (1%) - Player incentives for game-agnostic tournament platform
+* **Summit**: 100,000 (1%) - Player incentives and utility for Beasts collected in Loot Survivor
+
+### Team Allocation: 2,500,000 (25%)
+
+Reserved for the Loot Survivor team. This allocation aligns long-term incentives between the team and the ecosystem's success.
+
+## Value Accrual Mechanisms
+
+### Governance Treasury
+
+SURVIVOR token holders control the governance treasury, which consists of:
+
+* Proceeds from the Treasury Bootstrap DCA (1.5M tokens sold over 3 months)
+* 80% of proceeds from dungeon ticket purchases
+* 1,002,222 SURVIVOR tokens from the Survivor Treasury allocation
+* Initial seed of \~3M LORDS at genesis
+
+These funds can be directed towards:
+
+* Buyback and burns to distribute game revenue to token holders
+* Development funding for new features
+* Liquidity provision incentives
+* Ecosystem partnerships and growth initiatives
+
+### Governance Rights
+
+SURVIVOR token holders control:
+
+* **Beast NFT Settings**:
+  * Move Beasts to new Dungeons
+  * Royalty settings (default 5% to Survivor Treasury)
+* **LS2 Beast Mode**:
+  * Beast Mode configuration
+  * ERC-20 acceptance in Dungeons
+  * Dungeon payment token selection
+* **Treasury Management**:
+  * Allocation of treasury funds
+  * Partnership approvals and funding
+  * Community initiative funding
+
+## Distribution Schedule
+
+### Launch Distributions
+
+* **Free Games Airdrop**: \~500k games to \~80k addresses (2-week claim window)
+* **Beast Entitlements**: Claimable at Beast mint
+* **LS1/LS1.5 Players**: Based on historical participation
+
+### Ongoing Distributions
+
+* **LS2 Dungeon**: First-come, first-served through gameplay
+  * Week 1: Standard rate (tokens = level reached, starting at L3)
+  * Weeks 2-4: 4X promotion (standard rate × 4)
+  * After Week 4: 2X promotion until exhausted (standard rate × 2)
+* **Treasury Bootstrap DCA**: 3-month programmatic sale (Oct 15 - Jan 15)
+
+### No Lockups
+
+* All allocations are immediately liquid upon receipt
+* No vesting schedules or lockup periods
+* Team tokens have no restrictions
+
+## Economic Sustainability
+
+The tokenomics model is designed to create a self-sustaining ecosystem where:
+
+* Players are rewarded for skill and participation
+* Developers are incentivized to build on the platform
+* Token holders benefit from ecosystem growth
+* Protocol revenue supports ongoing development
+
+This balanced approach ensures long-term viability while maintaining decentralization and community ownership.
+
+
+
+---
+
+file: docs/budokan/guide/create/best-practices.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Best Practices
+
+This guide covers recommended practices for creating successful tournaments on Budokan. Following these guidelines will help protect your prize pools, attract genuine participants, and ensure a smooth experience for everyone.
+
+## Sybil Resistance
+
+### Always Charge Entry Fees for Open Tournaments
+
+If your tournament is open to everyone and has no entry requirements (token gating, qualification, or whitelist), **always charge a small entry fee**. This is critical for protecting your prize pool.
+
+**Why this matters:**
+
+* Without barriers to entry, bots and farmers can create unlimited wallets and play an infinite number of games to exploit prize distributions
+* Even a small fee (e.g., $0.10–$1.00) creates enough friction to make mass exploitation unprofitable
+* The fee doesn't need to be large—just enough to make the cost of running many accounts exceed potential rewards
+
+**Recommended approaches:**
+
+| Tournament Type        | Recommendation                                               |
+| ---------------------- | ------------------------------------------------------------ |
+| Open + Prize Pool      | Charge entry fee (required)                                  |
+| Open + No Prizes       | Entry fee optional                                           |
+| Token Gated            | Entry fee optional (token requirement provides protection)   |
+| Qualification Required | Entry fee optional (prior tournament provides protection)    |
+| Whitelisted            | Entry fee optional (address restriction provides protection) |
+
+> **Rule of thumb:** If anyone can join and there's money to win, require an entry fee.
+
+### Combine Multiple Protections
+
+For high-value prize pools, consider layering protections:
+
+* Entry fee + token gating
+* Entry fee + qualification from a previous tournament
+* Token gating + whitelist for invite-only events
+
+## Submission Period
+
+### Set Realistic Deadlines
+
+The submission period determines how long players have to submit their final scores after the tournament ends. If no scores are submitted before the deadline, **the prize pool will go to the tournament creator**.
+
+**Recommendations:**
+
+* Set submission periods of at least 24–48 hours for casual tournaments
+* For competitive events, 1–7 days gives players flexibility across time zones
+* Monitor your tournament as the deadline approaches
+
+### Use Auto-Submit Infrastructure
+
+Budokan provides infrastructure to help monitor and auto-submit scores. Take advantage of this:
+
+* Bookmark your tournament page
+* Set calendar reminders for the submission deadline
+* Consider enabling auto-submission if available
+
+## Prize Distribution
+
+### Plan Your Winner Distribution
+
+Before creating a tournament, decide how you want to distribute prizes:
+
+* **Top-heavy:** Rewards the best players heavily (e.g., 70/20/10 split)
+* **Flat:** Spreads rewards more evenly across winners
+* **Participation-focused:** Smaller prizes for more positions
+
+Consider your goals:
+
+* Competitive prestige → top-heavy
+* Community engagement → flatter distribution
+* Encouraging new players → participation rewards
+
+## Timing and Scheduling
+
+### Avoid Overlapping with Major Events
+
+Check for other tournaments, game updates, or community events that might compete for attention. Timing your tournament well can significantly impact participation.
+
+### Consider Time Zones
+
+If your community is global, consider:
+
+* Longer tournament durations (days rather than hours)
+* Start times that work for multiple regions
+* Extended submission periods
+
+## Communication
+
+### Write Clear Descriptions
+
+Use the tournament description to communicate:
+
+* Any special rules or expectations
+* The theme or purpose of the tournament
+* Links to community channels for questions
+
+### Announce Your Tournament
+
+After creation, share your tournament:
+
+* In relevant Discord channels
+* On social media
+* Through community newsletters
+
+## Pre-Launch Checklist
+
+Before confirming your tournament, verify:
+
+* [ ] Entry requirements match your intended audience
+* [ ] Entry fee is set (if tournament is open with prizes)
+* [ ] Prize distribution percentages total 100%
+* [ ] Start and end times are correct
+* [ ] Submission period gives players enough time
+* [ ] Game settings are configured correctly
+* [ ] Description clearly explains the tournament
+
+> **Remember:** Once created, some tournament settings cannot be changed. Double-check everything before confirming.
+
+## Related Guides
+
+* [Creating a Tournament](/budokan/guide/create)
+* [Entry Fees](/budokan/guide/create/entry-fees)
+* [Entry Requirements](/budokan/guide/create/entry-requirements)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/create/entry-fees.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Entry Fees
+
+Budokan allows you to set entry fees for your tournaments using any supported token on Starknet. This feature lets communities leverage their own ecosystem tokens as payment for games on the platform, adding flexibility and value.
+
+## Supported Tokens
+
+<div className="flex flex-row">
+  <p>
+    For security, Budokan currently uses a whitelist of tokens for tournament entry fees. In the future, any token supported on Ekubo will be available for use. Support for ERC721 (NFT) entry fees is also coming soon.
+  </p>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/erc20-tokens.png" alt="Entry Fee Tokens" width="300" height="600" />
+
+    <em>Figure 1: Entry fee tokens currently supported.</em>
+  </div>
+</div>
+
+## Customizing Entry Fee Distribution
+
+The entry fee form offers flexible options for setting the price of entry and how fees are split among different parties. To make things simple, values are converted to USD where possible, so both players and creators can easily compare amounts—even if they're unfamiliar with the token.
+
+![Entry Fees](/docs/entry-fees.png)
+*Figure 2: Entry Fees Form.*
+
+### How Entry Fees Are Split
+
+* **Creator Fee:**
+  * The percentage of each entry fee that goes to the tournament creator. This is automatically distributed to the creator's account (`Entry #0`) when a player enters.
+
+* **Game Fee:**
+  * The percentage of each entry fee that goes to the game developer. The creator sets this percentage, though a minimum base fee may be enforced in the future. The game developer receives this cut via the account holding `Game #0`.
+
+* **Player Distribution (Prize Pool):**
+  * The remaining amount is added to the tournament's prize pool. The creator decides how the prize is split among winners, based on the leaderboard size. Use the slider to adjust distribution weights, or manually enter the splits (they must total 100%).
+
+> **Tip:** Use familiar tokens for your audience to encourage participation. Double-check your fee splits before confirming, as they can't be changed after creation.
+
+***
+
+## Related Guides
+
+* [Creating a Tournament](/budokan/guide/create)
+* [Prize Structure](/budokan/guide/prizes)
+* [Onboarding](/budokan/guide/onboarding)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/create/entry-requirements.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Entry Requirements
+
+Entry requirements let you control who can join your tournament, adding exclusivity and enabling unique playing conditions. Use these features to target specific communities, create multi-stage events, or restrict access as needed.
+
+## Token Gating
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      You can require participants to own specific NFTs or tokens to enter your tournament. This is a great way to host exclusive events for certain communities without manually tracking eligible accounts.<br /><br />
+      Currently, Budokan uses a whitelist of supported tokens for gating, similar to entry fee tokens. In the future, all tokens will be supported.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/erc20-tokens.png" alt="Entry Requirement Tokens" width="300" height="600" />
+
+    <br />
+
+    <em>Figure 1: Gated tokens currently supported.</em>
+  </div>
+</div>
+
+![Token Gating](/docs/entry-requirements-token.png)
+*Figure 2: Token Entry Requirements Form.*
+
+> **Tip:** Use token gating to reward loyal holders or run special events for your community.
+
+## Tournament Qualification
+
+Budokan allows you to chain tournaments together, unlocking advanced formats such as:
+
+* Multi-round tournaments
+* Multi-game tournaments
+* Multi-game, multi-round tournaments
+
+![Tournament Qualification](/docs/entry-requirements-tournament-2.png)
+*Figure 3: Selecting participants of a previous tournament.*
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      By leveraging Starknet and Dojo interoperability, you can create tournament structures that were not possible before. For example, you can require players to qualify in one tournament before entering another, or combine results across multiple games.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/championship-tweet.png" alt="Dark Shuffle World Championship" width="300" height="600" />
+
+    <br />
+
+    <em>Figure 4: Dark Shuffle World Championship.</em>
+  </div>
+</div>
+
+> **Note:** Chaining tournaments is a powerful way to build leagues, championships, or community-driven series.
+
+## Whitelisting Addresses
+
+You can also restrict tournament access by whitelisting specific wallet addresses. Only those on the list will be able to join.
+
+![Whitelisting](/docs/entry-requirements-whitelist.png)
+*Figure 5: Whitelisting addresses for tournament entry.*
+
+> **Tip:** Use whitelisting for invitation-only events or to reward select players.
+
+## Related Guides
+
+* [Creating a Tournament](/budokan/guide/create)
+* [Entry Fees](/budokan/guide/create/entry-fees)
+* [Onboarding](/budokan/guide/onboarding)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/create/game-settings.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Game Settings
+
+Budokan supports fully customizable game settings for all games that implement the [Embeddable Game Standard (EGS)](/embeddable-game-standard). This allows tournament creators to experiment with new game modes, tailor experiences for their communities, and offer a wide variety of play styles.
+
+## Why Customize Game Settings?
+
+Custom game settings let you:
+
+* Create unique tournament experiences
+* Enable or disable specific game features
+* Adjust difficulty, rules, or other parameters
+* Encourage new strategies and community engagement
+
+> **Tip:** Experimenting with different settings can help you discover popular new game modes and keep your tournaments fresh.
+
+***
+
+## How to Select and Customize Settings
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      When creating a tournament, you can choose to customize the game settings. These settings are displayed as key-value pairs, read directly from the game contract on-chain. Click <strong>Select Settings</strong> to open the customization dialog.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/game-settings.png" alt="Game Settings" width="400" height="200" />
+
+    <br />
+
+    <em>Figure 1: Customizing Game Settings in Budokan.</em>
+  </div>
+</div>
+
+***
+
+## Creating and Using Custom Settings
+
+* Settings can be created permissionlessly through the games themselves.
+* Any custom settings you create will be displayed and available for play within Budokan.
+* You can select from existing settings or define new ones for your tournament.
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-shrink-0">
+    <img src="/docs/game-settings-modal.png" alt="Game Settings Modal" width="300" height="200" />
+
+    <br />
+
+    <em>Figure 2: Selecting Specific Settings.</em>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/view-settings.png" alt="Game Settings View" width="300" height="200" />
+
+    <br />
+
+    <em>Figure 3: Viewing a selected setting.</em>
+  </div>
+</div>
+
+> **Note:** All custom settings are transparent and visible to players, ensuring a fair and open tournament environment.
+
+***
+
+## Related Guides
+
+* [Creating a Tournament](/budokan/guide/create)
+* [Prizes](/budokan/guide/prizes)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/create/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Creating a Tournament
+
+Budokan lets anyone create tournaments for any game that supports the [Emedabble Game Standard](/embeddable-game-standard/index) (EGS). This guide walks you through the process, highlights customization options, and shares best practices for a successful tournament.
+
+## Prerequisites
+
+* A Starknet wallet ([see Onboarding](../onboarding))
+* Prize tokens (if you want to offer custom prizes)
+
+## How to Create a Tournament
+
+### 1. Open the Create Tournament Page
+
+* Click the **Create Tournament** button in the navigation menu.
+
+![Create Tournament Button](/docs/navigation.png)
+*Figure 1: Create Tournament Button.*
+
+This opens the Create Tournament page, where you can configure all aspects of your tournament.
+
+![Create Tournament Page](/docs/create-tournament.png)
+*Figure 2: Create Tournament Page.*
+
+***
+
+### 2. Configure Tournament Details
+
+* Select the game
+* Adjust game settings ([see Game Settings](../create/entry-requirements))
+* Enter a name and description
+* Set the leaderboard size (number of winners)
+
+***
+
+### 3. Set the Tournament Schedule
+
+* Choose start and end times
+* Set the submission period
+* Select registration type:
+  * Open (anyone can join)
+  * Fixed (limited registration)
+
+![Tournament Schedule](/docs/schedule.png)
+*Figure 3: Tournament Schedule Form.*
+
+***
+
+### 4. (Optional) Configure Entry Requirements
+
+* Set qualification requirements
+* Limit the number of players
+
+![Tournament Entry Requirements](/docs/entry-requirements-tournament.png)
+*Figure 4: Entry Requirements Form.*
+
+For more details, see [Entry Requirements](../create/entry-requirements).
+
+***
+
+### 5. (Optional) Set Entry Fees
+
+* Choose entry fee tokens
+* Define fee distribution
+  * Tournament Creator %
+  * Game %
+  * Winner distribution
+
+![Entry Fees](/docs/entry-fees.png)
+*Figure 5: Entry Fees Form.*
+
+For more details, see [Entry Fees](../create/entry-fees).
+
+***
+
+### 6. (Optional) Set Up Prize Structure
+
+* Choose prize types (ERC20s, ERC721s)
+* Define how prizes are distributed
+* Set winner positions
+
+![Prizes](/docs/prizes.png)
+*Figure 6: Tournament Prizes Form.*
+
+***
+
+### 7. Review and Confirm
+
+After completing the form, you'll see a tournament confirmation page. Review all details and confirm before submitting the transaction. This is your chance to double-check the structure and any prizes.
+
+<div className="flex flex-row">
+  <p>
+    Once you confirm, your tournament will be created and visible to other players. Make sure you are happy with all settings before finalizing.
+  </p>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/tournament-confirmation.png" alt="Tournament Confirmation" width="300" height="600" />
+
+    <em>Figure 7: Tournament confirmation dialog.</em>
+  </div>
+</div>
+
+## Best Practices
+
+* **Sybil Resistance:**
+  * Avoid making tournaments with open, free entry and a prize pool, as this can lead to abuse (multiple entries per wallet). Consider qualification requirements or entry fees to protect your tournament.
+
+* **Submission Period:**
+  * Always note the submission period. If no scores are submitted before the deadline, the prize pool will be forfeited.
+  * Budokan provides infrastructure to help monitor and auto-submit, but it's wise to bookmark your tournament and set reminders.
+
+> **Tip:** Double-check all tournament settings before confirming. Once created, some options cannot be changed.
+
+## Related Guides
+
+* [Onboarding](/budokan/guide/onboarding)
+* [Entry Requirements](/budokan/guide/create/entry-requirements)
+* [Entry Fees](/budokan/guide/create/entry-fees)
+* [Submitting Scores](/budokan/guide/submission)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
 
