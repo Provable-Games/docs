@@ -16,6 +16,356 @@ import { HomePage } from "../components/Homepage.tsx";
 
 ---
 
+file: docs/budokan/faq.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Budokan: FAQ
+
+Welcome to the Budokan FAQ! Here you'll find answers to the most common questions about using the Budokan tournament platform. If you can't find what you're looking for, check our other guides or contact support through the app.
+
+## General
+
+**What is Budokan?**
+
+Budokan is a permissionless tournament platform for on-chain games, allowing anyone to create, join, and sponsor tournaments using Starknet wallets and a variety of supported tokens.
+
+**Who can participate in Budokan tournaments?**
+
+Anyone with a supported Starknet wallet who meets the tournament's entry requirements can participate.
+
+## Getting Started & Wallets
+
+**How do I get started on Budokan?**
+
+See our [Onboarding Guide](/budokan/guide/onboarding) for step-by-step instructions on setting up your wallet and connecting to Budokan.
+
+**Which wallets are supported?**
+
+Budokan supports Cartridge Controller (recommended), Argent, Braavos, and more. See the [Onboarding Guide](/budokan/guide/onboarding) for details.
+
+**Do I need a wallet to join a tournament?**
+
+Yes, a Starknet wallet is required to enter tournaments, claim prizes, and interact with the platform.
+
+## Tournaments & Entry
+
+**How do I find and join a tournament?**
+
+Browse tournaments on the overview page, select one to view details, and follow the steps in [Entering Tournaments](/budokan/guide/enter) to join.
+
+**What are entry requirements?**
+
+Entry requirements can include holding specific tokens/NFTs, qualifying in previous tournaments, or being on a whitelist. See [Entry Requirements](/budokan/guide/create/entry-requirements) for more info.
+
+**Can I join multiple tournaments?**
+
+Yes, you can join as many tournaments as you qualify for.
+
+**What if I don't meet the entry requirements?**
+
+Review the requirements section on the tournament page for guidance. You may need to acquire certain tokens or qualify in another event.
+
+## Prizes & Fees
+
+**How are prizes funded and distributed?**
+
+Prizes can be funded by tournament creators, sponsors, or the community. They are distributed according to the rules and splits set for each tournament. See [Prizes](/budokan/guide/prizes) for details.
+
+**What tokens can be used for entry fees and prizes?**
+
+Currently, Budokan uses a whitelist of supported tokens. In the future, any token on Ekubo and NFTs will be supported. See [Entry Fees](/budokan/guide/create/entry-fees) and [Prizes](./guide/prizes).
+
+**How do I claim my prize?**
+
+After the tournament ends and results are verified, use the **Claim Prizes** button on the tournament page. See [Prizes](/budokan/guide/prizes) for step-by-step instructions.
+
+**Can sponsors add prizes after a tournament has started?**
+
+Yes! Sponsors and community members can add prizes at any time before the tournament ends. See [Prizes](/budokan/guide/prizes).
+
+## Creating & Managing Tournaments
+
+**How do I create a tournament?**
+
+Click the **Create Tournament** button in the navigation and follow the steps in [Creating a Tournament](/budokan/guide/create).
+
+**What customization options are available?**
+
+You can set game, schedule, entry requirements, fees, prize structure, and more. See [Creating a Tournament](/budokan/guide/create) for a full walkthrough.
+
+**Can I edit a tournament after creation?**
+
+Some settings (like prizes) can be updated before the tournament ends, but core settings are locked after creation. Double-check all details before confirming.
+
+## Troubleshooting & Support
+
+**Why can't I enter a tournament?**
+
+Check that you meet all entry requirements and have a supported wallet connected. If you still have issues, contact support.
+
+**Why can't I claim my prize?**
+
+Ensure the tournament has ended, results are finalized, and you are eligible. If problems persist, see [Prizes](/budokan/guide/prizes) or contact support.
+
+**Where can I get more help?**
+
+Check our guides or contact support through the app for further assistance.
+
+## More Resources
+
+* [Onboarding Guide](/budokan/guide/onboarding)
+* [Entering Tournaments](/budokan/guide/enter)
+* [Creating a Tournament](/budokan/guide/create)
+* [Prizes](/budokan/guide/prizes)
+
+If you have suggestions for this FAQ, let us know!
+
+
+
+---
+
+file: docs/budokan/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+import { ContractTable } from '../../components/ContractTable'
+import { Button } from 'vocs/components'
+
+![Overview](/banner-1200x630.webp)
+
+# Budokan
+
+Budokan is an onchain tournament system designed to power competitive gaming experiences on Starknet. It provides a robust, modular, and extensible framework for:
+
+* Creating and managing tournaments with flexible schedules and rules
+* Supporting a variety of entry requirements and fee structures
+* Handling prize pools and distribution (ERC20, ERC721, and custom tokens)
+* Integrating with embeddable game standards for seamless game onboarding
+* Leveraging Dojo world storage and event systems for composability and upgradability
+
+<Button href="https://budokan.gg" target="_blank" className="bg-white text-black" size="lg">
+  Launch App
+</Button>
+
+## Table of Contents
+
+* [Key Functions](/budokan/key-functions)
+* [Guide](/budokan/guide)
+* [FAQ](/budokan/faq)
+
+## Contracts
+
+<ContractTable
+  contracts={[[
+  { name: "Budokan", address: "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3" },
+  { name: "Budokan", address: "0x5accc0e54259cb3176450fa730fc5824cf2d3e550aec385cdaaa6250efdff27" }
+]]}
+/>
+
+## Key Features
+
+* **Modular Architecture**: Components for tournaments, games, schedules, and prizes can be extended or replaced.
+* **Secure and Permissionless**: Anyone can create or enter tournaments, with robust checks for entry requirements and prize claims.
+* **Flexible Entry and Prize Logic**: Supports entry fees, qualification proofs, and multiple prize types.
+* **Leaderboard and Scoring**: Built-in leaderboard management and score submission.
+
+## Use Cases
+
+* Esports tournaments for onchain games
+* Community competitions and challenges
+* Automated prize distribution for game events
+* Open standards for game developers to integrate with tournament infrastructure
+
+Budokan is designed to be the backbone for provable, transparent, and fair onchain competitions, enabling new forms of player engagement and game design.
+
+
+
+---
+
+file: docs/budokan/key-functions.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Budokan: Key Functions
+
+This section details the primary functions exposed by the Budokan tournament system. Each function is designed to be permissionless, composable, and secure.
+
+## `create_tournament`
+
+```cairo
+fn create_tournament(
+    ref self: TState,
+    creator_rewards_address: ContractAddress,
+    metadata: Metadata,
+    schedule: Schedule,
+    game_config: GameConfig,
+    entry_fee: Option<EntryFee>,
+    entry_requirement: Option<EntryRequirement>,
+) -> TournamentModel;
+```
+
+**Purpose:** Create a new tournament with specified metadata, schedule, game configuration, entry fee, and requirements. Mints a game token to the creator for reward distribution.
+
+**Parameters:**
+
+* `creator_rewards_address`: Address to receive the creator's game token.
+* `metadata`: Tournament metadata (name, description, etc.).
+* `schedule`: Tournament schedule (registration, submission, finalization phases).
+* `game_config`: Game configuration (game address, settings, prize spots).
+* `entry_fee`: Optional entry fee (ERC20/721, amount, etc.).
+* `entry_requirement`: Optional qualification requirement.
+
+**Returns:** Tournament model struct.
+
+***
+
+## `enter_tournament`
+
+```cairo
+fn enter_tournament(
+    ref self: TState,
+    tournament_id: u64,
+    player_name: felt252,
+    player_address: ContractAddress,
+    qualification: Option<QualificationProof>,
+) -> (u64, u32);
+```
+
+**Purpose:** Register a player for a tournament, minting a game token and assigning an entry number.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament to enter.
+* `player_name`: Name of the player (felt252).
+* `player_address`: Address to mint the game token to.
+* `qualification`: Optional qualification proof.
+
+**Returns:** Tuple of (game token ID, entry number).
+
+***
+
+## `submit_score`
+
+```cairo
+fn submit_score(
+    ref self: TState,
+    tournament_id: u64,
+    token_id: u64,
+    position: u8,
+);
+```
+
+**Purpose:** Submit a score/position for a tournament entry. Updates the leaderboard and marks the score as submitted.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament.
+* `token_id`: Game token ID for the entry.
+* `position`: Leaderboard position (1-based index).
+
+***
+
+## `claim_prize`
+
+```cairo
+fn claim_prize(
+    ref self: TState,
+    tournament_id: u64,
+    prize_type: PrizeType,
+);
+```
+
+**Purpose:** Claim a prize for a tournament after it is finalized. Handles entry fee and custom prize types.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament.
+* `prize_type`: Type of prize to claim (entry fees, custom, etc.).
+
+***
+
+## `add_prize`
+
+```cairo
+fn add_prize(
+    ref self: TState,
+    tournament_id: u64,
+    token_address: ContractAddress,
+    token_type: TokenType,
+    position: u8,
+) -> u64;
+```
+
+**Purpose:** Add a new prize to a tournament for a specific leaderboard position.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament.
+* `token_address`: Address of the prize token.
+* `token_type`: Type of token (ERC20, ERC721, etc.).
+* `position`: Leaderboard position for the prize.
+
+**Returns:** Prize ID.
+
+***
+
+## `register_token`
+
+```cairo
+fn register_token(
+    ref self: TState,
+    address: ContractAddress,
+    token_type: TokenType,
+);
+```
+
+**Purpose:** Register a new token (ERC20/ERC721) for use in tournaments.
+
+**Parameters:**
+
+* `address`: Token contract address.
+* `token_type`: Type of token.
+
+***
+
+## `get_leaderboard`
+
+```cairo
+fn get_leaderboard(
+    self: @TState,
+    tournament_id: u64,
+) -> Array<u64>;
+```
+
+**Purpose:** Retrieve the current leaderboard for a tournament.
+
+**Parameters:**
+
+* `tournament_id`: ID of the tournament.
+
+**Returns:** Array of game token IDs ordered by position.
+
+***
+
+## Additional Functions
+
+* `total_tournaments`: Returns the total number of tournaments created.
+* `tournament`: Returns the tournament model for a given ID.
+* `get_registration`: Returns registration details for a game token.
+* `get_prize`: Returns prize details for a given prize ID.
+* `tournament_entries`: Returns the number of entries for a tournament.
+* `is_token_registered`: Checks if a token is registered for tournaments.
+* `current_phase`: Returns the current phase of a tournament.
+* `get_tournament_id_for_token_id`: Returns the tournament ID for a given game token.
+
+
+
+---
+
 file: docs/darkshuffle/faq.mdx
 meta: {
   "layout": "docs"
@@ -701,7 +1051,7 @@ Settings allow custom game modes by linking a unique `settings_id` to each game 
 
 **How do platforms embed my game?**
 
-Platforms call `mint()` on your game contract to create a game instance (an NFT) for each player. They then call `score()` to validate results for leaderboards and prizes. See: [Embedding Games](/embeddable-game-standard/implementation/embedding-games).
+Platforms call `mint()` on your game contract to create a game instance (a unique onchain token) for each player. They then call `score()` to validate results for leaderboards and prizes. See: [Embedding Games](/embeddable-game-standard/implementation/embedding-games).
 
 ## Platforms
 
@@ -716,7 +1066,7 @@ Reach new audiences without building platform integrations. Your game can be use
 
 **What are the benefits for platform developers?**
 
-Access a library of onchain games without building from scratch. Add new content and engagement through variety. Each game instance is a unique, verifiable NFT.
+Access a library of onchain games without building from scratch. Add new content and engagement through variety. Each game instance is a unique, verifiable onchain token.
 
 ## More Resources
 
@@ -1667,13 +2017,12 @@ Loot Survivor is a fully onchain dungeon crawler RPG built on Starknet. Every ac
 
 **Is Loot Survivor free to play?**
 
-Yes, Loot Survivor has a completely free game mode for players to practice their skills. For the full dungeon experience, a ticket is required which is purchased from an Ekubo DCA pool. No gas required.
+Yes, Loot Survivor has a completely free game mode for players to practice their skills. For the full dungeon experience, a ticket is required which can be purchased directly through the game. No gas required.
 
 **What do I need to play?**
 
 * **Free Version:** No wallet, gas, or ticket required — just a modern browser (Chrome, Firefox, Safari, Edge).
-* **Full Version:** A Cartridge Controller wallet (for VRF support) and a dungeon ticket purchased from Ekubo. No gas fees.
-* **LORDS tokens** are optional and used for special tournament modes.
+* **Full Version:** A Cartridge Controller wallet (for VRF support) and a dungeon ticket purchased through the game. No gas fees.
 
 **Is the game mobile-friendly?**
 
@@ -1691,7 +2040,7 @@ Death is permanent — your adventurer's journey ends but earned assets remain o
 
 **Can I have multiple adventurers?**
 
-Yes. Each adventurer is a separate NFT with unique progression.
+Yes. Each adventurer is a separate onchain token with unique progression.
 
 **How does combat work?**
 
@@ -1723,19 +2072,11 @@ Uses VRF (Verifiable Random Function) seeds by default for true randomness. Can 
 
 Yes. All contracts are open source and verified on Starknet. You can inspect the code on [GitHub](https://github.com/Provable-Games/death-mountain) and verify any game action onchain.
 
-**What is Dojo?**
-
-Starknet game engine framework using Entity-Component-System architecture for efficient onchain state management. Learn more: [Technical Architecture](/lootsurvivor/technical/architecture).
-
 **How are gas fees kept low?**
 
 Optimizations include packed storage, batch operations, and efficient algorithms, plus Starknet's L2 scaling benefits.
 
 ## Economic
-
-**What are LORDS tokens?**
-
-LORDS is the native token of the Realms ecosystem. In Loot Survivor, LORDS can be used for entry fees for special game modes and tournament entries.
 
 **How does the market work?**
 
@@ -1747,7 +2088,7 @@ Currently, direct player-to-player trading is not implemented. All trading happe
 
 **Are there rewards for playing?**
 
-Yes. Tournaments with prize pools are held regularly. Check [Discord](https://discord.gg/Q36rUxS66c) for current tournament info and schedules.
+Yes. When you kill beasts during gameplay, you collect them and earn $SURVIVOR tokens on collection. Tournaments with prize pools are another way to earn rewards. Check [Discord](https://discord.gg/Q36rUxS66c) for current tournament info and schedules.
 
 ## Wallet & Account
 
@@ -1839,7 +2180,7 @@ Only onchain data (transactions, game actions) is recorded. No personal informat
 
 **Can I lose money playing?**
 
-You pay entry fees for certain game modes. Never spend more than you can afford to lose.
+You pay entry fees for certain game modes. Entry fees can be paid in any supported token. Never spend more than you can afford to lose.
 
 ## Getting More Help
 
@@ -2836,356 +3177,6 @@ Stats are the foundation of every successful adventurer in Loot Survivor. Whethe
 
 ---
 
-file: docs/budokan/faq.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Budokan: FAQ
-
-Welcome to the Budokan FAQ! Here you'll find answers to the most common questions about using the Budokan tournament platform. If you can't find what you're looking for, check our other guides or contact support through the app.
-
-## General
-
-**What is Budokan?**
-
-Budokan is a permissionless tournament platform for on-chain games, allowing anyone to create, join, and sponsor tournaments using Starknet wallets and a variety of supported tokens.
-
-**Who can participate in Budokan tournaments?**
-
-Anyone with a supported Starknet wallet who meets the tournament's entry requirements can participate.
-
-## Getting Started & Wallets
-
-**How do I get started on Budokan?**
-
-See our [Onboarding Guide](/budokan/guide/onboarding) for step-by-step instructions on setting up your wallet and connecting to Budokan.
-
-**Which wallets are supported?**
-
-Budokan supports Cartridge Controller (recommended), Argent, Braavos, and more. See the [Onboarding Guide](/budokan/guide/onboarding) for details.
-
-**Do I need a wallet to join a tournament?**
-
-Yes, a Starknet wallet is required to enter tournaments, claim prizes, and interact with the platform.
-
-## Tournaments & Entry
-
-**How do I find and join a tournament?**
-
-Browse tournaments on the overview page, select one to view details, and follow the steps in [Entering Tournaments](/budokan/guide/enter) to join.
-
-**What are entry requirements?**
-
-Entry requirements can include holding specific tokens/NFTs, qualifying in previous tournaments, or being on a whitelist. See [Entry Requirements](/budokan/guide/create/entry-requirements) for more info.
-
-**Can I join multiple tournaments?**
-
-Yes, you can join as many tournaments as you qualify for.
-
-**What if I don't meet the entry requirements?**
-
-Review the requirements section on the tournament page for guidance. You may need to acquire certain tokens or qualify in another event.
-
-## Prizes & Fees
-
-**How are prizes funded and distributed?**
-
-Prizes can be funded by tournament creators, sponsors, or the community. They are distributed according to the rules and splits set for each tournament. See [Prizes](/budokan/guide/prizes) for details.
-
-**What tokens can be used for entry fees and prizes?**
-
-Currently, Budokan uses a whitelist of supported tokens. In the future, any token on Ekubo and NFTs will be supported. See [Entry Fees](/budokan/guide/create/entry-fees) and [Prizes](./guide/prizes).
-
-**How do I claim my prize?**
-
-After the tournament ends and results are verified, use the **Claim Prizes** button on the tournament page. See [Prizes](/budokan/guide/prizes) for step-by-step instructions.
-
-**Can sponsors add prizes after a tournament has started?**
-
-Yes! Sponsors and community members can add prizes at any time before the tournament ends. See [Prizes](/budokan/guide/prizes).
-
-## Creating & Managing Tournaments
-
-**How do I create a tournament?**
-
-Click the **Create Tournament** button in the navigation and follow the steps in [Creating a Tournament](/budokan/guide/create).
-
-**What customization options are available?**
-
-You can set game, schedule, entry requirements, fees, prize structure, and more. See [Creating a Tournament](/budokan/guide/create) for a full walkthrough.
-
-**Can I edit a tournament after creation?**
-
-Some settings (like prizes) can be updated before the tournament ends, but core settings are locked after creation. Double-check all details before confirming.
-
-## Troubleshooting & Support
-
-**Why can't I enter a tournament?**
-
-Check that you meet all entry requirements and have a supported wallet connected. If you still have issues, contact support.
-
-**Why can't I claim my prize?**
-
-Ensure the tournament has ended, results are finalized, and you are eligible. If problems persist, see [Prizes](/budokan/guide/prizes) or contact support.
-
-**Where can I get more help?**
-
-Check our guides or contact support through the app for further assistance.
-
-## More Resources
-
-* [Onboarding Guide](/budokan/guide/onboarding)
-* [Entering Tournaments](/budokan/guide/enter)
-* [Creating a Tournament](/budokan/guide/create)
-* [Prizes](/budokan/guide/prizes)
-
-If you have suggestions for this FAQ, let us know!
-
-
-
----
-
-file: docs/budokan/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-import { ContractTable } from '../../components/ContractTable'
-import { Button } from 'vocs/components'
-
-![Overview](/banner-1200x630.webp)
-
-# Budokan
-
-Budokan is an onchain tournament system designed to power competitive gaming experiences on Starknet. It provides a robust, modular, and extensible framework for:
-
-* Creating and managing tournaments with flexible schedules and rules
-* Supporting a variety of entry requirements and fee structures
-* Handling prize pools and distribution (ERC20, ERC721, and custom tokens)
-* Integrating with embeddable game standards for seamless game onboarding
-* Leveraging Dojo world storage and event systems for composability and upgradability
-
-<Button href="https://budokan.gg" target="_blank" className="bg-white text-black" size="lg">
-  Launch App
-</Button>
-
-## Table of Contents
-
-* [Key Functions](/budokan/key-functions)
-* [Guide](/budokan/guide)
-* [FAQ](/budokan/faq)
-
-## Contracts
-
-<ContractTable
-  contracts={[[
-  { name: "Budokan", address: "0xbcb2386436161d8d3afea0a805a8610ab90af5cf5582d866b83e9cb779bef3" },
-  { name: "Budokan", address: "0x5accc0e54259cb3176450fa730fc5824cf2d3e550aec385cdaaa6250efdff27" }
-]]}
-/>
-
-## Key Features
-
-* **Modular Architecture**: Components for tournaments, games, schedules, and prizes can be extended or replaced.
-* **Secure and Permissionless**: Anyone can create or enter tournaments, with robust checks for entry requirements and prize claims.
-* **Flexible Entry and Prize Logic**: Supports entry fees, qualification proofs, and multiple prize types.
-* **Leaderboard and Scoring**: Built-in leaderboard management and score submission.
-
-## Use Cases
-
-* Esports tournaments for onchain games
-* Community competitions and challenges
-* Automated prize distribution for game events
-* Open standards for game developers to integrate with tournament infrastructure
-
-Budokan is designed to be the backbone for provable, transparent, and fair onchain competitions, enabling new forms of player engagement and game design.
-
-
-
----
-
-file: docs/budokan/key-functions.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Budokan: Key Functions
-
-This section details the primary functions exposed by the Budokan tournament system. Each function is designed to be permissionless, composable, and secure.
-
-## `create_tournament`
-
-```cairo
-fn create_tournament(
-    ref self: TState,
-    creator_rewards_address: ContractAddress,
-    metadata: Metadata,
-    schedule: Schedule,
-    game_config: GameConfig,
-    entry_fee: Option<EntryFee>,
-    entry_requirement: Option<EntryRequirement>,
-) -> TournamentModel;
-```
-
-**Purpose:** Create a new tournament with specified metadata, schedule, game configuration, entry fee, and requirements. Mints a game token to the creator for reward distribution.
-
-**Parameters:**
-
-* `creator_rewards_address`: Address to receive the creator's game token.
-* `metadata`: Tournament metadata (name, description, etc.).
-* `schedule`: Tournament schedule (registration, submission, finalization phases).
-* `game_config`: Game configuration (game address, settings, prize spots).
-* `entry_fee`: Optional entry fee (ERC20/721, amount, etc.).
-* `entry_requirement`: Optional qualification requirement.
-
-**Returns:** Tournament model struct.
-
-***
-
-## `enter_tournament`
-
-```cairo
-fn enter_tournament(
-    ref self: TState,
-    tournament_id: u64,
-    player_name: felt252,
-    player_address: ContractAddress,
-    qualification: Option<QualificationProof>,
-) -> (u64, u32);
-```
-
-**Purpose:** Register a player for a tournament, minting a game token and assigning an entry number.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament to enter.
-* `player_name`: Name of the player (felt252).
-* `player_address`: Address to mint the game token to.
-* `qualification`: Optional qualification proof.
-
-**Returns:** Tuple of (game token ID, entry number).
-
-***
-
-## `submit_score`
-
-```cairo
-fn submit_score(
-    ref self: TState,
-    tournament_id: u64,
-    token_id: u64,
-    position: u8,
-);
-```
-
-**Purpose:** Submit a score/position for a tournament entry. Updates the leaderboard and marks the score as submitted.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament.
-* `token_id`: Game token ID for the entry.
-* `position`: Leaderboard position (1-based index).
-
-***
-
-## `claim_prize`
-
-```cairo
-fn claim_prize(
-    ref self: TState,
-    tournament_id: u64,
-    prize_type: PrizeType,
-);
-```
-
-**Purpose:** Claim a prize for a tournament after it is finalized. Handles entry fee and custom prize types.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament.
-* `prize_type`: Type of prize to claim (entry fees, custom, etc.).
-
-***
-
-## `add_prize`
-
-```cairo
-fn add_prize(
-    ref self: TState,
-    tournament_id: u64,
-    token_address: ContractAddress,
-    token_type: TokenType,
-    position: u8,
-) -> u64;
-```
-
-**Purpose:** Add a new prize to a tournament for a specific leaderboard position.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament.
-* `token_address`: Address of the prize token.
-* `token_type`: Type of token (ERC20, ERC721, etc.).
-* `position`: Leaderboard position for the prize.
-
-**Returns:** Prize ID.
-
-***
-
-## `register_token`
-
-```cairo
-fn register_token(
-    ref self: TState,
-    address: ContractAddress,
-    token_type: TokenType,
-);
-```
-
-**Purpose:** Register a new token (ERC20/ERC721) for use in tournaments.
-
-**Parameters:**
-
-* `address`: Token contract address.
-* `token_type`: Type of token.
-
-***
-
-## `get_leaderboard`
-
-```cairo
-fn get_leaderboard(
-    self: @TState,
-    tournament_id: u64,
-) -> Array<u64>;
-```
-
-**Purpose:** Retrieve the current leaderboard for a tournament.
-
-**Parameters:**
-
-* `tournament_id`: ID of the tournament.
-
-**Returns:** Array of game token IDs ordered by position.
-
-***
-
-## Additional Functions
-
-* `total_tournaments`: Returns the total number of tournaments created.
-* `tournament`: Returns the tournament model for a given ID.
-* `get_registration`: Returns registration details for a game token.
-* `get_prize`: Returns prize details for a given prize ID.
-* `tournament_entries`: Returns the number of entries for a tournament.
-* `is_token_registered`: Checks if a token is registered for tournaments.
-* `current_phase`: Returns the current phase of a tournament.
-* `get_tournament_id_for_token_id`: Returns the tournament ID for a given game token.
-
-
-
----
-
 file: docs/summit/battle-system.mdx
 meta: {
   "title": "Battle System",
@@ -3838,7 +3829,7 @@ Find answers to common questions about Summit. Summit is currently in alpha and 
 
 **What is Summit?**
 
-Summit is an all-against-all, king-of-the-hill PvP arena where players use Loot Survivor Beast NFTs to battle for control of the Summit and earn $SURVIVOR rewards.
+Summit is an all-against-all, king-of-the-hill PvP arena where players use Loot Survivor Beasts to battle for control of the Summit and earn $SURVIVOR rewards.
 
 **Is Summit still in alpha?**
 
@@ -3856,15 +3847,15 @@ Each Summit game lasts 8 million seconds (approximately 93 days).
 
 **What do I need to play?**
 
-You need Beast NFTs from Loot Survivor. Beasts are earned by killing monsters during Loot Survivor gameplay or can be purchased on NFT marketplaces.
+You need Beasts from Loot Survivor. Beasts are earned by killing monsters during Loot Survivor gameplay or can be purchased on secondary markets.
 
-**How do I get Beast NFTs?**
+**How do I get Beasts?**
 
-Play Loot Survivor and kill beasts during your adventure — each beast kill mints a Beast NFT. You can also buy them on secondary markets.
+Play Loot Survivor and kill beasts during your adventure — each beast kill mints a collectible Beast. You can also buy them on secondary markets.
 
 **How do I start?**
 
-Select one of your Beast NFTs and attack the current Summit holder. Your first attack unlocks quests for that beast.
+Select one of your Beasts and attack the current Summit holder. Your first attack unlocks quests for that beast.
 
 ## Battle System
 
@@ -4270,6 +4261,387 @@ Summit's reward system is elegant in its simplicity: defend the hill, earn $SURV
 5. **Governance Value** - $SURVIVOR tokens grant voting power in the Survivor ecosystem
 
 The clock is ticking, the reward pool is finite, and only the strongest beasts will claim the largest shares. Make every second count!
+
+
+
+---
+
+file: docs/budokan/guide/enter.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Entering Tournaments
+
+This guide will walk you through how to find, enter, and track tournaments. Whether you're a new or returning player, follow these steps to get started.
+
+## Browsing Tournaments
+
+On the **Overview** page, you can:
+
+* Filter tournaments by game, status (upcoming, live, ended), or your participation.
+* View summarized information on each tournament card, including:
+  * Name
+  * Duration
+  * Number of participants
+  * Time remaining
+  * Entry fee (in $)
+  * Prize pot (in $)
+  * Key badges for important details (explained on the full details page)
+
+![Overview](/docs/overview.png)
+*Figure 1: Tournament overview page.*
+
+## Viewing Tournament Details
+
+To learn more about a tournament:
+
+1. Click on a tournament card to open its details page.
+2. Review the following sections:
+   * **Requirements and Interactions** (top-right)
+   * **Tournament Details**
+   * **Timeline**
+   * **Prizes**
+   * **Scores (Entries)**
+   * **My Entries**
+
+The **Timeline** shows the tournament's structure, including the submission period after the tournament ends.
+
+![Tournament Details](/docs/tournament-details.png)
+*Figure 2: Tournament details page.*
+
+> **Note:** Scores must be submitted during the submission period after the tournament ends to be eligible for prizes. The platform provides tools to handle this automatically, but you can also submit scores manually through the app.
+
+## How to Enter a Tournament
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>To join a tournament:</p>
+
+    <ol style={{ listStyleType: 'decimal', marginLeft: '1.5em' }}>
+      <li>On the tournament details page, click the <strong>Enter Tournament</strong> button.</li>
+
+      <li>
+        <div>
+          Review the entry fee breakdown, including:
+
+          <ul style={{ listStyleType: 'disc', marginLeft: '1.5em' }}>
+            <li>Tournament creator fees</li>
+            <li>Game fees</li>
+            <li>Prize pool contribution</li>
+          </ul>
+        </div>
+      </li>
+
+      <li>Check any entry requirements and confirm you qualify.</li>
+      <li>Enter your player name when prompted.</li>
+      <li>Confirm your entry and pay any required fees.</li>
+    </ol>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/enter-tournament.png" alt="Entering a tournament" width="300" height="300" />
+
+    <br />
+
+    <em>Figure 3: Entering a tournament.</em>
+  </div>
+</div>
+
+> **Tip:** If you do not meet the entry requirements, review the requirements section for guidance on how to qualify.
+
+## After Entering
+
+Once you have entered a tournament:
+
+* Your entry will appear in the **Scores (Entries)** table.
+* You will see your game listed under **My Entries**.
+* Any entry fees you pay are instantly added to the prize pool.
+
+![Entered Tournament](/docs/entered-tournament.png)
+*Figure 4: After entering a tournament.*
+
+## Related Guides
+
+* [Submitting Scores](/budokan/guide/submission)
+* [Tournament Prizes](/budokan/guide/prizes)
+
+If you have questions or encounter issues, check the [FAQ](/budokan/faq) or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Budokan: Guide
+
+This guide walks you through the complete process of using Budokan, from creating tournaments to claiming prizes.
+
+## Table of Contents
+
+* [Onboarding](/budokan/guide/onboarding)
+* [Entering a Tournament](/budokan/guide/enter)
+* [Creating a Tournament](/budokan/guide/create)
+* [Prizes](/budokan/guide/prizes)
+
+## Overview
+
+Budokan provides a complete tournament management system with three main phases:
+
+1. Player Registration and Participation
+2. Tournament Creation and Setup
+3. Prize Management and Distribution
+
+Each section of this guide provides detailed instructions and examples for these key processes.
+
+
+
+---
+
+file: docs/budokan/guide/onboarding.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Getting Started: Onboarding
+
+Welcome to Budokan! This guide will help you set up your wallet and get ready to play on-chain games. Budokan supports a variety of Starknet wallets, with a special recommendation for the [Cartridge Controller](https://cartridge.gg/controller) due to its advanced features and signerless transactions.
+
+## Choosing a Wallet
+
+Budokan currently supports connection through several wallets. For the best experience, we recommend using the Cartridge Controller, which enables gas-less transactions and seamless gameplay on the platform.
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <ul>
+      <li><strong>Cartridge Controller</strong> (recommended)</li>
+      <li>Argent</li>
+      <li>Braavos</li>
+    </ul>
+
+    <p>
+      The Cartridge Controller offers extended features ideal for on-chain games, including signerless transactions and multi-platform login options.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/wallets.png" alt="Budokan Wallets" width="400" height="200" />
+
+    <br />
+
+    <em>Figure 1: Supported wallets on Budokan.</em>
+  </div>
+</div>
+
+## Setting Up Your Wallet
+
+Follow these steps to get started:
+
+1. If you don't already have a wallet, select Controller and sign up.
+2. Choose your preferred login method. The Cartridge Controller supports:
+   * Social logins (Discord)
+   * Other blockchain wallets (Metamask, Phantom, Rabby)
+   * Passkey
+3. Complete the sign-up process as guided.
+4. Once your wallet is set up, connect it to Budokan through the platform's wallet connection interface.
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      The Cartridge Controller makes onboarding easy, allowing you to use familiar social accounts or other wallets. After setup, you'll be ready to join tournaments and play games on Budokan.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/controller-sign-up.png" alt="Controller Onboarding" width="200" height="100" />
+
+    <br />
+
+    <em>Figure 2: Signing up with the Cartridge Controller.</em>
+  </div>
+</div>
+
+> **Tip:** Using the Cartridge Controller enables gas-less transactions and a smoother experience across all supported games.
+
+## Next Steps & Related Guides
+
+* [Entering Tournaments](/budokan/guide/enter)
+* [Submitting Scores](/budokan/guide/submission)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/prizes.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Budokan Prizes
+
+Budokan features a flexible, permissionless prize system that allows anyone to add prizes to new or ongoing tournaments. This guide explains how prizes work, how to add and claim them, and best practices for both players and sponsors.
+
+## Supported Prize Tokens
+
+<div className="flex flex-row gap-4 items-start">
+  <div className="flex-1">
+    <p>
+      For security, Budokan currently uses a whitelist of tokens for prizes. In the future, any token supported on Ekubo, as well as NFTs (ERC721), will be available for use. This enables communities and sponsors to contribute a wide variety of rewards.
+    </p>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/prize-token-list.png" alt="Prize Tokens" width="300" height="600" />
+
+    <br />
+
+    <em>Figure 1: Supported ERC20s and NFTs for prizes.</em>
+  </div>
+</div>
+
+## How to Add Prizes
+
+Prizes can be added at multiple stages during a tournament's lifecycle:
+
+1. **During Tournament Creation:**
+   * Set up prize tokens and distribution when creating your tournament.
+   * Choose from supported ERC20s or NFTs.
+
+![Prizes](/docs/prizes.png)
+*Figure 2: Tournament Prizes Form during creation.*
+
+2. **After Tournament Creation:**
+   * Add prizes at any time before the tournament ends.
+   * Go to the tournament page and click the **Add Prizes** button.
+
+![Add Prizes Button](/docs/add-prizes-button.png)
+*Figure 3: Add Prizes on the tournament page.*
+
+> **Tip:** Sponsors and community members can contribute prizes even after a tournament has started, increasing engagement and excitement.
+
+## Prize Eligibility & Distribution
+
+Prizes are distributed based on the tournament's rules and leaderboard positions. Here's how it works:
+
+* **Eligibility:**
+  * Players must meet all tournament requirements and achieve a winning position to be eligible for prizes.
+
+* **Distribution:**
+  * Prizes will be allocated to winners after the tournament concludes, the submission period ends and the prizes have been claimed.
+  * The distribution follows the splits set by the tournament creator or sponsor.
+
+> **Note:** Always check the tournament details for specific prize eligibility rules and distribution breakdowns.
+
+## Claiming Prizes
+
+1. **When to Claim:**
+   * Prizes become claimable after the tournament ends and all results are verified.
+   * You will be notified in the app or via your tournament dashboard.
+
+2. **How to Claim:**
+   * Go to the tournament page and look for the **Claim Prizes** button in the top right.
+   * The will effectively distribute all prizes, game fees and creator fees in a single tx.
+
+## For Sponsors & Community Contributors
+
+Budokan encourages sponsors and community members to add prizes to tournaments. Here's how you can get involved:
+
+* **Adding Prizes:**
+  * Use the **Add Prizes** button on any tournament page to contribute tokens or NFTs.
+  * Specify the prize type, amount, and any special eligibility requirements.
+
+* **Visibility:**
+  * Your contribution will be visible on the tournament page, and you will be credited as a sponsor.
+
+> **Tip:** Adding prizes can boost tournament participation and promote your project or community.
+
+## Related Guides
+
+* [Creating a Tournament](/budokan/guide/create)
+* [Entry Fees](/budokan/guide/create/entry-fees)
+* [Entry Requirements](/budokan/guide/create/entry-requirements)
+* [Onboarding](/budokan/guide/onboarding)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
+
+
+
+---
+
+file: docs/budokan/guide/submission.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Submitting Scores
+
+Congratulations on achieving a high score! To ensure your results count and you remain eligible for prizes, you must submit your score to the contract during the designated submission period. This guide explains how and when to submit, how verification works, and how automation can help.
+
+## Submission Period
+
+After a tournament ends, there is a dedicated window—called the **submission period**—for players to submit their scores on-chain. The tournament creator sets this window (minimum 15 minutes). It is crucial to submit your score during this time; otherwise, you may not qualify for prizes or leaderboard positions.
+
+> **Note:** If you miss the submission period, your score may not be recognized, and you could forfeit any prizes.
+
+## How to Submit Your Score
+
+1. When the tournament ends, check the tournament page for the submission window and instructions.
+2. Submit your score through the app interface during the submission period.
+3. Once your score is submitted and verified, a checkmark or "verified" mark will appear next to your name in the leaderboard.
+
+<div className="flex flex-row gap-4 items-center">
+  <div className="flex-1">
+    <img src="/docs/submit-button.png" alt="Submission Dialog" width="700" height="700" />
+
+    <br />
+
+    <em>Figure 1: Submit Scores Button.</em>
+  </div>
+
+  <div className="flex-shrink-0">
+    <img src="/docs/submission-dialog.png" alt="Submission Dialog" width="400" height="200" />
+
+    <br />
+
+    <em>Figure 2: Submission dialog for top scores.</em>
+  </div>
+</div>
+
+## Score Verification
+
+* Submitted scores are validated by the contract to ensure they qualify for their claimed positions.
+* Only verified scores are eligible for prizes and final leaderboard placement.
+
+![Submitted Scores](/docs/submitted-scores.jpeg)
+*Figure 3: Submitted scores table with verified entries.*
+
+## Automated Submission
+
+Budokan provides an automated submission bot that detects when a tournament ends and schedules the top scores to be submitted on-chain. This helps ensure that scores are not missed due to user error or forgetfulness.
+
+You can find the code and instructions for running your own submission bot here:
+
+[Submission Bot Template](https://github.com/Provable-Games/budokan-submission-bot)
+
+> **Tip:** Even with automation, always double-check that your score has been submitted and verified before the submission window closes.
+
+***
+
+## Related Guides
+
+* [Entering Tournaments](/budokan/guide/enter)
+* [Prizes](/budokan/guide/prizes)
+* [FAQ](/budokan/faq)
+
+If you have questions or need help, check the FAQ or contact support through the app.
 
 
 
@@ -10233,387 +10605,6 @@ The tokenomics model is designed to create a self-sustaining ecosystem where:
 * Protocol revenue supports ongoing development
 
 This balanced approach ensures long-term viability while maintaining decentralization and community ownership.
-
-
-
----
-
-file: docs/budokan/guide/enter.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Entering Tournaments
-
-This guide will walk you through how to find, enter, and track tournaments. Whether you're a new or returning player, follow these steps to get started.
-
-## Browsing Tournaments
-
-On the **Overview** page, you can:
-
-* Filter tournaments by game, status (upcoming, live, ended), or your participation.
-* View summarized information on each tournament card, including:
-  * Name
-  * Duration
-  * Number of participants
-  * Time remaining
-  * Entry fee (in $)
-  * Prize pot (in $)
-  * Key badges for important details (explained on the full details page)
-
-![Overview](/docs/overview.png)
-*Figure 1: Tournament overview page.*
-
-## Viewing Tournament Details
-
-To learn more about a tournament:
-
-1. Click on a tournament card to open its details page.
-2. Review the following sections:
-   * **Requirements and Interactions** (top-right)
-   * **Tournament Details**
-   * **Timeline**
-   * **Prizes**
-   * **Scores (Entries)**
-   * **My Entries**
-
-The **Timeline** shows the tournament's structure, including the submission period after the tournament ends.
-
-![Tournament Details](/docs/tournament-details.png)
-*Figure 2: Tournament details page.*
-
-> **Note:** Scores must be submitted during the submission period after the tournament ends to be eligible for prizes. The platform provides tools to handle this automatically, but you can also submit scores manually through the app.
-
-## How to Enter a Tournament
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>To join a tournament:</p>
-
-    <ol style={{ listStyleType: 'decimal', marginLeft: '1.5em' }}>
-      <li>On the tournament details page, click the <strong>Enter Tournament</strong> button.</li>
-
-      <li>
-        <div>
-          Review the entry fee breakdown, including:
-
-          <ul style={{ listStyleType: 'disc', marginLeft: '1.5em' }}>
-            <li>Tournament creator fees</li>
-            <li>Game fees</li>
-            <li>Prize pool contribution</li>
-          </ul>
-        </div>
-      </li>
-
-      <li>Check any entry requirements and confirm you qualify.</li>
-      <li>Enter your player name when prompted.</li>
-      <li>Confirm your entry and pay any required fees.</li>
-    </ol>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/enter-tournament.png" alt="Entering a tournament" width="300" height="300" />
-
-    <br />
-
-    <em>Figure 3: Entering a tournament.</em>
-  </div>
-</div>
-
-> **Tip:** If you do not meet the entry requirements, review the requirements section for guidance on how to qualify.
-
-## After Entering
-
-Once you have entered a tournament:
-
-* Your entry will appear in the **Scores (Entries)** table.
-* You will see your game listed under **My Entries**.
-* Any entry fees you pay are instantly added to the prize pool.
-
-![Entered Tournament](/docs/entered-tournament.png)
-*Figure 4: After entering a tournament.*
-
-## Related Guides
-
-* [Submitting Scores](/budokan/guide/submission)
-* [Tournament Prizes](/budokan/guide/prizes)
-
-If you have questions or encounter issues, check the [FAQ](/budokan/faq) or contact support through the app.
-
-
-
----
-
-file: docs/budokan/guide/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Budokan: Guide
-
-This guide walks you through the complete process of using Budokan, from creating tournaments to claiming prizes.
-
-## Table of Contents
-
-* [Onboarding](/budokan/guide/onboarding)
-* [Entering a Tournament](/budokan/guide/enter)
-* [Creating a Tournament](/budokan/guide/create)
-* [Prizes](/budokan/guide/prizes)
-
-## Overview
-
-Budokan provides a complete tournament management system with three main phases:
-
-1. Player Registration and Participation
-2. Tournament Creation and Setup
-3. Prize Management and Distribution
-
-Each section of this guide provides detailed instructions and examples for these key processes.
-
-
-
----
-
-file: docs/budokan/guide/onboarding.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Getting Started: Onboarding
-
-Welcome to Budokan! This guide will help you set up your wallet and get ready to play on-chain games. Budokan supports a variety of Starknet wallets, with a special recommendation for the [Cartridge Controller](https://cartridge.gg/controller) due to its advanced features and signerless transactions.
-
-## Choosing a Wallet
-
-Budokan currently supports connection through several wallets. For the best experience, we recommend using the Cartridge Controller, which enables gas-less transactions and seamless gameplay on the platform.
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <ul>
-      <li><strong>Cartridge Controller</strong> (recommended)</li>
-      <li>Argent</li>
-      <li>Braavos</li>
-    </ul>
-
-    <p>
-      The Cartridge Controller offers extended features ideal for on-chain games, including signerless transactions and multi-platform login options.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/wallets.png" alt="Budokan Wallets" width="400" height="200" />
-
-    <br />
-
-    <em>Figure 1: Supported wallets on Budokan.</em>
-  </div>
-</div>
-
-## Setting Up Your Wallet
-
-Follow these steps to get started:
-
-1. If you don't already have a wallet, select Controller and sign up.
-2. Choose your preferred login method. The Cartridge Controller supports:
-   * Social logins (Discord)
-   * Other blockchain wallets (Metamask, Phantom, Rabby)
-   * Passkey
-3. Complete the sign-up process as guided.
-4. Once your wallet is set up, connect it to Budokan through the platform's wallet connection interface.
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      The Cartridge Controller makes onboarding easy, allowing you to use familiar social accounts or other wallets. After setup, you'll be ready to join tournaments and play games on Budokan.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/controller-sign-up.png" alt="Controller Onboarding" width="200" height="100" />
-
-    <br />
-
-    <em>Figure 2: Signing up with the Cartridge Controller.</em>
-  </div>
-</div>
-
-> **Tip:** Using the Cartridge Controller enables gas-less transactions and a smoother experience across all supported games.
-
-## Next Steps & Related Guides
-
-* [Entering Tournaments](/budokan/guide/enter)
-* [Submitting Scores](/budokan/guide/submission)
-* [FAQ](/budokan/faq)
-
-If you have questions or need help, check the FAQ or contact support through the app.
-
-
-
----
-
-file: docs/budokan/guide/prizes.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Budokan Prizes
-
-Budokan features a flexible, permissionless prize system that allows anyone to add prizes to new or ongoing tournaments. This guide explains how prizes work, how to add and claim them, and best practices for both players and sponsors.
-
-## Supported Prize Tokens
-
-<div className="flex flex-row gap-4 items-start">
-  <div className="flex-1">
-    <p>
-      For security, Budokan currently uses a whitelist of tokens for prizes. In the future, any token supported on Ekubo, as well as NFTs (ERC721), will be available for use. This enables communities and sponsors to contribute a wide variety of rewards.
-    </p>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/prize-token-list.png" alt="Prize Tokens" width="300" height="600" />
-
-    <br />
-
-    <em>Figure 1: Supported ERC20s and NFTs for prizes.</em>
-  </div>
-</div>
-
-## How to Add Prizes
-
-Prizes can be added at multiple stages during a tournament's lifecycle:
-
-1. **During Tournament Creation:**
-   * Set up prize tokens and distribution when creating your tournament.
-   * Choose from supported ERC20s or NFTs.
-
-![Prizes](/docs/prizes.png)
-*Figure 2: Tournament Prizes Form during creation.*
-
-2. **After Tournament Creation:**
-   * Add prizes at any time before the tournament ends.
-   * Go to the tournament page and click the **Add Prizes** button.
-
-![Add Prizes Button](/docs/add-prizes-button.png)
-*Figure 3: Add Prizes on the tournament page.*
-
-> **Tip:** Sponsors and community members can contribute prizes even after a tournament has started, increasing engagement and excitement.
-
-## Prize Eligibility & Distribution
-
-Prizes are distributed based on the tournament's rules and leaderboard positions. Here's how it works:
-
-* **Eligibility:**
-  * Players must meet all tournament requirements and achieve a winning position to be eligible for prizes.
-
-* **Distribution:**
-  * Prizes will be allocated to winners after the tournament concludes, the submission period ends and the prizes have been claimed.
-  * The distribution follows the splits set by the tournament creator or sponsor.
-
-> **Note:** Always check the tournament details for specific prize eligibility rules and distribution breakdowns.
-
-## Claiming Prizes
-
-1. **When to Claim:**
-   * Prizes become claimable after the tournament ends and all results are verified.
-   * You will be notified in the app or via your tournament dashboard.
-
-2. **How to Claim:**
-   * Go to the tournament page and look for the **Claim Prizes** button in the top right.
-   * The will effectively distribute all prizes, game fees and creator fees in a single tx.
-
-## For Sponsors & Community Contributors
-
-Budokan encourages sponsors and community members to add prizes to tournaments. Here's how you can get involved:
-
-* **Adding Prizes:**
-  * Use the **Add Prizes** button on any tournament page to contribute tokens or NFTs.
-  * Specify the prize type, amount, and any special eligibility requirements.
-
-* **Visibility:**
-  * Your contribution will be visible on the tournament page, and you will be credited as a sponsor.
-
-> **Tip:** Adding prizes can boost tournament participation and promote your project or community.
-
-## Related Guides
-
-* [Creating a Tournament](/budokan/guide/create)
-* [Entry Fees](/budokan/guide/create/entry-fees)
-* [Entry Requirements](/budokan/guide/create/entry-requirements)
-* [Onboarding](/budokan/guide/onboarding)
-* [FAQ](/budokan/faq)
-
-If you have questions or need help, check the FAQ or contact support through the app.
-
-
-
----
-
-file: docs/budokan/guide/submission.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Submitting Scores
-
-Congratulations on achieving a high score! To ensure your results count and you remain eligible for prizes, you must submit your score to the contract during the designated submission period. This guide explains how and when to submit, how verification works, and how automation can help.
-
-## Submission Period
-
-After a tournament ends, there is a dedicated window—called the **submission period**—for players to submit their scores on-chain. The tournament creator sets this window (minimum 15 minutes). It is crucial to submit your score during this time; otherwise, you may not qualify for prizes or leaderboard positions.
-
-> **Note:** If you miss the submission period, your score may not be recognized, and you could forfeit any prizes.
-
-## How to Submit Your Score
-
-1. When the tournament ends, check the tournament page for the submission window and instructions.
-2. Submit your score through the app interface during the submission period.
-3. Once your score is submitted and verified, a checkmark or "verified" mark will appear next to your name in the leaderboard.
-
-<div className="flex flex-row gap-4 items-center">
-  <div className="flex-1">
-    <img src="/docs/submit-button.png" alt="Submission Dialog" width="700" height="700" />
-
-    <br />
-
-    <em>Figure 1: Submit Scores Button.</em>
-  </div>
-
-  <div className="flex-shrink-0">
-    <img src="/docs/submission-dialog.png" alt="Submission Dialog" width="400" height="200" />
-
-    <br />
-
-    <em>Figure 2: Submission dialog for top scores.</em>
-  </div>
-</div>
-
-## Score Verification
-
-* Submitted scores are validated by the contract to ensure they qualify for their claimed positions.
-* Only verified scores are eligible for prizes and final leaderboard placement.
-
-![Submitted Scores](/docs/submitted-scores.jpeg)
-*Figure 3: Submitted scores table with verified entries.*
-
-## Automated Submission
-
-Budokan provides an automated submission bot that detects when a tournament ends and schedules the top scores to be submitted on-chain. This helps ensure that scores are not missed due to user error or forgetfulness.
-
-You can find the code and instructions for running your own submission bot here:
-
-[Submission Bot Template](https://github.com/Provable-Games/budokan-submission-bot)
-
-> **Tip:** Even with automation, always double-check that your score has been submitted and verified before the submission window closes.
-
-***
-
-## Related Guides
-
-* [Entering Tournaments](/budokan/guide/enter)
-* [Prizes](/budokan/guide/prizes)
-* [FAQ](/budokan/faq)
-
-If you have questions or need help, check the FAQ or contact support through the app.
 
 
 
