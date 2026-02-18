@@ -195,6 +195,7 @@ export default defineConfig({
             link: "/summit/quests",
           },
           { text: "FAQ", link: "/summit/faq" },
+          { text: "Disclaimers", link: "/summit/disclaimers" },
         ],
       },
     ],
