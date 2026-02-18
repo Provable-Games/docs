@@ -11,18 +11,42 @@ Summit is an all-against-all, king-of-the-hill battle game where players use the
   href="https://summit.game/"
   target="_blank"
   rel="noreferrer"
-  style={{ display: "block", margin: "16px 0" }}
+  style={{ display: "block", margin: "16px 0", textDecoration: "none" }}
 >
-  <img
-    src="/summit/banner.png"
-    alt="Play Summit"
+  <div
     style={{
-      width: "100%",
-      height: "min(240px, 28vw)",
-      display: "block",
-      objectFit: "contain",
+      border: "1px solid rgba(255,255,255,0.14)",
+      borderRadius: 12,
+      overflow: "hidden",
+      cursor: "pointer",
     }}
-  />
+  >
+    <img
+      src="/summit/banner.png"
+      alt="Play Summit"
+      style={{
+        width: "100%",
+        height: "min(240px, 28vw)",
+        display: "block",
+        objectFit: "contain",
+        background: "rgba(255,255,255,0.04)",
+      }}
+    />
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
+        padding: "10px 12px",
+        background: "rgba(70,169,240,0.10)",
+        color: "rgba(255,255,255,0.92)",
+      }}
+    >
+      <strong style={{ fontSize: 14, lineHeight: "18px" }}>Play Summit</strong>
+      <span style={{ fontSize: 13, opacity: 0.9 }}>Open https://summit.game/ -></span>
+    </div>
+  </div>
 </a>
 
 ## How It Works
