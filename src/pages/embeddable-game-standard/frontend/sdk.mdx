@@ -17,6 +17,7 @@ const client = new DenshokanClient({
   wsUrl: "wss://...",         // Override WebSocket URL
   rpcUrl: "https://...",      // Override RPC URL
   primarySource: "api",       // "api" | "rpc" (default: "api")
+  viewerAddress: "0x...",     // Viewer contract for batch filter queries
   fetch: {
     timeout: 10000,           // Request timeout (ms)
     maxRetries: 3,            // Max retry attempts
@@ -26,6 +27,11 @@ const client = new DenshokanClient({
   ws: {
     maxReconnectAttempts: 10, // Max reconnect attempts
     reconnectBaseDelay: 1000, // Base reconnect delay (ms)
+  },
+  health: {
+    initialCheckDelay: 1000,  // ms before first health check
+    checkInterval: 30000,     // ms between health checks
+    checkTimeout: 5000,       // ms timeout for health check
   },
 });
 ```
@@ -220,6 +226,23 @@ const unsub = client.onWsConnectionChange((connected) => {
 // Later: stop listening
 unsub();
 ```
+
+## Health Monitoring
+
+The SDK performs background health checks to detect API or RPC availability and automatically switch data sources.
+
+```typescript
+// ConnectionStatus modes
+type ConnectionStatus = "normal" | "rpc-fallback" | "offline";
+```
+
+| Status | Meaning |
+|--------|---------|
+| `normal` | API is reachable, using primary data source |
+| `rpc-fallback` | API is unavailable, using RPC as fallback |
+| `offline` | Both API and RPC are unreachable |
+
+Health checks run at 30-second intervals (configurable via `health.checkInterval`). When the API goes down, the SDK auto-switches to RPC. When the API recovers, it switches back to `normal`.
 
 ## Error Handling
 

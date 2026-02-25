@@ -70,7 +70,7 @@ pub struct GameSetting {
 Your game stores the parsed setting values in its own storage, then delegates the metadata to `SettingsComponent`:
 
 ```cairo
-use game_components_minigame::settings::SettingsComponent;
+use game_components_embeddable_game_standard::minigame::settings::SettingsComponent;
 
 component!(path: SettingsComponent, storage: settings, event: SettingsEvent);
 

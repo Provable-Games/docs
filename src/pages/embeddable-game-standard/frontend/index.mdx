@@ -4,6 +4,8 @@ layout: docs
 
 # Frontend Integration
 
+> **Always use `@provable-games/denshokan-sdk` for client-side interactions.** The SDK handles data source selection, fallback, type safety, and packed token ID decoding automatically. Direct RPC calls should only be needed for write operations.
+
 The `@provable-games/denshokan-sdk` provides everything you need to integrate EGS game data into your frontend: a client for querying data, React hooks for declarative UI, and WebSocket subscriptions for real-time updates.
 
 ## Installation
@@ -129,7 +131,7 @@ const games = await client.getGames();
 
 ### 3. WebSocket Subscriptions
 
-Best for live dashboards, real-time leaderboards, and notifications. Six typed hooks provide per-channel subscriptions with event buffering:
+Best for live dashboards, real-time leaderboards, and notifications. Eight typed hooks provide per-channel subscriptions with event buffering:
 
 ```tsx
 import { useScoreUpdates } from "@provable-games/denshokan-sdk/react";

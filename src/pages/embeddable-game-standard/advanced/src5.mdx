@@ -24,7 +24,7 @@ let src5 = ISRC5Dispatcher { contract_address: target };
 if src5.supports_interface(IMETAGAME_CALLBACK_ID) {
     // Safe to dispatch callback
     let callback = IMetagameCallbackDispatcher { contract_address: target };
-    callback.on_score_update(token_id, score);
+    callback.on_game_action(token_id, score);
 }
 ```
 
@@ -73,23 +73,27 @@ if src5.supports_interface(IMETAGAME_CALLBACK_ID) {
 
 | Interface | ID | Used By |
 |-----------|---|---------|
-| `IMinigame` | `IMINIGAME_ID` | Game contracts |
-| `IMinigameTokenSettings` | Component-registered | Games with settings |
-| `IMinigameTokenObjectives` | Component-registered | Games with objectives |
-| `IMetagame` | `0x0260d5160a283a03815f6c3799926c7bdbec5f22e759f992fb8faf172243ab20` | Platform contracts |
-| `IMetagameCallback` | `0x04d4f4758b99dcb4f1e2dc37c3a6e8c7a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6` | Platforms that receive callbacks |
-| `IMetagameContext` | `0x0c2e78065b81a310a1cb470d14a7b88875542ad05286b3263cf3c254082386e` | Platforms with context data |
-| `IMinigameRegistry` | `0x014a8d6e4bf56a4bbf869257d1f846e5a2ac1e3508466147556f186143409be1` | Registry contracts |
-| `ILeaderboard` | `0x03c0f9265d397c10970f24822e4b57cac7d8895f8c449b7c9caaa26910499705` | Leaderboard contracts |
+| `IMinigameToken` | `0x3ada6a6dc9a3b4b3034600a86f30b17d36dc428ed185e192e25bb86e690001a` | Token contracts |
+| `IMinigame` | `0x1050f9a792acfa175e26783e365e1b0b38ff3440b960d0ffdfc0ff9d7dc9f2a` | Game contracts |
+| `IMinigameTokenSettings` | `0x229ba85053f3653daaa2e0d3a9f9296e6d3eae099557c7610822f5b556f1bc8` | Games with settings |
+| `IMinigameTokenObjectives` | `0x2c9b37fb2982c9480e67f2da4c7730a8cde17b5fb021f3d530305f2f3a0b929` | Games with objectives |
 | `IMinigameTokenContext` | `0x02b329e82f6f6b94f8949b36c5dc95acf86c6083b08d99bc81e399b4b0e8d19a` | Tokens with context |
+| `IMinigameTokenMinter` | `0x2198424b9ee68499f53f33ad952598acbd6d141af6c6863c9c56b117063acca` | Token minting |
+| `IMetagame` | `0x7997c74299c045696726f0f7f0165f85817acbb0964e23ff77e11e34eff6f2` | Platform contracts |
+| `IMetagameCallback` | `0x3b4312c1422de8c35936cc79948381ab8ef9fd083d8c8e20317164690aa1600` | Platforms that receive callbacks |
+| `IMetagameContext` | `0x1633419b5abcc4c0bbed8bd37a363fbe6de5bd25908761ab6dcda6a9b598ca9` | Platforms with context data |
+| `IMinigameRegistry` | `0x3607d1f9cf92726b22f1cd06ed993357e0891e4abb317625eb503bd6a7694b7` | Registry contracts |
+| `ILeaderboard` | `0x381684b12c5a80d08222695ee5eca750b99e56cb53101a47378c542859907e1` | Leaderboard contracts |
+| `IMinigameSettings` | `0x1a58ab3ee416cc018f93236fd0bb995de89ee536626c268491121e51a46a0f4` | Settings components |
+| `IMinigameObjectives` | `0xac0aaa451454d78741d9fafe803b69c8b31d073156020b08496104356db5e5` | Objectives components |
 
 ## Computing Interface IDs
 
 Interface IDs in Cairo are computed from the trait's selector. The constant is defined in the interface module:
 
 ```cairo
-// In game_components_minigame::interface
-pub const IMINIGAME_ID: felt252 = 0xa08df7e54b63300eeacf85a0f3289c405351278620b5af7e5d868b91f4d43d;
+// In game_components_embeddable_game_standard::minigame::interface
+pub const IMINIGAME_ID: felt252 = 0x1050f9a792acfa175e26783e365e1b0b38ff3440b960d0ffdfc0ff9d7dc9f2a;
 ```
 
 ## Registering Interfaces
@@ -98,7 +102,7 @@ When your contract implements an EGS interface, register it in the constructor:
 
 ```cairo
 use openzeppelin_introspection::src5::SRC5Component;
-use game_components_minigame::interface::IMINIGAME_ID;
+use game_components_embeddable_game_standard::minigame::interface::IMINIGAME_ID;
 
 component!(path: SRC5Component, storage: src5, event: SRC5Event);
 
@@ -130,7 +134,7 @@ fn safe_callback(
 
     // Safe to dispatch
     let callback = IMetagameCallbackDispatcher { contract_address: minter_address };
-    callback.on_score_update(token_id, score);
+    callback.on_game_action(token_id, score);
 }
 ```
 

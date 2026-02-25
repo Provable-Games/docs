@@ -8,11 +8,11 @@ Platforms and applications that use the Embeddable Game Standard to embed, orche
 
 ## Denshokan
 
-Denshokan (伝承館 - "Hall of Legends") is the reference implementation of the Embeddable Game Standard. It provides the complete stack:
+Denshokan (伝承館 - "Hall of Legends") is the reference implementation of the Embeddable Game Standard. It is organized as a 6-package workspace and provides the complete stack:
 
 - **Token Contract** - ERC721 with all game-components composed (settings, objectives, minter, context, renderer, enumerable)
 - **Game Registry** - Discovers and catalogs registered games
-- **Viewer Contract** - Efficient on-chain filtering with 30+ query methods
+- **Viewer Contract** - Efficient on-chain batch queries and filtering with 30+ query methods
 - **Indexer** - Apibara-based event indexer writing to PostgreSQL
 - **REST API** - Hono-based API with filtering, pagination, and WebSocket
 - **Client** - React frontend with Cartridge Controller integration

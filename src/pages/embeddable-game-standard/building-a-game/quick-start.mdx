@@ -37,9 +37,9 @@ The `guess()` function returns `-1` (too low), `0` (correct), or `1` (too high).
 ```cairo
 #[starknet::contract]
 mod NumberGuess {
-    use game_components_minigame::minigame::MinigameComponent;
-    use game_components_minigame::objectives::ObjectivesComponent;
-    use game_components_minigame::settings::SettingsComponent;
+    use game_components_embeddable_game_standard::minigame::MinigameComponent;
+    use game_components_embeddable_game_standard::minigame::objectives::ObjectivesComponent;
+    use game_components_embeddable_game_standard::minigame::settings::SettingsComponent;
     use openzeppelin_introspection::src5::SRC5Component;
 
     component!(path: MinigameComponent, storage: minigame, event: MinigameEvent);
@@ -81,7 +81,7 @@ mod NumberGuess {
 This is the core requirement. The token contract reads your game's state through this interface:
 
 ```cairo
-use game_components_minigame::interface::{IMINIGAME_ID, IMinigameTokenData};
+use game_components_embeddable_game_standard::minigame::interface::{IMINIGAME_ID, IMinigameTokenData};
 
 #[abi(embed_v0)]
 impl MinigameTokenDataImpl of IMinigameTokenData<ContractState> {
@@ -172,7 +172,7 @@ fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
 Implement `IMinigameTokenSettings` to let anyone create custom difficulty levels:
 
 ```cairo
-use game_components_minigame::interface::IMinigameTokenSettings;
+use game_components_embeddable_game_standard::minigame::interface::IMinigameTokenSettings;
 
 #[abi(embed_v0)]
 impl SettingsImpl of IMinigameTokenSettings<ContractState> {
@@ -210,7 +210,7 @@ During initialization, create default settings:
 Your game's initializer should register it with the game registry:
 
 ```cairo
-use game_components_minigame::minigame::MinigameComponent;
+use game_components_embeddable_game_standard::minigame::MinigameComponent;
 
 #[abi(embed_v0)]
 impl InitImpl of INumberGuessInit<ContractState> {

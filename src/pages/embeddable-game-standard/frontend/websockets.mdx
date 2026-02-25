@@ -38,6 +38,8 @@ The API server uses PostgreSQL triggers on the `tokens`, `games`, and `minters` 
 | `mints` | `MintEvent` | When new game tokens are minted |
 | `games` | `NewGameEvent` | When a new game is registered |
 | `minters` | `NewMinterEvent` | When a new minter is registered |
+| `settings` | `NewSettingEvent` | When a new game setting is created |
+| `objectives` | `NewObjectiveEvent` | When a new game objective is created |
 
 ## Event Payloads
 
@@ -85,10 +87,25 @@ interface NewGameEvent {
 }
 
 interface NewMinterEvent {
-  minterId: number;
+  minterId: string;
   contractAddress: string;
   name: string;
-  blockNumber: number;
+  blockNumber: string;
+}
+
+interface NewSettingEvent {
+  gameAddress: string;
+  settingsId: number;
+  creatorAddress: string;
+  settingsData: string | null;
+}
+
+interface NewObjectiveEvent {
+  gameAddress: string;
+  objectiveId: number;
+  settingsId: number;
+  creatorAddress: string;
+  objectiveData: string | null;
 }
 ```
 
@@ -104,6 +121,8 @@ import type {
   TokenUpdateEvent,
   NewGameEvent,
   NewMinterEvent,
+  NewSettingEvent,
+  NewObjectiveEvent,
   WSChannelPayloadMap,
 } from "@provable-games/denshokan-sdk";
 ```
@@ -136,7 +155,7 @@ client.disconnect();
 
 ## Typed React Hooks (Recommended)
 
-The SDK provides six typed hooks — one per channel. Each returns the last event, a buffered event history, and connection state.
+The SDK provides eight typed hooks — one per channel. Each returns the last event, a buffered event history, and connection state.
 
 ### useScoreUpdates
 
@@ -173,6 +192,8 @@ function LiveScores({ gameId }: { gameId: number }) {
 | `useTokenUpdates` | `tokens` | `TokenUpdateEvent` |
 | `useNewGames` | `games` | `NewGameEvent` |
 | `useNewMinters` | `minters` | `NewMinterEvent` |
+| `useNewSettings` | `settings` | `NewSettingEvent` |
+| `useNewObjectives` | `objectives` | `NewObjectiveEvent` |
 
 ### Hook Options
 
@@ -294,7 +315,7 @@ const unsub = client.onWsConnectionChange((connected) => {
 
 ```typescript
 interface WSMessage {
-  channel: string;     // "scores", "game_over", "tokens", "mints", "games", "minters"
+  channel: string;     // "scores", "game_over", "tokens", "mints", "games", "minters", "settings", "objectives"
   data: unknown;       // Channel-specific payload (use typed hooks for automatic typing)
   _timing?: {
     serverTs: number;  // Server timestamp for latency measurement

@@ -11,27 +11,24 @@ The `game-components` library provides modular Cairo components for building EGS
 | Package | Crate Name | Purpose |
 |---------|-----------|---------|
 | **interfaces** | `game_components_interfaces` | All trait definitions, structs, and interface IDs |
-| **token** | `game_components_token` | ERC721 with packed token IDs and compile-time feature flags |
-| **minigame** | `game_components_minigame` | Game logic foundation (settings, objectives, details) |
-| **metagame** | `game_components_metagame` | Platform coordination, callbacks, context |
-| **registry** | `game_components_registry` | Game registration and discovery |
-| **leaderboard** | `game_components_leaderboard` | Tournament scoring and ranking |
-| **tokenomics** | `game_components_tokenomics` | Ekubo TWAMM buyback and stream distribution |
+| **embeddable_game_standard** | `game_components_embeddable_game_standard` | Token, Minigame, Metagame, Registry components |
+| **metagame** | `game_components_metagame` | Leaderboard, registration, entry gating, prizes |
+| **economy** | `game_components_economy` | Ekubo TWAMM buyback and stream distribution |
+| **utilities** | `game_components_utilities` | Math, distribution, encoding, rendering |
 | **presets** | `game_components_presets` | Ready-to-deploy contracts |
-| **utils** | `game_components_utils` | Pure utilities (encoding, JSON, rendering) |
 
 ## Dependency Graph
 
 ```
-interfaces ◀─── token ◀─── presets
-    ▲              ▲
-    │              │
-    ├── minigame   ├── metagame
-    ├── registry   ├── leaderboard
-    └── tokenomics └── utils
+interfaces ◀─── embeddable_game_standard ◀─── presets
+    ▲                    ▲
+    │                    │
+    ├── metagame         ├── economy
+    └── utilities        │
+                         └── utilities
 ```
 
-All packages depend on `interfaces` for trait definitions. The `token` package is the most complex, composing multiple components.
+All packages depend on `interfaces` for trait definitions. The `embeddable_game_standard` package is the most complex, composing Token, Minigame, Metagame, and Registry components.
 
 ## Installation
 
@@ -41,23 +38,20 @@ Add the packages you need to your `Scarb.toml`:
 [dependencies]
 starknet = "2.15.1"
 
-# Core - almost always needed
-game_components_minigame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+# Core - Token, Minigame, Metagame, Registry
+game_components_embeddable_game_standard = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 
-# Token contract
-game_components_token = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
-
-# Platform integration
+# Leaderboard, entry gating, prizes
 game_components_metagame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 
-# Game discovery
-game_components_registry = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+# Ekubo TWAMM buyback and streams
+game_components_economy = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 
-# Tournament scoring
-game_components_leaderboard = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+# Math, distribution, encoding, rendering
+game_components_utilities = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 
-# Token economics
-game_components_tokenomics = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+# Ready-to-deploy contracts
+game_components_presets = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 
 # OpenZeppelin (required)
 openzeppelin_token = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }

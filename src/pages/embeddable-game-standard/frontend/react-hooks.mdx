@@ -217,6 +217,30 @@ function GameSettings({ gameAddress }: { gameAddress: string }) {
 }
 ```
 
+### Settings, Objectives & Activity
+
+```tsx
+import {
+  useSettings,
+  useObjectives,
+  useActivity,
+} from "@provable-games/denshokan-sdk/react";
+
+function GameConfig({ gameAddress }: { gameAddress: string }) {
+  const { data: settings } = useSettings(gameAddress);
+  const { data: objectives } = useObjectives(gameAddress);
+  const { data: activity } = useActivity({ gameAddress, limit: 20 });
+
+  return (
+    <div>
+      <p>{settings?.data.length} settings</p>
+      <p>{objectives?.data.length} objectives</p>
+      <p>{activity?.data.length} recent actions</p>
+    </div>
+  );
+}
+```
+
 ## Subscription Hooks
 
 Type-safe real-time event subscriptions. Each hook subscribes to a specific WebSocket channel and returns typed events with buffering.
@@ -229,6 +253,8 @@ import {
   useTokenUpdates,
   useNewGames,
   useNewMinters,
+  useNewSettings,
+  useNewObjectives,
   useConnectionStatus,
 } from "@provable-games/denshokan-sdk/react";
 
@@ -259,6 +285,8 @@ function LiveDashboard({ gameId }: { gameId: number }) {
 | `useTokenUpdates` | `tokens` | `TokenUpdateEvent` |
 | `useNewGames` | `games` | `NewGameEvent` |
 | `useNewMinters` | `minters` | `NewMinterEvent` |
+| `useNewSettings` | `settings` | `NewSettingEvent` |
+| `useNewObjectives` | `objectives` | `NewObjectiveEvent` |
 
 Options and return types:
 

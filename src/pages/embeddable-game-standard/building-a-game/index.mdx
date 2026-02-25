@@ -32,8 +32,7 @@ Add game-components to your `Scarb.toml`:
 ```toml
 [dependencies]
 starknet = "2.15.1"
-game_components_minigame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
-game_components_utils = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+game_components_embeddable_game_standard = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 openzeppelin_introspection = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
 
 [dev-dependencies]
@@ -54,7 +53,7 @@ pub trait IMyGame<TContractState> {
 
 #[starknet::contract]
 mod MyGame {
-    use game_components_minigame::interface::{IMINIGAME_ID, IMinigameTokenData};
+    use game_components_embeddable_game_standard::minigame::interface::{IMINIGAME_ID, IMinigameTokenData};
     use openzeppelin_introspection::src5::SRC5Component;
     use starknet::ContractAddress;
 

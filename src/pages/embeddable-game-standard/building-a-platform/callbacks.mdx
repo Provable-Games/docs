@@ -10,12 +10,12 @@ When a game's state changes, the MinigameToken can automatically notify the mint
 
 ```cairo
 pub const IMETAGAME_CALLBACK_ID: felt252 =
-    0x04d4f4758b99dcb4f1e2dc37c3a6e8c7a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6;
+    0x3b4312c1422de8c35936cc79948381ab8ef9fd083d8c8e20317164690aa1600;
 
 #[starknet::interface]
 pub trait IMetagameCallback<TState> {
-    /// Called when a token's score changes
-    fn on_score_update(ref self: TState, token_id: u256, score: u64);
+    /// Called on every update_game() call to notify the metagame of a game action
+    fn on_game_action(ref self: TState, token_id: u256, score: u64);
 
     /// Called when a game ends (game_over becomes true)
     fn on_game_over(ref self: TState, token_id: u256, final_score: u64);
@@ -39,8 +39,7 @@ update_game(token_id)
     ├── Read score from game contract
     ├── Read game_over from game contract
     │
-    ├── Score changed?
-    │   └── Yes → minter.on_score_update(token_id, new_score)
+    ├── minter.on_game_action(token_id, score)  ← fires every time
     │
     ├── Game over? (and wasn't before)
     │   └── Yes → minter.on_game_over(token_id, final_score)
@@ -82,13 +81,13 @@ mod MyTournament {
     fn constructor(ref self: ContractState) {
         // Register callback support so the token knows to call us
         self.src5.register_interface(
-            0x04d4f4758b99dcb4f1e2dc37c3a6e8c7a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+            0x3b4312c1422de8c35936cc79948381ab8ef9fd083d8c8e20317164690aa1600
         );
     }
 
     #[abi(embed_v0)]
     impl CallbackImpl of IMetagameCallback<ContractState> {
-        fn on_score_update(ref self: ContractState, token_id: u256, score: u64) {
+        fn on_game_action(ref self: ContractState, token_id: u256, score: u64) {
             // Update leaderboard
             let id: felt252 = token_id.try_into().unwrap();
             self.leaderboard.write(id, score);
@@ -135,7 +134,7 @@ Player achieves objective
 ```
 Player scores points
     → update_game() called
-    → on_score_update(token_id, score) callback
+    → on_game_action(token_id, score) callback
     → Leaderboard contract re-ranks entries
     → Frontend subscribes to events for live updates
 ```
