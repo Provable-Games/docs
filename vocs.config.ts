@@ -198,10 +198,6 @@ export default defineConfig({
                 text: "SRC5 Interface Discovery",
                 link: "/embeddable-game-standard/advanced/src5",
               },
-              {
-                text: "Feature Flags & Optimization",
-                link: "/embeddable-game-standard/advanced/feature-flags",
-              },
             ],
           },
           {

@@ -138,12 +138,6 @@ pub struct TokenMutableState {
 
 These are stored separately and packed into a single `felt252` using `StorePacking` (2 bits total).
 
-## Feature Flags
-
-The token contract uses compile-time feature flags to control which extensions are included. This reduces contract size by eliminating dead code.
-
-See [Feature Flags](/embeddable-game-standard/advanced/feature-flags) for details.
-
 ## Packed Token IDs
 
 Token IDs are `felt252` values with 13 fields packed into 251 bits. This allows reading immutable token data without any storage lookups.
