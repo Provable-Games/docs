@@ -13,19 +13,16 @@ The `game-components` library provides modular Cairo components for building EGS
 | **interfaces** | `game_components_interfaces` | All trait definitions, structs, and interface IDs |
 | **embeddable_game_standard** | `game_components_embeddable_game_standard` | Token, Minigame, Metagame, Registry components |
 | **metagame** | `game_components_metagame` | Leaderboard, registration, entry gating, prizes |
-| **economy** | `game_components_economy` | Ekubo TWAMM buyback and stream distribution |
 | **utilities** | `game_components_utilities` | Math, distribution, encoding, rendering |
-| **presets** | `game_components_presets` | Ready-to-deploy contracts |
 
 ## Dependency Graph
 
 ```
-interfaces ◀─── embeddable_game_standard ◀─── presets
+interfaces ◀─── embeddable_game_standard
     ▲                    ▲
     │                    │
-    ├── metagame         ├── economy
-    └── utilities        │
-                         └── utilities
+    ├── metagame         └── utilities
+    └── utilities
 ```
 
 All packages depend on `interfaces` for trait definitions. The `embeddable_game_standard` package is the most complex, composing Token, Minigame, Metagame, and Registry components.
@@ -44,14 +41,8 @@ game_components_embeddable_game_standard = { git = "https://github.com/Provable-
 # Leaderboard, entry gating, prizes
 game_components_metagame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 
-# Ekubo TWAMM buyback and streams
-game_components_economy = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
-
 # Math, distribution, encoding, rendering
 game_components_utilities = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
-
-# Ready-to-deploy contracts
-game_components_presets = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 
 # OpenZeppelin (required)
 openzeppelin_token = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
@@ -64,5 +55,3 @@ openzeppelin_access = { git = "https://github.com/OpenZeppelin/cairo-contracts.g
 - [MinigameToken (ERC721)](/embeddable-game-standard/reference/token) - The core token contract with packed IDs, feature flags, and component composition
 - [MinigameComponent](/embeddable-game-standard/reference/minigame) - Game logic foundation: `IMinigameTokenData`, settings, objectives
 - [Leaderboard](/embeddable-game-standard/reference/leaderboard) - Tournament scoring, ranking, and administration
-- [Tokenomics](/embeddable-game-standard/reference/tokenomics) - Buyback and stream token distribution via Ekubo TWAMM
-- [Presets](/embeddable-game-standard/reference/presets) - Ready-to-deploy contracts

@@ -164,14 +164,6 @@ export default defineConfig({
                 text: "Leaderboard",
                 link: "/embeddable-game-standard/reference/leaderboard",
               },
-              {
-                text: "Tokenomics",
-                link: "/embeddable-game-standard/reference/tokenomics",
-              },
-              {
-                text: "Presets",
-                link: "/embeddable-game-standard/reference/presets",
-              },
             ],
           },
           {
