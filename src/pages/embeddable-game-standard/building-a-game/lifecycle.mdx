@@ -93,25 +93,56 @@ fn play(ref self: ContractState, token_id: felt252) {
 
 ### Pre-action and Post-action Hooks
 
-The token contract provides hooks that run before and after game actions:
+**Every player-facing action in your game contract must be wrapped** with `pre_action` and `post_action` calls. These are available via the `MinigameComponent`'s internal impl:
 
 ```cairo
-// Before any game action
-fn pre_action(self: @ContractState, token_id: felt252) {
-    let metadata = self.token_metadata(token_id);
-    assert!(!metadata.game_over, "Game is over");
-    assert!(
-        metadata.lifecycle.is_playable(get_block_timestamp()),
-        "Not playable"
-    );
-}
+impl MinigameInternalImpl = MinigameComponent::InternalImpl<ContractState>;
+```
 
-// After a game action that might end the game
-fn post_action(ref self: ContractState, token_id: felt252) {
-    // Sync game state (reads score/game_over from minigame)
-    self.update_game(token_id);
+Then in every action function:
+
+```cairo
+fn play(ref self: ContractState, token_id: felt252) {
+    // Validates the token is playable:
+    //   - Token exists (minted on the Denshokan contract)
+    //   - game_over is false
+    //   - completed_objective is false
+    //   - Lifecycle is valid (started, not expired)
+    self.minigame.pre_action(token_id);
+
+    // ... your game logic ...
+
+    // Syncs state back to the token contract:
+    //   - Reads score() and game_over() from your contract
+    //   - Emits ScoreUpdate events
+    //   - Manages game_over and completed_objective state transitions
+    self.minigame.post_action(token_id);
 }
 ```
+
+:::warning
+**Avoid early `return` statements** in action functions. If you return before `post_action`, score changes and game completions won't be synced to the token contract. Instead, store results in a variable and return after `post_action`:
+
+```cairo
+fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
+    self.minigame.pre_action(token_id);
+
+    let result = if number == secret {
+        // win logic...
+        0_i8
+    } else {
+        if number < secret { -1_i8 } else { 1_i8 }
+    };
+
+    self.minigame.post_action(token_id);
+    result
+}
+```
+:::
+
+Under the hood:
+- `pre_action` calls `is_playable(token_id)` on the token contract
+- `post_action` calls `update_game(token_id)` on the token contract, which reads `score()` and `game_over()` from your game and updates the token state
 
 ## Soulbound Tokens
 

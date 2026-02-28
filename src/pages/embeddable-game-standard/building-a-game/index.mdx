@@ -13,6 +13,7 @@ At minimum, your game contract must:
 1. **Implement `IMinigameTokenData`** - Expose `score()` and `game_over()` so the token contract can read your game's state
 2. **Register `IMINIGAME_ID` via SRC5** - So the token contract can discover your game's capabilities
 3. **Register with the game Registry** - So platforms can find and display your game
+4. **Call `pre_action` and `post_action`** - Wrap every player-facing action function with these hooks to validate playability and sync state back to the token
 
 Optionally, your game can also implement:
 - **`IMinigameTokenSettings`** - Named difficulty configurations (Easy, Medium, Hard)
@@ -54,16 +55,24 @@ pub trait IMyGame<TContractState> {
 #[starknet::contract]
 mod MyGame {
     use game_components_embeddable_game_standard::minigame::interface::{IMINIGAME_ID, IMinigameTokenData};
+    use game_components_embeddable_game_standard::minigame::minigame_component::MinigameComponent;
     use openzeppelin_introspection::src5::SRC5Component;
     use starknet::ContractAddress;
 
+    component!(path: MinigameComponent, storage: minigame, event: MinigameEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
+
+    #[abi(embed_v0)]
+    impl MinigameImpl = MinigameComponent::MinigameImpl<ContractState>;
+    impl MinigameInternalImpl = MinigameComponent::InternalImpl<ContractState>;
 
     #[abi(embed_v0)]
     impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
 
     #[storage]
     struct Storage {
+        #[substorage(v0)]
+        minigame: MinigameComponent::Storage,
         #[substorage(v0)]
         src5: SRC5Component::Storage,
         scores: Map<felt252, u64>,
@@ -73,6 +82,8 @@ mod MyGame {
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
+        #[flat]
+        MinigameEvent: MinigameComponent::Event,
         #[flat]
         SRC5Event: SRC5Component::Event,
     }
@@ -115,9 +126,15 @@ mod MyGame {
     #[abi(embed_v0)]
     impl MyGameImpl of super::IMyGame<ContractState> {
         fn play(ref self: ContractState, token_id: felt252) {
+            // Validate token is playable (exists, not expired, not game_over)
+            self.minigame.pre_action(token_id);
+
             // Your game logic here
             self.scores.write(token_id, 100);
             self.game_overs.write(token_id, true);
+
+            // Sync score and game_over back to the token contract
+            self.minigame.post_action(token_id);
         }
     }
 }
