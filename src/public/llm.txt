@@ -5144,6 +5144,7 @@ At minimum, your game contract must:
 1. **Implement `IMinigameTokenData`** - Expose `score()` and `game_over()` so the token contract can read your game's state
 2. **Register `IMINIGAME_ID` via SRC5** - So the token contract can discover your game's capabilities
 3. **Register with the game Registry** - So platforms can find and display your game
+4. **Call `pre_action` and `post_action`** - Wrap every player-facing action function with these hooks to validate playability and sync state back to the token
 
 Optionally, your game can also implement:
 
@@ -5186,16 +5187,24 @@ pub trait IMyGame<TContractState> {
 #[starknet::contract]
 mod MyGame {
     use game_components_embeddable_game_standard::minigame::interface::{IMINIGAME_ID, IMinigameTokenData};
+    use game_components_embeddable_game_standard::minigame::minigame_component::MinigameComponent;
     use openzeppelin_introspection::src5::SRC5Component;
     use starknet::ContractAddress;
 
+    component!(path: MinigameComponent, storage: minigame, event: MinigameEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
+
+    #[abi(embed_v0)]
+    impl MinigameImpl = MinigameComponent::MinigameImpl<ContractState>;
+    impl MinigameInternalImpl = MinigameComponent::InternalImpl<ContractState>;
 
     #[abi(embed_v0)]
     impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
 
     #[storage]
     struct Storage {
+        #[substorage(v0)]
+        minigame: MinigameComponent::Storage,
         #[substorage(v0)]
         src5: SRC5Component::Storage,
         scores: Map<felt252, u64>,
@@ -5205,6 +5214,8 @@ mod MyGame {
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
+        #[flat]
+        MinigameEvent: MinigameComponent::Event,
         #[flat]
         SRC5Event: SRC5Component::Event,
     }
@@ -5247,9 +5258,15 @@ mod MyGame {
     #[abi(embed_v0)]
     impl MyGameImpl of super::IMyGame<ContractState> {
         fn play(ref self: ContractState, token_id: felt252) {
+            // Validate token is playable (exists, not expired, not game_over)
+            self.minigame.pre_action(token_id);
+
             // Your game logic here
             self.scores.write(token_id, 100);
             self.game_overs.write(token_id, true);
+
+            // Sync score and game_over back to the token contract
+            self.minigame.post_action(token_id);
         }
     }
 }
@@ -5362,25 +5379,58 @@ fn play(ref self: ContractState, token_id: felt252) {
 
 ### Pre-action and Post-action Hooks
 
-The token contract provides hooks that run before and after game actions:
+**Every player-facing action in your game contract must be wrapped** with `pre_action` and `post_action` calls. These are available via the `MinigameComponent`'s internal impl:
 
 ```cairo
-// Before any game action
-fn pre_action(self: @ContractState, token_id: felt252) {
-    let metadata = self.token_metadata(token_id);
-    assert!(!metadata.game_over, "Game is over");
-    assert!(
-        metadata.lifecycle.is_playable(get_block_timestamp()),
-        "Not playable"
-    );
-}
+impl MinigameInternalImpl = MinigameComponent::InternalImpl<ContractState>;
+```
 
-// After a game action that might end the game
-fn post_action(ref self: ContractState, token_id: felt252) {
-    // Sync game state (reads score/game_over from minigame)
-    self.update_game(token_id);
+Then in every action function:
+
+```cairo
+fn play(ref self: ContractState, token_id: felt252) {
+    // Validates the token is playable:
+    //   - Token exists (minted on the Denshokan contract)
+    //   - game_over is false
+    //   - completed_objective is false
+    //   - Lifecycle is valid (started, not expired)
+    self.minigame.pre_action(token_id);
+
+    // ... your game logic ...
+
+    // Syncs state back to the token contract:
+    //   - Reads score() and game_over() from your contract
+    //   - Emits ScoreUpdate events
+    //   - Manages game_over and completed_objective state transitions
+    self.minigame.post_action(token_id);
 }
 ```
+
+:::warning
+**Avoid early `return` statements** in action functions. If you return before `post_action`, score changes and game completions won't be synced to the token contract. Instead, store results in a variable and return after `post_action`:
+
+```cairo
+fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
+    self.minigame.pre_action(token_id);
+
+    let result = if number == secret {
+        // win logic...
+        0_i8
+    } else {
+        if number < secret { -1_i8 } else { 1_i8 }
+    };
+
+    self.minigame.post_action(token_id);
+    result
+}
+```
+
+:::
+
+Under the hood:
+
+* `pre_action` calls `is_playable(token_id)` on the token contract
+* `post_action` calls `update_game(token_id)` on the token contract, which reads `score()` and `game_over()` from your game and updates the token state
 
 ## Soulbound Tokens
 
@@ -5593,8 +5643,19 @@ impl MinigameTokenDataImpl of IMinigameTokenData<ContractState> {
 
 The core game loop: generate a secret, let the player guess, calculate a score.
 
+Every player-facing action **must** be wrapped with `self.minigame.pre_action(token_id)` and `self.minigame.post_action(token_id)`:
+
+* **`pre_action`** validates the token is playable (exists, not expired, game not over)
+* **`post_action`** syncs score and game\_over state back to the token contract
+
+:::warning
+Without these hooks, the token contract won't know when scores change or games end, and players could take actions on expired or completed tokens.
+:::
+
 ```cairo
 fn new_game(ref self: ContractState, token_id: felt252, settings_id: u32) {
+    self.minigame.pre_action(token_id);
+
     // Load settings (range min/max, max attempts)
     let (min, max, attempts) = self.settings_data.read(settings_id);
     assert!(max > min, "Invalid settings");
@@ -5613,11 +5674,15 @@ fn new_game(ref self: ContractState, token_id: felt252, settings_id: u32) {
     self.range_max.write(token_id, max);
     self.max_attempts.write(token_id, attempts);
     self.game_status.write(token_id, 1); // STATUS_PLAYING
+
+    self.minigame.post_action(token_id);
 }
 ```
 
 ```cairo
 fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
+    self.minigame.pre_action(token_id);
+
     assert!(self.game_status.read(token_id) == 1, "No active game");
 
     let count = self.current_guess_count.read(token_id) + 1;
@@ -5625,25 +5690,29 @@ fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
 
     let secret = self.secret_numbers.read(token_id);
 
-    if number == secret {
+    let result = if number == secret {
         // Player wins - calculate score
         let score = calculate_score(count, self.range_min.read(token_id), self.range_max.read(token_id));
         let total = self.scores.read(token_id) + score;
         self.scores.write(token_id, total);
         self.game_status.write(token_id, 2); // STATUS_WON
-        return 0; // Correct
-    }
+        0_i8 // Correct
+    } else {
+        // Check max attempts
+        let max = self.max_attempts.read(token_id);
+        if max > 0 && count >= max {
+            self.game_status.write(token_id, 3); // STATUS_LOST
+            self.game_overs.write(token_id, true);
+        }
+        if number < secret { -1_i8 } else { 1_i8 }
+    };
 
-    // Check max attempts
-    let max = self.max_attempts.read(token_id);
-    if max > 0 && count >= max {
-        self.game_status.write(token_id, 3); // STATUS_LOST
-        self.game_overs.write(token_id, true);
-    }
-
-    if number < secret { -1 } else { 1 }
+    self.minigame.post_action(token_id);
+    result
 }
 ```
+
+Note how `guess` avoids early `return` statements so that `post_action` always runs at the end. Store the result in a variable and return it after `post_action`.
 
 ## Step 5: Add Settings (Optional)
 
@@ -5653,35 +5722,56 @@ Implement `IMinigameTokenSettings` to let anyone create custom difficulty levels
 use game_components_embeddable_game_standard::minigame::interface::IMinigameTokenSettings;
 
 #[abi(embed_v0)]
-impl SettingsImpl of IMinigameTokenSettings<ContractState> {
+NumberGuessConfigImpl of super::INumberGuessConfig<ContractState> {
     fn create_settings(
         ref self: ContractState,
         name: ByteArray,
         description: ByteArray,
-        settings: Span<GameSetting>,
+        min: u32,
+        max: u32,
+        max_attempts: u32,
     ) -> u32 {
-        // Parse settings from key-value pairs
-        let mut min: u32 = 1;
-        let mut max: u32 = 100;
-        let mut max_attempts: u32 = 0;
+        // Validate inputs
+        assert!(max > min, "max must be greater than min");
 
-        // ... parse settings span ...
+        // Auto-increment settings ID
+        let settings_id = self.settings_count.read() + 1;
+        self.settings_count.write(settings_id);
 
         // Store in game-specific storage
-        let settings_id = self.settings.create_settings(name, description, settings);
-        self.settings_data.write(settings_id, (min, max, max_attempts));
+        self.settings_data.entry(settings_id).write(
+            (name, description, min, max, max_attempts, true)
+        );
         settings_id
+    }
+
+    fn create_objective(
+        ref self: ContractState,
+        name: ByteArray,
+        description: ByteArray,
+        objective_type: u8,    // 1=Win, 2=WinWithinN, 3=PerfectGame
+        threshold: u32,
+    ) -> u32 {
+        assert!(
+            objective_type >= 1 && objective_type <= 3,
+            "Invalid objective type (must be 1-3)",
+        );
+
+        let objective_id = self.objective_count.read() + 1;
+        self.objective_count.write(objective_id);
+
+        self.objective_data.entry(objective_id).write(
+            (objective_type, threshold, true)
+        );
+        self.objective_metadata.entry(objective_id).write(
+            (name, description)
+        );
+        objective_id
     }
 }
 ```
 
-During initialization, create default settings:
-
-```cairo
-// Easy: 1-10, unlimited attempts
-// Medium: 1-100, 10 attempts
-// Hard: 1-1000, 10 attempts
-```
+Settings and objectives use game-specific storage — you define the schema that makes sense for your game. The `SettingsComponent` and `ObjectivesComponent` handle the registry-facing metadata (name, description, key-value display data) while your contract stores the actual gameplay parameters.
 
 ## Step 6: Register with Registry
 
@@ -5717,8 +5807,53 @@ impl InitImpl of INumberGuessInit<ContractState> {
             minigame_token_address, royalty_fraction,
         );
 
-        // Create default settings and objectives
-        // ...
+        // Create default settings (3 difficulty levels)
+        // Settings 1: Easy — Range 1-10, unlimited attempts
+        self.settings_data.entry(1).write(
+            ("Easy", "Guess a number between 1 and 10", 1, 10, 0, true)
+        );
+        // Settings 2: Medium — Range 1-100, 10 attempts
+        self.settings_data.entry(2).write(
+            ("Medium", "Guess a number between 1 and 100", 1, 100, 10, true)
+        );
+        // Settings 3: Hard — Range 1-1000, 10 attempts
+        self.settings_data.entry(3).write(
+            ("Hard", "Guess a number between 1 and 1000", 1, 1000, 10, true)
+        );
+        self.settings_count.write(3);
+
+        // Create default objectives (3 single-game achievements)
+        // Objective types: 1=Win, 2=WinWithinN, 3=PerfectGame
+        self.objective_data.entry(1).write((1, 1, true));
+        self.objective_metadata.entry(1).write(
+            ("First Win", "Win your first game")
+        );
+        self.objective_data.entry(2).write((2, 5, true));
+        self.objective_metadata.entry(2).write(
+            ("Quick Thinker", "Win a game in 5 or fewer guesses")
+        );
+        self.objective_data.entry(3).write((3, 1, true));
+        self.objective_metadata.entry(3).write(
+            ("Lucky Guess", "Win a game on your first guess")
+        );
+        self.objective_count.write(3);
+
+        // Register settings and objectives with their components
+        // (so the token contract can discover them via RPC)
+        self.settings.create_settings(
+            get_contract_address(), 1,
+            GameSettingDetails {
+                name: "Easy",
+                description: "Guess a number between 1 and 10",
+                settings: array![
+                    GameSetting { name: "Range Min", value: "1" },
+                    GameSetting { name: "Range Max", value: "10" },
+                    GameSetting { name: "Max Attempts", value: "Unlimited" },
+                ].span(),
+            },
+            minigame_token_address,
+        );
+        // ... repeat for Medium and Hard settings, and objectives
     }
 }
 ```
@@ -5728,20 +5863,37 @@ impl InitImpl of INumberGuessInit<ContractState> {
 ```cairo
 #[test]
 fn test_number_guess_basic() {
-    let game = deploy_number_guess();
+    // Deploy the game and token contracts
+    let (game, token) = deploy_number_guess_with_token();
 
-    // Start a new game with Easy settings (1-10)
-    game.new_game(token_id: 1, settings_id: 1);
+    // Mint a token with Easy settings (settings_id=1)
+    let token_id = mint_token(token, settings_id: 1, to: PLAYER());
 
-    // Make guesses
-    let result = game.guess(token_id: 1, number: 5);
-    // result is -1 (too low), 0 (correct), or 1 (too high)
+    // Start a new game — loads settings (range 1-10, unlimited attempts)
+    game.new_game(token_id, settings_id: 1);
 
-    // After winning, check score
-    let score = game.score(token_id: 1);
+    // Binary search for the secret number
+    let (mut low, mut high) = game.get_range(token_id);
+    loop {
+        let mid = (low + high) / 2;
+        let result = game.guess(token_id, mid);
+        if result == 0 { break; }         // Correct!
+        if result == -1 { low = mid + 1; } // Too low
+        else { high = mid - 1; }           // Too high
+    };
+
+    // Verify the game recorded a score
+    let score = game.score(token_id);
     assert!(score > 0, "Should have a score after winning");
+
+    // Verify game state
+    assert!(game.games_won(token_id) == 1, "Should have 1 win");
 }
 ```
+
+:::note
+This test is illustrative — the actual [Number Guess test suite](https://github.com/Provable-Games/denshokan/blob/main/contracts/packages/games/src/number_guess.cairo) covers deployment helpers, multiple difficulty levels, objective completion, and edge cases.
+:::
 
 ## Summary
 
@@ -5750,9 +5902,10 @@ To make your game EGS-compliant:
 1. **Required**: Implement `IMinigameTokenData` (score + game\_over)
 2. **Required**: Register `IMINIGAME_ID` via SRC5
 3. **Required**: Register with the game Registry
-4. **Optional**: Implement `IMinigameTokenSettings` for custom difficulty
-5. **Optional**: Implement `IMinigameTokenObjectives` for achievements
-6. **Optional**: Implement `IMinigameDetails` for rich game state display
+4. **Required**: Call `pre_action`/`post_action` in every player-facing action
+5. **Optional**: Implement `IMinigameTokenSettings` for custom difficulty
+6. **Optional**: Implement `IMinigameTokenObjectives` for achievements
+7. **Optional**: Implement `IMinigameDetails` for rich game state display
 
 For a complete reference implementation, see the [Number Guess source code](https://github.com/Provable-Games/denshokan/blob/main/contracts/src/number_guess.cairo).
 
@@ -6849,1203 +7002,6 @@ fn after_register_game(game_id: u64, creator_address: ContractAddress) {
 ```
 
 This hook pattern allows different registry implementations to add custom logic (minting NFTs, emitting events, updating state) without modifying the core registry.
-
-
-
----
-
-file: docs/embeddable-game-standard/frontend/index.mdx
-meta: {
-  "layout": "docs"
-}
-
-# Frontend Integration
-
-> **Always use `@provable-games/denshokan-sdk` for client-side interactions.** The SDK handles data source selection, fallback, type safety, and packed token ID decoding automatically. Direct RPC calls should only be needed for write operations.
-
-The `@provable-games/denshokan-sdk` provides everything you need to integrate EGS game data into your frontend: a client for querying data, React hooks for declarative UI, and WebSocket subscriptions for real-time updates.
-
-## Installation
-
-```bash
-npm install @provable-games/denshokan-sdk
-# or
-pnpm add @provable-games/denshokan-sdk
-```
-
-**Peer dependencies** (install if you need them):
-
-* `react >=18.0.0` - Required for React hooks
-* `starknet >=9.0.0` - Required for RPC methods
-
-## Quick Start
-
-### Vanilla TypeScript
-
-```typescript
-import { DenshokanClient } from "@provable-games/denshokan-sdk";
-
-const client = new DenshokanClient({
-  chain: "mainnet",
-});
-
-// List all registered games
-const games = await client.getGames();
-
-// Get a specific token
-const token = await client.getToken("0x123...");
-
-// Decode a packed token ID (no RPC call needed)
-const decoded = client.decodeTokenId("0x123...");
-console.log(decoded.gameId, decoded.settingsId, decoded.mintedAt);
-```
-
-### React
-
-```tsx
-import {
-  DenshokanProvider,
-  useGames,
-  useToken,
-} from "@provable-games/denshokan-sdk/react";
-
-function App() {
-  return (
-    <DenshokanProvider config={{ chain: "mainnet" }}>
-      <GameList />
-    </DenshokanProvider>
-  );
-}
-
-function GameList() {
-  const { data: games, isLoading, error } = useGames();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
-  return (
-    <ul>
-      {games?.data.map((game) => (
-        <li key={game.gameId}>{game.name}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-## Data Source Architecture
-
-The SDK provides three data paths, automatically choosing the best one:
-
-| Source        | Speed     | Freshness              | Use Case                                               |
-| ------------- | --------- | ---------------------- | ------------------------------------------------------ |
-| **REST API**  | Fast      | Indexed (slight delay) | Lists, search, aggregation, pagination                 |
-| **WebSocket** | Real-time | Live                   | Score updates, new mints, game completions             |
-| **RPC**       | Slower    | On-chain truth         | ERC721 methods, batch contract reads, write operations |
-
-### Smart Fallback
-
-If the API is unavailable, the SDK automatically falls back to RPC:
-
-```
-Request → Try API → Success → Return data
-                  → Failure → Try RPC → Success → Return data
-                                       → Failure → Throw DataSourceError
-```
-
-Configure the primary source:
-
-```typescript
-const client = new DenshokanClient({
-  chain: "mainnet",
-  primarySource: "api",  // Default: try API first, fallback to RPC
-  // or
-  primarySource: "rpc",  // Always use RPC (no API dependency)
-});
-```
-
-## Three Integration Options
-
-### 1. React Hooks (Recommended)
-
-Best for React apps. Handles loading states, caching, and re-fetching automatically.
-
-```tsx
-const { data, isLoading, error, refetch } = useGames();
-```
-
-[React Hooks Reference →](/embeddable-game-standard/frontend/react-hooks)
-
-### 2. DenshokanClient
-
-Best for non-React apps, server-side code, or when you need full control.
-
-```typescript
-const client = new DenshokanClient({ chain: "mainnet" });
-const games = await client.getGames();
-```
-
-[SDK Reference →](/embeddable-game-standard/frontend/sdk)
-
-### 3. WebSocket Subscriptions
-
-Best for live dashboards, real-time leaderboards, and notifications. Eight typed hooks provide per-channel subscriptions with event buffering:
-
-```tsx
-import { useScoreUpdates } from "@provable-games/denshokan-sdk/react";
-
-const { lastEvent, events, isConnected } = useScoreUpdates({
-  gameIds: [1],
-  bufferSize: 50,
-});
-```
-
-Or use the client directly:
-
-```typescript
-const unsub = client.subscribe(
-  { channels: ["scores", "game_over"], gameIds: [1] },
-  (message) => console.log(message),
-);
-```
-
-[WebSocket Reference →](/embeddable-game-standard/frontend/websockets)
-
-
-
----
-
-file: docs/embeddable-game-standard/frontend/react-hooks.mdx
-meta: {
-  "layout": "docs"
-}
-
-# React Hooks
-
-The SDK provides React hooks for declarative data fetching. All hooks return `{ data, isLoading, error, refetch }` and handle loading states automatically.
-
-## Setup
-
-Wrap your app with `DenshokanProvider`:
-
-```tsx
-import { DenshokanProvider } from "@provable-games/denshokan-sdk/react";
-
-function App() {
-  return (
-    <DenshokanProvider config={{ chain: "mainnet" }}>
-      <MyApp />
-    </DenshokanProvider>
-  );
-}
-```
-
-### Provider Props
-
-```typescript
-interface DenshokanProviderProps {
-  children: ReactNode;
-  config?: DenshokanClientConfig;  // Create a new client from config
-  client?: DenshokanClient;        // Or pass an existing client
-}
-```
-
-You can pass either `config` (and a client will be created) or `client` (to reuse an existing instance).
-
-### Accessing the Client
-
-```tsx
-import { useDenshokanClient } from "@provable-games/denshokan-sdk/react";
-
-function MyComponent() {
-  const client = useDenshokanClient();
-  // Use client for custom queries or write operations
-}
-```
-
-## Data Hooks
-
-### Games
-
-```tsx
-import { useGames, useGame, useGameStats } from "@provable-games/denshokan-sdk/react";
-
-function GameList() {
-  const { data: games, isLoading } = useGames({ limit: 20, offset: 0 });
-
-  return games?.data.map(game => (
-    <div key={game.gameId}>{game.name}</div>
-  ));
-}
-
-function GameDetail({ address }: { address: string }) {
-  const { data: game } = useGame(address);
-  const { data: stats } = useGameStats(address);
-
-  return (
-    <div>
-      <h1>{game?.name}</h1>
-      <p>{stats?.totalTokens} tokens minted</p>
-      <p>{stats?.uniquePlayers} unique players</p>
-    </div>
-  );
-}
-```
-
-### Tokens
-
-```tsx
-import { useTokens, useToken, useTokenScores } from "@provable-games/denshokan-sdk/react";
-
-function TokenList({ gameAddress }: { gameAddress: string }) {
-  const { data: tokens } = useTokens({
-    gameAddress,
-    gameOver: true,
-    limit: 50,
-  });
-
-  return tokens?.data.map(token => (
-    <div key={token.tokenId}>
-      Score: {token.score}
-    </div>
-  ));
-}
-
-function TokenDetail({ tokenId }: { tokenId: string }) {
-  const { data: token, isLoading } = useToken(tokenId);
-  const { data: scores } = useTokenScores(tokenId, 10);
-
-  if (isLoading) return <div>Loading...</div>;
-
-  return (
-    <div>
-      <p>Score: {token?.score}</p>
-      <p>Game Over: {token?.gameOver ? "Yes" : "No"}</p>
-      <p>Playable: {token?.isPlayable ? "Yes" : "No"}</p>
-    </div>
-  );
-}
-```
-
-### Players
-
-```tsx
-import { usePlayerStats, usePlayerTokens } from "@provable-games/denshokan-sdk/react";
-
-function PlayerProfile({ address }: { address: string }) {
-  const { data: stats } = usePlayerStats(address);
-  const { data: tokens } = usePlayerTokens(address, {
-    gameAddress: "0x1234...",
-  });
-
-  return (
-    <div>
-      <p>Total Tokens: {stats?.totalTokens}</p>
-      <p>Games Played: {stats?.gamesPlayed}</p>
-      {tokens?.data.map(t => <TokenCard key={t.tokenId} token={t} />)}
-    </div>
-  );
-}
-```
-
-### Token Decoding (Client-side)
-
-Decode a packed token ID without any network call:
-
-```tsx
-import { useDecodeToken } from "@provable-games/denshokan-sdk/react";
-
-function TokenInfo({ tokenId }: { tokenId: string }) {
-  const decoded = useDecodeToken(tokenId);
-
-  if (!decoded) return null;
-
-  return (
-    <div>
-      <p>Game ID: {decoded.gameId}</p>
-      <p>Settings: {decoded.settingsId}</p>
-      <p>Minted: {decoded.mintedAt}</p>
-      <p>Soulbound: {decoded.soulbound ? "Yes" : "No"}</p>
-    </div>
-  );
-}
-```
-
-## RPC Hooks
-
-Direct contract reads:
-
-```tsx
-import {
-  useBalanceOf,
-  useOwnerOf,
-  useTokenUri,
-  useTokenMetadataBatch,
-  useScoreBatch,
-  useGameOverBatch,
-  useObjectivesCount,
-  useObjectiveDetails,
-  useObjectivesDetails,
-  useSettingsCount,
-  useSettingDetails,
-  useSettingsDetails,
-} from "@provable-games/denshokan-sdk/react";
-
-function OwnerInfo({ tokenId }: { tokenId: string }) {
-  const { data: owner } = useOwnerOf(tokenId);
-  const { data: balance } = useBalanceOf(owner ?? undefined);
-
-  return <p>Owner {owner} has {balance?.toString()} tokens</p>;
-}
-```
-
-### Batch RPC Hooks
-
-```tsx
-function Scores({ tokenIds, gameAddress }: Props) {
-  const { data: scores } = useScoreBatch(tokenIds, gameAddress);
-  const { data: gameOvers } = useGameOverBatch(tokenIds, gameAddress);
-
-  return tokenIds.map((id, i) => (
-    <div key={id}>
-      Score: {scores?.[i]?.toString() ?? "..."} |
-      Over: {gameOvers?.[i] ? "Yes" : "No"}
-    </div>
-  ));
-}
-```
-
-### Settings & Objectives Hooks
-
-```tsx
-function GameSettings({ gameAddress }: { gameAddress: string }) {
-  const { data: count } = useSettingsCount(gameAddress);
-  const { data: settings } = useSettingsDetails(gameAddress, {
-    limit: 10, offset: 0,
-  });
-
-  return (
-    <div>
-      <p>{count} settings available</p>
-      {settings?.data.map(s => (
-        <div key={s.id}>{s.name}: {s.description}</div>
-      ))}
-    </div>
-  );
-}
-```
-
-### Settings, Objectives & Activity
-
-```tsx
-import {
-  useSettings,
-  useObjectives,
-  useActivity,
-} from "@provable-games/denshokan-sdk/react";
-
-function GameConfig({ gameAddress }: { gameAddress: string }) {
-  const { data: settings } = useSettings(gameAddress);
-  const { data: objectives } = useObjectives(gameAddress);
-  const { data: activity } = useActivity({ gameAddress, limit: 20 });
-
-  return (
-    <div>
-      <p>{settings?.data.length} settings</p>
-      <p>{objectives?.data.length} objectives</p>
-      <p>{activity?.data.length} recent actions</p>
-    </div>
-  );
-}
-```
-
-## Subscription Hooks
-
-Type-safe real-time event subscriptions. Each hook subscribes to a specific WebSocket channel and returns typed events with buffering.
-
-```tsx
-import {
-  useScoreUpdates,
-  useGameOverEvents,
-  useMintEvents,
-  useTokenUpdates,
-  useNewGames,
-  useNewMinters,
-  useNewSettings,
-  useNewObjectives,
-  useConnectionStatus,
-} from "@provable-games/denshokan-sdk/react";
-
-function LiveDashboard({ gameId }: { gameId: number }) {
-  const { lastEvent, events, isConnected, clear } = useScoreUpdates({
-    gameIds: [gameId],
-    bufferSize: 100,
-    onEvent: (event) => console.log("Score:", event.score),
-  });
-
-  const { isConnected: wsConnected } = useConnectionStatus();
-
-  return (
-    <div>
-      <p>{wsConnected ? "Connected" : "Reconnecting..."}</p>
-      <p>Latest: {lastEvent?.playerName} — {lastEvent?.score}</p>
-      <button onClick={clear}>Clear History</button>
-    </div>
-  );
-}
-```
-
-| Hook                | Channel      | Payload Type        |
-| ------------------- | ------------ | ------------------- |
-| `useScoreUpdates`   | `scores`     | `ScoreEvent`        |
-| `useGameOverEvents` | `game_over`  | `GameOverEvent`     |
-| `useMintEvents`     | `mints`      | `MintEvent`         |
-| `useTokenUpdates`   | `tokens`     | `TokenUpdateEvent`  |
-| `useNewGames`       | `games`      | `NewGameEvent`      |
-| `useNewMinters`     | `minters`    | `NewMinterEvent`    |
-| `useNewSettings`    | `settings`   | `NewSettingEvent`   |
-| `useNewObjectives`  | `objectives` | `NewObjectiveEvent` |
-
-Options and return types:
-
-```typescript
-interface UseChannelOptions<C extends WSChannel> {
-  gameIds?: number[];       // Server-side game ID filter
-  bufferSize?: number;      // Max events in memory (default: 50)
-  enabled?: boolean;        // Enable/disable subscription (default: true)
-  onEvent?: (event: WSChannelPayloadMap[C]) => void;
-}
-
-interface UseChannelResult<C extends WSChannel> {
-  lastEvent: WSChannelPayloadMap[C] | null;
-  events: WSChannelPayloadMap[C][];
-  isConnected: boolean;
-  clear: () => void;
-}
-```
-
-For full details on channels, event payloads, and the low-level `useSubscription` hook, see [WebSocket Subscriptions](/embeddable-game-standard/frontend/websockets).
-
-## Hook Return Type
-
-All data hooks return the same shape:
-
-```typescript
-interface UseAsyncResult<T> {
-  data: T | null;       // The fetched data (null while loading)
-  isLoading: boolean;   // True during initial load
-  error: Error | null;  // Error if the fetch failed
-  refetch: () => void;  // Manually trigger a re-fetch
-}
-```
-
-### Conditional Fetching
-
-Hooks accept `undefined` parameters and won't fetch until all required params are defined:
-
-```tsx
-function TokenDetail({ tokenId }: { tokenId?: string }) {
-  // Won't fetch until tokenId is defined
-  const { data } = useToken(tokenId);
-}
-```
-
-This makes it safe to chain hooks:
-
-```tsx
-function GameInfo({ tokenId }: { tokenId: string }) {
-  const { data: token } = useToken(tokenId);
-  // Only fetches once token.gameAddress is available
-  const { data: game } = useGame(token?.gameAddress);
-}
-```
-
-
-
----
-
-file: docs/embeddable-game-standard/frontend/sdk.mdx
-meta: {
-  "layout": "docs"
-}
-
-# DenshokanClient
-
-The `DenshokanClient` is the core class for interacting with EGS data. It provides methods for querying games, tokens, players, and activity through REST API and Starknet RPC.
-
-## Configuration
-
-```typescript
-import { DenshokanClient } from "@provable-games/denshokan-sdk";
-
-const client = new DenshokanClient({
-  chain: "mainnet",           // "mainnet" | "sepolia"
-  apiUrl: "https://...",      // Override API URL
-  wsUrl: "wss://...",         // Override WebSocket URL
-  rpcUrl: "https://...",      // Override RPC URL
-  primarySource: "api",       // "api" | "rpc" (default: "api")
-  viewerAddress: "0x...",     // Viewer contract for batch filter queries
-  fetch: {
-    timeout: 10000,           // Request timeout (ms)
-    maxRetries: 3,            // Max retry attempts
-    baseBackoff: 1000,        // Base backoff delay (ms)
-    maxBackoff: 30000,        // Max backoff delay (ms)
-  },
-  ws: {
-    maxReconnectAttempts: 10, // Max reconnect attempts
-    reconnectBaseDelay: 1000, // Base reconnect delay (ms)
-  },
-  health: {
-    initialCheckDelay: 1000,  // ms before first health check
-    checkInterval: 30000,     // ms between health checks
-    checkTimeout: 5000,       // ms timeout for health check
-  },
-});
-```
-
-## Games
-
-```typescript
-// List games with pagination
-const games = await client.getGames({ limit: 20, offset: 0 });
-// Returns: { data: Game[], total: number }
-
-// Get a single game (API with RPC fallback)
-const game = await client.getGame("0x1234...");
-// Returns: Game
-
-// Get game statistics
-const stats = await client.getGameStats("0x1234...");
-// Returns: GameStats { totalTokens, completedGames, activeGames, uniquePlayers }
-```
-
-## Tokens
-
-```typescript
-// List tokens with filtering
-const tokens = await client.getTokens({
-  gameAddress: "0x1234...",
-  owner: "0x5678...",
-  settingsId: 2,
-  gameOver: true,
-  playable: false,
-  soulbound: false,
-  limit: 50,
-  offset: 0,
-});
-// Returns: { data: Token[], total: number }
-
-// Get a single token (API with RPC fallback)
-const token = await client.getToken("0xabc...");
-// Returns: Token
-
-// Get score history
-const scores = await client.getTokenScores("0xabc...", 10);
-// Returns: ScoreHistory[]
-```
-
-### Token Filter Parameters
-
-| Parameter       | Type      | Description                       |
-| --------------- | --------- | --------------------------------- |
-| `gameAddress`   | `string`  | Filter by game contract address   |
-| `gameId`        | `number`  | Filter by game ID                 |
-| `owner`         | `string`  | Filter by token owner             |
-| `settingsId`    | `number`  | Filter by settings configuration  |
-| `objectiveId`   | `number`  | Filter by objective               |
-| `minterAddress` | `string`  | Filter by who minted the token    |
-| `soulbound`     | `boolean` | Filter by soulbound status        |
-| `playable`      | `boolean` | Filter by playability             |
-| `gameOver`      | `boolean` | Filter by game completion         |
-| `mintedAfter`   | `number`  | Filter by mint timestamp (after)  |
-| `mintedBefore`  | `number`  | Filter by mint timestamp (before) |
-| `limit`         | `number`  | Page size                         |
-| `offset`        | `number`  | Page offset                       |
-
-## Players
-
-```typescript
-// Get player's tokens
-const tokens = await client.getPlayerTokens("0x5678...", {
-  gameAddress: "0x1234...",  // Optional: filter by game
-});
-// Returns: { data: Token[], total: number }
-
-// Get player statistics
-const stats = await client.getPlayerStats("0x5678...");
-// Returns: PlayerStats { totalTokens, gamesPlayed, completedGames, totalScore }
-```
-
-## Settings & Objectives
-
-```typescript
-// Get settings for a game
-const settings = await client.getSettingsDetails("0x1234...", {
-  limit: 10, offset: 0,
-});
-// Returns: PaginatedResult<GameSettingDetails>
-
-// Get a specific setting
-const setting = await client.getSettingDetails(2, "0x1234...");
-// Returns: GameSettingDetails { id, name, description, settings }
-
-// Get objectives for a game
-const objectives = await client.getObjectivesDetails("0x1234...");
-// Returns: PaginatedResult<GameObjectiveDetails>
-```
-
-## RPC Methods
-
-Direct contract reads when you need on-chain truth:
-
-### ERC721
-
-```typescript
-const balance = await client.balanceOf("0x5678...");   // bigint
-const owner = await client.ownerOf("0xabc...");        // string
-const uri = await client.tokenUri("0xabc...");         // string
-const name = await client.name();                       // string
-const supply = await client.totalSupply();              // bigint
-```
-
-### Token Metadata (Batch)
-
-```typescript
-const metadata = await client.tokenMetadataBatch(["0xa..", "0xb.."]);
-// Returns: TokenMetadata[]
-
-const states = await client.tokenMutableStateBatch(["0xa..", "0xb.."]);
-// Returns: { gameOver: boolean, completedObjective: boolean }[]
-
-const playable = await client.isPlayableBatch(["0xa..", "0xb.."]);
-// Returns: boolean[]
-```
-
-### Game Contract Reads
-
-```typescript
-const score = await client.score("0xabc...", "0x1234...");   // bigint
-const over = await client.gameOver("0xabc...", "0x1234..."); // boolean
-
-// Batch
-const scores = await client.scoreBatch(
-  ["0xa..", "0xb.."],  // token IDs
-  "0x1234...",          // game address
-);
-```
-
-## Write Operations
-
-```typescript
-// Mint a new game token
-const calls = client.mint({
-  gameId: 1,
-  settingsId: 2,
-  to: playerAddress,
-  soulbound: false,
-});
-// Returns: Call[] (for starknet.js account.execute())
-
-// Update game state (sync score/game_over)
-const calls = client.updateGame(tokenId);
-
-// Update player name
-const calls = client.updatePlayerName(tokenId, "NewName");
-```
-
-## Utilities
-
-### Decode Token ID
-
-Extract all 13 packed fields without any RPC call:
-
-```typescript
-const decoded = client.decodeTokenId("0x123...");
-// Returns: DecodedTokenId {
-//   tokenId: bigint,
-//   gameId: number,
-//   mintedBy: bigint,
-//   settingsId: number,
-//   mintedAt: Date,
-//   startDelay: number,
-//   endDelay: number,
-//   objectiveId: number,
-//   soulbound: boolean,
-//   hasContext: boolean,
-//   paymaster: boolean,
-//   txHash: number,
-//   salt: number,
-//   metadata: number,
-// }
-```
-
-### Connection Status
-
-```typescript
-// Check WebSocket connection
-const connected = client.wsConnected; // boolean
-
-// Listen for connection changes
-const unsub = client.onWsConnectionChange((connected) => {
-  console.log("WebSocket:", connected ? "up" : "down");
-});
-
-// Later: stop listening
-unsub();
-```
-
-## Health Monitoring
-
-The SDK performs background health checks to detect API or RPC availability and automatically switch data sources.
-
-```typescript
-// ConnectionStatus modes
-type ConnectionStatus = "normal" | "rpc-fallback" | "offline";
-```
-
-| Status         | Meaning                                     |
-| -------------- | ------------------------------------------- |
-| `normal`       | API is reachable, using primary data source |
-| `rpc-fallback` | API is unavailable, using RPC as fallback   |
-| `offline`      | Both API and RPC are unreachable            |
-
-Health checks run at 30-second intervals (configurable via `health.checkInterval`). When the API goes down, the SDK auto-switches to RPC. When the API recovers, it switches back to `normal`.
-
-## Error Handling
-
-```typescript
-import {
-  DenshokanError,
-  ApiError,
-  RpcError,
-  TokenNotFoundError,
-  DataSourceError,
-} from "@provable-games/denshokan-sdk";
-
-try {
-  const token = await client.getToken(id);
-} catch (error) {
-  if (error instanceof TokenNotFoundError) {
-    console.log(`Token ${error.tokenId} not found`);
-  } else if (error instanceof ApiError) {
-    console.log(`API error: ${error.statusCode}`);
-  } else if (error instanceof DataSourceError) {
-    console.log("Both API and RPC failed");
-  }
-}
-```
-
-### Error Hierarchy
-
-| Error                | Description                                   |
-| -------------------- | --------------------------------------------- |
-| `DenshokanError`     | Base error class                              |
-| `ApiError`           | REST API returned an error (has `statusCode`) |
-| `RpcError`           | Starknet RPC call failed                      |
-| `RateLimitError`     | Rate limit exceeded (has `retryAfter`)        |
-| `TimeoutError`       | Request timed out                             |
-| `AbortError`         | Request was aborted                           |
-| `TokenNotFoundError` | Token doesn't exist                           |
-| `GameNotFoundError`  | Game doesn't exist                            |
-| `InvalidChainError`  | Invalid chain specified                       |
-| `DataSourceError`    | Both primary and fallback sources failed      |
-
-## Cleanup
-
-```typescript
-// Disconnect WebSocket and cleanup
-client.disconnect();
-```
-
-
-
----
-
-file: docs/embeddable-game-standard/frontend/websockets.mdx
-meta: {
-  "layout": "docs"
-}
-
-# WebSocket Subscriptions
-
-The SDK provides real-time event subscriptions via WebSocket. Subscribe to game events for live leaderboards, activity feeds, and instant notifications.
-
-## Architecture
-
-Events flow from the blockchain through a multi-layered pipeline:
-
-```
-Blockchain Event (e.g. score update)
-    ↓
-Apibara Indexer → writes to PostgreSQL
-    ↓
-PostgreSQL LISTEN/NOTIFY triggers
-    ↓
-API Server broadcasts to subscribed WebSocket clients
-    ↓
-denshokan-sdk WebSocketManager
-    ↓
-Event mappers (snake_case → camelCase)
-    ↓
-React hooks / callback handlers
-```
-
-The API server uses PostgreSQL triggers on the `tokens`, `games`, and `minters` tables. When data changes, triggers fire `NOTIFY` on named channels, and the API server broadcasts to all subscribed WebSocket clients.
-
-## Channels
-
-| Channel      | Event Type          | Description                                               |
-| ------------ | ------------------- | --------------------------------------------------------- |
-| `tokens`     | `TokenUpdateEvent`  | Any token state change (score update, game over, or mint) |
-| `scores`     | `ScoreEvent`        | When a token's score changes                              |
-| `game_over`  | `GameOverEvent`     | When a game session ends                                  |
-| `mints`      | `MintEvent`         | When new game tokens are minted                           |
-| `games`      | `NewGameEvent`      | When a new game is registered                             |
-| `minters`    | `NewMinterEvent`    | When a new minter is registered                           |
-| `settings`   | `NewSettingEvent`   | When a new game setting is created                        |
-| `objectives` | `NewObjectiveEvent` | When a new game objective is created                      |
-
-## Event Payloads
-
-Each channel delivers a typed event. The SDK automatically maps snake\_case server data to camelCase TypeScript types.
-
-```typescript
-interface ScoreEvent {
-  tokenId: string;
-  gameId: number;
-  score: number;
-  ownerAddress: string;
-  playerName: string;
-}
-
-interface GameOverEvent {
-  tokenId: string;
-  gameId: number;
-  score: number;
-  ownerAddress: string;
-  playerName: string;
-  completedAllObjectives: boolean;
-}
-
-interface MintEvent {
-  tokenId: string;
-  gameId: number;
-  ownerAddress: string;
-  mintedBy: string;
-  settingsId: number;
-}
-
-// TokenUpdateEvent is polymorphic — it aggregates all token-related events
-interface TokenUpdateEvent {
-  type: "scoreUpdate" | "gameOver" | "minted";
-  tokenId: string;
-  gameId: number;
-  score?: number;
-  ownerAddress?: string;
-}
-
-interface NewGameEvent {
-  gameId: number;
-  contractAddress: string;
-  name: string;
-}
-
-interface NewMinterEvent {
-  minterId: string;
-  contractAddress: string;
-  name: string;
-  blockNumber: string;
-}
-
-interface NewSettingEvent {
-  gameAddress: string;
-  settingsId: number;
-  creatorAddress: string;
-  settingsData: string | null;
-}
-
-interface NewObjectiveEvent {
-  gameAddress: string;
-  objectiveId: number;
-  settingsId: number;
-  creatorAddress: string;
-  objectiveData: string | null;
-}
-```
-
-All types are exported from the SDK:
-
-```typescript
-import type {
-  WSChannel,
-  WSMessage,
-  ScoreEvent,
-  GameOverEvent,
-  MintEvent,
-  TokenUpdateEvent,
-  NewGameEvent,
-  NewMinterEvent,
-  NewSettingEvent,
-  NewObjectiveEvent,
-  WSChannelPayloadMap,
-} from "@provable-games/denshokan-sdk";
-```
-
-## Using the Client
-
-```typescript
-import { DenshokanClient } from "@provable-games/denshokan-sdk";
-
-const client = new DenshokanClient({ chain: "mainnet" });
-
-// Subscribe to score updates for game ID 1
-const unsubscribe = client.subscribe(
-  {
-    channels: ["scores", "game_over"],
-    gameIds: [1],
-  },
-  (message) => {
-    console.log(`Channel: ${message.channel}`);
-    console.log(`Data:`, message.data);
-  },
-);
-
-// Later: unsubscribe
-unsubscribe();
-
-// Cleanup all connections
-client.disconnect();
-```
-
-## Typed React Hooks (Recommended)
-
-The SDK provides eight typed hooks — one per channel. Each returns the last event, a buffered event history, and connection state.
-
-### useScoreUpdates
-
-```tsx
-import { useScoreUpdates } from "@provable-games/denshokan-sdk/react";
-
-function LiveScores({ gameId }: { gameId: number }) {
-  const { lastEvent, events, isConnected } = useScoreUpdates({
-    gameIds: [gameId],
-    bufferSize: 100,
-  });
-
-  return (
-    <div>
-      <p>Connected: {isConnected ? "Yes" : "No"}</p>
-      <p>Latest: {lastEvent?.playerName} scored {lastEvent?.score}</p>
-      <ul>
-        {events.map((e, i) => (
-          <li key={i}>{e.playerName}: {e.score}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-```
-
-### All Typed Hooks
-
-| Hook                | Channel      | Payload             |
-| ------------------- | ------------ | ------------------- |
-| `useScoreUpdates`   | `scores`     | `ScoreEvent`        |
-| `useGameOverEvents` | `game_over`  | `GameOverEvent`     |
-| `useMintEvents`     | `mints`      | `MintEvent`         |
-| `useTokenUpdates`   | `tokens`     | `TokenUpdateEvent`  |
-| `useNewGames`       | `games`      | `NewGameEvent`      |
-| `useNewMinters`     | `minters`    | `NewMinterEvent`    |
-| `useNewSettings`    | `settings`   | `NewSettingEvent`   |
-| `useNewObjectives`  | `objectives` | `NewObjectiveEvent` |
-
-### Hook Options
-
-```typescript
-interface UseChannelOptions<C extends WSChannel> {
-  gameIds?: number[];       // Filter to specific game IDs (server-side)
-  bufferSize?: number;      // Max events to keep in memory (default: 50)
-  enabled?: boolean;        // Enable/disable the subscription (default: true)
-  onEvent?: (event: WSChannelPayloadMap[C]) => void;  // Callback per event
-}
-```
-
-### Hook Return Value
-
-```typescript
-interface UseChannelResult<C extends WSChannel> {
-  lastEvent: WSChannelPayloadMap[C] | null;  // Most recent event
-  events: WSChannelPayloadMap[C][];          // Buffered event history
-  isConnected: boolean;                       // WebSocket connection state
-  clear: () => void;                          // Clear event buffer
-}
-```
-
-### useChannelSubscription (Generic)
-
-All typed hooks wrap `useChannelSubscription`. You can use it directly for type-safe access to any channel:
-
-```tsx
-import { useChannelSubscription } from "@provable-games/denshokan-sdk/react";
-
-const { lastEvent, events, isConnected } = useChannelSubscription("scores", {
-  gameIds: [1, 2],
-  bufferSize: 25,
-  onEvent: (event) => {
-    console.log("New score:", event.score);
-  },
-});
-```
-
-## Low-Level Hook
-
-For raw message access, use `useSubscription`:
-
-```tsx
-import { useSubscription } from "@provable-games/denshokan-sdk/react";
-
-function LiveLeaderboard({ gameId }: { gameId: number }) {
-  const [scores, setScores] = useState<Map<string, number>>(new Map());
-
-  useSubscription(
-    ["scores", "game_over"],
-    (message) => {
-      if (message.channel === "scores") {
-        const data = message.data as ScoreEvent;
-        setScores(prev => new Map(prev).set(data.tokenId, data.score));
-      }
-    },
-    [gameId],
-  );
-
-  return (
-    <ul>
-      {[...scores.entries()]
-        .sort(([, a], [, b]) => b - a)
-        .map(([id, score]) => (
-          <li key={id}>Token {id}: {score}</li>
-        ))}
-    </ul>
-  );
-}
-```
-
-### useSubscription Signature
-
-```typescript
-function useSubscription(
-  channels: WSChannel[],
-  handler: WSEventHandler,    // (message: WSMessage) => void
-  gameIds?: number[],
-): void;
-```
-
-The hook manages connection lifecycle automatically:
-
-* Connects when the component mounts
-* Re-subscribes if channels or gameIds change
-* Disconnects when the component unmounts
-
-## Connection Status
-
-Monitor WebSocket connection state in your UI:
-
-```tsx
-import { useConnectionStatus } from "@provable-games/denshokan-sdk/react";
-
-function ConnectionBadge() {
-  const { isConnected } = useConnectionStatus();
-
-  return (
-    <span style={{ color: isConnected ? "green" : "red" }}>
-      {isConnected ? "Live" : "Reconnecting..."}
-    </span>
-  );
-}
-```
-
-For programmatic use outside React:
-
-```typescript
-// Check current status
-const connected = client.wsConnected;
-
-// Listen for changes
-const unsub = client.onWsConnectionChange((connected) => {
-  console.log("WebSocket:", connected ? "connected" : "disconnected");
-});
-```
-
-## Message Format
-
-```typescript
-interface WSMessage {
-  channel: string;     // "scores", "game_over", "tokens", "mints", "games", "minters", "settings", "objectives"
-  data: unknown;       // Channel-specific payload (use typed hooks for automatic typing)
-  _timing?: {
-    serverTs: number;  // Server timestamp for latency measurement
-  };
-}
-```
-
-## Connection Management
-
-The WebSocket manager handles:
-
-* **Auto-reconnect** with exponential backoff (1s, 2s, 4s, ... capped at 30s)
-* **Max 10 reconnect attempts** before giving up
-* **Re-subscription** on reconnect (all active subscriptions are restored)
-* **Smart retry** — only attempts reconnection if active subscriptions exist
-
-### Manual Connection
-
-```typescript
-// Connect manually (usually not needed - subscribe() auto-connects)
-client.connect();
-
-// Check connection status
-const connected = client.wsConnected;
-
-// Disconnect
-client.disconnect();
-```
-
-## Combining with Data Hooks
-
-A common pattern is to use data hooks for initial load and typed subscription hooks for live updates:
-
-```tsx
-function GameDashboard({ gameAddress }: { gameAddress: string }) {
-  const { data: tokens, refetch } = useTokens({
-    gameAddress,
-    gameOver: false,
-    limit: 50,
-  });
-
-  // Automatically refetch when a game completes
-  useGameOverEvents({
-    onEvent: () => refetch(),
-  });
-
-  // Show live score updates
-  const { lastEvent: latestScore } = useScoreUpdates();
-
-  return (
-    <div>
-      {latestScore && (
-        <p>Latest: {latestScore.playerName} scored {latestScore.score}</p>
-      )}
-      <TokenList tokens={tokens?.data ?? []} />
-    </div>
-  );
-}
-```
-
-This gives you:
-
-* Instant initial render from the API
-* Automatic list refresh when games complete
-* Live score ticker from WebSocket
 
 
 
@@ -11122,6 +10078,2383 @@ Suffix bonuses transform the loot system from simple tier progression to complex
 * Suffix distribution matters more than individual bonuses
 * Consider your build when evaluating suffix value
 * Don't automatically dismiss lower tiers with good suffixes
+
+
+
+---
+
+file: docs/embeddable-game-standard/frontend/index.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Frontend Integration
+
+> **Always use `@provable-games/denshokan-sdk` for client-side interactions.** The SDK handles data source selection, fallback, type safety, and packed token ID decoding automatically. Direct RPC calls should only be needed for write operations.
+
+The `@provable-games/denshokan-sdk` provides everything you need to integrate EGS game data into your frontend: a client for querying data, React hooks for declarative UI, and WebSocket subscriptions for real-time updates.
+
+## Installation
+
+```bash
+npm install @provable-games/denshokan-sdk
+# or
+pnpm add @provable-games/denshokan-sdk
+```
+
+**Peer dependencies** (install if you need them):
+
+* `react >=18.0.0` - Required for React hooks
+* `starknet >=9.0.0` - Required for RPC methods
+
+## Quick Start
+
+### Vanilla TypeScript
+
+```typescript
+import { DenshokanClient } from "@provable-games/denshokan-sdk";
+
+const client = new DenshokanClient({
+  chain: "mainnet",
+});
+
+// List all registered games
+const games = await client.getGames();
+
+// Get a specific token
+const token = await client.getToken("0x123...");
+
+// Decode a packed token ID (no RPC call needed)
+const decoded = client.decodeTokenId("0x123...");
+console.log(decoded.gameId, decoded.settingsId, decoded.mintedAt);
+```
+
+### React
+
+```tsx
+import {
+  DenshokanProvider,
+  useGames,
+  useToken,
+} from "@provable-games/denshokan-sdk/react";
+
+function App() {
+  return (
+    <DenshokanProvider config={{ chain: "mainnet" }}>
+      <GameList />
+    </DenshokanProvider>
+  );
+}
+
+function GameList() {
+  const { data: games, isLoading, error } = useGames();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <ul>
+      {games?.data.map((game) => (
+        <li key={game.gameId}>{game.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Data Source Architecture
+
+The SDK provides three data paths, automatically choosing the best one:
+
+| Source        | Speed     | Freshness              | Use Case                                               |
+| ------------- | --------- | ---------------------- | ------------------------------------------------------ |
+| **REST API**  | Fast      | Indexed (slight delay) | Lists, search, aggregation, pagination                 |
+| **WebSocket** | Real-time | Live                   | Score updates, new mints, game completions             |
+| **RPC**       | Slower    | On-chain truth         | ERC721 methods, batch contract reads, write operations |
+
+### Smart Fallback
+
+If the API is unavailable, the SDK automatically falls back to RPC:
+
+```
+Request → Try API → Success → Return data
+                  → Failure → Try RPC → Success → Return data
+                                       → Failure → Throw DataSourceError
+```
+
+Configure the primary source:
+
+```typescript
+const client = new DenshokanClient({
+  chain: "mainnet",
+  primarySource: "api",  // Default: try API first, fallback to RPC
+  // or
+  primarySource: "rpc",  // Always use RPC (no API dependency)
+});
+```
+
+## Three Integration Options
+
+### 1. React Hooks (Recommended)
+
+Best for React apps. Handles loading states, caching, and re-fetching automatically.
+
+```tsx
+const { data, isLoading, error, refetch } = useGames();
+```
+
+[React Hooks Reference →](/embeddable-game-standard/frontend/react-hooks)
+
+### 2. DenshokanClient
+
+Best for non-React apps, server-side code, or when you need full control.
+
+```typescript
+const client = new DenshokanClient({ chain: "mainnet" });
+const games = await client.getGames();
+```
+
+[SDK Reference →](/embeddable-game-standard/frontend/sdk)
+
+### 3. WebSocket Subscriptions
+
+Best for live dashboards, real-time leaderboards, and notifications. Eight typed hooks provide per-channel subscriptions with event buffering:
+
+```tsx
+import { useScoreUpdates } from "@provable-games/denshokan-sdk/react";
+
+const { lastEvent, events, isConnected } = useScoreUpdates({
+  gameIds: [1],
+  bufferSize: 50,
+});
+```
+
+Or use the client directly:
+
+```typescript
+const unsub = client.subscribe(
+  { channels: ["scores", "game_over"], gameIds: [1] },
+  (message) => console.log(message),
+);
+```
+
+[WebSocket Reference →](/embeddable-game-standard/frontend/websockets)
+
+
+
+---
+
+file: docs/embeddable-game-standard/frontend/react-hooks.mdx
+meta: {
+  "layout": "docs"
+}
+
+# React Hooks
+
+The SDK provides React hooks for declarative data fetching. All hooks return `{ data, isLoading, error, refetch }` and handle loading states automatically.
+
+## Setup
+
+Wrap your app with `DenshokanProvider`:
+
+```tsx
+import { DenshokanProvider } from "@provable-games/denshokan-sdk/react";
+
+function App() {
+  return (
+    <DenshokanProvider config={{ chain: "mainnet" }}>
+      <MyApp />
+    </DenshokanProvider>
+  );
+}
+```
+
+### Provider Props
+
+```typescript
+interface DenshokanProviderProps {
+  children: ReactNode;
+  config?: DenshokanClientConfig;  // Create a new client from config
+  client?: DenshokanClient;        // Or pass an existing client
+}
+```
+
+You can pass either `config` (and a client will be created) or `client` (to reuse an existing instance).
+
+### Accessing the Client
+
+```tsx
+import { useDenshokanClient } from "@provable-games/denshokan-sdk/react";
+
+function MyComponent() {
+  const client = useDenshokanClient();
+  // Use client for custom queries or write operations
+}
+```
+
+## Data Hooks
+
+### Games
+
+```tsx
+import { useGames, useGame, useGameStats } from "@provable-games/denshokan-sdk/react";
+
+function GameList() {
+  const { data: games, isLoading } = useGames({ limit: 20, offset: 0 });
+
+  return games?.data.map(game => (
+    <div key={game.gameId}>{game.name}</div>
+  ));
+}
+
+function GameDetail({ address }: { address: string }) {
+  const { data: game } = useGame(address);
+  const { data: stats } = useGameStats(address);
+
+  return (
+    <div>
+      <h1>{game?.name}</h1>
+      <p>{stats?.totalTokens} tokens minted</p>
+      <p>{stats?.uniquePlayers} unique players</p>
+    </div>
+  );
+}
+```
+
+### Tokens
+
+```tsx
+import { useTokens, useToken, useTokenScores } from "@provable-games/denshokan-sdk/react";
+
+function TokenList({ gameAddress }: { gameAddress: string }) {
+  const { data: tokens, isLoadingUri } = useTokens({
+    gameAddress,
+    gameOver: true,
+    includeUri: true,
+    limit: 50,
+  });
+
+  return (
+    <div>
+      {isLoadingUri && <p>Loading token images...</p>}
+      {tokens?.data.map(token => (
+        <div key={token.tokenId}>
+          Score: {token.score}
+          {token.tokenUri && <img src={token.tokenUri} />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TokenDetail({ tokenId }: { tokenId: string }) {
+  const { data: token, isLoading } = useToken(tokenId);
+  const { data: scores } = useTokenScores(tokenId, 10);
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <p>Score: {token?.score}</p>
+      <p>Game Over: {token?.gameOver ? "Yes" : "No"}</p>
+      <p>Playable: {token?.isPlayable ? "Yes" : "No"}</p>
+    </div>
+  );
+}
+```
+
+:::note
+When `includeUri: true` is passed to `useTokens` or `usePlayerTokens`, an additional `isLoadingUri` flag is returned. It is `true` while token URIs are being fetched in the background via batch RPC. The main `data` is available immediately — URIs populate asynchronously.
+:::
+
+### Players
+
+```tsx
+import { usePlayerStats, usePlayerTokens } from "@provable-games/denshokan-sdk/react";
+
+function PlayerProfile({ address }: { address: string }) {
+  const { data: stats } = usePlayerStats(address);
+  const { data: tokens } = usePlayerTokens(address, {
+    gameAddress: "0x1234...",
+  });
+
+  return (
+    <div>
+      <p>Total Tokens: {stats?.totalTokens}</p>
+      <p>Games Played: {stats?.gamesPlayed}</p>
+      {tokens?.data.map(t => <TokenCard key={t.tokenId} token={t} />)}
+    </div>
+  );
+}
+```
+
+### Minters
+
+```tsx
+import { useMinters } from "@provable-games/denshokan-sdk/react";
+
+function MinterList() {
+  const { data: minters, isLoading } = useMinters({ limit: 20, offset: 0 });
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return minters?.data.map(minter => (
+    <div key={minter.id}>
+      {minter.name} — {minter.contractAddress}
+    </div>
+  ));
+}
+```
+
+### Token Decoding (Client-side)
+
+Decode a packed token ID without any network call:
+
+```tsx
+import { useDecodeToken } from "@provable-games/denshokan-sdk/react";
+
+function TokenInfo({ tokenId }: { tokenId: string }) {
+  const decoded = useDecodeToken(tokenId);
+
+  if (!decoded) return null;
+
+  return (
+    <div>
+      <p>Game ID: {decoded.gameId}</p>
+      <p>Settings: {decoded.settingsId}</p>
+      <p>Minted: {decoded.mintedAt}</p>
+      <p>Soulbound: {decoded.soulbound ? "Yes" : "No"}</p>
+    </div>
+  );
+}
+```
+
+`useDecodeToken` returns a [`CoreToken`](/embeddable-game-standard/frontend/types#coretoken) directly (no loading state) since decoding is purely client-side.
+
+## RPC Hooks
+
+Direct contract reads:
+
+```tsx
+import {
+  useBalanceOf,
+  useOwnerOf,
+  useTokenUri,
+  useTokenUriBatch,
+  useTokenMetadataBatch,
+  useScoreBatch,
+  useGameOverBatch,
+  useObjectivesCount,
+  useSettingsCount,
+} from "@provable-games/denshokan-sdk/react";
+
+function OwnerInfo({ tokenId }: { tokenId: string }) {
+  const { data: owner } = useOwnerOf(tokenId);
+  const { data: balance } = useBalanceOf(owner ?? undefined);
+
+  return <p>Owner {owner} has {balance?.toString()} tokens</p>;
+}
+```
+
+### Batch RPC Hooks
+
+```tsx
+function Scores({ tokenIds, gameAddress }: Props) {
+  const { data: scores } = useScoreBatch(tokenIds, gameAddress);
+  const { data: gameOvers } = useGameOverBatch(tokenIds, gameAddress);
+
+  return tokenIds.map((id, i) => (
+    <div key={id}>
+      Score: {scores?.[i]?.toString() ?? "..."} |
+      Over: {gameOvers?.[i] ? "Yes" : "No"}
+    </div>
+  ));
+}
+```
+
+### Settings & Objectives Hooks
+
+```tsx
+function GameSettings({ gameAddress }: { gameAddress: string }) {
+  const { data: count } = useSettingsCount(gameAddress);
+  const { data: settings } = useSettings(gameAddress);
+
+  return (
+    <div>
+      <p>{count} settings available</p>
+      {settings?.data.map(s => (
+        <div key={s.id}>{s.name}: {s.description}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Settings, Objectives & Activity
+
+```tsx
+import {
+  useSettings,
+  useObjectives,
+  useActivity,
+} from "@provable-games/denshokan-sdk/react";
+
+function GameConfig({ gameAddress }: { gameAddress: string }) {
+  const { data: settings } = useSettings(gameAddress);
+  const { data: objectives } = useObjectives(gameAddress);
+  const { data: activity } = useActivity({ gameAddress, limit: 20 });
+
+  return (
+    <div>
+      <p>{settings?.data.length} settings</p>
+      <p>{objectives?.data.length} objectives</p>
+      <p>{activity?.data.length} recent actions</p>
+    </div>
+  );
+}
+```
+
+## Subscription Hooks
+
+Type-safe real-time event subscriptions. Each hook subscribes to a specific WebSocket channel and returns typed events with buffering.
+
+```tsx
+import {
+  useScoreUpdates,
+  useGameOverEvents,
+  useMintEvents,
+  useTokenUpdates,
+  useNewGames,
+  useNewMinters,
+  useNewSettings,
+  useNewObjectives,
+  useConnectionStatus,
+} from "@provable-games/denshokan-sdk/react";
+
+function LiveDashboard({ gameId }: { gameId: number }) {
+  const { lastEvent, events, isConnected, clear } = useScoreUpdates({
+    gameIds: [gameId],
+    bufferSize: 100,
+    onEvent: (event) => console.log("Score:", event.score),
+  });
+
+  const { isConnected: wsConnected } = useConnectionStatus();
+
+  return (
+    <div>
+      <p>{wsConnected ? "Connected" : "Reconnecting..."}</p>
+      <p>Latest: {lastEvent?.playerName} — {lastEvent?.score}</p>
+      <button onClick={clear}>Clear History</button>
+    </div>
+  );
+}
+```
+
+| Hook                | Channel      | Payload Type                                                                      |
+| ------------------- | ------------ | --------------------------------------------------------------------------------- |
+| `useScoreUpdates`   | `scores`     | [`ScoreEvent`](/embeddable-game-standard/frontend/types#scoreevent)               |
+| `useGameOverEvents` | `game_over`  | [`GameOverEvent`](/embeddable-game-standard/frontend/types#gameoverevent)         |
+| `useMintEvents`     | `mints`      | [`MintEvent`](/embeddable-game-standard/frontend/types#mintevent)                 |
+| `useTokenUpdates`   | `tokens`     | [`TokenUpdateEvent`](/embeddable-game-standard/frontend/types#tokenupdateevent)   |
+| `useNewGames`       | `games`      | [`NewGameEvent`](/embeddable-game-standard/frontend/types#newgameevent)           |
+| `useNewMinters`     | `minters`    | [`NewMinterEvent`](/embeddable-game-standard/frontend/types#newminterevent)       |
+| `useNewSettings`    | `settings`   | [`NewSettingEvent`](/embeddable-game-standard/frontend/types#newsettingevent)     |
+| `useNewObjectives`  | `objectives` | [`NewObjectiveEvent`](/embeddable-game-standard/frontend/types#newobjectiveevent) |
+
+Options and return types:
+
+```typescript
+interface UseChannelOptions<C extends WSChannel> {
+  gameIds?: number[];       // Server-side game ID filter
+  bufferSize?: number;      // Max events in memory (default: 50)
+  enabled?: boolean;        // Enable/disable subscription (default: true)
+  onEvent?: (event: WSChannelPayloadMap[C]) => void;
+}
+
+interface UseChannelResult<C extends WSChannel> {
+  lastEvent: WSChannelPayloadMap[C] | null;
+  events: WSChannelPayloadMap[C][];
+  isConnected: boolean;
+  clear: () => void;
+}
+```
+
+For full details on channels, event payloads, and the low-level `useSubscription` hook, see [WebSocket Subscriptions](/embeddable-game-standard/frontend/websockets).
+
+## Hook Return Type
+
+All data hooks return the same shape:
+
+```typescript
+interface UseAsyncResult<T> {
+  data: T | null;       // The fetched data (null while loading)
+  isLoading: boolean;   // True during initial load
+  error: Error | null;  // Error if the fetch failed
+  refetch: () => void;  // Manually trigger a re-fetch
+}
+```
+
+`useTokens` and `usePlayerTokens` extend this with an additional field:
+
+```typescript
+interface UseTokensResult extends UseAsyncResult<PaginatedResult<Token>> {
+  /** True while token URIs are being fetched (when includeUri: true) */
+  isLoadingUri: boolean;
+}
+```
+
+See [`UseAsyncResult`](/embeddable-game-standard/frontend/types#useasyncresultt), [`UseTokensResult`](/embeddable-game-standard/frontend/types#usetokensresult), and [`UseChannelResult`](/embeddable-game-standard/frontend/types#usechannelresultc) for the full type definitions.
+
+## Complete Hook Signatures
+
+### Data Hooks
+
+| Hook                                 | Parameters                                                                          | Return                                                  |
+| ------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `useGames(params?)`                  | `{ limit?, offset? }`                                                               | `UseAsyncResult<PaginatedResult<Game>>`                 |
+| `useGame(address?)`                  | `string \| undefined`                                                               | `UseAsyncResult<Game>`                                  |
+| `useGameStats(address?)`             | `string \| undefined`                                                               | `UseAsyncResult<GameStats>`                             |
+| `useTokens(params?)`                 | [`TokensFilterParams`](/embeddable-game-standard/frontend/types#tokensfilterparams) | `UseTokensResult`                                       |
+| `useToken(tokenId?)`                 | `string \| undefined`                                                               | `UseAsyncResult<Token>`                                 |
+| `useTokenScores(tokenId?, limit?)`   | `string \| undefined, number`                                                       | `UseAsyncResult<TokenScoreEntry[]>`                     |
+| `useDecodeToken(tokenId?)`           | `string \| undefined`                                                               | `CoreToken \| null`                                     |
+| `usePlayerStats(address?)`           | `string \| undefined`                                                               | `UseAsyncResult<PlayerStats>`                           |
+| `usePlayerTokens(address?, params?)` | `string \| undefined, PlayerTokensParams`                                           | `UseTokensResult`                                       |
+| `useMinters(params?)`                | `{ limit?, offset? }`                                                               | `UseAsyncResult<PaginatedResult<Minter>>`               |
+| `useSettings(params?)`               | [`SettingsParams`](/embeddable-game-standard/frontend/types#settingsparams)         | `UseAsyncResult<PaginatedResult<GameSettingDetails>>`   |
+| `useObjectives(params?)`             | [`ObjectivesParams`](/embeddable-game-standard/frontend/types#objectivesparams)     | `UseAsyncResult<PaginatedResult<GameObjectiveDetails>>` |
+| `useActivity(params?)`               | [`ActivityParams`](/embeddable-game-standard/frontend/types#activityparams)         | `UseAsyncResult<PaginatedResult<ActivityEvent>>`        |
+
+### RPC Hooks
+
+| Hook                                        | Parameters                                   | Return                            |
+| ------------------------------------------- | -------------------------------------------- | --------------------------------- |
+| `useBalanceOf(account?)`                    | `string \| undefined`                        | `UseAsyncResult<bigint>`          |
+| `useOwnerOf(tokenId?)`                      | `string \| undefined`                        | `UseAsyncResult<string>`          |
+| `useTokenUri(tokenId?)`                     | `string \| undefined`                        | `UseAsyncResult<string>`          |
+| `useTokenUriBatch(tokenIds?)`               | `string[] \| undefined`                      | `UseAsyncResult<string[]>`        |
+| `useTokenMetadataBatch(tokenIds?)`          | `string[] \| undefined`                      | `UseAsyncResult<TokenMetadata[]>` |
+| `useScoreBatch(tokenIds?, gameAddress?)`    | `string[] \| undefined, string \| undefined` | `UseAsyncResult<bigint[]>`        |
+| `useGameOverBatch(tokenIds?, gameAddress?)` | `string[] \| undefined, string \| undefined` | `UseAsyncResult<boolean[]>`       |
+| `useObjectivesCount(gameAddress?)`          | `string \| undefined`                        | `UseAsyncResult<number>`          |
+| `useSettingsCount(gameAddress?)`            | `string \| undefined`                        | `UseAsyncResult<number>`          |
+
+## Caching & Refetch Behavior
+
+Hooks do **not** auto-poll or auto-refresh. Data is fetched:
+
+1. **On mount** — when the component first renders with defined parameters
+2. **On parameter change** — when hook parameters change (referential equality)
+
+To manually refresh data, call `refetch()`:
+
+```tsx
+function TokenView({ tokenId }: { tokenId: string }) {
+  const { data: token, refetch } = useToken(tokenId);
+
+  return (
+    <div>
+      <p>Score: {token?.score}</p>
+      <button onClick={refetch}>Refresh</button>
+    </div>
+  );
+}
+```
+
+For live updates, combine data hooks with [subscription hooks](#subscription-hooks):
+
+```tsx
+function LiveScore({ tokenId, gameId }: Props) {
+  const { data: token, refetch } = useToken(tokenId);
+
+  useScoreUpdates({
+    gameIds: [gameId],
+    onEvent: (event) => {
+      if (event.tokenId === tokenId) {
+        refetch(); // Re-fetch when this token's score changes
+      }
+    },
+  });
+
+  return <p>Score: {token?.score}</p>;
+}
+```
+
+### Conditional Fetching
+
+Hooks accept `undefined` parameters and won't fetch until all required params are defined:
+
+```tsx
+function TokenDetail({ tokenId }: { tokenId?: string }) {
+  // Won't fetch until tokenId is defined
+  const { data } = useToken(tokenId);
+}
+```
+
+This makes it safe to chain hooks:
+
+```tsx
+function GameInfo({ tokenId }: { tokenId: string }) {
+  const { data: token } = useToken(tokenId);
+  // Only fetches once token.gameAddress is available
+  const { data: game } = useGame(token?.gameAddress);
+}
+```
+
+
+
+---
+
+file: docs/embeddable-game-standard/frontend/sdk.mdx
+meta: {
+  "layout": "docs"
+}
+
+# DenshokanClient
+
+The `DenshokanClient` is the core class for interacting with EGS data. It provides methods for querying games, tokens, players, and activity through REST API and Starknet RPC.
+
+## Configuration
+
+```typescript
+import { DenshokanClient } from "@provable-games/denshokan-sdk";
+
+const client = new DenshokanClient({
+  chain: "mainnet",           // "mainnet" | "sepolia"
+  apiUrl: "https://...",      // Override API URL
+  wsUrl: "wss://...",         // Override WebSocket URL
+  rpcUrl: "https://...",      // Override RPC URL
+  primarySource: "api",       // "api" | "rpc" (default: "api")
+  viewerAddress: "0x...",     // Viewer contract for batch filter queries
+  denshokanAddress: "0x...",  // Denshokan ERC721 contract address
+  registryAddress: "0x...",   // Minigame registry contract address
+  fetch: {
+    timeout: 10000,           // Request timeout (ms)
+    maxRetries: 3,            // Max retry attempts
+    baseBackoff: 1000,        // Base backoff delay (ms)
+    maxBackoff: 30000,        // Max backoff delay (ms)
+    tokenUriConcurrency: 0,   // Max concurrent URI fetches (0 = unlimited)
+  },
+  ws: {
+    maxReconnectAttempts: 10, // Max reconnect attempts
+    reconnectBaseDelay: 1000, // Base reconnect delay (ms)
+  },
+  health: {
+    initialCheckDelay: 1000,  // ms before first health check
+    checkInterval: 30000,     // ms between health checks
+    checkTimeout: 5000,       // ms timeout for health check
+  },
+});
+```
+
+See [`DenshokanClientConfig`](/embeddable-game-standard/frontend/types#denshokanclientconfig) for the full configuration type.
+
+## Games
+
+```typescript
+// List games with pagination
+const games = await client.getGames({ limit: 20, offset: 0 });
+// Returns: PaginatedResult<Game>
+
+// Get a single game (API with RPC fallback)
+const game = await client.getGame("0x1234...");
+// Returns: Game
+
+// Get game statistics
+const stats = await client.getGameStats("0x1234...");
+// Returns: GameStats
+```
+
+## Tokens
+
+```typescript
+// List tokens with filtering
+const tokens = await client.getTokens({
+  gameAddress: "0x1234...",
+  owner: "0x5678...",
+  settingsId: 2,
+  gameOver: true,
+  playable: false,
+  soulbound: false,
+  includeUri: true,    // Fetch token URIs via batch RPC
+  limit: 50,
+  offset: 0,
+});
+// Returns: PaginatedResult<Token>
+
+// Get a single token (API with RPC fallback)
+const token = await client.getToken("0xabc...");
+// Returns: Token
+
+// Get score history
+const scores = await client.getTokenScores("0xabc...", 10);
+// Returns: TokenScoreEntry[]
+```
+
+### Token Filter Parameters
+
+| Parameter       | Type      | Description                       |
+| --------------- | --------- | --------------------------------- |
+| `gameAddress`   | `string`  | Filter by game contract address   |
+| `gameId`        | `number`  | Filter by game ID                 |
+| `owner`         | `string`  | Filter by token owner             |
+| `settingsId`    | `number`  | Filter by settings configuration  |
+| `objectiveId`   | `number`  | Filter by objective               |
+| `minterAddress` | `string`  | Filter by who minted the token    |
+| `soulbound`     | `boolean` | Filter by soulbound status        |
+| `playable`      | `boolean` | Filter by playability             |
+| `gameOver`      | `boolean` | Filter by game completion         |
+| `mintedAfter`   | `number`  | Filter by mint timestamp (after)  |
+| `mintedBefore`  | `number`  | Filter by mint timestamp (before) |
+| `includeUri`    | `boolean` | Fetch token URIs via batch RPC    |
+| `limit`         | `number`  | Page size                         |
+| `offset`        | `number`  | Page offset                       |
+
+See [`TokensFilterParams`](/embeddable-game-standard/frontend/types#tokensfilterparams) for the full type.
+
+## Players
+
+```typescript
+// Get player's tokens
+const tokens = await client.getPlayerTokens("0x5678...", {
+  gameAddress: "0x1234...",  // Optional: filter by game
+  includeUri: true,          // Optional: fetch token URIs
+});
+// Returns: PaginatedResult<Token>
+
+// Get player statistics
+const stats = await client.getPlayerStats("0x5678...");
+// Returns: PlayerStats
+```
+
+## Minters
+
+```typescript
+// List minters with pagination
+const minters = await client.getMinters({ limit: 20, offset: 0 });
+// Returns: PaginatedResult<Minter>
+
+// Get a single minter
+const minter = await client.getMinter("minter-id");
+// Returns: Minter
+```
+
+See [`Minter`](/embeddable-game-standard/frontend/types#minter) for the type definition.
+
+## Activity
+
+```typescript
+// List activity events
+const activity = await client.getActivity({
+  type: "score_update",  // Optional: filter by event type
+  limit: 50,
+  offset: 0,
+});
+// Returns: PaginatedResult<ActivityEvent>
+
+// Get aggregate activity stats
+const stats = await client.getActivityStats(1); // Optional: gameId filter
+// Returns: ActivityStats
+```
+
+See [`ActivityEvent`](/embeddable-game-standard/frontend/types#activityevent) and [`ActivityStats`](/embeddable-game-standard/frontend/types#activitystats) for the type definitions.
+
+## Settings & Objectives
+
+```typescript
+// Get settings for a game
+const settings = await client.getSettings({
+  gameAddress: "0x1234...",
+  limit: 10,
+  offset: 0,
+});
+// Returns: PaginatedResult<GameSettingDetails>
+
+// Get a specific setting
+const setting = await client.getSetting(2, "0x1234...");
+// Returns: GameSettingDetails
+
+// Get objectives for a game
+const objectives = await client.getObjectives({
+  gameAddress: "0x1234...",
+  settingsId: 1,  // Optional: filter by settings
+});
+// Returns: PaginatedResult<GameObjectiveDetails>
+
+// Get a specific objective
+const objective = await client.getObjective(1, "0x1234...");
+// Returns: GameObjectiveDetails
+```
+
+## RPC Methods
+
+Direct contract reads when you need on-chain truth.
+
+### ERC721
+
+```typescript
+const balance = await client.balanceOf("0x5678...");   // bigint
+const owner = await client.ownerOf("0xabc...");        // string
+const uri = await client.tokenUri("0xabc...");         // string
+const name = await client.name();                       // string
+const sym = await client.symbol();                      // string
+const supply = await client.totalSupply();              // bigint
+
+// Batch URI fetch
+const uris = await client.tokenUriBatch(["0xa..", "0xb.."]);
+// Returns: string[]
+
+// ERC-2981 royalty info
+const royalty = await client.royaltyInfo("0xabc..", salePrice);
+// Returns: RoyaltyInfo { receiver, amount }
+```
+
+### ERC721 Enumerable
+
+```typescript
+// Get token ID by global index
+const tokenId = await client.tokenByIndex(0n);
+
+// Get token ID by owner index
+const tokenId = await client.tokenOfOwnerByIndex("0x5678...", 0n);
+
+// Enumerate all token IDs (paginated)
+const ids = await client.enumerateTokenIds({ limit: 100, offset: 0 });
+
+// Enumerate token IDs owned by address
+const ids = await client.enumerateTokenIdsByOwner("0x5678...", {
+  limit: 100,
+  offset: 0,
+});
+```
+
+### Token Metadata
+
+Single and batch accessors for on-chain token metadata. Each method has a batch variant that accepts an array of token IDs.
+
+| Method                       | Returns                                                                           | Batch Variant                      |
+| ---------------------------- | --------------------------------------------------------------------------------- | ---------------------------------- |
+| `tokenMetadata(tokenId)`     | [`TokenMetadata`](/embeddable-game-standard/frontend/types#tokenmetadata)         | `tokenMetadataBatch(tokenIds)`     |
+| `tokenMutableState(tokenId)` | [`TokenMutableState`](/embeddable-game-standard/frontend/types#tokenmutablestate) | `tokenMutableStateBatch(tokenIds)` |
+| `isPlayable(tokenId)`        | `boolean`                                                                         | `isPlayableBatch(tokenIds)`        |
+| `settingsId(tokenId)`        | `number`                                                                          | `settingsIdBatch(tokenIds)`        |
+| `playerName(tokenId)`        | `string`                                                                          | `playerNameBatch(tokenIds)`        |
+| `objectiveId(tokenId)`       | `number`                                                                          | `objectiveIdBatch(tokenIds)`       |
+| `mintedBy(tokenId)`          | `string`                                                                          | `mintedByBatch(tokenIds)`          |
+| `isSoulbound(tokenId)`       | `boolean`                                                                         | `isSoulboundBatch(tokenIds)`       |
+| `rendererAddress(tokenId)`   | `string`                                                                          | `rendererAddressBatch(tokenIds)`   |
+| `tokenGameAddress(tokenId)`  | `string`                                                                          | `tokenGameAddressBatch(tokenIds)`  |
+
+```typescript
+// Single
+const metadata = await client.tokenMetadata("0xabc...");
+const playable = await client.isPlayable("0xabc...");
+const name = await client.playerName("0xabc...");
+
+// Batch
+const metadatas = await client.tokenMetadataBatch(["0xa..", "0xb.."]);
+const names = await client.playerNameBatch(["0xa..", "0xb.."]);
+```
+
+### Game Contract Reads
+
+Read game-specific state directly from on-chain contracts.
+
+**Score & Game Over:**
+
+```typescript
+const score = await client.score("0xabc...", "0x1234...");   // bigint
+const over = await client.gameOver("0xabc...", "0x1234..."); // boolean
+
+// Batch
+const scores = await client.scoreBatch(["0xa..", "0xb.."], "0x1234...");
+const overs = await client.gameOverBatch(["0xa..", "0xb.."], "0x1234...");
+```
+
+**Token Details (game-specific):**
+
+```typescript
+const name = await client.tokenName("0xabc..", "0x1234..");
+const desc = await client.tokenDescription("0xabc..", "0x1234..");
+const details = await client.gameDetails("0xabc..", "0x1234..");
+// Returns: GameDetail[] — array of { key, value } pairs
+
+// Batch variants
+const names = await client.tokenNameBatch(["0xa..", "0xb.."], "0x1234..");
+const descs = await client.tokenDescriptionBatch(["0xa..", "0xb.."], "0x1234..");
+const allDetails = await client.gameDetailsBatch(["0xa..", "0xb.."], "0x1234..");
+```
+
+**Objectives (on-chain):**
+
+```typescript
+const count = await client.objectivesCount("0x1234..");             // number
+const exists = await client.objectiveExists(1, "0x1234..");         // boolean
+const completed = await client.completedObjective(
+  "0xabc..", 1, "0x1234.."
+);  // boolean
+const details = await client.objectivesDetails(1, "0x1234..");      // GameObjectiveDetails
+
+// Batch variants
+const existsAll = await client.objectiveExistsBatch([1, 2, 3], "0x1234..");
+const completedAll = await client.completedObjectiveBatch(
+  ["0xa..", "0xb.."], 1, "0x1234.."
+);
+const detailsAll = await client.objectivesDetailsBatch([1, 2, 3], "0x1234..");
+```
+
+**Settings (on-chain):**
+
+```typescript
+const count = await client.settingsCount("0x1234..");              // number
+const exists = await client.settingsExists(1, "0x1234..");         // boolean
+const details = await client.settingsDetails(1, "0x1234..");       // GameSettingDetails
+
+// Batch variants
+const existsAll = await client.settingsExistsBatch([1, 2, 3], "0x1234..");
+const detailsAll = await client.settingsDetailsBatch([1, 2, 3], "0x1234..");
+```
+
+### Registry RPC
+
+```typescript
+// Get full on-chain game metadata from registry
+const meta = await client.gameMetadata(1);       // GameMetadata
+const addr = await client.gameAddress(1);        // string
+```
+
+## Write Operations
+
+Write methods return transaction call data for use with starknet.js `account.execute()`.
+
+```typescript
+// Mint a new game token
+const calls = client.mint({
+  gameId: 1,
+  settingsId: 2,
+  objectiveId: 0,
+  playerName: "Player1",
+  to: playerAddress,
+  soulbound: false,
+});
+
+// Batch mint (auto-assigns salts)
+const calls = client.mintBatch([
+  { gameId: 1, settingsId: 1, objectiveId: 0, playerName: "P1", to: addr, soulbound: false },
+  { gameId: 1, settingsId: 2, objectiveId: 0, playerName: "P2", to: addr, soulbound: false },
+]);
+
+// Update game state (sync score/game_over from game contract)
+const calls = client.updateGame(tokenId);
+const calls = client.updateGameBatch([tokenId1, tokenId2]);
+
+// Update player name
+const calls = client.updatePlayerName(tokenId, "NewName");
+const calls = client.updatePlayerNameBatch([
+  { tokenId: "0xa..", name: "Name1" },
+  { tokenId: "0xb..", name: "Name2" },
+]);
+```
+
+### Executing Transactions
+
+Write methods return `Call[]` arrays. Use starknet.js to execute them:
+
+```typescript
+import { Account, RpcProvider } from "starknet";
+
+const provider = new RpcProvider({ nodeUrl: "https://..." });
+const account = new Account(provider, accountAddress, privateKey);
+
+// Execute a mint
+const mintCalls = client.mint({
+  gameId: 1,
+  settingsId: 1,
+  objectiveId: 0,
+  playerName: "MyPlayer",
+  to: account.address,
+  soulbound: false,
+});
+const { transaction_hash } = await account.execute(mintCalls);
+await provider.waitForTransaction(transaction_hash);
+```
+
+With Cartridge Controller:
+
+```tsx
+import { useAccount } from "@starknet-react/core";
+
+function MintButton({ client }) {
+  const { account } = useAccount();
+
+  const handleMint = async () => {
+    const calls = client.mint({
+      gameId: 1,
+      settingsId: 1,
+      objectiveId: 0,
+      playerName: "Player",
+      to: account.address,
+      soulbound: false,
+    });
+    await account.execute(calls);
+  };
+
+  return <button onClick={handleMint}>Mint Token</button>;
+}
+```
+
+See [`MintParams`](/embeddable-game-standard/frontend/types#mintparams) for the full parameter type.
+
+## Utilities
+
+### Decode Token ID
+
+Extract all 14 packed fields without any RPC call:
+
+```typescript
+const decoded = client.decodeTokenId("0x123...");
+// Returns: DecodedTokenId {
+//   tokenId: bigint,
+//   gameId: number,
+//   mintedBy: bigint,
+//   settingsId: number,
+//   mintedAt: Date,
+//   startDelay: number,
+//   endDelay: number,
+//   objectiveId: number,
+//   soulbound: boolean,
+//   hasContext: boolean,
+//   paymaster: boolean,
+//   txHash: number,
+//   salt: number,
+//   metadata: number,
+// }
+```
+
+The standalone `decodeCoreToken()` function returns a [`CoreToken`](/embeddable-game-standard/frontend/types#coretoken) without needing a client instance:
+
+```typescript
+import { decodeCoreToken } from "@provable-games/denshokan-sdk";
+
+const core = decodeCoreToken("0x123...");
+// Returns: CoreToken — no RPC, no client needed
+```
+
+### MintSaltCounter
+
+Manages auto-incrementing 10-bit salt values (0–1023) for token minting:
+
+```typescript
+import { MintSaltCounter } from "@provable-games/denshokan-sdk";
+
+const counter = new MintSaltCounter();    // starts at 0
+const salt1 = counter.next();             // 0
+const salt2 = counter.next();             // 1
+const peeked = counter.peek();            // 2 (without advancing)
+counter.reset();                          // back to 0
+```
+
+### assignSalts
+
+Assigns auto-incrementing salts to mint parameter arrays:
+
+```typescript
+import { assignSalts } from "@provable-games/denshokan-sdk";
+
+const params = [
+  { gameId: 1, settingsId: 1, objectiveId: 0, playerName: "P1", to: addr, soulbound: false },
+  { gameId: 1, settingsId: 2, objectiveId: 0, playerName: "P2", to: addr, soulbound: false },
+];
+
+const withSalts = assignSalts(params);
+// withSalts[0].salt === 0
+// withSalts[1].salt === 1
+```
+
+:::note
+`mintBatch()` calls `assignSalts` automatically — you only need this for custom salt management.
+:::
+
+### Address Utilities
+
+```typescript
+import { normalizeAddress, toHexTokenId } from "@provable-games/denshokan-sdk";
+
+// Normalize to 0x-prefixed, 64-char hex (strips leading zeros, pads)
+normalizeAddress("0x00123");
+// "0x0000000000000000000000000000000000000000000000000000000000000123"
+
+// Convert bigint/hex/decimal to 0x-prefixed hex (no padding)
+toHexTokenId(255n);
+// "0xff"
+```
+
+### Connection Status
+
+```typescript
+// Check WebSocket connection
+const connected = client.wsConnected; // boolean
+
+// Listen for connection changes
+const unsub = client.onWsConnectionChange((connected) => {
+  console.log("WebSocket:", connected ? "up" : "down");
+});
+
+// Later: stop listening
+unsub();
+```
+
+## Health Monitoring
+
+The SDK performs background health checks to detect API or RPC availability and automatically switch data sources.
+
+```typescript
+// ConnectionStatus modes
+type ConnectionMode = "api" | "rpc-fallback" | "offline";
+```
+
+| Status         | Meaning                                     |
+| -------------- | ------------------------------------------- |
+| `api`          | API is reachable, using primary data source |
+| `rpc-fallback` | API is unavailable, using RPC as fallback   |
+| `offline`      | Both API and RPC are unreachable            |
+
+Health checks run at 30-second intervals (configurable via `health.checkInterval`). When the API goes down, the SDK auto-switches to RPC. When the API recovers, it switches back.
+
+## Error Handling
+
+```typescript
+import {
+  DenshokanError,
+  ApiError,
+  RpcError,
+  TokenNotFoundError,
+  DataSourceError,
+} from "@provable-games/denshokan-sdk";
+
+try {
+  const token = await client.getToken(id);
+} catch (error) {
+  if (error instanceof TokenNotFoundError) {
+    console.log(`Token ${error.tokenId} not found`);
+  } else if (error instanceof ApiError) {
+    console.log(`API error: ${error.statusCode}`);
+  } else if (error instanceof DataSourceError) {
+    console.log("Both API and RPC failed");
+  }
+}
+```
+
+### Error Hierarchy
+
+| Error                | Description                                   |
+| -------------------- | --------------------------------------------- |
+| `DenshokanError`     | Base error class                              |
+| `ApiError`           | REST API returned an error (has `statusCode`) |
+| `RpcError`           | Starknet RPC call failed                      |
+| `RateLimitError`     | Rate limit exceeded (has `retryAfter`)        |
+| `TimeoutError`       | Request timed out                             |
+| `AbortError`         | Request was aborted                           |
+| `TokenNotFoundError` | Token doesn't exist                           |
+| `GameNotFoundError`  | Game doesn't exist                            |
+| `InvalidChainError`  | Invalid chain specified                       |
+| `DataSourceError`    | Both primary and fallback sources failed      |
+
+See [Error Types](/embeddable-game-standard/frontend/types#error-types) for the full class definitions.
+
+## Cleanup
+
+```typescript
+// Disconnect WebSocket and cleanup
+client.disconnect();
+```
+
+
+
+---
+
+file: docs/embeddable-game-standard/frontend/types.mdx
+meta: {
+  "layout": "docs"
+}
+
+# Types Reference
+
+Complete TypeScript type definitions for the `@provable-games/denshokan-sdk` package.
+
+```typescript
+import type {
+  Token, CoreToken, DecodedTokenId, TokenMetadata,
+  TokenMutableState, TokenScoreEntry, PaginatedResult,
+  TokensFilterParams, Game, GameStats, // ... etc
+} from "@provable-games/denshokan-sdk";
+```
+
+## Core Token Types
+
+### Token
+
+The full token representation returned by API and RPC queries. See [DenshokanClient](/embeddable-game-standard/frontend/sdk) for query methods.
+
+```typescript
+interface Token {
+  tokenId: string;
+  gameId: number;
+  owner: string;
+  score: number;
+  gameOver: boolean;
+  playerName: string;
+  /** 40-bit truncated minter address from token ID (not full address) */
+  mintedBy: number;
+  mintedAt: string;
+  settingsId: number;
+  objectiveId: number;
+  soulbound: boolean;
+  isPlayable: boolean;
+  gameAddress: string;
+  startDelay: number;
+  endDelay: number;
+  hasContext: boolean;
+  paymaster: boolean;
+  /** Only populated when includeUri option is passed to getTokens/useTokens */
+  tokenUri?: string;
+}
+```
+
+### CoreToken
+
+Decoded purely from the packed token ID — no RPC calls required. Returned by [`useDecodeToken`](/embeddable-game-standard/frontend/react-hooks#token-decoding-client-side) and [`decodeCoreToken()`](/embeddable-game-standard/frontend/sdk#decode-token-id).
+
+```typescript
+interface CoreToken {
+  tokenId: string;
+  gameId: number;
+  settingsId: number;
+  objectiveId: number;
+  mintedAt: string;
+  soulbound: boolean;
+  startDelay: number;
+  endDelay: number;
+  hasContext: boolean;
+  paymaster: boolean;
+  /** 40-bit truncated minter address (not full address) */
+  mintedByTruncated: bigint;
+  txHash: number;
+  salt: number;
+  metadata: number;
+}
+```
+
+### DecodedTokenId
+
+Raw bigint decode of the packed token ID. Returned by [`client.decodeTokenId()`](/embeddable-game-standard/frontend/sdk#decode-token-id). See [Packed Token IDs](/embeddable-game-standard/advanced/packed-token-ids) for the bit layout.
+
+```typescript
+interface DecodedTokenId {
+  tokenId: bigint;
+  gameId: number;
+  mintedBy: bigint;
+  settingsId: number;
+  mintedAt: Date;
+  startDelay: number;
+  endDelay: number;
+  objectiveId: number;
+  soulbound: boolean;
+  hasContext: boolean;
+  paymaster: boolean;
+  txHash: number;
+  salt: number;
+  metadata: number;
+}
+```
+
+### TokenMetadata
+
+Immutable on-chain token metadata returned by [`client.tokenMetadata()`](/embeddable-game-standard/frontend/sdk#token-metadata).
+
+```typescript
+interface TokenMetadata {
+  gameId: number;
+  settingsId: number;
+  objectiveId: number;
+  playerName: string;
+  mintedBy: string;
+  isPlayable: boolean;
+  isSoulbound: boolean;
+  rendererAddress: string;
+  gameAddress: string;
+}
+```
+
+### TokenMutableState
+
+Mutable token state that can change after minting. Returned by [`client.tokenMutableState()`](/embeddable-game-standard/frontend/sdk#token-metadata).
+
+```typescript
+interface TokenMutableState {
+  gameOver: boolean;
+  completedObjective: boolean;
+}
+```
+
+### TokenScoreEntry
+
+A single score history entry. Returned by [`client.getTokenScores()`](/embeddable-game-standard/frontend/sdk#tokens).
+
+```typescript
+interface TokenScoreEntry {
+  score: number;
+  timestamp: string;
+}
+```
+
+### PaginatedResult\<T>
+
+Wrapper for paginated API responses. All list queries return this shape.
+
+```typescript
+interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+}
+```
+
+### TokensFilterParams
+
+Filter parameters for [`client.getTokens()`](/embeddable-game-standard/frontend/sdk#tokens) and [`useTokens()`](/embeddable-game-standard/frontend/react-hooks#tokens).
+
+```typescript
+interface TokensFilterParams {
+  gameId?: number;
+  gameAddress?: string;
+  owner?: string;
+  settingsId?: number;
+  objectiveId?: number;
+  minterAddress?: string;
+  soulbound?: boolean;
+  playable?: boolean;
+  gameOver?: boolean;
+  mintedAfter?: number;
+  mintedBefore?: number;
+  limit?: number;
+  offset?: number;
+  /** When true, fetches token URIs via batch RPC */
+  includeUri?: boolean;
+}
+```
+
+## Game Types
+
+### Game
+
+A registered game in the EGS ecosystem.
+
+```typescript
+interface Game {
+  gameId: number;
+  name: string;
+  description: string;
+  contractAddress: string;
+  imageUrl?: string;
+  developer?: string;
+  publisher?: string;
+  genre?: string;
+  color?: string;
+  clientUrl?: string;
+  rendererAddress?: string;
+  royaltyFraction?: string;
+  agentSkills?: string;
+  createdAt: string;
+}
+```
+
+### GameStats
+
+Aggregate statistics for a game. Returned by [`client.getGameStats()`](/embeddable-game-standard/frontend/sdk#games).
+
+```typescript
+interface GameStats {
+  gameId: number;
+  totalTokens: number;
+  completedGames: number;
+  activeGames: number;
+  uniquePlayers: number;
+}
+```
+
+### GameDetail
+
+A key-value pair from game-specific detail data. Returned by [`client.gameDetails()`](/embeddable-game-standard/frontend/sdk#game-contract-reads).
+
+```typescript
+interface GameDetail {
+  key: string;
+  value: string;
+}
+```
+
+### GameSettingDetails
+
+A complete settings configuration for a game.
+
+```typescript
+interface GameSettingDetails {
+  id: number;
+  gameAddress: string;
+  creatorAddress: string;
+  name: string;
+  description: string;
+  settings: Record<string, string>;
+  blockNumber: string;
+  createdAt: string;
+}
+```
+
+### GameObjectiveDetails
+
+A complete objective definition for a game.
+
+```typescript
+interface GameObjectiveDetails {
+  id: number;
+  settingsId: number;
+  gameAddress: string;
+  creatorAddress: string;
+  name: string;
+  description: string;
+  objectives: Record<string, string>;
+  blockNumber: string;
+  createdAt: string;
+}
+```
+
+### SettingsParams
+
+Parameters for querying settings lists.
+
+```typescript
+interface SettingsParams {
+  limit?: number;
+  offset?: number;
+  gameAddress?: string;
+}
+```
+
+### ObjectivesParams
+
+Parameters for querying objectives lists.
+
+```typescript
+interface ObjectivesParams {
+  limit?: number;
+  offset?: number;
+  gameAddress?: string;
+  settingsId?: number;
+}
+```
+
+## Player Types
+
+### PlayerStats
+
+Aggregate player statistics. Returned by [`client.getPlayerStats()`](/embeddable-game-standard/frontend/sdk#players).
+
+```typescript
+interface PlayerStats {
+  address: string;
+  totalTokens: number;
+  gamesPlayed: number;
+  completedGames: number;
+  activeGames: number;
+  totalScore: string;
+}
+```
+
+### PlayerTokensParams
+
+Parameters for querying a player's tokens.
+
+```typescript
+interface PlayerTokensParams {
+  gameId?: number;
+  limit?: number;
+  offset?: number;
+  /** When true, fetches token URIs via batch RPC */
+  includeUri?: boolean;
+}
+```
+
+## Minter Types
+
+### Minter
+
+A registered minter contract. Returned by [`client.getMinters()`](/embeddable-game-standard/frontend/sdk#minters).
+
+```typescript
+interface Minter {
+  id: string;
+  minterId: string;
+  name: string;
+  contractAddress: string;
+  createdAt: string;
+  blockNumber: string;
+}
+```
+
+## Activity Types
+
+### ActivityEvent
+
+A single activity event in the system.
+
+```typescript
+interface ActivityEvent {
+  id: string;
+  type: string;
+  tokenId: string;
+  gameId: number;
+  player: string;
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+```
+
+### ActivityParams
+
+Parameters for querying activity.
+
+```typescript
+interface ActivityParams {
+  type?: string;
+  limit?: number;
+  offset?: number;
+}
+```
+
+### ActivityStats
+
+Aggregate activity statistics.
+
+```typescript
+interface ActivityStats {
+  gameId: number;
+  totalTokens: number;
+  completedGames: number;
+  activeGames: number;
+  uniquePlayers: number;
+}
+```
+
+## RPC Types
+
+### MintParams
+
+Parameters for [`client.mint()`](/embeddable-game-standard/frontend/sdk#write-operations). All fields are required except `salt` and `metadata`.
+
+```typescript
+interface MintParams {
+  gameId: number;
+  settingsId: number;
+  objectiveId: number;
+  playerName: string;
+  soulbound: boolean;
+  to: string;
+  salt?: number;
+  metadata?: number;
+}
+```
+
+### RoyaltyInfo
+
+ERC-2981 royalty information. Returned by [`client.royaltyInfo()`](/embeddable-game-standard/frontend/sdk#erc721).
+
+```typescript
+interface RoyaltyInfo {
+  receiver: string;
+  amount: bigint;
+}
+```
+
+### GameMetadata
+
+On-chain game metadata from the registry RPC.
+
+```typescript
+interface GameMetadata {
+  gameId: number;
+  contractAddress: string;
+  name: string;
+  description: string;
+  developer: string;
+  publisher: string;
+  genre: string;
+  image: string;
+  color: string;
+  clientUrl: string;
+  rendererAddress: string;
+  royaltyFraction: bigint;
+  agentSkills: string;
+  createdAt: number;
+}
+```
+
+### PlayerNameUpdate
+
+Used with [`client.updatePlayerNameBatch()`](/embeddable-game-standard/frontend/sdk#write-operations).
+
+```typescript
+interface PlayerNameUpdate {
+  tokenId: string;
+  name: string;
+}
+```
+
+### FilterResult
+
+Result from viewer contract filter queries.
+
+```typescript
+interface FilterResult {
+  tokenIds: string[];
+  total: number;
+}
+```
+
+### TokenFullState
+
+Full on-chain token state from the viewer contract.
+
+```typescript
+interface TokenFullState {
+  tokenId: string;
+  owner: string;
+  playerName: string;
+  isPlayable: boolean;
+  gameAddress: string;
+  gameOver: boolean;
+  completedObjective: boolean;
+  lifecycle: Lifecycle;
+}
+```
+
+### Lifecycle
+
+Start and end timestamps for token playability windows.
+
+```typescript
+interface Lifecycle {
+  start: number;
+  end: number;
+}
+```
+
+## WebSocket Event Types
+
+For subscription hooks usage, see [WebSocket Subscriptions](/embeddable-game-standard/frontend/websockets) and [React Hooks](/embeddable-game-standard/frontend/react-hooks#subscription-hooks).
+
+### WSChannel
+
+```typescript
+type WSChannel =
+  | "tokens"
+  | "scores"
+  | "game_over"
+  | "mints"
+  | "games"
+  | "minters"
+  | "settings"
+  | "objectives";
+```
+
+### WSMessage
+
+```typescript
+interface WSMessage {
+  channel: string;
+  data: unknown;
+  _timing?: { serverTs: number };
+}
+```
+
+### WSSubscribeOptions
+
+```typescript
+interface WSSubscribeOptions {
+  channels: WSChannel[];
+  gameIds?: number[];
+}
+```
+
+### WSEventHandler
+
+```typescript
+type WSEventHandler = (message: WSMessage) => void;
+```
+
+### ScoreEvent
+
+Emitted on the `scores` channel when a token's score changes.
+
+```typescript
+interface ScoreEvent {
+  tokenId: string;
+  gameId: number;
+  score: number;
+  ownerAddress: string;
+  playerName: string;
+}
+```
+
+### GameOverEvent
+
+Emitted on the `game_over` channel when a game ends.
+
+```typescript
+interface GameOverEvent {
+  tokenId: string;
+  gameId: number;
+  score: number;
+  ownerAddress: string;
+  playerName: string;
+  completedAllObjectives: boolean;
+}
+```
+
+### MintEvent
+
+Emitted on the `mints` channel when a new token is minted.
+
+```typescript
+interface MintEvent {
+  tokenId: string;
+  gameId: number;
+  ownerAddress: string;
+  mintedBy: string;
+  settingsId: number;
+}
+```
+
+### TokenUpdateEvent
+
+Union type emitted on the `tokens` channel for any token state change.
+
+```typescript
+type TokenUpdateEvent =
+  | { type: "scoreUpdate"; tokenId: string; gameId: number; score: number }
+  | { type: "gameOver"; tokenId: string; gameId: number; score: number }
+  | { type: "minted"; tokenId: string; gameId: number; ownerAddress: string };
+```
+
+### NewGameEvent
+
+```typescript
+interface NewGameEvent {
+  gameId: number;
+  contractAddress: string;
+  name: string;
+}
+```
+
+### NewMinterEvent
+
+```typescript
+interface NewMinterEvent {
+  minterId: string;
+  contractAddress: string;
+  name: string;
+  blockNumber: string;
+}
+```
+
+### NewSettingEvent
+
+```typescript
+interface NewSettingEvent {
+  gameAddress: string;
+  settingsId: number;
+  creatorAddress: string;
+  settingsData: string | null;
+}
+```
+
+### NewObjectiveEvent
+
+```typescript
+interface NewObjectiveEvent {
+  gameAddress: string;
+  objectiveId: number;
+  settingsId: number;
+  creatorAddress: string;
+  objectiveData: string | null;
+}
+```
+
+### WSChannelPayloadMap
+
+Maps each channel name to its typed payload. Used by subscription hooks for type safety.
+
+```typescript
+interface WSChannelPayloadMap {
+  scores: ScoreEvent;
+  game_over: GameOverEvent;
+  mints: MintEvent;
+  tokens: TokenUpdateEvent;
+  games: NewGameEvent;
+  minters: NewMinterEvent;
+  settings: NewSettingEvent;
+  objectives: NewObjectiveEvent;
+}
+```
+
+## Configuration Types
+
+### DenshokanClientConfig
+
+Configuration for creating a [`DenshokanClient`](/embeddable-game-standard/frontend/sdk#configuration).
+
+```typescript
+interface DenshokanClientConfig {
+  chain?: "mainnet" | "sepolia";
+  apiUrl?: string;
+  wsUrl?: string;
+  rpcUrl?: string;
+  provider?: unknown;
+  /** Denshokan ERC721 contract address (defaults to chain address) */
+  denshokanAddress?: string;
+  /** Minigame registry contract address (defaults to chain address) */
+  registryAddress?: string;
+  /** Viewer contract address for batch filter queries (defaults to chain address) */
+  viewerAddress?: string;
+  primarySource?: DataSource;
+  fetch?: FetchConfig;
+  ws?: WSConfig;
+  health?: HealthConfig;
+}
+```
+
+### DataSource
+
+```typescript
+type DataSource = "api" | "rpc";
+```
+
+### FetchConfig
+
+```typescript
+interface FetchConfig {
+  timeout?: number;
+  maxRetries?: number;
+  baseBackoff?: number;
+  maxBackoff?: number;
+  /** Max concurrent token URI RPC calls (0 = unlimited) */
+  tokenUriConcurrency?: number;
+}
+```
+
+### WSConfig
+
+```typescript
+interface WSConfig {
+  maxReconnectAttempts?: number;
+  reconnectBaseDelay?: number;
+}
+```
+
+### HealthConfig
+
+```typescript
+interface HealthConfig {
+  /** Delay before first health check in ms (default: 1000) */
+  initialCheckDelay?: number;
+  /** Interval between health checks in ms (default: 30000) */
+  checkInterval?: number;
+  /** Timeout for each health check in ms (default: 5000) */
+  checkTimeout?: number;
+}
+```
+
+## Error Types
+
+All errors extend `DenshokanError`. See [Error Handling](/embeddable-game-standard/frontend/sdk#error-handling) for usage examples.
+
+```typescript
+class DenshokanError extends Error {}
+
+class ApiError extends DenshokanError {
+  statusCode: number;
+}
+
+class RpcError extends DenshokanError {
+  contractAddress?: string;
+}
+
+class RateLimitError extends DenshokanError {
+  retryAfter: number | null;
+}
+
+class TimeoutError extends DenshokanError {}
+
+class AbortError extends DenshokanError {}
+
+class TokenNotFoundError extends DenshokanError {
+  tokenId: string;
+}
+
+class GameNotFoundError extends DenshokanError {
+  gameId: string | number;
+}
+
+class InvalidChainError extends DenshokanError {
+  chain: string;
+}
+
+class DataSourceError extends DenshokanError {
+  primaryError: Error;
+  fallbackError: Error;
+}
+```
+
+## Hook Return Types
+
+### UseAsyncResult\<T>
+
+Standard return type for all data [React hooks](/embeddable-game-standard/frontend/react-hooks#hook-return-type).
+
+```typescript
+interface UseAsyncResult<T> {
+  data: T | null;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => void;
+}
+```
+
+### UseTokensResult
+
+Extended return type for [`useTokens`](/embeddable-game-standard/frontend/react-hooks#tokens) and [`usePlayerTokens`](/embeddable-game-standard/frontend/react-hooks#players). Adds `isLoadingUri` for background URI fetching.
+
+```typescript
+interface UseTokensResult extends UseAsyncResult<PaginatedResult<Token>> {
+  /** True while token URIs are being fetched (when includeUri: true) */
+  isLoadingUri: boolean;
+}
+```
+
+### UseChannelOptions\<C>
+
+Options for [subscription hooks](/embeddable-game-standard/frontend/react-hooks#subscription-hooks).
+
+```typescript
+interface UseChannelOptions<C extends WSChannel> {
+  gameIds?: number[];
+  bufferSize?: number;
+  enabled?: boolean;
+  onEvent?: (event: WSChannelPayloadMap[C]) => void;
+}
+```
+
+### UseChannelResult\<C>
+
+Return type for [subscription hooks](/embeddable-game-standard/frontend/react-hooks#subscription-hooks).
+
+```typescript
+interface UseChannelResult<C extends WSChannel> {
+  lastEvent: WSChannelPayloadMap[C] | null;
+  events: WSChannelPayloadMap[C][];
+  isConnected: boolean;
+  clear: () => void;
+}
+```
+
+
+
+---
+
+file: docs/embeddable-game-standard/frontend/websockets.mdx
+meta: {
+  "layout": "docs"
+}
+
+# WebSocket Subscriptions
+
+The SDK provides real-time event subscriptions via WebSocket. Subscribe to game events for live leaderboards, activity feeds, and instant notifications.
+
+## Architecture
+
+Events flow from the blockchain through a multi-layered pipeline:
+
+```
+Blockchain Event (e.g. score update)
+    ↓
+Apibara Indexer → writes to PostgreSQL
+    ↓
+PostgreSQL LISTEN/NOTIFY triggers
+    ↓
+API Server broadcasts to subscribed WebSocket clients
+    ↓
+denshokan-sdk WebSocketManager
+    ↓
+Event mappers (snake_case → camelCase)
+    ↓
+React hooks / callback handlers
+```
+
+The API server uses PostgreSQL triggers on the `tokens`, `games`, and `minters` tables. When data changes, triggers fire `NOTIFY` on named channels, and the API server broadcasts to all subscribed WebSocket clients.
+
+## Channels
+
+| Channel      | Event Type          | Description                                               |
+| ------------ | ------------------- | --------------------------------------------------------- |
+| `tokens`     | `TokenUpdateEvent`  | Any token state change (score update, game over, or mint) |
+| `scores`     | `ScoreEvent`        | When a token's score changes                              |
+| `game_over`  | `GameOverEvent`     | When a game session ends                                  |
+| `mints`      | `MintEvent`         | When new game tokens are minted                           |
+| `games`      | `NewGameEvent`      | When a new game is registered                             |
+| `minters`    | `NewMinterEvent`    | When a new minter is registered                           |
+| `settings`   | `NewSettingEvent`   | When a new game setting is created                        |
+| `objectives` | `NewObjectiveEvent` | When a new game objective is created                      |
+
+## Event Payloads
+
+Each channel delivers a typed event. The SDK automatically maps snake\_case server data to camelCase TypeScript types.
+
+```typescript
+interface ScoreEvent {
+  tokenId: string;
+  gameId: number;
+  score: number;
+  ownerAddress: string;
+  playerName: string;
+}
+
+interface GameOverEvent {
+  tokenId: string;
+  gameId: number;
+  score: number;
+  ownerAddress: string;
+  playerName: string;
+  completedAllObjectives: boolean;
+}
+
+interface MintEvent {
+  tokenId: string;
+  gameId: number;
+  ownerAddress: string;
+  mintedBy: string;
+  settingsId: number;
+}
+
+// TokenUpdateEvent is polymorphic — it aggregates all token-related events
+interface TokenUpdateEvent {
+  type: "scoreUpdate" | "gameOver" | "minted";
+  tokenId: string;
+  gameId: number;
+  score?: number;
+  ownerAddress?: string;
+}
+
+interface NewGameEvent {
+  gameId: number;
+  contractAddress: string;
+  name: string;
+}
+
+interface NewMinterEvent {
+  minterId: string;
+  contractAddress: string;
+  name: string;
+  blockNumber: string;
+}
+
+interface NewSettingEvent {
+  gameAddress: string;
+  settingsId: number;
+  creatorAddress: string;
+  settingsData: string | null;
+}
+
+interface NewObjectiveEvent {
+  gameAddress: string;
+  objectiveId: number;
+  settingsId: number;
+  creatorAddress: string;
+  objectiveData: string | null;
+}
+```
+
+All types are exported from the SDK:
+
+```typescript
+import type {
+  WSChannel,
+  WSMessage,
+  ScoreEvent,
+  GameOverEvent,
+  MintEvent,
+  TokenUpdateEvent,
+  NewGameEvent,
+  NewMinterEvent,
+  NewSettingEvent,
+  NewObjectiveEvent,
+  WSChannelPayloadMap,
+} from "@provable-games/denshokan-sdk";
+```
+
+## Using the Client
+
+```typescript
+import { DenshokanClient } from "@provable-games/denshokan-sdk";
+
+const client = new DenshokanClient({ chain: "mainnet" });
+
+// Subscribe to score updates for game ID 1
+const unsubscribe = client.subscribe(
+  {
+    channels: ["scores", "game_over"],
+    gameIds: [1],
+  },
+  (message) => {
+    console.log(`Channel: ${message.channel}`);
+    console.log(`Data:`, message.data);
+  },
+);
+
+// Later: unsubscribe
+unsubscribe();
+
+// Cleanup all connections
+client.disconnect();
+```
+
+## Typed React Hooks (Recommended)
+
+The SDK provides eight typed hooks — one per channel. Each returns the last event, a buffered event history, and connection state.
+
+### useScoreUpdates
+
+```tsx
+import { useScoreUpdates } from "@provable-games/denshokan-sdk/react";
+
+function LiveScores({ gameId }: { gameId: number }) {
+  const { lastEvent, events, isConnected } = useScoreUpdates({
+    gameIds: [gameId],
+    bufferSize: 100,
+  });
+
+  return (
+    <div>
+      <p>Connected: {isConnected ? "Yes" : "No"}</p>
+      <p>Latest: {lastEvent?.playerName} scored {lastEvent?.score}</p>
+      <ul>
+        {events.map((e, i) => (
+          <li key={i}>{e.playerName}: {e.score}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### All Typed Hooks
+
+| Hook                | Channel      | Payload             |
+| ------------------- | ------------ | ------------------- |
+| `useScoreUpdates`   | `scores`     | `ScoreEvent`        |
+| `useGameOverEvents` | `game_over`  | `GameOverEvent`     |
+| `useMintEvents`     | `mints`      | `MintEvent`         |
+| `useTokenUpdates`   | `tokens`     | `TokenUpdateEvent`  |
+| `useNewGames`       | `games`      | `NewGameEvent`      |
+| `useNewMinters`     | `minters`    | `NewMinterEvent`    |
+| `useNewSettings`    | `settings`   | `NewSettingEvent`   |
+| `useNewObjectives`  | `objectives` | `NewObjectiveEvent` |
+
+### Hook Options
+
+```typescript
+interface UseChannelOptions<C extends WSChannel> {
+  gameIds?: number[];       // Filter to specific game IDs (server-side)
+  bufferSize?: number;      // Max events to keep in memory (default: 50)
+  enabled?: boolean;        // Enable/disable the subscription (default: true)
+  onEvent?: (event: WSChannelPayloadMap[C]) => void;  // Callback per event
+}
+```
+
+### Hook Return Value
+
+```typescript
+interface UseChannelResult<C extends WSChannel> {
+  lastEvent: WSChannelPayloadMap[C] | null;  // Most recent event
+  events: WSChannelPayloadMap[C][];          // Buffered event history
+  isConnected: boolean;                       // WebSocket connection state
+  clear: () => void;                          // Clear event buffer
+}
+```
+
+### useChannelSubscription (Generic)
+
+All typed hooks wrap `useChannelSubscription`. You can use it directly for type-safe access to any channel:
+
+```tsx
+import { useChannelSubscription } from "@provable-games/denshokan-sdk/react";
+
+const { lastEvent, events, isConnected } = useChannelSubscription("scores", {
+  gameIds: [1, 2],
+  bufferSize: 25,
+  onEvent: (event) => {
+    console.log("New score:", event.score);
+  },
+});
+```
+
+## Low-Level Hook
+
+For raw message access, use `useSubscription`:
+
+```tsx
+import { useSubscription } from "@provable-games/denshokan-sdk/react";
+
+function LiveLeaderboard({ gameId }: { gameId: number }) {
+  const [scores, setScores] = useState<Map<string, number>>(new Map());
+
+  useSubscription(
+    ["scores", "game_over"],
+    (message) => {
+      if (message.channel === "scores") {
+        const data = message.data as ScoreEvent;
+        setScores(prev => new Map(prev).set(data.tokenId, data.score));
+      }
+    },
+    [gameId],
+  );
+
+  return (
+    <ul>
+      {[...scores.entries()]
+        .sort(([, a], [, b]) => b - a)
+        .map(([id, score]) => (
+          <li key={id}>Token {id}: {score}</li>
+        ))}
+    </ul>
+  );
+}
+```
+
+### useSubscription Signature
+
+```typescript
+function useSubscription(
+  channels: WSChannel[],
+  handler: WSEventHandler,    // (message: WSMessage) => void
+  gameIds?: number[],
+): void;
+```
+
+The hook manages connection lifecycle automatically:
+
+* Connects when the component mounts
+* Re-subscribes if channels or gameIds change
+* Disconnects when the component unmounts
+
+## Connection Status
+
+Monitor WebSocket connection state in your UI:
+
+```tsx
+import { useConnectionStatus } from "@provable-games/denshokan-sdk/react";
+
+function ConnectionBadge() {
+  const { isConnected } = useConnectionStatus();
+
+  return (
+    <span style={{ color: isConnected ? "green" : "red" }}>
+      {isConnected ? "Live" : "Reconnecting..."}
+    </span>
+  );
+}
+```
+
+For programmatic use outside React:
+
+```typescript
+// Check current status
+const connected = client.wsConnected;
+
+// Listen for changes
+const unsub = client.onWsConnectionChange((connected) => {
+  console.log("WebSocket:", connected ? "connected" : "disconnected");
+});
+```
+
+## Message Format
+
+```typescript
+interface WSMessage {
+  channel: string;     // "scores", "game_over", "tokens", "mints", "games", "minters", "settings", "objectives"
+  data: unknown;       // Channel-specific payload (use typed hooks for automatic typing)
+  _timing?: {
+    serverTs: number;  // Server timestamp for latency measurement
+  };
+}
+```
+
+## Connection Management
+
+The WebSocket manager handles:
+
+* **Auto-reconnect** with exponential backoff (1s, 2s, 4s, ... capped at 30s)
+* **Max 10 reconnect attempts** before giving up
+* **Re-subscription** on reconnect (all active subscriptions are restored)
+* **Smart retry** — only attempts reconnection if active subscriptions exist
+
+### Manual Connection
+
+```typescript
+// Connect manually (usually not needed - subscribe() auto-connects)
+client.connect();
+
+// Check connection status
+const connected = client.wsConnected;
+
+// Disconnect
+client.disconnect();
+```
+
+## Combining with Data Hooks
+
+A common pattern is to use data hooks for initial load and typed subscription hooks for live updates:
+
+```tsx
+function GameDashboard({ gameAddress }: { gameAddress: string }) {
+  const { data: tokens, refetch } = useTokens({
+    gameAddress,
+    gameOver: false,
+    limit: 50,
+  });
+
+  // Automatically refetch when a game completes
+  useGameOverEvents({
+    onEvent: () => refetch(),
+  });
+
+  // Show live score updates
+  const { lastEvent: latestScore } = useScoreUpdates();
+
+  return (
+    <div>
+      {latestScore && (
+        <p>Latest: {latestScore.playerName} scored {latestScore.score}</p>
+      )}
+      <TokenList tokens={tokens?.data ?? []} />
+    </div>
+  );
+}
+```
+
+This gives you:
+
+* Instant initial render from the API
+* Automatic list refresh when games complete
+* Live score ticker from WebSocket
 
 
 

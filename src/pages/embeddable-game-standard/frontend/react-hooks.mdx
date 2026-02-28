@@ -80,17 +80,24 @@ function GameDetail({ address }: { address: string }) {
 import { useTokens, useToken, useTokenScores } from "@provable-games/denshokan-sdk/react";
 
 function TokenList({ gameAddress }: { gameAddress: string }) {
-  const { data: tokens } = useTokens({
+  const { data: tokens, isLoadingUri } = useTokens({
     gameAddress,
     gameOver: true,
+    includeUri: true,
     limit: 50,
   });
 
-  return tokens?.data.map(token => (
-    <div key={token.tokenId}>
-      Score: {token.score}
+  return (
+    <div>
+      {isLoadingUri && <p>Loading token images...</p>}
+      {tokens?.data.map(token => (
+        <div key={token.tokenId}>
+          Score: {token.score}
+          {token.tokenUri && <img src={token.tokenUri} />}
+        </div>
+      ))}
     </div>
-  ));
+  );
 }
 
 function TokenDetail({ tokenId }: { tokenId: string }) {
@@ -108,6 +115,10 @@ function TokenDetail({ tokenId }: { tokenId: string }) {
   );
 }
 ```
+
+:::note
+When `includeUri: true` is passed to `useTokens` or `usePlayerTokens`, an additional `isLoadingUri` flag is returned. It is `true` while token URIs are being fetched in the background via batch RPC. The main `data` is available immediately — URIs populate asynchronously.
+:::
 
 ### Players
 
@@ -127,6 +138,24 @@ function PlayerProfile({ address }: { address: string }) {
       {tokens?.data.map(t => <TokenCard key={t.tokenId} token={t} />)}
     </div>
   );
+}
+```
+
+### Minters
+
+```tsx
+import { useMinters } from "@provable-games/denshokan-sdk/react";
+
+function MinterList() {
+  const { data: minters, isLoading } = useMinters({ limit: 20, offset: 0 });
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return minters?.data.map(minter => (
+    <div key={minter.id}>
+      {minter.name} — {minter.contractAddress}
+    </div>
+  ));
 }
 ```
 
@@ -153,6 +182,8 @@ function TokenInfo({ tokenId }: { tokenId: string }) {
 }
 ```
 
+`useDecodeToken` returns a [`CoreToken`](/embeddable-game-standard/frontend/types#coretoken) directly (no loading state) since decoding is purely client-side.
+
 ## RPC Hooks
 
 Direct contract reads:
@@ -162,15 +193,12 @@ import {
   useBalanceOf,
   useOwnerOf,
   useTokenUri,
+  useTokenUriBatch,
   useTokenMetadataBatch,
   useScoreBatch,
   useGameOverBatch,
   useObjectivesCount,
-  useObjectiveDetails,
-  useObjectivesDetails,
   useSettingsCount,
-  useSettingDetails,
-  useSettingsDetails,
 } from "@provable-games/denshokan-sdk/react";
 
 function OwnerInfo({ tokenId }: { tokenId: string }) {
@@ -202,9 +230,7 @@ function Scores({ tokenIds, gameAddress }: Props) {
 ```tsx
 function GameSettings({ gameAddress }: { gameAddress: string }) {
   const { data: count } = useSettingsCount(gameAddress);
-  const { data: settings } = useSettingsDetails(gameAddress, {
-    limit: 10, offset: 0,
-  });
+  const { data: settings } = useSettings(gameAddress);
 
   return (
     <div>
@@ -279,14 +305,14 @@ function LiveDashboard({ gameId }: { gameId: number }) {
 
 | Hook | Channel | Payload Type |
 |------|---------|-------------|
-| `useScoreUpdates` | `scores` | `ScoreEvent` |
-| `useGameOverEvents` | `game_over` | `GameOverEvent` |
-| `useMintEvents` | `mints` | `MintEvent` |
-| `useTokenUpdates` | `tokens` | `TokenUpdateEvent` |
-| `useNewGames` | `games` | `NewGameEvent` |
-| `useNewMinters` | `minters` | `NewMinterEvent` |
-| `useNewSettings` | `settings` | `NewSettingEvent` |
-| `useNewObjectives` | `objectives` | `NewObjectiveEvent` |
+| `useScoreUpdates` | `scores` | [`ScoreEvent`](/embeddable-game-standard/frontend/types#scoreevent) |
+| `useGameOverEvents` | `game_over` | [`GameOverEvent`](/embeddable-game-standard/frontend/types#gameoverevent) |
+| `useMintEvents` | `mints` | [`MintEvent`](/embeddable-game-standard/frontend/types#mintevent) |
+| `useTokenUpdates` | `tokens` | [`TokenUpdateEvent`](/embeddable-game-standard/frontend/types#tokenupdateevent) |
+| `useNewGames` | `games` | [`NewGameEvent`](/embeddable-game-standard/frontend/types#newgameevent) |
+| `useNewMinters` | `minters` | [`NewMinterEvent`](/embeddable-game-standard/frontend/types#newminterevent) |
+| `useNewSettings` | `settings` | [`NewSettingEvent`](/embeddable-game-standard/frontend/types#newsettingevent) |
+| `useNewObjectives` | `objectives` | [`NewObjectiveEvent`](/embeddable-game-standard/frontend/types#newobjectiveevent) |
 
 Options and return types:
 
@@ -318,6 +344,92 @@ interface UseAsyncResult<T> {
   isLoading: boolean;   // True during initial load
   error: Error | null;  // Error if the fetch failed
   refetch: () => void;  // Manually trigger a re-fetch
+}
+```
+
+`useTokens` and `usePlayerTokens` extend this with an additional field:
+
+```typescript
+interface UseTokensResult extends UseAsyncResult<PaginatedResult<Token>> {
+  /** True while token URIs are being fetched (when includeUri: true) */
+  isLoadingUri: boolean;
+}
+```
+
+See [`UseAsyncResult`](/embeddable-game-standard/frontend/types#useasyncresultt), [`UseTokensResult`](/embeddable-game-standard/frontend/types#usetokensresult), and [`UseChannelResult`](/embeddable-game-standard/frontend/types#usechannelresultc) for the full type definitions.
+
+## Complete Hook Signatures
+
+### Data Hooks
+
+| Hook | Parameters | Return |
+|------|-----------|--------|
+| `useGames(params?)` | `{ limit?, offset? }` | `UseAsyncResult<PaginatedResult<Game>>` |
+| `useGame(address?)` | `string \| undefined` | `UseAsyncResult<Game>` |
+| `useGameStats(address?)` | `string \| undefined` | `UseAsyncResult<GameStats>` |
+| `useTokens(params?)` | [`TokensFilterParams`](/embeddable-game-standard/frontend/types#tokensfilterparams) | `UseTokensResult` |
+| `useToken(tokenId?)` | `string \| undefined` | `UseAsyncResult<Token>` |
+| `useTokenScores(tokenId?, limit?)` | `string \| undefined, number` | `UseAsyncResult<TokenScoreEntry[]>` |
+| `useDecodeToken(tokenId?)` | `string \| undefined` | `CoreToken \| null` |
+| `usePlayerStats(address?)` | `string \| undefined` | `UseAsyncResult<PlayerStats>` |
+| `usePlayerTokens(address?, params?)` | `string \| undefined, PlayerTokensParams` | `UseTokensResult` |
+| `useMinters(params?)` | `{ limit?, offset? }` | `UseAsyncResult<PaginatedResult<Minter>>` |
+| `useSettings(params?)` | [`SettingsParams`](/embeddable-game-standard/frontend/types#settingsparams) | `UseAsyncResult<PaginatedResult<GameSettingDetails>>` |
+| `useObjectives(params?)` | [`ObjectivesParams`](/embeddable-game-standard/frontend/types#objectivesparams) | `UseAsyncResult<PaginatedResult<GameObjectiveDetails>>` |
+| `useActivity(params?)` | [`ActivityParams`](/embeddable-game-standard/frontend/types#activityparams) | `UseAsyncResult<PaginatedResult<ActivityEvent>>` |
+
+### RPC Hooks
+
+| Hook | Parameters | Return |
+|------|-----------|--------|
+| `useBalanceOf(account?)` | `string \| undefined` | `UseAsyncResult<bigint>` |
+| `useOwnerOf(tokenId?)` | `string \| undefined` | `UseAsyncResult<string>` |
+| `useTokenUri(tokenId?)` | `string \| undefined` | `UseAsyncResult<string>` |
+| `useTokenUriBatch(tokenIds?)` | `string[] \| undefined` | `UseAsyncResult<string[]>` |
+| `useTokenMetadataBatch(tokenIds?)` | `string[] \| undefined` | `UseAsyncResult<TokenMetadata[]>` |
+| `useScoreBatch(tokenIds?, gameAddress?)` | `string[] \| undefined, string \| undefined` | `UseAsyncResult<bigint[]>` |
+| `useGameOverBatch(tokenIds?, gameAddress?)` | `string[] \| undefined, string \| undefined` | `UseAsyncResult<boolean[]>` |
+| `useObjectivesCount(gameAddress?)` | `string \| undefined` | `UseAsyncResult<number>` |
+| `useSettingsCount(gameAddress?)` | `string \| undefined` | `UseAsyncResult<number>` |
+
+## Caching & Refetch Behavior
+
+Hooks do **not** auto-poll or auto-refresh. Data is fetched:
+
+1. **On mount** — when the component first renders with defined parameters
+2. **On parameter change** — when hook parameters change (referential equality)
+
+To manually refresh data, call `refetch()`:
+
+```tsx
+function TokenView({ tokenId }: { tokenId: string }) {
+  const { data: token, refetch } = useToken(tokenId);
+
+  return (
+    <div>
+      <p>Score: {token?.score}</p>
+      <button onClick={refetch}>Refresh</button>
+    </div>
+  );
+}
+```
+
+For live updates, combine data hooks with [subscription hooks](#subscription-hooks):
+
+```tsx
+function LiveScore({ tokenId, gameId }: Props) {
+  const { data: token, refetch } = useToken(tokenId);
+
+  useScoreUpdates({
+    gameIds: [gameId],
+    onEvent: (event) => {
+      if (event.tokenId === tokenId) {
+        refetch(); // Re-fetch when this token's score changes
+      }
+    },
+  });
+
+  return <p>Score: {token?.score}</p>;
 }
 ```
 

@@ -176,6 +176,10 @@ export default defineConfig({
                 link: "/embeddable-game-standard/frontend/sdk",
               },
               {
+                text: "Types Reference",
+                link: "/embeddable-game-standard/frontend/types",
+              },
+              {
                 text: "React Hooks",
                 link: "/embeddable-game-standard/frontend/react-hooks",
               },

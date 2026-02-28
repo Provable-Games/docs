@@ -1,0 +1,791 @@
+---
+layout: docs
+---
+
+# Types Reference
+
+Complete TypeScript type definitions for the `@provable-games/denshokan-sdk` package.
+
+```typescript
+import type {
+  Token, CoreToken, DecodedTokenId, TokenMetadata,
+  TokenMutableState, TokenScoreEntry, PaginatedResult,
+  TokensFilterParams, Game, GameStats, // ... etc
+} from "@provable-games/denshokan-sdk";
+```
+
+## Core Token Types
+
+### Token
+
+The full token representation returned by API and RPC queries. See [DenshokanClient](/embeddable-game-standard/frontend/sdk) for query methods.
+
+```typescript
+interface Token {
+  tokenId: string;
+  gameId: number;
+  owner: string;
+  score: number;
+  gameOver: boolean;
+  playerName: string;
+  /** 40-bit truncated minter address from token ID (not full address) */
+  mintedBy: number;
+  mintedAt: string;
+  settingsId: number;
+  objectiveId: number;
+  soulbound: boolean;
+  isPlayable: boolean;
+  gameAddress: string;
+  startDelay: number;
+  endDelay: number;
+  hasContext: boolean;
+  paymaster: boolean;
+  /** Only populated when includeUri option is passed to getTokens/useTokens */
+  tokenUri?: string;
+}
+```
+
+### CoreToken
+
+Decoded purely from the packed token ID — no RPC calls required. Returned by [`useDecodeToken`](/embeddable-game-standard/frontend/react-hooks#token-decoding-client-side) and [`decodeCoreToken()`](/embeddable-game-standard/frontend/sdk#decode-token-id).
+
+```typescript
+interface CoreToken {
+  tokenId: string;
+  gameId: number;
+  settingsId: number;
+  objectiveId: number;
+  mintedAt: string;
+  soulbound: boolean;
+  startDelay: number;
+  endDelay: number;
+  hasContext: boolean;
+  paymaster: boolean;
+  /** 40-bit truncated minter address (not full address) */
+  mintedByTruncated: bigint;
+  txHash: number;
+  salt: number;
+  metadata: number;
+}
+```
+
+### DecodedTokenId
+
+Raw bigint decode of the packed token ID. Returned by [`client.decodeTokenId()`](/embeddable-game-standard/frontend/sdk#decode-token-id). See [Packed Token IDs](/embeddable-game-standard/advanced/packed-token-ids) for the bit layout.
+
+```typescript
+interface DecodedTokenId {
+  tokenId: bigint;
+  gameId: number;
+  mintedBy: bigint;
+  settingsId: number;
+  mintedAt: Date;
+  startDelay: number;
+  endDelay: number;
+  objectiveId: number;
+  soulbound: boolean;
+  hasContext: boolean;
+  paymaster: boolean;
+  txHash: number;
+  salt: number;
+  metadata: number;
+}
+```
+
+### TokenMetadata
+
+Immutable on-chain token metadata returned by [`client.tokenMetadata()`](/embeddable-game-standard/frontend/sdk#token-metadata).
+
+```typescript
+interface TokenMetadata {
+  gameId: number;
+  settingsId: number;
+  objectiveId: number;
+  playerName: string;
+  mintedBy: string;
+  isPlayable: boolean;
+  isSoulbound: boolean;
+  rendererAddress: string;
+  gameAddress: string;
+}
+```
+
+### TokenMutableState
+
+Mutable token state that can change after minting. Returned by [`client.tokenMutableState()`](/embeddable-game-standard/frontend/sdk#token-metadata).
+
+```typescript
+interface TokenMutableState {
+  gameOver: boolean;
+  completedObjective: boolean;
+}
+```
+
+### TokenScoreEntry
+
+A single score history entry. Returned by [`client.getTokenScores()`](/embeddable-game-standard/frontend/sdk#tokens).
+
+```typescript
+interface TokenScoreEntry {
+  score: number;
+  timestamp: string;
+}
+```
+
+### PaginatedResult\<T\>
+
+Wrapper for paginated API responses. All list queries return this shape.
+
+```typescript
+interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+}
+```
+
+### TokensFilterParams
+
+Filter parameters for [`client.getTokens()`](/embeddable-game-standard/frontend/sdk#tokens) and [`useTokens()`](/embeddable-game-standard/frontend/react-hooks#tokens).
+
+```typescript
+interface TokensFilterParams {
+  gameId?: number;
+  gameAddress?: string;
+  owner?: string;
+  settingsId?: number;
+  objectiveId?: number;
+  minterAddress?: string;
+  soulbound?: boolean;
+  playable?: boolean;
+  gameOver?: boolean;
+  mintedAfter?: number;
+  mintedBefore?: number;
+  limit?: number;
+  offset?: number;
+  /** When true, fetches token URIs via batch RPC */
+  includeUri?: boolean;
+}
+```
+
+## Game Types
+
+### Game
+
+A registered game in the EGS ecosystem.
+
+```typescript
+interface Game {
+  gameId: number;
+  name: string;
+  description: string;
+  contractAddress: string;
+  imageUrl?: string;
+  developer?: string;
+  publisher?: string;
+  genre?: string;
+  color?: string;
+  clientUrl?: string;
+  rendererAddress?: string;
+  royaltyFraction?: string;
+  agentSkills?: string;
+  createdAt: string;
+}
+```
+
+### GameStats
+
+Aggregate statistics for a game. Returned by [`client.getGameStats()`](/embeddable-game-standard/frontend/sdk#games).
+
+```typescript
+interface GameStats {
+  gameId: number;
+  totalTokens: number;
+  completedGames: number;
+  activeGames: number;
+  uniquePlayers: number;
+}
+```
+
+### GameDetail
+
+A key-value pair from game-specific detail data. Returned by [`client.gameDetails()`](/embeddable-game-standard/frontend/sdk#game-contract-reads).
+
+```typescript
+interface GameDetail {
+  key: string;
+  value: string;
+}
+```
+
+### GameSettingDetails
+
+A complete settings configuration for a game.
+
+```typescript
+interface GameSettingDetails {
+  id: number;
+  gameAddress: string;
+  creatorAddress: string;
+  name: string;
+  description: string;
+  settings: Record<string, string>;
+  blockNumber: string;
+  createdAt: string;
+}
+```
+
+### GameObjectiveDetails
+
+A complete objective definition for a game.
+
+```typescript
+interface GameObjectiveDetails {
+  id: number;
+  settingsId: number;
+  gameAddress: string;
+  creatorAddress: string;
+  name: string;
+  description: string;
+  objectives: Record<string, string>;
+  blockNumber: string;
+  createdAt: string;
+}
+```
+
+### SettingsParams
+
+Parameters for querying settings lists.
+
+```typescript
+interface SettingsParams {
+  limit?: number;
+  offset?: number;
+  gameAddress?: string;
+}
+```
+
+### ObjectivesParams
+
+Parameters for querying objectives lists.
+
+```typescript
+interface ObjectivesParams {
+  limit?: number;
+  offset?: number;
+  gameAddress?: string;
+  settingsId?: number;
+}
+```
+
+## Player Types
+
+### PlayerStats
+
+Aggregate player statistics. Returned by [`client.getPlayerStats()`](/embeddable-game-standard/frontend/sdk#players).
+
+```typescript
+interface PlayerStats {
+  address: string;
+  totalTokens: number;
+  gamesPlayed: number;
+  completedGames: number;
+  activeGames: number;
+  totalScore: string;
+}
+```
+
+### PlayerTokensParams
+
+Parameters for querying a player's tokens.
+
+```typescript
+interface PlayerTokensParams {
+  gameId?: number;
+  limit?: number;
+  offset?: number;
+  /** When true, fetches token URIs via batch RPC */
+  includeUri?: boolean;
+}
+```
+
+## Minter Types
+
+### Minter
+
+A registered minter contract. Returned by [`client.getMinters()`](/embeddable-game-standard/frontend/sdk#minters).
+
+```typescript
+interface Minter {
+  id: string;
+  minterId: string;
+  name: string;
+  contractAddress: string;
+  createdAt: string;
+  blockNumber: string;
+}
+```
+
+## Activity Types
+
+### ActivityEvent
+
+A single activity event in the system.
+
+```typescript
+interface ActivityEvent {
+  id: string;
+  type: string;
+  tokenId: string;
+  gameId: number;
+  player: string;
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+```
+
+### ActivityParams
+
+Parameters for querying activity.
+
+```typescript
+interface ActivityParams {
+  type?: string;
+  limit?: number;
+  offset?: number;
+}
+```
+
+### ActivityStats
+
+Aggregate activity statistics.
+
+```typescript
+interface ActivityStats {
+  gameId: number;
+  totalTokens: number;
+  completedGames: number;
+  activeGames: number;
+  uniquePlayers: number;
+}
+```
+
+## RPC Types
+
+### MintParams
+
+Parameters for [`client.mint()`](/embeddable-game-standard/frontend/sdk#write-operations). All fields are required except `salt` and `metadata`.
+
+```typescript
+interface MintParams {
+  gameId: number;
+  settingsId: number;
+  objectiveId: number;
+  playerName: string;
+  soulbound: boolean;
+  to: string;
+  salt?: number;
+  metadata?: number;
+}
+```
+
+### RoyaltyInfo
+
+ERC-2981 royalty information. Returned by [`client.royaltyInfo()`](/embeddable-game-standard/frontend/sdk#erc721).
+
+```typescript
+interface RoyaltyInfo {
+  receiver: string;
+  amount: bigint;
+}
+```
+
+### GameMetadata
+
+On-chain game metadata from the registry RPC.
+
+```typescript
+interface GameMetadata {
+  gameId: number;
+  contractAddress: string;
+  name: string;
+  description: string;
+  developer: string;
+  publisher: string;
+  genre: string;
+  image: string;
+  color: string;
+  clientUrl: string;
+  rendererAddress: string;
+  royaltyFraction: bigint;
+  agentSkills: string;
+  createdAt: number;
+}
+```
+
+### PlayerNameUpdate
+
+Used with [`client.updatePlayerNameBatch()`](/embeddable-game-standard/frontend/sdk#write-operations).
+
+```typescript
+interface PlayerNameUpdate {
+  tokenId: string;
+  name: string;
+}
+```
+
+### FilterResult
+
+Result from viewer contract filter queries.
+
+```typescript
+interface FilterResult {
+  tokenIds: string[];
+  total: number;
+}
+```
+
+### TokenFullState
+
+Full on-chain token state from the viewer contract.
+
+```typescript
+interface TokenFullState {
+  tokenId: string;
+  owner: string;
+  playerName: string;
+  isPlayable: boolean;
+  gameAddress: string;
+  gameOver: boolean;
+  completedObjective: boolean;
+  lifecycle: Lifecycle;
+}
+```
+
+### Lifecycle
+
+Start and end timestamps for token playability windows.
+
+```typescript
+interface Lifecycle {
+  start: number;
+  end: number;
+}
+```
+
+## WebSocket Event Types
+
+For subscription hooks usage, see [WebSocket Subscriptions](/embeddable-game-standard/frontend/websockets) and [React Hooks](/embeddable-game-standard/frontend/react-hooks#subscription-hooks).
+
+### WSChannel
+
+```typescript
+type WSChannel =
+  | "tokens"
+  | "scores"
+  | "game_over"
+  | "mints"
+  | "games"
+  | "minters"
+  | "settings"
+  | "objectives";
+```
+
+### WSMessage
+
+```typescript
+interface WSMessage {
+  channel: string;
+  data: unknown;
+  _timing?: { serverTs: number };
+}
+```
+
+### WSSubscribeOptions
+
+```typescript
+interface WSSubscribeOptions {
+  channels: WSChannel[];
+  gameIds?: number[];
+}
+```
+
+### WSEventHandler
+
+```typescript
+type WSEventHandler = (message: WSMessage) => void;
+```
+
+### ScoreEvent
+
+Emitted on the `scores` channel when a token's score changes.
+
+```typescript
+interface ScoreEvent {
+  tokenId: string;
+  gameId: number;
+  score: number;
+  ownerAddress: string;
+  playerName: string;
+}
+```
+
+### GameOverEvent
+
+Emitted on the `game_over` channel when a game ends.
+
+```typescript
+interface GameOverEvent {
+  tokenId: string;
+  gameId: number;
+  score: number;
+  ownerAddress: string;
+  playerName: string;
+  completedAllObjectives: boolean;
+}
+```
+
+### MintEvent
+
+Emitted on the `mints` channel when a new token is minted.
+
+```typescript
+interface MintEvent {
+  tokenId: string;
+  gameId: number;
+  ownerAddress: string;
+  mintedBy: string;
+  settingsId: number;
+}
+```
+
+### TokenUpdateEvent
+
+Union type emitted on the `tokens` channel for any token state change.
+
+```typescript
+type TokenUpdateEvent =
+  | { type: "scoreUpdate"; tokenId: string; gameId: number; score: number }
+  | { type: "gameOver"; tokenId: string; gameId: number; score: number }
+  | { type: "minted"; tokenId: string; gameId: number; ownerAddress: string };
+```
+
+### NewGameEvent
+
+```typescript
+interface NewGameEvent {
+  gameId: number;
+  contractAddress: string;
+  name: string;
+}
+```
+
+### NewMinterEvent
+
+```typescript
+interface NewMinterEvent {
+  minterId: string;
+  contractAddress: string;
+  name: string;
+  blockNumber: string;
+}
+```
+
+### NewSettingEvent
+
+```typescript
+interface NewSettingEvent {
+  gameAddress: string;
+  settingsId: number;
+  creatorAddress: string;
+  settingsData: string | null;
+}
+```
+
+### NewObjectiveEvent
+
+```typescript
+interface NewObjectiveEvent {
+  gameAddress: string;
+  objectiveId: number;
+  settingsId: number;
+  creatorAddress: string;
+  objectiveData: string | null;
+}
+```
+
+### WSChannelPayloadMap
+
+Maps each channel name to its typed payload. Used by subscription hooks for type safety.
+
+```typescript
+interface WSChannelPayloadMap {
+  scores: ScoreEvent;
+  game_over: GameOverEvent;
+  mints: MintEvent;
+  tokens: TokenUpdateEvent;
+  games: NewGameEvent;
+  minters: NewMinterEvent;
+  settings: NewSettingEvent;
+  objectives: NewObjectiveEvent;
+}
+```
+
+## Configuration Types
+
+### DenshokanClientConfig
+
+Configuration for creating a [`DenshokanClient`](/embeddable-game-standard/frontend/sdk#configuration).
+
+```typescript
+interface DenshokanClientConfig {
+  chain?: "mainnet" | "sepolia";
+  apiUrl?: string;
+  wsUrl?: string;
+  rpcUrl?: string;
+  provider?: unknown;
+  /** Denshokan ERC721 contract address (defaults to chain address) */
+  denshokanAddress?: string;
+  /** Minigame registry contract address (defaults to chain address) */
+  registryAddress?: string;
+  /** Viewer contract address for batch filter queries (defaults to chain address) */
+  viewerAddress?: string;
+  primarySource?: DataSource;
+  fetch?: FetchConfig;
+  ws?: WSConfig;
+  health?: HealthConfig;
+}
+```
+
+### DataSource
+
+```typescript
+type DataSource = "api" | "rpc";
+```
+
+### FetchConfig
+
+```typescript
+interface FetchConfig {
+  timeout?: number;
+  maxRetries?: number;
+  baseBackoff?: number;
+  maxBackoff?: number;
+  /** Max concurrent token URI RPC calls (0 = unlimited) */
+  tokenUriConcurrency?: number;
+}
+```
+
+### WSConfig
+
+```typescript
+interface WSConfig {
+  maxReconnectAttempts?: number;
+  reconnectBaseDelay?: number;
+}
+```
+
+### HealthConfig
+
+```typescript
+interface HealthConfig {
+  /** Delay before first health check in ms (default: 1000) */
+  initialCheckDelay?: number;
+  /** Interval between health checks in ms (default: 30000) */
+  checkInterval?: number;
+  /** Timeout for each health check in ms (default: 5000) */
+  checkTimeout?: number;
+}
+```
+
+## Error Types
+
+All errors extend `DenshokanError`. See [Error Handling](/embeddable-game-standard/frontend/sdk#error-handling) for usage examples.
+
+```typescript
+class DenshokanError extends Error {}
+
+class ApiError extends DenshokanError {
+  statusCode: number;
+}
+
+class RpcError extends DenshokanError {
+  contractAddress?: string;
+}
+
+class RateLimitError extends DenshokanError {
+  retryAfter: number | null;
+}
+
+class TimeoutError extends DenshokanError {}
+
+class AbortError extends DenshokanError {}
+
+class TokenNotFoundError extends DenshokanError {
+  tokenId: string;
+}
+
+class GameNotFoundError extends DenshokanError {
+  gameId: string | number;
+}
+
+class InvalidChainError extends DenshokanError {
+  chain: string;
+}
+
+class DataSourceError extends DenshokanError {
+  primaryError: Error;
+  fallbackError: Error;
+}
+```
+
+## Hook Return Types
+
+### UseAsyncResult\<T\>
+
+Standard return type for all data [React hooks](/embeddable-game-standard/frontend/react-hooks#hook-return-type).
+
+```typescript
+interface UseAsyncResult<T> {
+  data: T | null;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => void;
+}
+```
+
+### UseTokensResult
+
+Extended return type for [`useTokens`](/embeddable-game-standard/frontend/react-hooks#tokens) and [`usePlayerTokens`](/embeddable-game-standard/frontend/react-hooks#players). Adds `isLoadingUri` for background URI fetching.
+
+```typescript
+interface UseTokensResult extends UseAsyncResult<PaginatedResult<Token>> {
+  /** True while token URIs are being fetched (when includeUri: true) */
+  isLoadingUri: boolean;
+}
+```
+
+### UseChannelOptions\<C\>
+
+Options for [subscription hooks](/embeddable-game-standard/frontend/react-hooks#subscription-hooks).
+
+```typescript
+interface UseChannelOptions<C extends WSChannel> {
+  gameIds?: number[];
+  bufferSize?: number;
+  enabled?: boolean;
+  onEvent?: (event: WSChannelPayloadMap[C]) => void;
+}
+```
+
+### UseChannelResult\<C\>
+
+Return type for [subscription hooks](/embeddable-game-standard/frontend/react-hooks#subscription-hooks).
+
+```typescript
+interface UseChannelResult<C extends WSChannel> {
+  lastEvent: WSChannelPayloadMap[C] | null;
+  events: WSChannelPayloadMap[C][];
+  isConnected: boolean;
+  clear: () => void;
+}
+```
