@@ -160,10 +160,6 @@ export default defineConfig({
                 text: "MinigameComponent",
                 link: "/embeddable-game-standard/reference/minigame",
               },
-              {
-                text: "Leaderboard",
-                link: "/embeddable-game-standard/reference/leaderboard",
-              },
             ],
           },
           {

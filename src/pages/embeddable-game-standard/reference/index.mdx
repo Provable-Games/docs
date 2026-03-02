@@ -12,7 +12,7 @@ The `game-components` library provides modular Cairo components for building EGS
 |---------|-----------|---------|
 | **interfaces** | `game_components_interfaces` | All trait definitions, structs, and interface IDs |
 | **embeddable_game_standard** | `game_components_embeddable_game_standard` | Token, Minigame, Metagame, Registry components |
-| **metagame** | `game_components_metagame` | Leaderboard, registration, entry gating, prizes |
+| **metagame** | `game_components_metagame` | Registration, entry gating, prizes |
 | **utilities** | `game_components_utilities` | Math, distribution, encoding, rendering |
 
 ## Dependency Graph
@@ -38,7 +38,7 @@ starknet = "2.15.1"
 # Core - Token, Minigame, Metagame, Registry
 game_components_embeddable_game_standard = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 
-# Leaderboard, entry gating, prizes
+# Registration, entry gating, prizes
 game_components_metagame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
 
 # Math, distribution, encoding, rendering
@@ -54,4 +54,3 @@ openzeppelin_access = { git = "https://github.com/OpenZeppelin/cairo-contracts.g
 
 - [MinigameToken (ERC721)](/embeddable-game-standard/reference/token) - The core token contract with packed IDs and component composition
 - [MinigameComponent](/embeddable-game-standard/reference/minigame) - Game logic foundation: `IMinigameTokenData`, settings, objectives
-- [Leaderboard](/embeddable-game-standard/reference/leaderboard) - Tournament scoring, ranking, and administration

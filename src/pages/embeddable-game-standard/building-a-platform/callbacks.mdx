@@ -54,7 +54,7 @@ Callbacks are **opt-in**. The token only dispatches callbacks if the minter's co
 1. Implements `SRC5` (has `supports_interface()`)
 2. Returns `true` for `IMETAGAME_CALLBACK_ID`
 
-If the minter is an EOA (externally owned account) or a contract without SRC5, no callbacks are attempted. This is safe - no reverts, no wasted gas.
+If the minter is an account or a contract without SRC5, no callbacks are attempted. This is safe - no reverts, no wasted gas.
 
 ## Implementing Callbacks
 
@@ -141,6 +141,6 @@ Player scores points
 
 ## Security Considerations
 
-- **Callbacks are called by the token contract**, not the player. Verify `get_caller_address()` is the expected token contract
+- **Callbacks are called by the token contract**, not the player. The `MetagameCallbackComponent` enforces this automatically via `assert_only_token` — you don't need to check the caller yourself
 - **Callbacks should not revert** on unexpected data. A reverting callback blocks `update_game()` for all tokens minted by that platform
 - **Gas limits**: Keep callback logic lightweight. Heavy computation should be deferred to separate transactions

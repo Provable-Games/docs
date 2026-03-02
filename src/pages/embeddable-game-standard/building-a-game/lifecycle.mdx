@@ -16,7 +16,7 @@ pub struct Lifecycle {
 }
 ```
 
-The lifecycle is set at mint time. The minter specifies `start` and `end` as delays relative to the current block timestamp, which get converted to absolute timestamps in the packed token ID.
+The lifecycle is set at mint time. The minter provides `start` and `end` as **absolute Unix timestamps**. The contract then converts these to relative delays (`start_delay` from current time, `end_delay` as duration from start) for packing into the token ID.
 
 ### Lifecycle Methods
 
@@ -71,29 +71,20 @@ impl LifecycleImpl of LifecycleTrait {
 
 ## Playability Checks
 
-Games should check playability before allowing actions:
+The token contract enforces playability with specific error messages for each failure case:
 
-```cairo
-use game_components_token::libs::lifecycle::LifecycleTrait;
+| Condition | Error message |
+|-----------|---------------|
+| Game is over | `"Token is not playable - game is over"` |
+| Objective already completed | `"Token is not playable - objective already completed"` |
+| Game hasn't started yet | `"Token is not playable - game has not started (now={}, start={})"` |
+| Game has expired | `"Token is not playable - game has expired (now={}, end={})"` |
 
-fn play(ref self: ContractState, token_id: felt252) {
-    // Get lifecycle from token metadata
-    let metadata = self.get_token_metadata(token_id);
-    let lifecycle = metadata.lifecycle;
-
-    // Check if the game is currently playable
-    assert!(
-        lifecycle.is_playable(get_block_timestamp()),
-        "Game is not playable"
-    );
-
-    // ... game logic
-}
-```
+The timestamp errors include the current block time and the relevant lifecycle bound so callers can see exactly why the check failed.
 
 ### Pre-action and Post-action Hooks
 
-**Every player-facing action in your game contract must be wrapped** with `pre_action` and `post_action` calls. These are available via the `MinigameComponent`'s internal impl:
+**Every player-facing action in your game contract must call** `assert_token_ownership`, `pre_action`, and `post_action`. These are available via the `MinigameComponent`'s internal impl:
 
 ```cairo
 impl MinigameInternalImpl = MinigameComponent::InternalImpl<ContractState>;
@@ -103,11 +94,13 @@ Then in every action function:
 
 ```cairo
 fn play(ref self: ContractState, token_id: felt252) {
+    // Verify the caller owns this token — always check first
+    self.minigame.assert_token_ownership(token_id);
+
     // Validates the token is playable:
-    //   - Token exists (minted on the Denshokan contract)
     //   - game_over is false
     //   - completed_objective is false
-    //   - Lifecycle is valid (started, not expired)
+    //   - Lifecycle has started and not expired
     self.minigame.pre_action(token_id);
 
     // ... your game logic ...
@@ -120,11 +113,31 @@ fn play(ref self: ContractState, token_id: felt252) {
 }
 ```
 
+If your game spans **multiple contracts**, contracts that don't have the `MinigameComponent` can import the library functions directly and pass the token address:
+
+```cairo
+use game_components_embeddable_game_standard::minigame::minigame::{
+    assert_token_ownership, pre_action, post_action,
+};
+
+fn play(ref self: ContractState, token_id: felt252) {
+    let token_address = self.minigame_token_address.read();
+
+    assert_token_ownership(token_address, token_id);
+    pre_action(token_address, token_id);
+
+    // ... game logic ...
+
+    post_action(token_address, token_id);
+}
+```
+
 :::warning
 **Avoid early `return` statements** in action functions. If you return before `post_action`, score changes and game completions won't be synced to the token contract. Instead, store results in a variable and return after `post_action`:
 
 ```cairo
 fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
+    self.minigame.assert_token_ownership(token_id);
     self.minigame.pre_action(token_id);
 
     let result = if number == secret {
@@ -141,7 +154,8 @@ fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
 :::
 
 Under the hood:
-- `pre_action` calls `is_playable(token_id)` on the token contract
+- `assert_token_ownership` checks the caller is the ERC721 owner of the token
+- `pre_action` calls `assert_playable(token_id)` on the token contract, which checks game_over, completed_objective, and lifecycle bounds with specific error messages
 - `post_action` calls `update_game(token_id)` on the token contract, which reads `score()` and `game_over()` from your game and updates the token state
 
 ## Soulbound Tokens

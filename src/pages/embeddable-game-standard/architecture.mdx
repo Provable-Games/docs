@@ -78,7 +78,6 @@ The registry maps game contracts to metadata (name, description, developer, genr
 | ObjectivesComponent | Minigame (IMinigameTokenObjectives) | Track named objectives and completion |
 | ContextComponent | Metagame (IMetagameContext) | Store per-token context from platform |
 | RendererComponent | - | Delegate token URI to external contract |
-| LeaderboardComponent | - | Standalone tournament scoring |
 
 ## SRC5 Interface Discovery
 
@@ -100,7 +99,6 @@ This enables safe, optional integration: a token can check if a minter supports 
 | `IMetagameCallback` | `0x3b4312c1422de8c35936cc79948381ab8ef9fd083d8c8e20317164690aa1600` | `game_components_embeddable_game_standard` |
 | `IMetagameContext` | `0x1633419b5abcc4c0bbed8bd37a363fbe6de5bd25908761ab6dcda6a9b598ca9` | `game_components_embeddable_game_standard` |
 | `IMinigameRegistry` | `0x3607d1f9cf92726b22f1cd06ed993357e0891e4abb317625eb503bd6a7694b7` | `game_components_embeddable_game_standard` |
-| `ILeaderboard` | `0x381684b12c5a80d08222695ee5eca750b99e56cb53101a47378c542859907e1` | `game_components_metagame` |
 | `IMinigameSettings` | `0x1a58ab3ee416cc018f93236fd0bb995de89ee536626c268491121e51a46a0f4` | `game_components_embeddable_game_standard` |
 | `IMinigameObjectives` | `0xac0aaa451454d78741d9fafe803b69c8b31d073156020b08496104356db5e5` | `game_components_embeddable_game_standard` |
 

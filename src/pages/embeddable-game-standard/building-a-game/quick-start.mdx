@@ -115,17 +115,23 @@ impl MinigameTokenDataImpl of IMinigameTokenData<ContractState> {
 
 The core game loop: generate a secret, let the player guess, calculate a score.
 
-Every player-facing action **must** be wrapped with `self.minigame.pre_action(token_id)` and `self.minigame.post_action(token_id)`:
+Every player-facing action **must**:
 
-- **`pre_action`** validates the token is playable (exists, not expired, game not over)
-- **`post_action`** syncs score and game_over state back to the token contract
+1. **`assert_token_ownership`** — verify the caller owns the token. A player should never be able to act on a token they don't own. This should be the **first** check in every action.
+2. **`pre_action`** — validate the token is playable (exists, not expired, game not over)
+3. **`post_action`** — sync score and game_over state back to the token contract
 
 :::warning
-Without these hooks, the token contract won't know when scores change or games end, and players could take actions on expired or completed tokens.
+Without these checks, players could act on tokens they don't own, the token contract won't know when scores change or games end, and players could take actions on expired or completed tokens.
 :::
+
+### Single-contract games (component methods)
+
+If your game logic lives in the same contract that was initialized with the `MinigameComponent`, you can use the component's internal methods directly:
 
 ```cairo
 fn new_game(ref self: ContractState, token_id: felt252, settings_id: u32) {
+    self.minigame.assert_token_ownership(token_id);
     self.minigame.pre_action(token_id);
 
     // Load settings (range min/max, max attempts)
@@ -153,6 +159,7 @@ fn new_game(ref self: ContractState, token_id: felt252, settings_id: u32) {
 
 ```cairo
 fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
+    self.minigame.assert_token_ownership(token_id);
     self.minigame.pre_action(token_id);
 
     assert!(self.game_status.read(token_id) == 1, "No active game");
@@ -185,6 +192,33 @@ fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
 ```
 
 Note how `guess` avoids early `return` statements so that `post_action` always runs at the end. Store the result in a variable and return it after `post_action`.
+
+### Multi-contract games (library functions)
+
+If your game spans multiple contracts (e.g. separate combat, exploration, and market systems), the contracts that don't have the `MinigameComponent` won't have access to `self.minigame`. Instead, import and call the **library functions** directly, passing the denshokan token address:
+
+```cairo
+use game_components_embeddable_game_standard::minigame::minigame::{
+    assert_token_ownership, pre_action, post_action,
+};
+```
+
+Each system contract stores the token address (set during construction) and passes it explicitly:
+
+```cairo
+fn start_game(ref self: ContractState, adventurer_id: felt252, weapon: u8) {
+    let minigame_token_address = self.minigame_token_address.read();
+
+    assert_token_ownership(minigame_token_address, adventurer_id);
+    pre_action(minigame_token_address, adventurer_id);
+
+    // ... game logic ...
+
+    post_action(minigame_token_address, adventurer_id);
+}
+```
+
+This pattern lets any number of contracts validate and update token state without needing the component — they just need the token contract address.
 
 ## Step 5: Add Settings (Optional)
 
@@ -374,7 +408,7 @@ To make your game EGS-compliant:
 1. **Required**: Implement `IMinigameTokenData` (score + game_over)
 2. **Required**: Register `IMINIGAME_ID` via SRC5
 3. **Required**: Register with the game Registry
-4. **Required**: Call `pre_action`/`post_action` in every player-facing action
+4. **Required**: Call `assert_token_ownership`, `pre_action`, and `post_action` in every player-facing action
 5. **Optional**: Implement `IMinigameTokenSettings` for custom difficulty
 6. **Optional**: Implement `IMinigameTokenObjectives` for achievements
 7. **Optional**: Implement `IMinigameDetails` for rich game state display
