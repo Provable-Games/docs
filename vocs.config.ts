@@ -212,6 +212,7 @@ export default defineConfig({
             text: "Applications",
             link: "/embeddable-game-standard/applications",
           },
+          { text: "FAQ", link: "/embeddable-game-standard/faq" },
         ],
       },
     ],
@@ -273,6 +274,12 @@ export default defineConfig({
             text: "Rewards",
             link: "/summit/rewards",
           },
+          {
+            text: "Quests",
+            link: "/summit/quests",
+          },
+          { text: "FAQ", link: "/summit/faq" },
+          { text: "Disclaimers", link: "/summit/disclaimers" },
         ],
       },
     ],
@@ -368,6 +375,14 @@ export default defineConfig({
           {
             text: "Golden Token",
             link: "/lootsurvivor/golden-token",
+          },
+          {
+            text: "Skull Token",
+            link: "/lootsurvivor/skull-token",
+          },
+          {
+            text: "Corpse Token",
+            link: "/lootsurvivor/corpse-token",
           },
           // {
           //   text: "Technical Documentation",

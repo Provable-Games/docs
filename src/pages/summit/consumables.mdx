@@ -1,19 +1,20 @@
 ---
-title: Consumables Guide
+title: Consumables
 sidebar_label: Consumables
 ---
 
-# Consumables Guide
+# Consumables
 
 Potions are the strategic fuel of Summit battles. Knowing when and how to use them can mean the difference between a brief appearance and a legendary reign.
 
 ## Types of Potions
 
-### 💀 Revival Potions
+### 🔄 Revival Potions
 
 Skip the 24-hour death cooldown and get back in the fight immediately.
 
 **How They Work:**
+
 - Instantly revives a dead beast
 - Cost increases with each use on the same beast
 - Essential for chain attacks
@@ -21,16 +22,17 @@ Skip the 24-hour death cooldown and get back in the fight immediately.
 **Cost Scaling:**
 | Revival # | Potions Required | Total Used |
 |-----------|-----------------|------------|
-| 1st       | 1               | 1          |
-| 2nd       | 2               | 3          |
-| 3rd       | 3               | 6          |
-| 4th       | 4               | 10         |
-| ...       | ...             | ...        |
-| 64th      | 64              | 904        |
+| 1st | 1 | 1 |
+| 2nd | 2 | 3 |
+| 3rd | 3 | 6 |
+| 4th | 4 | 10 |
+| ... | ... | ... |
+| 64th | 64 | 904 |
 
 **Note:** Revival cost caps at 64 potions. All revivals will cost 64 potions at this point.
 
 **Strategic Uses:**
+
 - Enable rapid counter-attacks after defeat
 - Chain multiple beast assaults
 - Maintain pressure on Summit holder
@@ -42,27 +44,31 @@ Skip the 24-hour death cooldown and get back in the fight immediately.
 Boost your damage output for devastating first strikes.
 
 **How They Work:**
+
 - Each potion increases attack damage
 - Only usable by attackers (not defenders)
 - Maximum 255 potions per beast
 
 **Strategic Uses:**
+
 - Overwhelm high-health defenders
 - Secure one-shot kills with type advantage
 - Break through extra lives quickly
 - Make impossible matchups winnable
 
-### 💚 Extra Life Potions
+### ❤️ Extra Life Potions
 
 Give your beast multiple chances to defend the Summit.
 
 **How They Work:**
+
 - Automatically activates when health reaches 0
 - Restores beast to full health (base + bonus)
 - Can only be applied to current Summit holder
 - Maximum 4000 extra lives
 
 **Strategic Uses:**
+
 - Extend Summit defense duration
 - Discourage attackers (psychological warfare)
 - Survive coordinated assaults
@@ -72,12 +78,14 @@ Give your beast multiple chances to defend the Summit.
 Slowly weaken the Summit holder over time without direct combat.
 
 **How They Work:**
+
 - Deals 1 damage per second to the Summit holder
 - Damage stops at 1 health and 0 extra lives (cannot kill)
 - Multiple poison potions stack for faster damage
 - Can only be applied to current Summit holder
 
 **Strategic Uses:**
+
 - Weaken defenders before attacking
 - Force defenders to waste extra lives
 - Create time pressure on Summit holders
@@ -85,22 +93,34 @@ Slowly weaken the Summit holder over time without direct combat.
 
 ## Potion Market
 
-### Dynamic Pricing System
+### Continuous Clearing Auction (CCA)
 
-Similar to [Loot Survivor's dungeon tickets](/lootsurvivor/dungeon-tickets), potions are the revenue source of Summit and uses a dynamic pricing model:
+Potions are distributed using a Continuous Clearing Auction (CCA) — the same mechanism used for [Loot Survivor's dungeon tickets](/lootsurvivor/dungeon-tickets). Potions are the revenue source of Summit.
 
 **How It Works:**
-- **Continuous Emission**: Potions are continuously released over time (amount TBD)
-- **Real-Time Pricing**: Price adjusts based on demand - can go up OR down
-- **Live Price Display**: Current price is always visible before purchase
-- **Market-Driven**: Natural price discovery through supply and demand
+
+- Potions are streamed block-by-block into an [Ekubo](https://ekubo.org/) TWAMM (Time-Weighted Average Market Maker) pool
+- Price starts intentionally high at game launch and decreases over time as supply enters the pool
+- The price naturally settles at what players are willing to pay -no more, no less
+- At launch, each of the four potion pools is seeded with **2,000 $SURVIVOR** in initial liquidity for price discovery and stability.
+
+**Daily Issuance Rates:**
+| Potion Type | Tokens Per Day | Initial Liquidity | Starting Price |
+|-------------|---------------|------------------|----------------|
+| ⚔️ Attack | 97,206 | 2,000 $SURVIVOR | $0.01 |
+| 🔄 Revival | 97,206 | 2,000 $SURVIVOR | $0.01 |
+| ☠️ Poison | 97,206 | 2,000 $SURVIVOR | $0.01 |
+| ❤️ Extra Life | 4,860 | 2,000 $SURVIVOR | $0.20 |
 
 **Key Features:**
-- Prices decrease during low-demand periods
-- Prices increase when many players are buying
+
+- Price adjusts based on supply and demand in real time
+- Current price is always visible before purchase
 - Purchase with any token on Starknet
 
 **Strategic Purchasing:**
+
+- No need to rush — prices start high and come down as potions stream in
 - Monitor price trends for optimal buying times
 - Consider DCA (Dollar-Cost Averaging) orders for bulk purchases
 
@@ -110,20 +130,27 @@ Similar to [Loot Survivor's dungeon tickets](/lootsurvivor/dungeon-tickets), pot
 ## Tips for Success
 
 ### For Beginners
+
 1. Start with revival potions to learn timing
 2. Use attack potions with type advantage
 3. Apply extra lives on attack before taking Summit
 
 ### For Veterans
+
 1. Calculate exact potion requirements
 2. Time market purchases strategically
 3. Coordinate group strategies
 4. Optimize cost per second held
 
 ### Common Mistakes
+
 - Using attack potions with type disadvantage
 - Applying extra lives on weak beasts
 - Reviving the same beast too many times
 - Ignoring potion economics
 
 The key to potion mastery is understanding not just what each does, but when each creates maximum value. Use them wisely, and the Summit will be yours!
+
+## After Summit Ends
+
+Potions are consumables designed exclusively for Summit gameplay. Once the game concludes and the reward pool is fully distributed, potions will have no further use case. Purchase and use them with this in mind — they are a tool for winning now, not an asset to hold.
