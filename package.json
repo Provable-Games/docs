@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@types/react": "^19.0.0",
-    "baseline-browser-mapping": "^2.9.19",
-    "caniuse-lite": "^1.0.30001770",
+    "baseline-browser-mapping": "^2.10.0",
+    "caniuse-lite": "^1.0.30001776",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^6.27.0",
