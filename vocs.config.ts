@@ -1,11 +1,7 @@
 import { defineConfig } from "vocs";
-import llmTxtPlugin from "./vite-plugin-llm-txt.mjs";
 
 export default defineConfig({
-  vite: {
-    plugins: [llmTxtPlugin()],
-  },
-  rootDir: "src",
+rootDir: "src",
   title: "Provable Games",
   description:
     "Using cryptography to create incorruptible and indestructible fun.",

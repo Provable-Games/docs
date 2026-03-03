@@ -29,7 +29,6 @@ src/
   components/      # React components (ContractTable, ContractLink, GameCard, Homepage)
   public/          # Static assets (images in public/docs/)
 vocs.config.ts     # Site config, theme, and sidebar navigation
-vite-plugin-llm-txt.mjs  # Vite plugin that generates llm.txt from all MDX content at build time
 ```
 
 ## Adding/Editing Documentation

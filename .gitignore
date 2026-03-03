@@ -2,5 +2,16 @@ node_modules/
 dist/
 src/dist/
 .DS_Store
-src/public/llm.txt
-bot/llm.txt
+
+# Environment files
+.env
+.env.*
+
+# Credentials and keys
+*.pem
+*.key
+*.secret
+.npmrc
+
+# Logs
+*.log

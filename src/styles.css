@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss" important;
 
 @theme {
     --color-primary: #46A9F0;
