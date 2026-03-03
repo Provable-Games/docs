@@ -120,11 +120,11 @@ export function HomePage() {
 
               {/* Card content */}
               <div className="relative z-10 p-4 sm:p-5 lg:p-6 flex flex-col gap-3">
-                <div className="flex items-center h-8">
+                <div className="flex items-center h-6">
                   <img
                     src={card.icon}
                     alt={card.title}
-                    className="h-8 max-w-[160px] object-contain object-left"
+                    className="h-6 w-auto object-contain"
                   />
                 </div>
                 <p
@@ -160,7 +160,7 @@ export function HomePage() {
             <img
               src={toolCard.icon}
               alt={toolCard.title}
-              className="h-8 shrink-0 object-contain"
+              className="h-6 w-auto shrink-0 object-contain"
             />
 
             <p
