@@ -139,8 +139,7 @@ export function HomePage() {
               style={{ height: "40px", width: "40px" }}
             />
             <h1 className="text-lg sm:text-xl lg:text-2xl text-center sm:text-left">
-              A <span className="text-primary">Web3 game studio</span> creating
-              cryptographically verifiable games and autonomous worlds.
+              Using cryptography to create incorruptible and indestructible fun.
             </h1>
           </div>
         </div>
