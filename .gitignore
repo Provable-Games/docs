@@ -2,5 +2,3 @@ node_modules/
 dist/
 src/dist/
 .DS_Store
-src/public/llm.txt
-bot/llm.txt
