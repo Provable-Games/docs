@@ -4,72 +4,152 @@ layout: docs
 
 # Embeddable Game Standard: FAQ
 
-Developer-oriented FAQ for the Embeddable Game Standard (EGS) on Starknet.
+Developer-oriented FAQ for the Embeddable Game Standard (EGS) on Starknet. For deeper dives, follow the links to the relevant guide pages.
 
 ## General
 
 **What is the Embeddable Game Standard?**
 
-EGS is a standard interface for Starknet games that enables interoperability across platforms. It standardizes game contract functionalities including ERC721 token minting, metadata management, score tracking, and settings — so any compliant game can be embedded in any compliant platform.
+An open protocol for building composable, provable on-chain games on Starknet. It defines how games expose their logic, how platforms mint and manage game tokens, and how frontends display real-time game state. See the [Overview](/embeddable-game-standard).
 
 **What problem does EGS solve?**
 
-Without EGS, each game needs custom integration for every platform. EGS provides a common interface so games can be listed in tournaments, embedded in other applications, and tracked on leaderboards without per-game integration work.
+On-chain games are silos. Each game reinvents token minting, score tracking, and settings management. Platforms that want to embed multiple games must write custom integration code for each one. EGS provides a common interface so games can be listed in tournaments, embedded as quests, and tracked across platforms without per-game integration work.
+
+**What is Denshokan?**
+
+Denshokan is the turnkey implementation of EGS — a deployed token contract, registry, indexer, API, and client. If you don't want to deploy your own token contract, you can register your game with the existing Denshokan deployment and start minting immediately.
+
+**What is game-components?**
+
+The [game-components](https://github.com/Provable-Games/game-components) library provides modular Cairo components (MinigameComponent, MetagameComponent, SettingsComponent, etc.) that you compose into your contracts. See the [Reference](/embeddable-game-standard/reference).
+
+**What is the denshokan-sdk?**
+
+A TypeScript SDK with React hooks and WebSocket subscriptions for querying games, tokens, players, and activity. See [Frontend Integration](/embeddable-game-standard/frontend).
 
 **What games currently use EGS?**
 
-Dark Shuffle, Loot Survivor, zKube, Nums, and Dope Wars all implement the EGS interface.
+Dark Shuffle, Loot Survivor, zKube, Nums, and Dope Wars all implement the EGS interface. See [Games](/embeddable-game-standard/games).
 
-## Integration
+## Building a Game
 
-**How do I implement EGS in my game?**
+**What's the minimum I need to implement to make my game EGS-compliant?**
 
-1. Add the tournaments dependency to your `Scarb.toml`: `tournaments = { git = "https://github.com/Provable-Games/tournaments.git", tag = "v1.5.0" }`
-2. Import and embed the `game_component` in your contract
-3. Implement required storage and events (Game, ERC721, SRC5)
-4. Expose required interfaces: ERC721, metadata, and settings
-5. Call `initializer()` during contract setup with your game's metadata
+1. Implement `IMinigameTokenData` — expose `score()` and `game_over()` for your game
+2. Register `IMINIGAME_ID` via SRC5
+3. Register with the game Registry
+4. Call `assert_token_ownership`, `pre_action`, and `post_action` in every player-facing action
 
-See the [Implementation Guide](/embeddable-game-standard/implementation) for a full walkthrough.
+See the [Quick Start](/embeddable-game-standard/building-a-game/quick-start) for a full walkthrough.
 
-**What are the key functions I need to implement?**
+**What are `pre_action` and `post_action`?**
 
-- `mint(player_name, settings_id, start, end, to)` — Mint a new game instance as an ERC721 token
-- `game_metadata()` — Return game contract metadata (name, description, developer, etc.)
-- `token_metadata(token_id)` — Return metadata for a specific game token
-- `score(game_id)` — Return a player's score for validation and leaderboards
-- `setting_exists(settings_id)` — Check if a settings profile exists
-- `emit_metadata_update(game_id)` — Emit event for offchain indexing
+`pre_action` validates that a token is playable (not game over, not expired, objective not already completed). `post_action` syncs your game's score and game_over state back to the token contract. Every player-facing action must call both. See [Lifecycle & Playability](/embeddable-game-standard/building-a-game/lifecycle).
 
-Full reference: [Key Functions](/embeddable-game-standard/key-functions).
+**Why do I need `assert_token_ownership`?**
 
-**What is the settings system?**
+A player should never be able to act on a token they don't own. This should be the first check in every action function, before `pre_action`.
 
-Settings allow custom game modes by linking a unique `settings_id` to each game instance. They enable difficulty levels, speedruns, seasonal events, and community challenges. Settings are stored onchain and are composable across games, quests, and tournaments. See: [Game Settings](/embeddable-game-standard/implementation/settings).
+**My game has multiple contracts. How do I call pre_action/post_action from other contracts?**
 
-**How do platforms embed my game?**
+Import the library functions directly and pass the denshokan token address:
 
-Platforms call `mint()` on your game contract to create a game instance (a unique onchain token) for each player. They then call `score()` to validate results for leaderboards and prizes. See: [Embedding Games](/embeddable-game-standard/implementation/embedding-games).
+```cairo
+use game_components_embeddable_game_standard::minigame::minigame::{
+    assert_token_ownership, pre_action, post_action,
+};
 
-## Platforms
+fn action(ref self: ContractState, token_id: felt252) {
+    let token_address = self.minigame_token_address.read();
+    assert_token_ownership(token_address, token_id);
+    pre_action(token_address, token_id);
+    // ... game logic ...
+    post_action(token_address, token_id);
+}
+```
 
-**What platforms support EGS games?**
+Only the contract initialized with the MinigameComponent can use `self.minigame.pre_action(token_id)`. See the [Quick Start](/embeddable-game-standard/building-a-game/quick-start#multi-contract-games-library-functions).
+
+**What happens if I forget to call `post_action`?**
+
+The token contract won't know when scores change or games end. Score updates won't be emitted, game_over transitions won't be recorded, and platform callbacks won't fire.
+
+**Are settings and objectives required?**
+
+No. Settings (difficulty modes) and objectives (achievements) are optional extensions. Your game works without them. See [Settings & Objectives](/embeddable-game-standard/building-a-game/settings-and-objectives).
+
+**How does scoring work?**
+
+Your contract implements `score()` and `game_over()`. The token contract reads these via `post_action` and emits `ScoreUpdate` events. You define the scoring formula — EGS doesn't prescribe one. See [Score & Game Over](/embeddable-game-standard/building-a-game/score-and-game-over).
+
+**Should `game_over` be reversible?**
+
+No. Once `game_over()` returns true, it should stay true. The token contract treats this as a permanent state transition. Reversing it would break platform integrations and tournament results.
+
+## Token Lifecycle
+
+**How are game tokens minted?**
+
+A platform (or the player directly) calls `mint()` on the token contract, specifying the game address, optional settings, start/end times, and other parameters. The token ID is a packed felt252 encoding all this metadata.
+
+**How does the lifecycle (start/end) work?**
+
+The minter provides `start` and `end` as absolute Unix timestamps. The contract converts these to relative delays for packing into the token ID. A token is playable when the current time is between start and end. `start=0` means immediately playable, `end=0` means never expires. See [Lifecycle & Playability](/embeddable-game-standard/building-a-game/lifecycle).
+
+**What are packed token IDs?**
+
+Token IDs encode game metadata (game ID, minter, settings, lifecycle, objective, flags) into a single felt252. This allows reading token properties without any storage lookups or RPC calls. See [Packed Token IDs](/embeddable-game-standard/advanced/packed-token-ids).
+
+**What error do I get if a token isn't playable?**
+
+Specific messages for each case:
+- `"Token is not playable - game is over"`
+- `"Token is not playable - objective already completed"`
+- `"Token is not playable - game has not started (now={}, start={})"`
+- `"Token is not playable - game has expired (now={}, end={})"`
+
+## Building a Platform
+
+**What is a Metagame?**
+
+A platform contract (tournament system, quest platform, social app) that mints game tokens and orchestrates gameplay. It uses the MetagameComponent to track its token contract and receive callbacks. See [Building a Platform](/embeddable-game-standard/building-a-platform).
+
+**How do callbacks work?**
+
+When `post_action` updates a token, the token contract checks if the minter supports `IMetagameCallback` via SRC5. If so, it dispatches `on_game_action`, `on_game_over`, or `on_objective_complete`. The `MetagameCallbackComponent` handles caller verification automatically — you just implement the `MetagameCallbackHooksTrait`. See [Callbacks](/embeddable-game-standard/building-a-platform/callbacks).
+
+**Do I need to verify the caller in my callback implementation?**
+
+No. The `MetagameCallbackComponent` enforces `assert_only_token` automatically before delegating to your hooks. You just implement the business logic.
+
+**What is the Registry?**
+
+A contract that maps game addresses to incrementing IDs, enabling multi-game token contracts. Games register once, and the registry provides discovery for platforms. See [Registry & Discovery](/embeddable-game-standard/building-a-platform/registry).
+
+**What platforms currently use EGS?**
 
 - **Budokan**: Permissionless tournament protocol. Any EGS game can be used in tournaments with custom entry fees and prize pools.
 - **Eternum**: MMO that embeds EGS games as quests, extending gameplay through mini-game integrations.
 
-**What are the benefits for game developers?**
+## Frontend
 
-Reach new audiences without building platform integrations. Your game can be used in tournaments, embedded as quests, and listed across multiple applications. Focus on gameplay and innovation rather than infrastructure.
+**How do I query game data?**
 
-**What are the benefits for platform developers?**
+Use the `denshokan-sdk` to query games, tokens, players, and activity through the Denshokan API. The SDK provides typed responses and handles pagination. See [denshokan-sdk](/embeddable-game-standard/frontend/sdk).
 
-Access a library of onchain games without building from scratch. Add new content and engagement through variety. Each game instance is a unique, verifiable onchain token.
+**How do I get real-time updates?**
+
+Subscribe via WebSocket hooks (`useScoreUpdates`, `useGameActivity`, etc.) for live score changes, game completions, and minting events. See [WebSocket Subscriptions](/embeddable-game-standard/frontend/websockets).
+
+**Can I decode token IDs client-side?**
+
+Yes. The SDK provides `decodeTokenId()` which unpacks the felt252 into all its fields (game ID, minter, settings, lifecycle, etc.) without any RPC calls. See [Types Reference](/embeddable-game-standard/frontend/types).
 
 ## More Resources
 
-- [Overview](/embeddable-game-standard)
-- [Key Functions](/embeddable-game-standard/key-functions)
-- [Implementation Guide](/embeddable-game-standard/implementation)
-- [Games](/embeddable-game-standard/games)
-- [Applications](/embeddable-game-standard/applications)
+- [Quick Start](/embeddable-game-standard/building-a-game/quick-start) — Build a Number Guess game step by step
+- [Architecture](/embeddable-game-standard/architecture) — How the layers fit together
+- [game-components Reference](/embeddable-game-standard/reference) — Interface and struct documentation
+- [Games](/embeddable-game-standard/games) — Live games built with EGS
+- [Applications](/embeddable-game-standard/applications) — Platforms using EGS

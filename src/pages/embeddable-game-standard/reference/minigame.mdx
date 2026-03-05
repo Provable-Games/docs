@@ -1,0 +1,205 @@
+---
+layout: docs
+---
+
+# MinigameComponent
+
+The MinigameComponent is the foundation that every game contract embeds. It handles registration with the game registry, initialization, and provides the interface that the token contract calls to read game state.
+
+## Core Interface: IMinigameTokenData
+
+Every game **must** implement this trait:
+
+```cairo
+#[starknet::interface]
+pub trait IMinigameTokenData<TState> {
+    fn score(self: @TState, token_id: felt252) -> u64;
+    fn game_over(self: @TState, token_id: felt252) -> bool;
+    fn score_batch(self: @TState, token_ids: Span<felt252>) -> Array<u64>;
+    fn game_over_batch(self: @TState, token_ids: Span<felt252>) -> Array<bool>;
+}
+```
+
+Interface ID: `IMINIGAME_ID` - must be registered via SRC5.
+
+## Optional Interfaces
+
+### IMinigameDetails
+
+Rich game state for display:
+
+```cairo
+#[starknet::interface]
+pub trait IMinigameDetails<TState> {
+    fn token_name(self: @TState, token_id: felt252) -> ByteArray;
+    fn token_description(self: @TState, token_id: felt252) -> ByteArray;
+    fn game_details(self: @TState, token_id: felt252) -> Array<GameDetail>;
+    fn token_name_batch(self: @TState, token_ids: Span<felt252>) -> Array<ByteArray>;
+    fn token_description_batch(self: @TState, token_ids: Span<felt252>) -> Array<ByteArray>;
+    fn game_details_batch(
+        self: @TState, token_ids: Span<felt252>,
+    ) -> Array<Array<GameDetail>>;
+}
+```
+
+### IMinigameTokenSettings
+
+Configurable game modes:
+
+```cairo
+#[starknet::interface]
+pub trait IMinigameTokenSettings<TState> {
+    fn create_settings(
+        ref self: TState,
+        name: ByteArray,
+        description: ByteArray,
+        settings: Span<GameSetting>,
+    ) -> u32;
+    fn settings_exists(self: @TState, settings_id: u32) -> bool;
+    fn settings_count(self: @TState) -> u32;
+    fn settings_details(self: @TState, settings_id: u32) -> GameSettingDetails;
+    fn settings_details_batch(
+        self: @TState, settings_ids: Span<u32>,
+    ) -> Array<GameSettingDetails>;
+}
+```
+
+### IMinigameTokenObjectives
+
+Trackable achievements:
+
+```cairo
+#[starknet::interface]
+pub trait IMinigameTokenObjectives<TState> {
+    fn create_objective(
+        ref self: TState,
+        name: ByteArray,
+        description: ByteArray,
+        objectives: Span<GameObjective>,
+    ) -> u32;
+    fn objective_exists(self: @TState, objective_id: u32) -> bool;
+    fn objectives_count(self: @TState) -> u32;
+    fn completed_objective(self: @TState, token_id: felt252, objective_id: u32) -> bool;
+    fn objectives_details(self: @TState, objective_id: u32) -> GameObjectiveDetails;
+    fn objectives_details_batch(
+        self: @TState, objective_ids: Span<u32>,
+    ) -> Array<GameObjectiveDetails>;
+    fn completed_objective_batch(
+        self: @TState, token_ids: Span<felt252>, objective_id: u32,
+    ) -> Array<bool>;
+}
+```
+
+## Component Storage
+
+The MinigameComponent stores:
+- MinigameToken address
+- Settings contract address
+- Objectives contract address
+
+```cairo
+#[storage]
+struct Storage {
+    token_address: ContractAddress,
+    settings_address: ContractAddress,
+    objectives_address: ContractAddress,
+}
+```
+
+## Initialization
+
+```cairo
+self.minigame.initializer(
+    game_creator,           // Address that receives creator NFT
+    game_name,              // "Number Guess"
+    game_description,       // "Guess the secret number"
+    game_developer,         // "Provable Games"
+    game_publisher,         // "Provable Games"
+    game_genre,             // "Puzzle"
+    game_image,             // Image URL
+    game_color,             // Option<ByteArray> - hex color
+    client_url,             // Option<ByteArray> - game client URL
+    renderer_address,       // Option<ContractAddress> - custom renderer
+    settings_address,       // Option<ContractAddress> - settings provider
+    objectives_address,     // Option<ContractAddress> - objectives provider
+    minigame_token_address, // MinigameToken contract address
+    royalty_fraction,       // Option<u128> - basis points
+    skills_address,         // Option<ContractAddress> - AI agent skills
+    version,                // u64 - game version number
+);
+```
+
+During initialization, the component:
+1. Registers the game with the MinigameRegistry
+2. Stores the assigned game_id
+3. Registers SRC5 interfaces (`IMINIGAME_ID`)
+
+## Events
+
+```cairo
+#[event]
+enum Event {
+    ScoreUpdate: ScoreUpdate,
+    GameOver: GameOver,
+}
+
+#[derive(Drop, starknet::Event)]
+struct ScoreUpdate {
+    #[key]
+    token_id: felt252,
+    score: u64,
+}
+
+#[derive(Drop, starknet::Event)]
+struct GameOver {
+    #[key]
+    token_id: felt252,
+    final_score: u64,
+}
+```
+
+## Data Structures
+
+### GameDetail
+
+```cairo
+#[derive(Drop, Serde, Copy)]
+pub struct GameDetail {
+    pub name: felt252,
+    pub value: felt252,
+}
+```
+
+### GameSettingDetails
+
+```cairo
+#[derive(Drop, Serde)]
+pub struct GameSettingDetails {
+    pub name: ByteArray,
+    pub description: ByteArray,
+    pub settings: Span<GameSetting>,
+}
+
+#[derive(Drop, Serde)]
+pub struct GameSetting {
+    pub name: felt252,
+    pub value: felt252,
+}
+```
+
+### GameObjectiveDetails
+
+```cairo
+#[derive(Drop, Serde)]
+pub struct GameObjectiveDetails {
+    pub name: ByteArray,
+    pub description: ByteArray,
+    pub objectives: Span<GameObjective>,
+}
+
+#[derive(Drop, Serde, Copy)]
+pub struct GameObjective {
+    pub name: felt252,
+    pub value: felt252,
+}
+```

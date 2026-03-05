@@ -1,0 +1,72 @@
+---
+layout: docs
+---
+
+# game-components Reference
+
+The `game-components` library provides modular Cairo components for building EGS-compliant contracts on Starknet. Each component is a self-contained unit that can be composed into your contract.
+
+## Package Overview
+
+| Package | Crate Name | Purpose |
+|---------|-----------|---------|
+| **interfaces** | `game_components_interfaces` | All trait definitions, structs, and interface IDs |
+| **embeddable_game_standard** | `game_components_embeddable_game_standard` | Token, Minigame, Metagame, Registry components |
+| **metagame** | `game_components_metagame` | Leaderboard, registration, entry gating, entry fees, prizes, ticket booth |
+| **economy** | `game_components_economy` | Tokenomics: buyback (Ekubo TWAMM), stream token |
+| **utilities** | `game_components_utilities` | Math, distribution, encoding, SVG rendering |
+| **presets** | `game_components_presets` | Ready-to-deploy contracts: LeaderboardPreset, AutonomousBuyback, StreamToken |
+
+## Dependency Graph
+
+```
+interfaces ◀─── embeddable_game_standard
+    ▲                    ▲
+    │                    │
+    ├── metagame         ├── utilities
+    ├── economy          └── presets
+    └── utilities
+```
+
+All packages depend on `interfaces` for trait definitions. The `embeddable_game_standard` package is the most complex, composing Token, Minigame, Metagame, and Registry components.
+
+## Installation
+
+Add the packages you need to your `Scarb.toml`:
+
+```toml
+[dependencies]
+starknet = "2.15.1"
+
+# Core - Token, Minigame, Metagame, Registry
+game_components_embeddable_game_standard = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# Leaderboard, registration, entry gating, entry fees, prizes
+game_components_metagame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# Tokenomics: buyback, stream token
+game_components_economy = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# Math, distribution, encoding, SVG rendering
+game_components_utilities = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# Ready-to-deploy contracts
+game_components_presets = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+
+# OpenZeppelin (required)
+openzeppelin_token = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
+openzeppelin_introspection = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
+openzeppelin_access = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
+```
+
+## Reference Pages
+
+### Core Components
+- [MinigameToken (ERC721)](/embeddable-game-standard/reference/token) — The core token contract with packed IDs and component composition
+- [Token Extensions](/embeddable-game-standard/reference/token-extensions) — Minter, Renderer, Skills, Settings, Objectives, and Context extensions
+- [MinigameComponent](/embeddable-game-standard/reference/minigame) — Game logic foundation: `IMinigameTokenData`, settings, objectives
+- [MetagameComponent](/embeddable-game-standard/reference/metagame) — Platform foundation: context, callbacks
+- [RegistryComponent](/embeddable-game-standard/reference/registry) — Game registration, discovery, and metadata
+
+### Metagame Package
+- [Metagame Extensions](/embeddable-game-standard/reference/metagame-extensions) — Leaderboard, Registration, Entry Requirements, Entry Fees, Prizes

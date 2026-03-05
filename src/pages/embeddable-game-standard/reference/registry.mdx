@@ -1,0 +1,146 @@
+---
+layout: docs
+---
+
+# MinigameRegistryComponent
+
+The MinigameRegistryComponent manages game registration, discovery, and metadata. It is itself an ERC721 — registering a game mints a creator NFT that controls royalties.
+
+For usage examples and integration patterns, see [Registry & Discovery](/embeddable-game-standard/building-a-platform/registry).
+
+## IMinigameRegistry
+
+```cairo
+pub const IMINIGAME_REGISTRY_ID: felt252 =
+    0x2ff8aa8dda405faf0eb17c5f806d7482b7352cf91fa9668e9ddf030f14b2ee9;
+
+#[starknet::interface]
+pub trait IMinigameRegistry<TState> {
+    // Discovery
+    fn game_count(self: @TState) -> u64;
+    fn game_id_from_address(self: @TState, contract_address: ContractAddress) -> u64;
+    fn game_address_from_id(self: @TState, game_id: u64) -> ContractAddress;
+    fn game_metadata(self: @TState, game_id: u64) -> GameMetadata;
+    fn is_game_registered(self: @TState, contract_address: ContractAddress) -> bool;
+    fn skills_address(self: @TState, game_id: u64) -> ContractAddress;
+
+    // Registration
+    fn register_game(
+        ref self: TState,
+        creator_address: ContractAddress,
+        name: ByteArray,
+        description: ByteArray,
+        developer: ByteArray,
+        publisher: ByteArray,
+        genre: ByteArray,
+        image: ByteArray,
+        color: Option<ByteArray>,
+        client_url: Option<ByteArray>,
+        renderer_address: Option<ContractAddress>,
+        royalty_fraction: Option<u128>,
+        skills_address: Option<ContractAddress>,
+        version: u64,
+    ) -> u64;
+
+    // Admin
+    fn set_game_royalty(ref self: TState, game_id: u64, royalty_fraction: u128);
+
+    // Batch queries
+    fn game_metadata_batch(self: @TState, game_ids: Span<u64>) -> Array<GameMetadata>;
+    fn games_registered_batch(
+        self: @TState, addresses: Span<ContractAddress>,
+    ) -> Array<bool>;
+    fn get_games(self: @TState, start: u64, count: u64) -> Array<GameMetadata>;
+
+    // Filtered queries
+    fn get_games_by_developer(
+        self: @TState, developer: ByteArray, start: u64, count: u64,
+    ) -> Array<GameMetadata>;
+    fn get_games_by_publisher(
+        self: @TState, publisher: ByteArray, start: u64, count: u64,
+    ) -> Array<GameMetadata>;
+    fn get_games_by_genre(
+        self: @TState, genre: ByteArray, start: u64, count: u64,
+    ) -> Array<GameMetadata>;
+}
+```
+
+## GameMetadata
+
+```cairo
+#[derive(Drop, Serde, Clone, starknet::Store)]
+pub struct GameMetadata {
+    pub contract_address: ContractAddress,
+    pub name: ByteArray,
+    pub description: ByteArray,
+    pub developer: ByteArray,
+    pub publisher: ByteArray,
+    pub genre: ByteArray,
+    pub image: ByteArray,
+    pub color: ByteArray,
+    pub client_url: ByteArray,
+    pub renderer_address: ContractAddress,
+    pub skills_address: ContractAddress,
+    pub royalty_fraction: u128,
+    pub created_at: u64,
+    pub version: u64,
+}
+```
+
+## Component Storage
+
+```cairo
+#[storage]
+struct Storage {
+    game_counter: u64,
+    game_id_by_address: Map<ContractAddress, u64>,
+    game_metadata: Map<u64, GameMetadata>,
+}
+```
+
+## Events
+
+```cairo
+#[derive(Drop, starknet::Event)]
+struct GameMetadataUpdate {
+    #[key]
+    game_id: u64,
+    metadata: GameMetadata,
+}
+
+#[derive(Drop, starknet::Event)]
+struct GameRegistryUpdate {
+    #[key]
+    game_id: u64,
+    contract_address: ContractAddress,
+}
+
+#[derive(Drop, starknet::Event)]
+struct GameRoyaltyUpdate {
+    #[key]
+    game_id: u64,
+    royalty_fraction: u128,
+}
+```
+
+## Hooks
+
+The registry component provides hooks for custom behavior:
+
+```cairo
+pub trait MinigameRegistryHooksTrait<TContractState> {
+    fn before_register_game(
+        ref self: TContractState,
+        caller_address: ContractAddress,
+        creator_address: ContractAddress,
+    );
+
+    fn after_register_game(
+        ref self: TContractState,
+        game_id: u64,
+        creator_address: ContractAddress,
+    );
+}
+```
+
+The Denshokan implementation uses `after_register_game` to mint a creator ERC721 to the `creator_address`.

@@ -1,0 +1,299 @@
+---
+layout: docs
+---
+
+# Metagame Extensions
+
+The `game_components_metagame` package provides components for competitive features: leaderboards, registration, entry gating, entry fees, and prizes. These are separate from the core EGS `embeddable_game_standard` package and used by platform contracts like Budokan.
+
+```toml
+[dependencies]
+game_components_metagame = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+```
+
+## Leaderboard
+
+Multi-context leaderboard that supports multiple simultaneous rankings (tournaments, seasons, etc.).
+
+### ILeaderboard
+
+```cairo
+pub const ILEADERBOARD_ID: felt252 =
+    0x381684b12c5a80d08222695ee5eca750b99e56cb53101a47378c542859907e1;
+
+#[starknet::interface]
+pub trait ILeaderboard<TState> {
+    fn submit_score(
+        ref self: TState, context_id: u64, token_id: felt252, score: u64, position: u32,
+    ) -> LeaderboardResult;
+    fn get_entries(self: @TState, context_id: u64) -> Array<LeaderboardEntry>;
+    fn get_top_entries(self: @TState, context_id: u64, count: u32) -> Array<LeaderboardEntry>;
+    fn get_position(self: @TState, context_id: u64, token_id: felt252) -> Option<u32>;
+    fn qualifies(self: @TState, context_id: u64, score: u64) -> bool;
+    fn is_full(self: @TState, context_id: u64) -> bool;
+    fn get_leaderboard_length(self: @TState, context_id: u64) -> u32;
+    fn get_config(self: @TState, context_id: u64) -> LeaderboardStoreConfig;
+}
+```
+
+### ILeaderboardAdmin
+
+```cairo
+#[starknet::interface]
+pub trait ILeaderboardAdmin<TState> {
+    fn configure(
+        ref self: TState,
+        context_id: u64,
+        max_entries: u32,
+        ascending: bool,
+        game_address: ContractAddress,
+    );
+    fn clear(ref self: TState, context_id: u64);
+    fn owner(self: @TState) -> ContractAddress;
+    fn transfer_ownership(ref self: TState, new_owner: ContractAddress);
+}
+```
+
+### IGameDetails
+
+Game contracts implement this so the leaderboard can read scores:
+
+```cairo
+#[starknet::interface]
+pub trait IGameDetails<TState> {
+    fn score(self: @TState, token_id: felt252) -> u64;
+}
+```
+
+### Leaderboard Data Structures
+
+```cairo
+#[derive(Drop, Serde, Copy)]
+pub struct LeaderboardEntry {
+    pub id: felt252,
+    pub score: u64,
+}
+
+#[derive(Drop, Serde, Copy)]
+pub struct LeaderboardConfig {
+    pub max_entries: u32,
+    pub ascending: bool,
+    pub allow_ties: bool,
+}
+
+#[derive(Drop, Serde, Copy)]
+pub struct LeaderboardStoreConfig {
+    pub max_entries: u32,
+    pub ascending: bool,
+    pub game_address: ContractAddress,
+}
+
+#[derive(Drop, Serde, Copy)]
+pub enum LeaderboardResult {
+    Success,
+    InvalidPosition,
+    LeaderboardFull,
+    ScoreTooLow,
+    ScoreTooHigh,
+    DuplicateEntry,
+    InvalidConfig,
+}
+```
+
+## Registration
+
+Tracks entries (participants) per context. Used by tournament contracts to manage who has entered.
+
+### IRegistration
+
+```cairo
+#[starknet::interface]
+pub trait IRegistration<TState> {
+    fn get_entry(self: @TState, context_id: u64, entry_id: u32) -> Registration;
+    fn entry_exists(self: @TState, context_id: u64, entry_id: u32) -> bool;
+    fn is_entry_banned(self: @TState, context_id: u64, entry_id: u32) -> bool;
+    fn get_entry_count(self: @TState, context_id: u64) -> u32;
+}
+```
+
+### Registration Struct
+
+```cairo
+#[derive(Copy, Drop, Serde)]
+pub struct Registration {
+    pub context_id: u64,
+    pub entry_id: u32,
+    pub game_token_id: felt252,
+    pub has_submitted: bool,
+    pub is_banned: bool,
+}
+```
+
+## Entry Requirements
+
+Gates entry to contexts based on token ownership, allowlists, or custom extension logic.
+
+### IEntryRequirement
+
+```cairo
+pub const IENTRY_REQUIREMENT_ID: felt252 =
+    0x153355c05540b99cd8196c632c72891a6039efdc0b4097d8161fbeed3809182;
+
+#[starknet::interface]
+pub trait IEntryRequirement<TState> {
+    fn get_entry_requirement(self: @TState, context_id: u64) -> Option<EntryRequirement>;
+    fn get_qualification_entries(
+        self: @TState, context_id: u64, proof: QualificationProof,
+    ) -> QualificationEntries;
+}
+```
+
+### Entry Requirement Data Structures
+
+```cairo
+#[derive(Copy, Drop, Serde, PartialEq)]
+pub struct EntryRequirement {
+    pub entry_limit: u32,
+    pub entry_requirement_type: EntryRequirementType,
+}
+
+#[derive(Copy, Drop, Serde, PartialEq)]
+pub enum EntryRequirementType {
+    token: ContractAddress,       // Must hold an NFT from this contract
+    allowlist: Span<ContractAddress>, // Must be on the allowlist
+    extension: ExtensionConfig,   // Custom gating logic
+}
+
+#[derive(Copy, Drop, Serde, PartialEq)]
+pub enum QualificationProof {
+    NFT: NFTQualification,
+    Address: ContractAddress,
+    Extension: Span<felt252>,
+}
+
+#[derive(Copy, Drop, Serde)]
+pub struct QualificationEntries {
+    pub context_id: u64,
+    pub qualification_proof: QualificationProof,
+    pub entry_count: u32,
+}
+
+#[derive(Copy, Drop, Serde, PartialEq, starknet::Store)]
+pub struct NFTQualification {
+    pub token_id: u256,
+}
+```
+
+## Entry Fees
+
+Manages fee collection and distribution for paid contexts (tournaments with buy-ins).
+
+### IEntryFee
+
+```cairo
+pub const IENTRY_FEE_ID: felt252 =
+    0x2386e28587616f249621004456b4ed72932c1f731b2a732d87d8a722ee739a1;
+
+#[starknet::interface]
+pub trait IEntryFee<TState> {
+    fn get_entry_fee(self: @TState, context_id: u64) -> Option<EntryFeeConfig>;
+}
+```
+
+### Entry Fee Data Structures
+
+```cairo
+#[derive(Drop, Serde, PartialEq)]
+pub struct EntryFeeConfig {
+    pub token_address: ContractAddress,       // ERC20 token for payment
+    pub amount: u128,                         // Fee amount
+    pub game_creator_share: Option<u16>,      // Basis points (10000 = 100%)
+    pub refund_share: Option<u16>,            // Refunded to each depositor
+    pub additional_shares: Span<AdditionalShare>,
+}
+
+#[derive(Copy, Drop, Serde, PartialEq)]
+pub struct AdditionalShare {
+    pub recipient: ContractAddress,
+    pub share_bps: u16,                       // Basis points (10000 = 100%)
+}
+```
+
+Fee distribution order:
+1. `game_creator_share` goes to the game creator
+2. `refund_share` is returned to each depositor
+3. `additional_shares` go to specified recipients
+4. Remainder is distributed to winners based on the `Distribution` strategy
+
+### Distribution
+
+```cairo
+#[derive(Drop, Copy, Serde, PartialEq)]
+pub enum Distribution {
+    Linear: u16,          // Linear decay with step size
+    Exponential: u16,     // Exponential decay with base
+    Uniform,              // Equal split
+    Custom: Span<u16>,    // Custom basis point shares per position
+}
+```
+
+## Prizes
+
+Manages ERC20 and ERC721 prize pools for contexts.
+
+### IPrize
+
+```cairo
+pub const IPRIZE_ID: felt252 =
+    0x2a7a3be3dafc2154ab2780a63f0457adc535ad295bc44ce46cc3fbb11019641;
+
+#[starknet::interface]
+pub trait IPrize<TState> {
+    fn get_prize(self: @TState, prize_id: u64) -> PrizeData;
+    fn get_total_prizes(self: @TState) -> u64;
+    fn is_prize_claimed(self: @TState, context_id: u64, prize_type: PrizeType) -> bool;
+}
+```
+
+### Prize Data Structures
+
+```cairo
+#[derive(Drop, Serde)]
+pub struct PrizeData {
+    pub id: u64,
+    pub context_id: u64,
+    pub token_address: ContractAddress,
+    pub token_type: TokenTypeData,
+    pub sponsor_address: ContractAddress,
+}
+
+#[derive(Drop, Serde)]
+pub struct PrizeConfig {
+    pub token_address: ContractAddress,
+    pub token_type: TokenTypeData,
+}
+
+#[derive(Drop, Serde)]
+pub enum TokenTypeData {
+    erc20: ERC20Data,
+    erc721: ERC721Data,
+}
+
+#[derive(Drop, Serde)]
+pub struct ERC20Data {
+    pub amount: u128,
+    pub distribution: Option<Distribution>,
+    pub distribution_count: Option<u32>,
+}
+
+#[derive(Copy, Drop, Serde, starknet::Store)]
+pub struct ERC721Data {
+    pub id: u128,
+}
+
+#[derive(Copy, Drop, Serde, PartialEq)]
+pub enum PrizeType {
+    Single: u64,              // Single winner prize (prize_id)
+    Distributed: (u64, u32),  // Multi-winner prize (prize_id, position)
+}
+```

@@ -8,9 +8,11 @@ interface Contract {
 
 interface ContractTableProps {
   contracts: Contract[];
+  network?: string;
 }
 
-export function ContractTable({ contracts }: ContractTableProps) {
+export function ContractTable({ contracts, network = "mainnet" }: ContractTableProps) {
+  const label = network === "mainnet" ? "Mainnet Address" : "Sepolia Address";
   return (
     <table className="min-w-full divide-y divide-gray-200 border border-gray-200 w-full">
       <thead>
@@ -19,7 +21,7 @@ export function ContractTable({ contracts }: ContractTableProps) {
             Contract
           </th>
           <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-            Mainnet Address
+            {label}
           </th>
         </tr>
       </thead>
@@ -33,7 +35,7 @@ export function ContractTable({ contracts }: ContractTableProps) {
               <td className="px-6 py-4 text-sm">
                 <ContractLink
                   address={contract.address}
-                  network="mainnet"
+                  network={network}
                 />
               </td>
             </tr>

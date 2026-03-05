@@ -4,15 +4,15 @@ layout: docs
 
 import { GameCard } from "../../components/GameCard";
 
-# Embeddable Game Standard: Games
+# Games
 
-Here is a list of games that have implemented the embeddable game standard and are benefitting from the tools provided:
+Games that implement the Embeddable Game Standard. Each game exposes `IMinigameTokenData` and can be embedded in any EGS-compatible platform.
 
 <GameCard
   icon="https://darkshuffle.io/favicon.svg"
   name="Dark Shuffle"
   url="https://darkshuffle.io"
-  description="Dark Shuffle is a turn-based, collectible card game. Build your deck, battle monsters, and explore a procedurally generated world."
+  description="Turn-based collectible card game. Build your deck, battle monsters, and explore a procedurally generated world."
   developer="Provable Games"
 />
 
@@ -20,7 +20,7 @@ Here is a list of games that have implemented the embeddable game standard and a
   icon="https://app.zkube.xyz/assets/pwa-512x512.png"
   name="zKube"
   url="https://app.zkube.xyz/"
-  description="zKube is an engaging puzzle game that puts players' strategic thinking to the test. Set within a dynamic grid, the objective is simple: manipulate blocks to form solid lines and earn points.	"
+  description="Puzzle game where players manipulate blocks within a dynamic grid to form solid lines and earn points."
   developer="zKorp"
 />
 
@@ -28,7 +28,7 @@ Here is a list of games that have implemented the embeddable game standard and a
   icon="https://raw.githubusercontent.com/Provable-Games/death-mountain/main/client/public/images/skull.png"
   name="Loot Survivor"
   url="https://lootsurvivor.io"
-  description="Fight for your life against treacherous beasts and obstacles in search of mythical loot in this procedurally generated dungeon crawler."
+  description="Fight for your life against beasts and obstacles in search of mythical loot in this procedurally generated dungeon crawler."
   developer="Provable Games"
 />
 
@@ -36,7 +36,7 @@ Here is a list of games that have implemented the embeddable game standard and a
   icon="https://raw.githubusercontent.com/cartridge-gg/nums/main/public/favicon.svg"
   name="Nums"
   url="https://nums.gg"
-  description="Nums is a sequential puzzle game where players sequence a series of 20 generated numbers. The first layer-3 appchain built on Starknet."
+  description="Sequential puzzle game where players sequence 20 generated numbers. The first layer-3 appchain built on Starknet."
   developer="Cartridge"
 />
 
@@ -44,13 +44,18 @@ Here is a list of games that have implemented the embeddable game standard and a
   icon="https://raw.githubusercontent.com/cartridge-gg/dopewars/main/assets/icon.png"
   name="Dope Wars"
   url="https://rollyourown.preview.cartridge.gg/"
-  description="A decentralized, hip-hop culture-infused on-chain metaverse inspired by the classic Drug Wars and GTA series, where players engage in strategic gameplay using NFTs."
+  description="A decentralized, hip-hop culture-infused on-chain metaverse inspired by Drug Wars and GTA."
   developer="Dope Wars DAO"
 />
 
 ## Why Build Games with EGS?
 
-- Instantly reach new audiences by making your game embeddable in multiple apps and platforms
-- Focus on gameplay and innovation, not infrastructure
-- Extend the way your game is played through permissionless settings creation
-- Benefit from community-driven tournaments, quests, and rewards
+- **Instant distribution**: Your game is automatically available in any EGS platform (Budokan, Denshokan, and more)
+- **Focus on gameplay**: The standard handles token minting, score tracking, and metadata - you write game logic
+- **Permissionless settings**: Anyone can create custom difficulty modes for your game
+- **Community objectives**: Players and organizers can define their own achievement goals
+- **Royalties**: Earn royalties on secondary sales via ERC-2981 with dynamic receiver resolution
+
+## Getting Started
+
+See the [Building a Game](/embeddable-game-standard/building-a-game) guide to make your game EGS-compatible.

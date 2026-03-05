@@ -1,0 +1,172 @@
+---
+layout: docs
+---
+
+# Packed Token IDs
+
+EGS token IDs are not simple incrementing integers. They are `felt252` values (251 bits) that encode 13 fields of immutable game data directly into the ID. This means you can read a token's game, settings, timing, and flags without any storage lookups.
+
+## Bit Layout
+
+Token IDs are packed into two `u128` halves for gas-efficient encoding/decoding via native Sierra `u128_safe_divmod` hints.
+
+### Low u128 (bits 0–127)
+
+| Bits | Field | Size | Max Value |
+|------|-------|------|-----------|
+| 0-29 | `game_id` | 30 bits | ~1 billion games |
+| 30-69 | `minted_by` | 40 bits | ~1 trillion minters |
+| 70-99 | `settings_id` | 30 bits | ~1 billion settings |
+| 100-124 | `start_delay` | 25 bits | ~388 days (in seconds) |
+| 125 | `soulbound` | 1 bit | true/false |
+| 126 | `has_context` | 1 bit | true/false |
+| 127 | `paymaster` | 1 bit | true/false |
+
+### High u128 (bits 128–250)
+
+| Bits | Field | Size | Max Value |
+|------|-------|------|-----------|
+| 128-162 | `minted_at` | 35 bits | Unix seconds until ~3058 |
+| 163-187 | `end_delay` | 25 bits | ~388 days (in seconds) |
+| 188-217 | `objective_id` | 30 bits | ~1 billion objectives |
+| 218-227 | `tx_hash` | 10 bits | Uniqueness from tx hash |
+| 228-237 | `salt` | 10 bits | User-provided salt |
+| 238-250 | `metadata` | 13 bits | Game-defined metadata |
+
+**Total: 251 bits** (fits exactly in a `felt252`)
+
+## Why Pack Token IDs?
+
+### Storage Optimization
+
+Without packing, each token would need 13 storage slots to hold its metadata. With packing, the metadata **is** the token ID - zero additional storage for immutable fields.
+
+### Query Efficiency
+
+The Denshokan Viewer contract can filter tokens by game, settings, or minter by unpacking the ID in-memory, without reading any extra storage. This makes on-chain queries significantly cheaper.
+
+### Client-side Decoding
+
+Frontends can decode a token ID instantly without any RPC calls:
+
+```typescript
+import { decodePackedTokenId } from "@provable-games/denshokan-sdk";
+
+const decoded = decodePackedTokenId("0x123abc...");
+console.log(decoded.gameId);      // 1
+console.log(decoded.settingsId);  // 2
+console.log(decoded.mintedAt);    // Date object
+console.log(decoded.soulbound);   // false
+```
+
+## Cairo Packing
+
+The packing splits fields across two `u128` halves, which aligns with Sierra's native division hints for efficient unpacking:
+
+```cairo
+pub fn pack_token_id(
+    game_id: u32,
+    minted_by: u64,
+    settings_id: u32,
+    start_delay: u32,
+    soulbound: bool,
+    has_context: bool,
+    paymaster: bool,
+    minted_at: u64,
+    end_delay: u32,
+    objective_id: u32,
+    tx_hash: u16,
+    salt: u16,
+    metadata: u16,
+) -> felt252 {
+    // Low u128: game_id | minted_by | settings_id | start_delay | flags
+    let mut low: u128 = game_id.into();
+    low = low | (Into::<u64, u128>::into(minted_by) * TWO_POW_30);
+    low = low | (Into::<u32, u128>::into(settings_id) * TWO_POW_70);
+    low = low | (Into::<u32, u128>::into(start_delay) * TWO_POW_100);
+    if soulbound { low = low | TWO_POW_125; }
+    if has_context { low = low | TWO_POW_126; }
+    if paymaster { low = low | TWO_POW_127; }
+
+    // High u128: minted_at | end_delay | objective_id | tx_hash | salt | metadata
+    let mut high: u128 = minted_at.into();
+    high = high | (Into::<u32, u128>::into(end_delay) * TWO_POW_35);
+    high = high | (Into::<u32, u128>::into(objective_id) * TWO_POW_60);
+    high = high | (Into::<u16, u128>::into(tx_hash) * TWO_POW_90);
+    high = high | (Into::<u16, u128>::into(salt) * TWO_POW_100);
+    high = high | (Into::<u16, u128>::into(metadata) * TWO_POW_110);
+
+    let packed: u256 = u256 { low, high };
+    packed.try_into().unwrap()
+}
+```
+
+## Cairo Unpacking
+
+```cairo
+pub fn unpack_token_id(token_id: felt252) -> PackedTokenId {
+    let packed: u256 = token_id.into();
+    let low: u128 = packed.low;
+    let high: u128 = packed.high;
+
+    // Unpack low u128
+    PackedTokenId {
+        game_id: (low & MASK_30).try_into().unwrap(),
+        minted_by: ((low / TWO_POW_30) & MASK_40).try_into().unwrap(),
+        settings_id: ((low / TWO_POW_70) & MASK_30).try_into().unwrap(),
+        start_delay: ((low / TWO_POW_100) & MASK_25).try_into().unwrap(),
+        soulbound: ((low / TWO_POW_125) & 1) == 1,
+        has_context: ((low / TWO_POW_126) & 1) == 1,
+        paymaster: ((low / TWO_POW_127) & 1) == 1,
+        // Unpack high u128
+        minted_at: (high & MASK_35).try_into().unwrap(),
+        end_delay: ((high / TWO_POW_35) & MASK_25).try_into().unwrap(),
+        objective_id: ((high / TWO_POW_60) & MASK_30).try_into().unwrap(),
+        tx_hash: ((high / TWO_POW_90) & MASK_10).try_into().unwrap(),
+        salt: ((high / TWO_POW_100) & MASK_10).try_into().unwrap(),
+        metadata: ((high / TWO_POW_110) & MASK_13).try_into().unwrap(),
+    }
+}
+```
+
+## TypeScript Decoding
+
+```typescript
+export function decodePackedTokenId(tokenId: string | bigint): DecodedTokenId {
+  const id = BigInt(tokenId);
+
+  return {
+    tokenId: id,
+    // Low u128 (bits 0-127)
+    gameId: Number(id & 0x3FFFFFFFn),                           // 30 bits
+    mintedBy: (id >> 30n) & 0xFFFFFFFFFFn,                      // 40 bits
+    settingsId: Number((id >> 70n) & 0x3FFFFFFFn),              // 30 bits
+    startDelay: Number((id >> 100n) & 0x1FFFFFFn),              // 25 bits
+    soulbound: Boolean((id >> 125n) & 1n),                      // 1 bit
+    hasContext: Boolean((id >> 126n) & 1n),                      // 1 bit
+    paymaster: Boolean((id >> 127n) & 1n),                      // 1 bit
+    // High u128 (bits 128-250)
+    mintedAt: new Date(Number((id >> 128n) & 0x7FFFFFFFFn) * 1000), // 35 bits
+    endDelay: Number((id >> 163n) & 0x1FFFFFFn),                // 25 bits
+    objectiveId: Number((id >> 188n) & 0x3FFFFFFFn),            // 30 bits
+    txHash: Number((id >> 218n) & 0x3FFn),                      // 10 bits
+    salt: Number((id >> 228n) & 0x3FFn),                        // 10 bits
+    metadata: Number((id >> 238n) & 0x1FFFn),                   // 13 bits
+  };
+}
+```
+
+## Trade-offs
+
+**Advantages:**
+- Zero storage cost for immutable metadata
+- Instant client-side decoding
+- Efficient on-chain filtering
+- Token ID itself is a provable commitment to game parameters
+
+**Limitations:**
+- Fields have fixed bit widths (e.g., `game_id` limited to ~1 billion)
+- `minted_by` is truncated to 40 bits (not a full address)
+- `start` and `end` are stored as delays, not absolute timestamps
+- Token IDs are not human-readable
+- Cannot change immutable fields after minting

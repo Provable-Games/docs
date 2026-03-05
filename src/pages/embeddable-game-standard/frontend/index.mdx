@@ -1,0 +1,154 @@
+---
+layout: docs
+---
+
+# Frontend Integration
+
+> **Always use `@provable-games/denshokan-sdk` for client-side interactions.** The SDK handles data source selection, fallback, type safety, and packed token ID decoding automatically. Direct RPC calls should only be needed for write operations.
+
+The `@provable-games/denshokan-sdk` provides everything you need to integrate EGS game data into your frontend: a client for querying data, React hooks for declarative UI, and WebSocket subscriptions for real-time updates.
+
+## Installation
+
+```bash
+npm install @provable-games/denshokan-sdk
+# or
+pnpm add @provable-games/denshokan-sdk
+```
+
+**Peer dependencies** (install if you need them):
+- `react >=18.0.0` - Required for React hooks
+- `starknet >=9.0.0` - Required for RPC methods
+
+## Quick Start
+
+### Vanilla TypeScript
+
+```typescript
+import { DenshokanClient } from "@provable-games/denshokan-sdk";
+
+const client = new DenshokanClient({
+  chain: "mainnet",
+});
+
+// List all registered games
+const games = await client.getGames();
+
+// Get a specific token
+const token = await client.getToken("0x123...");
+
+// Decode a packed token ID (no RPC call needed)
+const decoded = client.decodeTokenId("0x123...");
+console.log(decoded.gameId, decoded.settingsId, decoded.mintedAt);
+```
+
+### React
+
+```tsx
+import {
+  DenshokanProvider,
+  useGames,
+  useToken,
+} from "@provable-games/denshokan-sdk/react";
+
+function App() {
+  return (
+    <DenshokanProvider config={{ chain: "mainnet" }}>
+      <GameList />
+    </DenshokanProvider>
+  );
+}
+
+function GameList() {
+  const { data: games, isLoading, error } = useGames();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <ul>
+      {games?.data.map((game) => (
+        <li key={game.gameId}>{game.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Data Source Architecture
+
+The SDK provides three data paths, automatically choosing the best one:
+
+| Source | Speed | Freshness | Use Case |
+|--------|-------|-----------|----------|
+| **REST API** | Fast | Indexed (slight delay) | Lists, search, aggregation, pagination |
+| **WebSocket** | Real-time | Live | Score updates, new mints, game completions |
+| **RPC** | Slower | On-chain truth | ERC721 methods, batch contract reads, write operations |
+
+### Smart Fallback
+
+If the API is unavailable, the SDK automatically falls back to RPC:
+
+```
+Request → Try API → Success → Return data
+                  → Failure → Try RPC → Success → Return data
+                                       → Failure → Throw DataSourceError
+```
+
+Configure the primary source:
+
+```typescript
+const client = new DenshokanClient({
+  chain: "mainnet",
+  primarySource: "api",  // Default: try API first, fallback to RPC
+  // or
+  primarySource: "rpc",  // Always use RPC (no API dependency)
+});
+```
+
+## Three Integration Options
+
+### 1. React Hooks (Recommended)
+
+Best for React apps. Handles loading states, caching, and re-fetching automatically.
+
+```tsx
+const { data, isLoading, error, refetch } = useGames();
+```
+
+[React Hooks Reference →](/embeddable-game-standard/frontend/react-hooks)
+
+### 2. DenshokanClient
+
+Best for non-React apps, server-side code, or when you need full control.
+
+```typescript
+const client = new DenshokanClient({ chain: "mainnet" });
+const games = await client.getGames();
+```
+
+[SDK Reference →](/embeddable-game-standard/frontend/sdk)
+
+### 3. WebSocket Subscriptions
+
+Best for live dashboards, real-time leaderboards, and notifications. Eight typed hooks provide per-channel subscriptions with event buffering:
+
+```tsx
+import { useScoreUpdates } from "@provable-games/denshokan-sdk/react";
+
+const { lastEvent, events, isConnected } = useScoreUpdates({
+  gameIds: [1],
+  bufferSize: 50,
+});
+```
+
+Or use the client directly:
+
+```typescript
+const unsub = client.subscribe(
+  { channels: ["scores", "game_over"], gameIds: [1] },
+  (message) => console.log(message),
+);
+```
+
+[WebSocket Reference →](/embeddable-game-standard/frontend/websockets)

@@ -1,0 +1,246 @@
+---
+layout: docs
+---
+
+# Lifecycle & Playability
+
+Each game token has a lifecycle that controls when it can be played. This is managed through the `Lifecycle` struct and associated checks.
+
+## The Lifecycle Struct
+
+```cairo
+#[derive(Copy, Drop, Serde)]
+pub struct Lifecycle {
+    pub start: u64,  // Unix timestamp when the game becomes playable (0 = immediately)
+    pub end: u64,    // Unix timestamp when the game expires (0 = never)
+}
+```
+
+The lifecycle is set at mint time. The minter provides `start` and `end` as **absolute Unix timestamps**. The contract then converts these to relative delays (`start_delay` from current time, `end_delay` as duration from start) for packing into the token ID.
+
+### Lifecycle Methods
+
+```cairo
+pub trait LifecycleTrait {
+    /// Has the game expired?
+    fn has_expired(self: @Lifecycle, current_time: u64) -> bool;
+
+    /// Can the game start? (current time >= start time)
+    fn can_start(self: @Lifecycle, current_time: u64) -> bool;
+
+    /// Is the game currently playable? (can_start AND not expired)
+    fn is_playable(self: @Lifecycle, current_time: u64) -> bool;
+
+    /// Validate that start < end (if both are non-zero)
+    fn validate(self: @Lifecycle);
+}
+```
+
+### Implementation
+
+```cairo
+impl LifecycleImpl of LifecycleTrait {
+    fn has_expired(self: @Lifecycle, current_time: u64) -> bool {
+        if *self.end == 0 { false } else { current_time >= *self.end }
+    }
+
+    fn can_start(self: @Lifecycle, current_time: u64) -> bool {
+        if *self.start == 0 { true } else { current_time >= *self.start }
+    }
+
+    fn is_playable(self: @Lifecycle, current_time: u64) -> bool {
+        self.can_start(current_time) && !self.has_expired(current_time)
+    }
+
+    fn validate(self: @Lifecycle) {
+        if *self.end != 0 && *self.start > *self.end {
+            panic!("Lifecycle: Start time cannot be greater than end time");
+        }
+    }
+}
+```
+
+### Special Values
+
+| Start | End | Meaning |
+|-------|-----|---------|
+| 0 | 0 | Playable immediately, never expires |
+| 0 | T | Playable immediately, expires at T |
+| T | 0 | Playable after T, never expires |
+| T1 | T2 | Playable between T1 and T2 |
+
+## Playability Checks
+
+The token contract enforces playability with specific error messages for each failure case:
+
+| Condition | Error message |
+|-----------|---------------|
+| Game is over | `"Token is not playable - game is over"` |
+| Objective already completed | `"Token is not playable - objective already completed"` |
+| Game hasn't started yet | `"Token is not playable - game has not started (now={}, start={})"` |
+| Game has expired | `"Token is not playable - game has expired (now={}, end={})"` |
+
+The timestamp errors include the current block time and the relevant lifecycle bound so callers can see exactly why the check failed.
+
+### Pre-action and Post-action Hooks
+
+**Every player-facing action in your game contract must call** `assert_token_ownership`, `pre_action`, and `post_action`. These are available via the `MinigameComponent`'s internal impl:
+
+```cairo
+impl MinigameInternalImpl = MinigameComponent::InternalImpl<ContractState>;
+```
+
+Then in every action function:
+
+```cairo
+fn play(ref self: ContractState, token_id: felt252) {
+    // Verify the caller owns this token — always check first
+    self.minigame.assert_token_ownership(token_id);
+
+    // Validates the token is playable:
+    //   - game_over is false
+    //   - completed_objective is false
+    //   - Lifecycle has started and not expired
+    self.minigame.pre_action(token_id);
+
+    // ... your game logic ...
+
+    // Syncs state back to the token contract:
+    //   - Reads score() and game_over() from your contract
+    //   - Emits ScoreUpdate events
+    //   - Manages game_over and completed_objective state transitions
+    self.minigame.post_action(token_id);
+}
+```
+
+If your game spans **multiple contracts**, contracts that don't have the `MinigameComponent` can import the library functions directly and pass the token address:
+
+```cairo
+use game_components_embeddable_game_standard::minigame::minigame::{
+    assert_token_ownership, pre_action, post_action,
+};
+
+fn play(ref self: ContractState, token_id: felt252) {
+    let token_address = self.minigame_token_address.read();
+
+    assert_token_ownership(token_address, token_id);
+    pre_action(token_address, token_id);
+
+    // ... game logic ...
+
+    post_action(token_address, token_id);
+}
+```
+
+:::warning
+**Avoid early `return` statements** in action functions. If you return before `post_action`, score changes and game completions won't be synced to the token contract. Instead, store results in a variable and return after `post_action`:
+
+```cairo
+fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
+    self.minigame.assert_token_ownership(token_id);
+    self.minigame.pre_action(token_id);
+
+    let result = if number == secret {
+        // win logic...
+        0_i8
+    } else {
+        if number < secret { -1_i8 } else { 1_i8 }
+    };
+
+    self.minigame.post_action(token_id);
+    result
+}
+```
+:::
+
+Under the hood:
+- `assert_token_ownership` checks the caller is the ERC721 owner of the token
+- `pre_action` calls `assert_playable(token_id)` on the token contract, which checks game_over, completed_objective, and lifecycle bounds with specific error messages
+- `post_action` calls `update_game(token_id)` on the token contract, which reads `score()` and `game_over()` from your game and updates the token state
+
+## Soulbound Tokens
+
+Tokens can be minted as soulbound, preventing transfer after minting:
+
+```cairo
+#[derive(Drop, Serde)]
+pub struct MintParams {
+    // ...
+    pub soulbound: bool,  // If true, token cannot be transferred
+    // ...
+}
+```
+
+When `soulbound` is `true`:
+- The token is minted normally (Transfer event from zero address)
+- All subsequent transfer attempts are rejected
+- The `soulbound` flag is packed into the token ID (1 bit)
+
+This is enforced in the ERC721 `before_update` hook:
+
+```cairo
+fn before_update(
+    ref self: ContractState,
+    to: ContractAddress,
+    token_id: u256,
+    auth: ContractAddress,
+) {
+    // Allow minting (from = zero address)
+    let from = self.erc721._owner_of(token_id);
+    if from.is_zero() {
+        return;
+    }
+
+    // Block transfers for soulbound tokens
+    let packed = unpack_token_id(token_id.try_into().unwrap());
+    if packed.soulbound {
+        panic!("Token is soulbound and cannot be transferred");
+    }
+}
+```
+
+### When to Use Soulbound
+
+- **Tournament entries**: Prevent selling a game session mid-tournament
+- **Personal achievements**: Achievements should stay with the player
+- **Anti-gaming**: Prevent score-selling by making tokens non-transferable
+
+## Token Metadata
+
+The `TokenMetadata` struct contains all the immutable data about a token:
+
+```cairo
+#[derive(Copy, Drop, Serde)]
+pub struct TokenMetadata {
+    pub game_id: u64,             // Which game this token is for
+    pub minted_at: u64,           // When the token was minted
+    pub settings_id: u32,         // Game settings configuration
+    pub lifecycle: Lifecycle,     // Start/end timing
+    pub minted_by: u64,           // Minter ID (truncated address)
+    pub soulbound: bool,          // Transfer restriction
+    pub game_over: bool,          // Is the game complete
+    pub completed_objective: bool, // Has the objective been met
+    pub has_context: bool,        // Does this token have context data
+    pub objective_id: u32,        // Which objective (if any)
+    pub paymaster: bool,          // Was minting gas-sponsored
+    pub metadata: u16,            // Additional game-defined metadata
+}
+```
+
+Most of these fields are immutable - they're packed into the token ID at mint time. Only `game_over` and `completed_objective` are mutable (stored separately in `TokenMutableState`).
+
+## Lifecycle in Practice
+
+```
+Time ────────────────────────────────────────────▶
+
+     │← not playable →│← playable →│← expired →│
+     ▲                 ▲             ▲
+  minted            start          end
+```
+
+**Tournament use case**: A tournament creates tokens with `start` = tournament start time and `end` = tournament end time. Players can only play during the tournament window. After expiry, scores are finalized.
+
+**Quest use case**: A quest creates tokens with `start` = 0 (immediate) and `end` = quest deadline. Players can start anytime but must finish before the deadline.
+
+**Perpetual use case**: Tokens with `start` = 0 and `end` = 0 are always playable. Score accumulates indefinitely.

@@ -4,57 +4,61 @@ layout: docs
 
 # Embeddable Game Standard
 
-The Embeddable Game Standard (EGS) is a foundational blueprint for Starknet games, designed to ensure interoperability and unlock access to an ever-growing ecosystem of powerful onchain applications, including the [Budokan](/budokan) tournament platform and the Tanken Quest platform (coming soon). It standardizes essential game contract functionalities such as ERC721 token minting for unique game instances, comprehensive metadata management, and robust score or progress tracking, which are vital for both competitive play and objective-based questing. By adhering to EGS, games can be seamlessly integrated into systems that distribute game instances as NFTs, associate them with diverse rewards (for victory, completion, or participation), and support varied engagement models. From high-stakes tournaments to narrative-driven campaigns, onboarding tutorials, and community-tailored challenges.
+The Embeddable Game Standard (EGS) is an open protocol for building composable, provable on-chain games on Starknet. It defines how games expose their logic, how platforms mint and manage game tokens, and how frontends display real-time game state.
 
-## Table of Contents
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Key Functions](#key-functions)
-- [Implementation Guide](#implementation-guide)
+## The Problem
 
-## Overview
-The standard provides a blueprint for game contracts to:
-- Mint game tokens (ERC721) for tournament entries
-- Store and expose game and player metadata
-- Track scores and settings in a standardized way
-- Emit events for metadata updates and lifecycle changes
+On-chain games are silos. Each game reinvents token minting, score tracking, settings management, and leaderboard logic. Platforms that want to embed multiple games must write custom integration code for each one. There's no standard way for a tournament system, a quest platform, or a social app to discover, launch, and validate games.
 
-By adhering to this standard, games can:
-- Be listed and used in Budokan tournaments
-- Enable automated leaderboard and prize logic
-- Support composable, upgradable tournament experiences
+## Three Pillars
 
-## Architecture
-- **Game Component:** Implements the core logic for minting, metadata management, and score tracking. See `contracts/src/components/game.cairo`.
-- **Models & Interfaces:** Define the data structures for game metadata, token metadata, settings, and lifecycle events.
-- **Integration Points:** Games must expose the required interfaces and implement the necessary storage and event logic.
+EGS is built on three layers:
 
-## Key Functions
-- `mint`: Mint a new game token for a player, with associated metadata and settings.
-- `game_metadata`: Retrieve metadata for the game contract.
-- `token_metadata`: Retrieve metadata for a specific game token.
-- `game_count`: Get the total number of games/tokens minted.
-- `emit_metadata_update`: Emit an event when token metadata is updated.
-- `initializer`: Initialize the game contract with metadata, settings, and storage configuration.
+| Layer | What It Is | Who Uses It |
+|-------|-----------|-------------|
+| [**game-components**](/embeddable-game-standard/reference) | Modular Cairo component library for Starknet | Game and platform developers writing contracts |
+| [**Denshokan**](https://github.com/Provable-Games/denshokan) | Turnkey implementation: token contract, registry, indexer, API, and client | Teams that want a ready-made deployment |
+| [**denshokan-sdk**](/embeddable-game-standard/frontend) | TypeScript SDK with React hooks and WebSocket subscriptions | Frontend developers integrating game data |
 
-## Implementation Guide
-1. **Implement the Game Component:**
-   - Use the provided `game_component` module as a base.
-   - Implement the required storage, events, and interface functions.
-2. **Define Metadata and Settings:**
-   - Use the standard models for game and token metadata.
-   - Store settings and score models as required by your game logic.
-3. **Integrate with Budokan:**
-   - Ensure your contract exposes the required interfaces (ERC721, metadata, settings).
-   - Test minting, metadata retrieval, and event emission with Budokan tournament flows.
-4. **Deploy and Register:**
-   - Deploy your game contract to Starknet.
-   - Register the game with Budokan for tournament use.
+## What You Can Build
 
-## Games
-The current games that have implemented the standard:
-- Dark Shuffle
-- Zkube
-- Loot Survivor (coming soon)
+**Games** that are automatically compatible with any EGS platform:
+- Implement a single trait (`IMinigameTokenData`) to expose score and game-over status
+- Optionally add settings (difficulty modes), objectives (achievements), and custom metadata
+- Your game becomes mintable, trackable, and embeddable anywhere
 
-By following this standard, your game will be compatible with Budokan and other systems that adopt the Embeddable Game Standard. 
+**Platforms** that aggregate and orchestrate games:
+- Mint game tokens on behalf of users with a single `mint()` call
+- Receive automatic callbacks when scores update or games complete
+- Run tournaments, quests, and reward systems across any EGS-compliant game
+
+**Frontends** that display real-time game data:
+- Query games, tokens, players, and activity through a unified API
+- Subscribe to live score updates and game completions via WebSocket
+- Decode packed token IDs client-side for instant display without RPC calls
+
+## Architecture at a Glance
+
+```
+Metagame ──→ MinigameToken (ERC721) ──→ Minigame
+  │  ▲               │                      │
+  │  │               └── Registry            ├── Settings (optional)
+  │  │                                       └── Objectives (optional)
+  │  └── IMetagameCallback (on_game_action, on_game_over, on_objective_complete)
+  └── Context (optional)
+```
+
+**Game Lifecycle**: Setup → Mint → Play → Sync (`update_game()`) → Complete (`game_over()`)
+
+[Learn more about the architecture →](/embeddable-game-standard/architecture)
+
+## Quick Links
+
+| I want to... | Start here |
+|--------------|-----------|
+| Build a game | [Building a Game](/embeddable-game-standard/building-a-game) |
+| Build a platform that embeds games | [Building a Platform](/embeddable-game-standard/building-a-platform) |
+| Integrate game data in my frontend | [Frontend Integration](/embeddable-game-standard/frontend) |
+| Look up a specific interface or struct | [game-components Reference](/embeddable-game-standard/reference) |
+| See working examples | [Games](/embeddable-game-standard/games) and [Applications](/embeddable-game-standard/applications) |
+| Understand packed token IDs or SRC5 | [Advanced Topics](/embeddable-game-standard/advanced) |

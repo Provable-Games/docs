@@ -1,0 +1,122 @@
+---
+layout: docs
+---
+
+# Building a Platform
+
+A platform is any application that embeds EGS games - tournament systems, quest platforms, social apps, MMOs, or arcades. This guide covers how to mint game tokens, read results, and optionally receive automatic callbacks.
+
+## What Is a Platform?
+
+In EGS terms, a platform is a contract (or external caller) that:
+1. **Mints game tokens** on behalf of users
+2. **Validates results** by reading scores and game-over status
+3. **Optionally receives callbacks** when game state changes
+
+Examples:
+- **Budokan**: Tournament platform that mints tokens for entrants, ranks by score
+- **Eternum**: MMO that embeds mini-games as quests, rewards completion
+- **Any dApp**: Social app that lets users play games and share results
+
+## Minting a Game Token
+
+To start a game for a user, call `mint()` on the MinigameToken contract:
+
+```cairo
+use game_components_token::interface::{
+    IMinigameTokenMixinDispatcher, IMinigameTokenMixinDispatcherTrait,
+};
+
+let token = IMinigameTokenMixinDispatcher { contract_address: token_address };
+let token_id: felt252 = token.mint(MintParams {
+    game_address: number_guess_address,   // Which game to play
+    player_name: Option::Some('Alice'),   // Optional display name
+    settings_id: Option::Some(2),         // Medium difficulty
+    start: Option::None,                  // Playable immediately
+    end: Option::None,                    // Never expires
+    objective_id: Option::Some(1),        // Track "First Win" objective
+    context: Option::None,               // No platform context
+    client_url: Option::None,            // No custom client
+    renderer_address: Option::None,      // Default renderer
+    skills_address: Option::None,        // No agent skills
+    to: player_address,                  // Token recipient
+    soulbound: false,                    // Transferable
+    paymaster: false,                    // Not gas-sponsored
+    salt: 0,                             // Uniqueness salt
+    metadata: 0,                         // Game-specific metadata
+});
+```
+
+### MintParams
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `game_address` | `ContractAddress` | The game contract address |
+| `player_name` | `Option<felt252>` | Display name for the player |
+| `settings_id` | `Option<u32>` | Game settings configuration |
+| `start` | `Option<u64>` | Delay before game becomes playable (seconds) |
+| `end` | `Option<u64>` | Delay until game expires (seconds) |
+| `objective_id` | `Option<u32>` | Objective to track for this session |
+| `context` | `Option<GameContextDetails>` | Platform-specific context data |
+| `client_url` | `Option<ByteArray>` | Custom game client URL |
+| `renderer_address` | `Option<ContractAddress>` | Custom token renderer |
+| `skills_address` | `Option<ContractAddress>` | AI agent skills provider |
+| `to` | `ContractAddress` | Who receives the token |
+| `soulbound` | `bool` | Prevent transfers after minting |
+| `paymaster` | `bool` | Whether minting gas is sponsored |
+| `salt` | `u16` | Uniqueness salt (allows multiple tokens with same params) |
+| `metadata` | `u16` | Game-specific metadata bits |
+
+### Batch Minting
+
+For tournaments with many entrants:
+
+```cairo
+let token_ids: Array<felt252> = token.mint_batch(array![
+    MintParams { game_address, to: player1, settings_id: Option::Some(2), .. },
+    MintParams { game_address, to: player2, settings_id: Option::Some(2), .. },
+    MintParams { game_address, to: player3, settings_id: Option::Some(2), .. },
+]);
+```
+
+## Validating Results
+
+After players finish, read their results:
+
+```cairo
+use game_components_embeddable_game_standard::minigame::interface::{
+    IMinigameTokenDataDispatcher, IMinigameTokenDataDispatcherTrait,
+};
+
+let game = IMinigameTokenDataDispatcher { contract_address: game_address };
+
+// Single token
+let score: u64 = game.score(token_id);
+let is_over: bool = game.game_over(token_id);
+
+// Batch - more gas efficient for leaderboards
+let scores: Array<u64> = game.score_batch(token_ids);
+let game_overs: Array<bool> = game.game_over_batch(token_ids);
+```
+
+## Direct Minting vs MetagameComponent
+
+**Direct minting**: Your contract calls `token.mint()` directly. Simple, no extra components needed.
+
+**MetagameComponent**: For deeper integration, compose the MetagameComponent to get automatic minter registration, callback support, and context management.
+
+| Feature | Direct Mint | MetagameComponent |
+|---------|------------|-------------------|
+| Mint tokens | Yes | Yes |
+| Read scores | Yes | Yes |
+| Automatic callbacks | No | Yes (via SRC5) |
+| Minter registration | Manual | Automatic |
+| Context data | No | Yes |
+
+See [MetagameComponent](/embeddable-game-standard/building-a-platform/metagame) for the component-based approach.
+
+## Next Steps
+
+- [MetagameComponent](/embeddable-game-standard/building-a-platform/metagame) - Deep integration with automatic minter registration
+- [Callbacks & Automation](/embeddable-game-standard/building-a-platform/callbacks) - React to score updates and game completions
+- [Registry & Discovery](/embeddable-game-standard/building-a-platform/registry) - Find and display available games
