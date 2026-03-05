@@ -1,0 +1,155 @@
+---
+layout: docs
+---
+
+# Token Extensions
+
+The MinigameToken supports optional extensions that add functionality beyond the core `IMinigameToken` interface. Each extension has its own SRC5 interface ID and can be independently checked and queried.
+
+## Minter Extension
+
+Tracks which contracts have minted tokens. Each minter receives an auto-incrementing ID that gets packed into token IDs.
+
+### IMinigameTokenMinter
+
+```cairo
+pub const IMINIGAME_TOKEN_MINTER_ID: felt252 =
+    0x2198424b9ee68499f53f33ad952598acbd6d141af6c6863c9c56b117063acca;
+
+#[starknet::interface]
+pub trait IMinigameTokenMinter<TState> {
+    fn get_minter_address(self: @TState, minter_id: u64) -> ContractAddress;
+    fn get_minter_id(self: @TState, minter_address: ContractAddress) -> u64;
+    fn minter_exists(self: @TState, minter_address: ContractAddress) -> bool;
+    fn total_minters(self: @TState) -> u64;
+}
+```
+
+Minters are registered automatically on first mint. The minter ID (truncated to 40 bits) is packed into the token ID so it can be decoded without storage lookups.
+
+## Renderer Extension
+
+Allows per-token custom renderers. When a token has a custom renderer, `token_uri()` delegates to that contract instead of the default renderer.
+
+### IMinigameTokenRenderer
+
+```cairo
+pub const IMINIGAME_TOKEN_RENDERER_ID: felt252 =
+    0x2899a752da88d6acf4ed54cc644238f3956b4db3c9885d3ad94f6149f0ec465;
+
+#[starknet::interface]
+pub trait IMinigameTokenRenderer<TState> {
+    fn get_renderer(self: @TState, token_id: felt252) -> ContractAddress;
+    fn has_custom_renderer(self: @TState, token_id: felt252) -> bool;
+    fn reset_token_renderer(ref self: TState, token_id: felt252);
+
+    // Batch operations
+    fn reset_token_renderer_batch(ref self: TState, token_ids: Span<felt252>);
+    fn get_renderer_batch(
+        self: @TState, token_ids: Span<felt252>,
+    ) -> Array<ContractAddress>;
+}
+```
+
+The renderer address can be set at mint time via `MintParams.renderer_address`, or overridden later by the token owner using `set_token_renderer` on the core token interface.
+
+## Skills Extension
+
+Per-token AI agent skills. Each token can override the game's default skills provider with a custom one.
+
+### ISkills
+
+The external contract interface that skills providers implement:
+
+```cairo
+pub const ISKILLS_ID: felt252 =
+    0x39fae678a19cd9b999da1d9ad54f00e686406974a4ced6f7eb51c8959aabd98;
+
+#[starknet::interface]
+pub trait ISkills<TState> {
+    fn skills(self: @TState, token_id: felt252) -> ByteArray;
+}
+```
+
+### IMinigameTokenSkills
+
+The token extension interface for per-token skills address management:
+
+```cairo
+pub const IMINIGAME_TOKEN_SKILLS_ID: felt252 =
+    0x33846532a9b9e859675aaa1a6c3ae6a45ccf1920c83e2d34898fa2f116201b3;
+
+#[starknet::interface]
+pub trait IMinigameTokenSkills<TState> {
+    fn get_skills_address(self: @TState, token_id: felt252) -> ContractAddress;
+    fn has_custom_skills(self: @TState, token_id: felt252) -> bool;
+    fn reset_token_skills(ref self: TState, token_id: felt252);
+
+    // Batch operations
+    fn reset_token_skills_batch(ref self: TState, token_ids: Span<felt252>);
+    fn get_skills_address_batch(
+        self: @TState, token_ids: Span<felt252>,
+    ) -> Array<ContractAddress>;
+}
+```
+
+Resolution order: per-token override > game-level default (from registry) > zero address (no skills).
+
+## Settings Extension
+
+Stores game settings metadata on the token contract. The game contract creates settings via `create_settings`, and the token contract stores the display metadata for SDK/RPC queries.
+
+### IMinigameTokenSettings
+
+```cairo
+pub const IMINIGAME_TOKEN_SETTINGS_ID: felt252 =
+    0x3c6f5c714fef5141bb7edbbbf738c80782154e825a5675355c937aa9bc07bae;
+
+#[starknet::interface]
+pub trait IMinigameTokenSettings<TState> {
+    fn create_settings(
+        ref self: TState,
+        game_address: ContractAddress,
+        creator_address: ContractAddress,
+        settings_id: u32,
+        settings_details: GameSettingDetails,
+    );
+}
+```
+
+Called by the `SettingsComponent` in the game contract during `create_settings`. The token contract emits events that the indexer picks up for SDK queries.
+
+## Objectives Extension
+
+Stores objective metadata on the token contract. Mirrors the pattern of the Settings extension.
+
+### IMinigameTokenObjectives
+
+```cairo
+pub const IMINIGAME_TOKEN_OBJECTIVES_ID: felt252 =
+    0x1e9f4982a68b67ddda6e894e8e620fe12ae877cf303308fe16814ceb2706077;
+
+#[starknet::interface]
+pub trait IMinigameTokenObjectives<TState> {
+    fn create_objective(
+        ref self: TState,
+        game_address: ContractAddress,
+        creator_address: ContractAddress,
+        objective_id: u32,
+        objective_details: GameObjectiveDetails,
+    );
+}
+```
+
+Called by the `ObjectivesComponent` in the game contract during `create_objective`. The token contract stores and indexes the metadata.
+
+## Context Extension
+
+The context extension is an SRC5-only marker — there is no corresponding trait. The constant is used to indicate that a token contract supports context data:
+
+```cairo
+pub const IMINIGAME_TOKEN_CONTEXT_ID: felt252 =
+    0x02b329e82f6f6b94f8949b36c5dc95acf86c6083b08d99bc81e399b4b0e8d19a;
+```
+
+Context data is attached to tokens at mint time via `MintParams.context` and is read through the metagame's [IMetagameContextDetails](/embeddable-game-standard/reference/metagame#imetagamecontextdetails) interface.

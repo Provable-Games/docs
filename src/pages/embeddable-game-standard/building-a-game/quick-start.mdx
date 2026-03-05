@@ -4,7 +4,7 @@ layout: docs
 
 # Quick Start: Number Guess Game
 
-This tutorial walks through building a complete EGS-compliant game based on the [Number Guess](https://github.com/Provable-Games/denshokan/blob/main/contracts/src/number_guess.cairo) reference implementation.
+This tutorial walks through building a complete EGS-compliant game based on the [Number Guess](https://github.com/Provable-Games/number-guess) reference implementation.
 
 ## What We're Building
 
@@ -20,13 +20,16 @@ A number-guessing game where:
 ```cairo
 #[starknet::interface]
 pub trait INumberGuess<TContractState> {
-    fn new_game(ref self: TContractState, token_id: felt252, settings_id: u32);
+    fn new_game(ref self: TContractState, token_id: felt252);
     fn guess(ref self: TContractState, token_id: felt252, number: u32) -> i8;
     fn guess_count(self: @TContractState, token_id: felt252) -> u32;
     fn get_range(self: @TContractState, token_id: felt252) -> (u32, u32);
     fn get_max_attempts(self: @TContractState, token_id: felt252) -> u32;
     fn games_played(self: @TContractState, token_id: felt252) -> u32;
     fn games_won(self: @TContractState, token_id: felt252) -> u32;
+    fn best_score(self: @TContractState, token_id: felt252) -> u32;
+    fn perfect_games(self: @TContractState, token_id: felt252) -> u32;
+    fn game_status(self: @TContractState, token_id: felt252) -> u8;
 }
 ```
 
@@ -130,9 +133,12 @@ Without these checks, players could act on tokens they don't own, the token cont
 If your game logic lives in the same contract that was initialized with the `MinigameComponent`, you can use the component's internal methods directly:
 
 ```cairo
-fn new_game(ref self: ContractState, token_id: felt252, settings_id: u32) {
+fn new_game(ref self: ContractState, token_id: felt252) {
     self.minigame.assert_token_ownership(token_id);
     self.minigame.pre_action(token_id);
+
+    // Extract settings_id from the packed token ID
+    let settings_id = unpack_settings_id(token_id);
 
     // Load settings (range min/max, max attempts)
     let (min, max, attempts) = self.settings_data.read(settings_id);
@@ -304,6 +310,8 @@ impl InitImpl of INumberGuessInit<ContractState> {
         objectives_address: Option<ContractAddress>,
         minigame_token_address: ContractAddress,
         royalty_fraction: Option<u128>,
+        skills_address: Option<ContractAddress>,
+        version: u64,
     ) {
         self.minigame.initializer(
             game_creator, game_name, game_description,
@@ -311,6 +319,7 @@ impl InitImpl of INumberGuessInit<ContractState> {
             game_image, game_color, client_url,
             renderer_address, settings_address, objectives_address,
             minigame_token_address, royalty_fraction,
+            skills_address, version,
         );
 
         // Create default settings (3 difficulty levels)
@@ -352,9 +361,9 @@ impl InitImpl of INumberGuessInit<ContractState> {
                 name: "Easy",
                 description: "Guess a number between 1 and 10",
                 settings: array![
-                    GameSetting { name: "Range Min", value: "1" },
-                    GameSetting { name: "Range Max", value: "10" },
-                    GameSetting { name: "Max Attempts", value: "Unlimited" },
+                    GameSetting { name: 'Range Min', value: '1' },
+                    GameSetting { name: 'Range Max', value: '10' },
+                    GameSetting { name: 'Max Attempts', value: 'Unlimited' },
                 ].span(),
             },
             minigame_token_address,
@@ -375,8 +384,8 @@ fn test_number_guess_basic() {
     // Mint a token with Easy settings (settings_id=1)
     let token_id = mint_token(token, settings_id: 1, to: PLAYER());
 
-    // Start a new game — loads settings (range 1-10, unlimited attempts)
-    game.new_game(token_id, settings_id: 1);
+    // Start a new game — settings are extracted from the packed token ID
+    game.new_game(token_id);
 
     // Binary search for the secret number
     let (mut low, mut high) = game.get_range(token_id);
@@ -398,7 +407,7 @@ fn test_number_guess_basic() {
 ```
 
 :::note
-This test is illustrative — the actual [Number Guess test suite](https://github.com/Provable-Games/denshokan/blob/main/contracts/packages/games/src/number_guess.cairo) covers deployment helpers, multiple difficulty levels, objective completion, and edge cases.
+This test is illustrative — the actual [Number Guess test suite](https://github.com/Provable-Games/number-guess/blob/main/contracts/packages/number_guess/src/tests/test_number_guess.cairo) covers deployment helpers, multiple difficulty levels, objective completion, and edge cases.
 :::
 
 ## Summary
@@ -413,4 +422,4 @@ To make your game EGS-compliant:
 6. **Optional**: Implement `IMinigameTokenObjectives` for achievements
 7. **Optional**: Implement `IMinigameDetails` for rich game state display
 
-For a complete reference implementation, see the [Number Guess source code](https://github.com/Provable-Games/denshokan/blob/main/contracts/src/number_guess.cairo).
+For a complete reference implementation, see the [Number Guess source code](https://github.com/Provable-Games/number-guess/blob/main/contracts/packages/number_guess/src/number_guess.cairo).

@@ -153,8 +153,24 @@ rootDir: "src",
                 link: "/embeddable-game-standard/reference/token",
               },
               {
+                text: "Token Extensions",
+                link: "/embeddable-game-standard/reference/token-extensions",
+              },
+              {
                 text: "MinigameComponent",
                 link: "/embeddable-game-standard/reference/minigame",
+              },
+              {
+                text: "MetagameComponent",
+                link: "/embeddable-game-standard/reference/metagame",
+              },
+              {
+                text: "RegistryComponent",
+                link: "/embeddable-game-standard/reference/registry",
+              },
+              {
+                text: "Metagame Extensions",
+                link: "/embeddable-game-standard/reference/metagame-extensions",
               },
             ],
           },

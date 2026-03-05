@@ -93,16 +93,16 @@ pub trait IMinigameTokenObjectives<TState> {
 ## Component Storage
 
 The MinigameComponent stores:
-- Game registry address
 - MinigameToken address
-- Game ID (assigned by registry during registration)
+- Settings contract address
+- Objectives contract address
 
 ```cairo
 #[storage]
 struct Storage {
-    registry_address: ContractAddress,
     token_address: ContractAddress,
-    game_id: u64,
+    settings_address: ContractAddress,
+    objectives_address: ContractAddress,
 }
 ```
 
@@ -120,10 +120,12 @@ self.minigame.initializer(
     game_color,             // Option<ByteArray> - hex color
     client_url,             // Option<ByteArray> - game client URL
     renderer_address,       // Option<ContractAddress> - custom renderer
-    settings_address,       // Option<ContractAddress> - settings component
-    objectives_address,     // Option<ContractAddress> - objectives component
+    settings_address,       // Option<ContractAddress> - settings provider
+    objectives_address,     // Option<ContractAddress> - objectives provider
     minigame_token_address, // MinigameToken contract address
     royalty_fraction,       // Option<u128> - basis points
+    skills_address,         // Option<ContractAddress> - AI agent skills
+    version,                // u64 - game version number
 );
 ```
 
@@ -161,10 +163,10 @@ struct GameOver {
 ### GameDetail
 
 ```cairo
-#[derive(Drop, Serde)]
+#[derive(Drop, Serde, Copy)]
 pub struct GameDetail {
-    pub name: ByteArray,
-    pub value: ByteArray,
+    pub name: felt252,
+    pub value: felt252,
 }
 ```
 
@@ -180,8 +182,8 @@ pub struct GameSettingDetails {
 
 #[derive(Drop, Serde)]
 pub struct GameSetting {
-    pub name: ByteArray,
-    pub value: ByteArray,
+    pub name: felt252,
+    pub value: felt252,
 }
 ```
 
@@ -195,9 +197,9 @@ pub struct GameObjectiveDetails {
     pub objectives: Span<GameObjective>,
 }
 
-#[derive(Drop, Serde)]
+#[derive(Drop, Serde, Copy)]
 pub struct GameObjective {
-    pub name: ByteArray,
-    pub value: ByteArray,
+    pub name: felt252,
+    pub value: felt252,
 }
 ```

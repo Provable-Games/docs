@@ -36,6 +36,9 @@ interface Token {
   soulbound: boolean;
   isPlayable: boolean;
   gameAddress: string;
+  clientUrl?: string;
+  rendererAddress?: string;
+  skillsAddress?: string;
   startDelay: number;
   endDelay: number;
   hasContext: boolean;
@@ -187,7 +190,8 @@ interface Game {
   clientUrl?: string;
   rendererAddress?: string;
   royaltyFraction?: string;
-  agentSkills?: string;
+  skillsAddress?: string;
+  version?: number;
   createdAt: string;
 }
 ```
@@ -273,7 +277,6 @@ interface ObjectivesParams {
   limit?: number;
   offset?: number;
   gameAddress?: string;
-  settingsId?: number;
 }
 ```
 
@@ -381,6 +384,7 @@ interface MintParams {
   settingsId: number;
   objectiveId: number;
   playerName: string;
+  skillsAddress?: string;
   soulbound: boolean;
   to: string;
   salt?: number;
@@ -416,8 +420,9 @@ interface GameMetadata {
   color: string;
   clientUrl: string;
   rendererAddress: string;
+  skillsAddress: string;
+  version: number;
   royaltyFraction: bigint;
-  agentSkills: string;
   createdAt: number;
 }
 ```

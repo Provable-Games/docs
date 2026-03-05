@@ -62,8 +62,39 @@ fn objective_id_batch(self: @TState, token_ids: Span<felt252>) -> Array<u32>;
 ### Minter Extension
 
 ```cairo
-fn minted_by(self: @TState, token_id: felt252) -> u64;
-fn minted_by_batch(self: @TState, token_ids: Span<felt252>) -> Array<u64>;
+fn minted_by(self: @TState, token_id: felt252) -> felt252;
+fn minted_by_batch(self: @TState, token_ids: Span<felt252>) -> Array<felt252>;
+```
+
+### Full State & Batch Extensions
+
+```cairo
+fn token_full_state_batch(
+    self: @TState, token_ids: Span<felt252>,
+) -> Array<TokenFullState>;
+fn mint_batch_recipients(
+    ref self: TState, params: Array<MintParams>, recipients: Array<ContractAddress>,
+) -> Array<felt252>;
+fn game_address(self: @TState) -> ContractAddress;
+fn game_registry_address(self: @TState) -> ContractAddress;
+fn client_url(self: @TState, token_id: felt252) -> ByteArray;
+fn assert_is_playable(self: @TState, token_id: felt252);
+```
+
+### TokenFullState
+
+```cairo
+#[derive(Copy, Drop, Serde)]
+pub struct TokenFullState {
+    pub token_id: felt252,
+    pub owner: ContractAddress,
+    pub player_name: felt252,
+    pub is_playable: bool,
+    pub game_address: ContractAddress,
+    pub game_over: bool,
+    pub completed_objective: bool,
+    pub lifecycle: Lifecycle,
+}
 ```
 
 ### Soulbound Extension
@@ -82,6 +113,15 @@ fn set_token_renderer(ref self: TState, token_id: felt252, renderer: ContractAdd
 fn reset_token_renderer(ref self: TState, token_id: felt252);
 ```
 
+### Skills Extension
+
+```cairo
+fn skills_address(self: @TState, token_id: felt252) -> ContractAddress;
+fn skills_address_batch(self: @TState, token_ids: Span<felt252>) -> Array<ContractAddress>;
+fn set_token_skills(ref self: TState, token_id: felt252, skills: ContractAddress);
+fn reset_token_skills(ref self: TState, token_id: felt252);
+```
+
 ## MintParams
 
 ```cairo
@@ -96,6 +136,7 @@ pub struct MintParams {
     pub context: Option<GameContextDetails>,
     pub client_url: Option<ByteArray>,
     pub renderer_address: Option<ContractAddress>,
+    pub skills_address: Option<ContractAddress>,
     pub to: ContractAddress,
     pub soulbound: bool,
     pub paymaster: bool,

@@ -38,6 +38,7 @@ let token_id: felt252 = token.mint(MintParams {
     context: Option::None,               // No platform context
     client_url: Option::None,            // No custom client
     renderer_address: Option::None,      // Default renderer
+    skills_address: Option::None,        // No agent skills
     to: player_address,                  // Token recipient
     soulbound: false,                    // Transferable
     paymaster: false,                    // Not gas-sponsored
@@ -59,6 +60,7 @@ let token_id: felt252 = token.mint(MintParams {
 | `context` | `Option<GameContextDetails>` | Platform-specific context data |
 | `client_url` | `Option<ByteArray>` | Custom game client URL |
 | `renderer_address` | `Option<ContractAddress>` | Custom token renderer |
+| `skills_address` | `Option<ContractAddress>` | AI agent skills provider |
 | `to` | `ContractAddress` | Who receives the token |
 | `soulbound` | `bool` | Prevent transfers after minting |
 | `paymaster` | `bool` | Whether minting gas is sponsored |

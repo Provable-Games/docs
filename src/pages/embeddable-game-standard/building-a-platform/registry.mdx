@@ -10,7 +10,7 @@ The MinigameRegistry is the central directory where games register themselves an
 
 ```cairo
 pub const IMINIGAME_REGISTRY_ID: felt252 =
-    0x014a8d6e4bf56a4bbf869257d1f846e5a2ac1e3508466147556f186143409be1;
+    0x2ff8aa8dda405faf0eb17c5f806d7482b7352cf91fa9668e9ddf030f14b2ee9;
 
 #[starknet::interface]
 pub trait IMinigameRegistry<TState> {
@@ -35,7 +35,12 @@ pub trait IMinigameRegistry<TState> {
         client_url: Option<ByteArray>,
         renderer_address: Option<ContractAddress>,
         royalty_fraction: Option<u128>,
+        skills_address: Option<ContractAddress>,
+        version: u64,
     ) -> u64;
+
+    // View
+    fn skills_address(self: @TState, game_id: u64) -> ContractAddress;
 
     // Admin
     fn set_game_royalty(ref self: TState, game_id: u64, royalty_fraction: u128);
@@ -73,8 +78,10 @@ pub struct GameMetadata {
     pub color: ByteArray,             // Hex color for UI theming
     pub client_url: ByteArray,        // URL to game client
     pub renderer_address: ContractAddress, // Custom token renderer
+    pub skills_address: ContractAddress,  // AI agent skills provider
     pub royalty_fraction: u128,       // Basis points (500 = 5%)
     pub created_at: u64,              // Block timestamp
+    pub version: u64,                 // Game version number
 }
 ```
 
@@ -100,6 +107,8 @@ fn initializer(ref self: ContractState, ...) {
         objectives_address,
         minigame_token_address,
         royalty_fraction,
+        skills_address,
+        version,
     );
 }
 ```

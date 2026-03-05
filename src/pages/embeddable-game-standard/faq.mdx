@@ -91,7 +91,7 @@ No. Once `game_over()` returns true, it should stay true. The token contract tre
 
 **How are game tokens minted?**
 
-A platform (or the player directly) calls `mint_game()` on the token contract, specifying the game address, optional settings, start/end times, and other parameters. The token ID is a packed felt252 encoding all this metadata.
+A platform (or the player directly) calls `mint()` on the token contract, specifying the game address, optional settings, start/end times, and other parameters. The token ID is a packed felt252 encoding all this metadata.
 
 **How does the lifecycle (start/end) work?**
 
