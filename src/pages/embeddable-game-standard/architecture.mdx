@@ -6,6 +6,8 @@ import { ContractTable } from "../../components/ContractTable";
 
 # Architecture
 
+> **Source**: [denshokan](https://github.com/Provable-Games/denshokan) — turnkey implementation of the EGS architecture (token contract, registry, indexer, API, and client).
+
 The Embeddable Game Standard is built around three contract roles: **Metagame** (the platform), **MinigameToken** (the shared ERC721), and **Minigame** (the game logic). These roles communicate through well-defined interfaces discovered via SRC5.
 
 ## System Diagram
@@ -89,28 +91,7 @@ EGS uses [SRC5](https://github.com/starknet-io/SNIPs/blob/main/SNIPS/snip-5.md) 
 
 This enables safe, optional integration: a token can check if a minter supports callbacks before dispatching, and a platform can check if a game supports settings before querying them.
 
-### Interface ID Table
-
-| Interface | ID | Package |
-|-----------|---|---------|
-| `IMinigameToken` | `0x39b3cf4989f3d1493c059433fb1d41a763c166ef2f8f6bd801823f27414bdbc` | `game_components_embeddable_game_standard` |
-| `IMinigame` | `0x1050f9a792acfa175e26783e365e1b0b38ff3440b960d0ffdfc0ff9d7dc9f2a` | `game_components_embeddable_game_standard` |
-| `IMinigameTokenSettings` | `0x229ba85053f3653daaa2e0d3a9f9296e6d3eae099557c7610822f5b556f1bc8` | `game_components_embeddable_game_standard` |
-| `IMinigameTokenObjectives` | `0x2c9b37fb2982c9480e67f2da4c7730a8cde17b5fb021f3d530305f2f3a0b929` | `game_components_embeddable_game_standard` |
-| `IMinigameTokenContext` | `0x02b329e82f6f6b94f8949b36c5dc95acf86c6083b08d99bc81e399b4b0e8d19a` | `game_components_embeddable_game_standard` |
-| `IMinigameTokenMinter` | `0x2198424b9ee68499f53f33ad952598acbd6d141af6c6863c9c56b117063acca` | `game_components_embeddable_game_standard` |
-| `IMetagame` | `0x7997c74299c045696726f0f7f0165f85817acbb0964e23ff77e11e34eff6f2` | `game_components_embeddable_game_standard` |
-| `IMetagameCallback` | `0x3b4312c1422de8c35936cc79948381ab8ef9fd083d8c8e20317164690aa1600` | `game_components_embeddable_game_standard` |
-| `IMetagameContext` | `0x1633419b5abcc4c0bbed8bd37a363fbe6de5bd25908761ab6dcda6a9b598ca9` | `game_components_embeddable_game_standard` |
-| `IMinigameRegistry` | `0x2ff8aa8dda405faf0eb17c5f806d7482b7352cf91fa9668e9ddf030f14b2ee9` | `game_components_embeddable_game_standard` |
-| `IMinigameSettings` | `0x1a58ab3ee416cc018f93236fd0bb995de89ee536626c268491121e51a46a0f4` | `game_components_embeddable_game_standard` |
-| `IMinigameObjectives` | `0xac0aaa451454d78741d9fafe803b69c8b31d073156020b08496104356db5e5` | `game_components_embeddable_game_standard` |
-| `ILeaderboard` | `0x381684b...` | `game_components_metagame` |
-| `IEntryRequirement` | `0x153355c...` | `game_components_metagame` |
-| `IEntryFee` | `0x2386e28...` | `game_components_metagame` |
-| `IPrize` | `0x2a7a3be...` | `game_components_metagame` |
-
-[Full interface ID reference →](/embeddable-game-standard/advanced/src5)
+Interface IDs are defined alongside their traits in the [game-components](https://github.com/Provable-Games/game-components) source. See the [SRC5 reference →](/embeddable-game-standard/advanced/src5) for a full listing.
 
 ## Deployed Contracts
 
@@ -120,12 +101,24 @@ Mainnet contracts are coming soon. The addresses below are for **Sepolia testnet
 
 <ContractTable network="sepolia" contracts={[
   { name: "MinigameRegistry", address: "0x040f1ed9880611bb7273bf51fd67123ebbba04c282036e2f81314061f6f9b1a1" },
-  { name: "Denshokan Token", address: "0x0142712722e62a38f9c40fcc904610e1a14c70125876ecaaf25d803556734467" },
+  { name: "Denshokan Token (MinigameToken)", address: "0x0142712722e62a38f9c40fcc904610e1a14c70125876ecaaf25d803556734467" },
   { name: "DefaultRenderer", address: "0x035d01a7689ade1f5b27e50b07c923812580bb91bd0931042a9a2f8ff07dc7ec" },
   { name: "DenshokanViewer", address: "0x025d92f18c6c1ed2114774adf68249a95fc468d9381ab33fa4b9ccfff7cf5f9f" },
   { name: "Number Guess", address: "0x04484ca347cd957b9d591890ac7488ce0c0cd7920819f0c6376aedb953458a38" },
   { name: "Tic Tac Toe", address: "0x072bf4d1484599165731399c38f1c3aa27dcb31f88dac80b31098c925d7843a5" },
 ]} />
+
+### Denshokan Token = `minigame_token_address`
+
+The **Denshokan Token** contract above is the shared MinigameToken (ERC721) that all EGS games can use. Whenever you see `minigame_token_address` in the docs or in code (e.g. the game initializer, `pre_action`, `post_action`), this is the address to pass.
+
+Using the shared Denshokan contract gives you:
+- **Indexing & API** — your game is automatically indexed by the Denshokan indexer, giving you REST API, WebSocket, and SDK access out of the box
+- **Registry integration** — your game appears in the shared game registry alongside all other EGS games
+- **Platform compatibility** — any EGS platform (tournaments, quests, arcades) can mint tokens for your game immediately
+- **Token rendering** — default SVG rendering and metadata for all tokens
+
+You can deploy your own MinigameToken contract if you need custom behavior, but most games should use the shared Denshokan contract.
 
 ## Data Flow
 

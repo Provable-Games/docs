@@ -4,6 +4,8 @@ layout: docs
 
 # Building a Game
 
+> **Source**: [game-components](https://github.com/Provable-Games/game-components) — the Cairo component library used throughout this guide.
+
 This guide walks you through making your Starknet game compatible with the Embeddable Game Standard. By the end, your game will be mintable, scoreable, and embeddable in any EGS platform.
 
 ## What Your Game Must Do
@@ -20,6 +22,31 @@ Optionally, your game can also implement:
 - **`IMinigameTokenObjectives`** - Trackable achievements (First Win, Perfect Game)
 - **`IMinigameDetails`** - Rich game state for display (move history, board state)
 
+## Key Concept: Token-Keyed Storage
+
+In a traditional on-chain game, you key storage by player address:
+
+```cairo
+// Traditional pattern — keyed by player address
+scores: Map<ContractAddress, u64>,
+```
+
+In EGS, **all game state is keyed by `token_id` instead of player address**. Each minted token represents a unique game session, and the token ID is the universal key across the entire system — your game contract, the token contract, platforms, and the SDK all reference the same token ID.
+
+```cairo
+// EGS pattern — keyed by token ID
+scores: Map<felt252, u64>,
+```
+
+This means a single player can have multiple concurrent game sessions (one per token), and tokens can be transferred between players. To verify the caller owns the token they're acting on, use the `assert_token_ownership` helper in every player-facing function:
+
+```cairo
+// Verify the caller owns this token before allowing any action
+self.minigame.assert_token_ownership(token_id);
+```
+
+This check calls the Denshokan token contract to confirm `ownerOf(token_id) == get_caller_address()`.
+
 ## Prerequisites
 
 - [Scarb](https://docs.swmansion.com/scarb/) 2.15.0+
@@ -33,8 +60,8 @@ Add game-components to your `Scarb.toml`:
 ```toml
 [dependencies]
 starknet = "2.15.1"
-game_components_embeddable_game_standard = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
-game_components_interfaces = { git = "https://github.com/Provable-Games/game-components", branch = "next" }
+game_components_embeddable_game_standard = { git = "https://github.com/Provable-Games/game-components", tag = "v1.1.0" }
+game_components_interfaces = { git = "https://github.com/Provable-Games/game-components", tag = "v1.1.0" }
 openzeppelin_introspection = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
 
 [dev-dependencies]
@@ -127,6 +154,8 @@ mod MyGame {
     #[abi(embed_v0)]
     impl MyGameImpl of super::IMyGame<ContractState> {
         fn play(ref self: ContractState, token_id: felt252) {
+            // Verify caller owns this token
+            self.minigame.assert_token_ownership(token_id);
             // Validate token is playable (exists, not expired, not game_over)
             self.minigame.pre_action(token_id);
 
