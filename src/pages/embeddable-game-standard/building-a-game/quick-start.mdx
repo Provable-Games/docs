@@ -15,27 +15,7 @@ A number-guessing game where:
 - Settings define difficulty (range size, max attempts)
 - Objectives track achievements (first win, quick thinker, perfect game)
 
-## Step 1: Define Your Game Interface
-
-```cairo
-#[starknet::interface]
-pub trait INumberGuess<TContractState> {
-    fn new_game(ref self: TContractState, token_id: felt252);
-    fn guess(ref self: TContractState, token_id: felt252, number: u32) -> i8;
-    fn guess_count(self: @TContractState, token_id: felt252) -> u32;
-    fn get_range(self: @TContractState, token_id: felt252) -> (u32, u32);
-    fn get_max_attempts(self: @TContractState, token_id: felt252) -> u32;
-    fn games_played(self: @TContractState, token_id: felt252) -> u32;
-    fn games_won(self: @TContractState, token_id: felt252) -> u32;
-    fn best_score(self: @TContractState, token_id: felt252) -> u32;
-    fn perfect_games(self: @TContractState, token_id: felt252) -> u32;
-    fn game_status(self: @TContractState, token_id: felt252) -> u8;
-}
-```
-
-The `guess()` function returns `-1` (too low), `0` (correct), or `1` (too high).
-
-## Step 2: Compose Components
+## Step 1: Compose Components
 
 ```cairo
 #[starknet::contract]
@@ -63,23 +43,13 @@ mod NumberGuess {
         settings: SettingsComponent::Storage,
         #[substorage(v0)]
         src5: SRC5Component::Storage,
-        // Game-specific storage
-        secret_numbers: Map<felt252, u32>,
-        current_guess_count: Map<felt252, u32>,
-        game_status: Map<felt252, u8>,
-        range_min: Map<felt252, u32>,
-        range_max: Map<felt252, u32>,
-        max_attempts: Map<felt252, u32>,
-        scores: Map<felt252, u64>,
-        game_overs: Map<felt252, bool>,
-        // Settings data
-        settings_data: Map<u32, (u32, u32, u32)>,  // (min, max, max_attempts)
+        // ... your game-specific storage fields here
     }
     // ...
 }
 ```
 
-## Step 3: Implement IMinigameTokenData
+## Step 2: Implement IMinigameTokenData
 
 This is the core requirement. The token contract reads your game's state through this interface:
 
@@ -114,9 +84,7 @@ impl MinigameTokenDataImpl of IMinigameTokenData<ContractState> {
 }
 ```
 
-## Step 4: Implement Game Logic
-
-The core game loop: generate a secret, let the player guess, calculate a score.
+## Step 3: Wrap Actions with EGS Hooks
 
 Every player-facing action **must**:
 
@@ -133,75 +101,27 @@ Without these checks, players could act on tokens they don't own, the token cont
 If your game logic lives in the same contract that was initialized with the `MinigameComponent`, you can use the component's internal methods directly:
 
 ```cairo
-fn new_game(ref self: ContractState, token_id: felt252) {
+fn play(ref self: ContractState, token_id: felt252) {
+    // 1. Verify caller owns the token
     self.minigame.assert_token_ownership(token_id);
+    // 2. Validate token is playable
     self.minigame.pre_action(token_id);
 
-    // Extract settings_id from the packed token ID
-    let settings_id = unpack_settings_id(token_id);
+    // ... your game logic here ...
+    // Update self.scores, self.game_overs, etc.
 
-    // Load settings (range min/max, max attempts)
-    let (min, max, attempts) = self.settings_data.read(settings_id);
-    assert!(max > min, "Invalid settings");
-
-    // Generate secret using Pedersen hash
-    let games = self.games_played.read(token_id);
-    let seed = core::pedersen::pedersen(token_id, games.into());
-    let range: u32 = max - min + 1;
-    let hash_u256: u256 = seed.into();
-    let secret: u32 = min + (hash_u256 % range.into()).try_into().unwrap();
-
-    // Store game state
-    self.secret_numbers.write(token_id, secret);
-    self.current_guess_count.write(token_id, 0);
-    self.range_min.write(token_id, min);
-    self.range_max.write(token_id, max);
-    self.max_attempts.write(token_id, attempts);
-    self.game_status.write(token_id, 1); // STATUS_PLAYING
-
+    // 3. Sync state back to the token contract
     self.minigame.post_action(token_id);
 }
 ```
 
-```cairo
-fn guess(ref self: ContractState, token_id: felt252, number: u32) -> i8 {
-    self.minigame.assert_token_ownership(token_id);
-    self.minigame.pre_action(token_id);
-
-    assert!(self.game_status.read(token_id) == 1, "No active game");
-
-    let count = self.current_guess_count.read(token_id) + 1;
-    self.current_guess_count.write(token_id, count);
-
-    let secret = self.secret_numbers.read(token_id);
-
-    let result = if number == secret {
-        // Player wins - calculate score
-        let score = calculate_score(count, self.range_min.read(token_id), self.range_max.read(token_id));
-        let total = self.scores.read(token_id) + score;
-        self.scores.write(token_id, total);
-        self.game_status.write(token_id, 2); // STATUS_WON
-        0_i8 // Correct
-    } else {
-        // Check max attempts
-        let max = self.max_attempts.read(token_id);
-        if max > 0 && count >= max {
-            self.game_status.write(token_id, 3); // STATUS_LOST
-            self.game_overs.write(token_id, true);
-        }
-        if number < secret { -1_i8 } else { 1_i8 }
-    };
-
-    self.minigame.post_action(token_id);
-    result
-}
-```
-
-Note how `guess` avoids early `return` statements so that `post_action` always runs at the end. Store the result in a variable and return it after `post_action`.
+:::note
+Avoid early `return` statements so that `post_action` always runs at the end. Store results in a variable and return after `post_action`.
+:::
 
 ### Multi-contract games (library functions)
 
-If your game spans multiple contracts (e.g. separate combat, exploration, and market systems), the contracts that don't have the `MinigameComponent` won't have access to `self.minigame`. Instead, import and call the **library functions** directly, passing the denshokan token address:
+If your game spans multiple contracts (e.g. separate combat, exploration, and market systems), the contracts that don't have the `MinigameComponent` won't have access to `self.minigame`. Instead, import and call the **library functions** directly, passing the Denshokan Token address (your `minigame_token_address`):
 
 ```cairo
 use game_components_embeddable_game_standard::minigame::minigame::{
@@ -226,68 +146,19 @@ fn start_game(ref self: ContractState, adventurer_id: felt252, weapon: u8) {
 
 This pattern lets any number of contracts validate and update token state without needing the component — they just need the token contract address.
 
-## Step 5: Add Settings (Optional)
+## Step 4: Add Settings (Optional)
 
-Implement `IMinigameTokenSettings` to let anyone create custom difficulty levels:
+Settings and objectives let platforms and players configure difficulty and track achievements. You define the schema that makes sense for your game — the `SettingsComponent` and `ObjectivesComponent` handle the registry-facing metadata while your contract stores the actual gameplay parameters.
 
-```cairo
-use game_components_embeddable_game_standard::minigame::interface::IMinigameTokenSettings;
+See [Settings & Objectives](/embeddable-game-standard/building-a-game/settings-and-objectives) for the full implementation guide, or the [Number Guess source code](https://github.com/Provable-Games/number-guess/blob/main/contracts/packages/number_guess/src/number_guess.cairo) for a working example.
 
-#[abi(embed_v0)]
-NumberGuessConfigImpl of super::INumberGuessConfig<ContractState> {
-    fn create_settings(
-        ref self: ContractState,
-        name: ByteArray,
-        description: ByteArray,
-        min: u32,
-        max: u32,
-        max_attempts: u32,
-    ) -> u32 {
-        // Validate inputs
-        assert!(max > min, "max must be greater than min");
+## Step 5: Register with Registry
 
-        // Auto-increment settings ID
-        let settings_id = self.settings_count.read() + 1;
-        self.settings_count.write(settings_id);
+Your game's initializer should register it with the game registry. The `minigame_token_address` parameter is the **Denshokan Token** contract — see [Deployed Contracts](/embeddable-game-standard/architecture#deployed-contracts) for the current Sepolia address.
 
-        // Store in game-specific storage
-        self.settings_data.entry(settings_id).write(
-            (name, description, min, max, max_attempts, true)
-        );
-        settings_id
-    }
-
-    fn create_objective(
-        ref self: ContractState,
-        name: ByteArray,
-        description: ByteArray,
-        objective_type: u8,    // 1=Win, 2=WinWithinN, 3=PerfectGame
-        threshold: u32,
-    ) -> u32 {
-        assert!(
-            objective_type >= 1 && objective_type <= 3,
-            "Invalid objective type (must be 1-3)",
-        );
-
-        let objective_id = self.objective_count.read() + 1;
-        self.objective_count.write(objective_id);
-
-        self.objective_data.entry(objective_id).write(
-            (objective_type, threshold, true)
-        );
-        self.objective_metadata.entry(objective_id).write(
-            (name, description)
-        );
-        objective_id
-    }
-}
-```
-
-Settings and objectives use game-specific storage — you define the schema that makes sense for your game. The `SettingsComponent` and `ObjectivesComponent` handle the registry-facing metadata (name, description, key-value display data) while your contract stores the actual gameplay parameters.
-
-## Step 6: Register with Registry
-
-Your game's initializer should register it with the game registry:
+:::tip
+Use the shared Denshokan contract as your `minigame_token_address` to get automatic indexing, API access, SDK support, and platform compatibility. See [Denshokan Token = minigame_token_address](/embeddable-game-standard/architecture#denshokan-token--minigame_token_address) for details.
+:::
 
 ```cairo
 use game_components_embeddable_game_standard::minigame::MinigameComponent;
@@ -308,11 +179,12 @@ impl InitImpl of INumberGuessInit<ContractState> {
         renderer_address: Option<ContractAddress>,
         settings_address: Option<ContractAddress>,
         objectives_address: Option<ContractAddress>,
-        minigame_token_address: ContractAddress,
+        minigame_token_address: ContractAddress, // Denshokan Token address
         royalty_fraction: Option<u128>,
         skills_address: Option<ContractAddress>,
         version: u64,
     ) {
+        // Register with the game registry via the MinigameComponent
         self.minigame.initializer(
             game_creator, game_name, game_description,
             game_developer, game_publisher, game_genre,
@@ -322,58 +194,12 @@ impl InitImpl of INumberGuessInit<ContractState> {
             skills_address, version,
         );
 
-        // Create default settings (3 difficulty levels)
-        // Settings 1: Easy — Range 1-10, unlimited attempts
-        self.settings_data.entry(1).write(
-            ("Easy", "Guess a number between 1 and 10", 1, 10, 0, true)
-        );
-        // Settings 2: Medium — Range 1-100, 10 attempts
-        self.settings_data.entry(2).write(
-            ("Medium", "Guess a number between 1 and 100", 1, 100, 10, true)
-        );
-        // Settings 3: Hard — Range 1-1000, 10 attempts
-        self.settings_data.entry(3).write(
-            ("Hard", "Guess a number between 1 and 1000", 1, 1000, 10, true)
-        );
-        self.settings_count.write(3);
-
-        // Create default objectives (3 single-game achievements)
-        // Objective types: 1=Win, 2=WinWithinN, 3=PerfectGame
-        self.objective_data.entry(1).write((1, 1, true));
-        self.objective_metadata.entry(1).write(
-            ("First Win", "Win your first game")
-        );
-        self.objective_data.entry(2).write((2, 5, true));
-        self.objective_metadata.entry(2).write(
-            ("Quick Thinker", "Win a game in 5 or fewer guesses")
-        );
-        self.objective_data.entry(3).write((3, 1, true));
-        self.objective_metadata.entry(3).write(
-            ("Lucky Guess", "Win a game on your first guess")
-        );
-        self.objective_count.write(3);
-
-        // Register settings and objectives with their components
-        // (so the token contract can discover them via RPC)
-        self.settings.create_settings(
-            get_contract_address(), 1,
-            GameSettingDetails {
-                name: "Easy",
-                description: "Guess a number between 1 and 10",
-                settings: array![
-                    GameSetting { name: 'Range Min', value: '1' },
-                    GameSetting { name: 'Range Max', value: '10' },
-                    GameSetting { name: 'Max Attempts', value: 'Unlimited' },
-                ].span(),
-            },
-            minigame_token_address,
-        );
-        // ... repeat for Medium and Hard settings, and objectives
+        // ... set up your game's default settings, objectives, etc.
     }
 }
 ```
 
-## Step 7: Test
+## Step 6: Test
 
 ```cairo
 #[test]
