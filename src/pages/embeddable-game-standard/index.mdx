@@ -65,7 +65,31 @@ All EGS repositories are indexed on [Context7](https://context7.com) and can be 
 | [denshokan](https://github.com/Provable-Games/denshokan) | `/provable-games/denshokan` | 270 |
 | [denshokan-sdk](https://github.com/Provable-Games/denshokan-sdk) | `/provable-games/denshokan-sdk` | 80 |
 
-To use with any Context7-compatible tool, reference the library ID when asking questions — for example: *"Using `/provable-games/game-components`, how do I implement IMinigameTokenData?"*
+### Claude Code
+
+Context7 is available as an MCP server. Add it to your Claude Code config:
+
+```bash
+claude mcp add context7 -- npx -y @upstash/context7-mcp
+```
+
+Then ask questions referencing the library — for example: *"Using `/provable-games/game-components`, how do I implement IMinigameTokenData?"*
+
+### OpenAI Codex
+
+Add Context7 to your `codex.md` or system prompt:
+
+```
+When working with EGS, fetch up-to-date docs via Context7 MCP using these library IDs:
+- /provable-games/docs
+- /provable-games/game-components
+- /provable-games/denshokan
+- /provable-games/denshokan-sdk
+```
+
+### Other tools
+
+Any tool that supports MCP servers (Cursor, Windsurf, etc.) can use Context7. See the [Context7 docs](https://context7.com) for setup instructions.
 
 ## Quick Links
 
