@@ -43,6 +43,79 @@ const client = new DenshokanClient({
 
 See [`DenshokanClientConfig`](/embeddable-game-standard/frontend/types#denshokanclientconfig) for the full configuration type.
 
+## Default Endpoints
+
+When you specify `chain: "mainnet"` or `chain: "sepolia"`, the SDK uses these defaults. All URLs can be overridden via `apiUrl`, `wsUrl`, and `rpcUrl` in the config.
+
+### Mainnet
+
+| Service | URL |
+|---------|-----|
+| API | `https://denshokan-api-production-a145.up.railway.app` |
+| WebSocket | `wss://denshokan-api-production-a145.up.railway.app/ws` |
+| RPC | `https://api.cartridge.gg/x/starknet/mainnet` |
+
+**Contract addresses:**
+
+| Contract | Address |
+|----------|---------|
+| Denshokan | `0x0029ffae8b0c4626e06395a947800bc89e76422107f6adff8937a6e9a1e01f28` |
+| Registry | `0x05b4a2ed39dfb28a33c2dd73cbedf02091a31dccb9ed4ed19201e3c255865851` |
+| Viewer | `0x01825fa210dc2abd02fa03d4eb37dabf1d6b69e9c4cd471ee402fa0fcc78611b` |
+
+### Sepolia
+
+| Service | URL |
+|---------|-----|
+| API | `https://denshokan-api-production.up.railway.app` |
+| WebSocket | `wss://denshokan-api-production.up.railway.app/ws` |
+| RPC | `https://api.cartridge.gg/x/starknet/sepolia` |
+
+**Contract addresses:**
+
+| Contract | Address |
+|----------|---------|
+| Denshokan | `0x0142712722e62a38f9c40fcc904610e1a14c70125876ecaaf25d803556734467` |
+| Registry | `0x040f1ed9880611bb7273bf51fd67123ebbba04c282036e2f81314061f6f9b1a1` |
+| Viewer | `0x025d92f18c6c1ed2114774adf68249a95fc468d9381ab33fa4b9ccfff7cf5f9f` |
+
+### REST API Routes
+
+All REST endpoints are relative to the API base URL above.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/health` | Health check |
+| GET | `/games` | List games (paginated) |
+| GET | `/games/{gameAddress}` | Get a single game |
+| GET | `/games/{gameAddress}/stats` | Game statistics |
+| GET | `/games/{gameAddress}/settings` | Game settings |
+| GET | `/games/{gameAddress}/settings/{settingsId}` | Single game setting |
+| GET | `/games/{gameAddress}/objectives` | Game objectives |
+| GET | `/games/{gameAddress}/objectives/{objectiveId}` | Single game objective |
+| GET | `/settings` | Global settings |
+| GET | `/objectives` | Global objectives |
+| GET | `/tokens` | List tokens (filterable) |
+| GET | `/tokens/{tokenId}` | Get a single token |
+| GET | `/tokens/{tokenId}/scores` | Token score history |
+| GET | `/players/{address}/tokens` | Player's tokens |
+| GET | `/players/{address}/stats` | Player statistics |
+| GET | `/minters` | List minters |
+| GET | `/minters/{minterId}` | Get a single minter |
+| GET | `/activity` | Activity events (filterable) |
+| GET | `/activity/stats` | Activity statistics |
+
+### WebSocket Channels
+
+Connect to the WebSocket URL and subscribe to real-time events:
+
+| Channel | Description |
+|---------|-------------|
+| `tokens` | New token mints and updates |
+| `scores` | Score changes |
+| `game_over` | Game completion events |
+| `mints` | Mint events |
+
 ## Games
 
 ```typescript
