@@ -73,16 +73,16 @@ if src5.supports_interface(IMETAGAME_CALLBACK_ID) {
 
 | Interface | ID | Used By |
 |-----------|---|---------|
-| `IMinigameToken` | `0x39b3cf4989f3d1493c059433fb1d41a763c166ef2f8f6bd801823f27414bdbc` | Token contracts |
-| `IMinigame` | `0x1050f9a792acfa175e26783e365e1b0b38ff3440b960d0ffdfc0ff9d7dc9f2a` | Game contracts |
-| `IMinigameTokenSettings` | `0x229ba85053f3653daaa2e0d3a9f9296e6d3eae099557c7610822f5b556f1bc8` | Games with settings |
-| `IMinigameTokenObjectives` | `0x2c9b37fb2982c9480e67f2da4c7730a8cde17b5fb021f3d530305f2f3a0b929` | Games with objectives |
+| `IMinigameToken` | `0x21c51b9820202309d87ff5d316b17b2d9280f2db9fd8fc2c6120c3a60869e49` | Token contracts |
+| `IMinigame` | `0x3d1730c22937da340212dec5546ff5826895259966fa6a92d1191ab068cc2b4` | Game contracts |
+| `IMinigameTokenSettings` | `0x3c6f5c714fef5141bb7edbbbf738c80782154e825a5675355c937aa9bc07bae` | Games with settings |
+| `IMinigameTokenObjectives` | `0x1e9f4982a68b67ddda6e894e8e620fe12ae877cf303308fe16814ceb2706077` | Games with objectives |
 | `IMinigameTokenContext` | `0x02b329e82f6f6b94f8949b36c5dc95acf86c6083b08d99bc81e399b4b0e8d19a` | Tokens with context |
 | `IMinigameTokenMinter` | `0x2198424b9ee68499f53f33ad952598acbd6d141af6c6863c9c56b117063acca` | Token minting |
 | `IMetagame` | `0x7997c74299c045696726f0f7f0165f85817acbb0964e23ff77e11e34eff6f2` | Platform contracts |
 | `IMetagameCallback` | `0x3b4312c1422de8c35936cc79948381ab8ef9fd083d8c8e20317164690aa1600` | Platforms that receive callbacks |
 | `IMetagameContext` | `0x1633419b5abcc4c0bbed8bd37a363fbe6de5bd25908761ab6dcda6a9b598ca9` | Platforms with context data |
-| `IMinigameRegistry` | `0x2ff8aa8dda405faf0eb17c5f806d7482b7352cf91fa9668e9ddf030f14b2ee9` | Registry contracts |
+| `IMinigameRegistry` | `0x2d4d61e5a2e608d8adab5fc69e6d35baff40ba85dadbd5f4ff0be139d4b69b5` | Registry contracts |
 | `IMinigameSettings` | `0x1a58ab3ee416cc018f93236fd0bb995de89ee536626c268491121e51a46a0f4` | Settings components |
 | `IMinigameObjectives` | `0xac0aaa451454d78741d9fafe803b69c8b31d073156020b08496104356db5e5` | Objectives components |
 | `IMinigameTokenRenderer` | `0x2899a752da88d6acf4ed54cc644238f3956b4db3c9885d3ad94f6149f0ec465` | Custom token renderer |
@@ -99,7 +99,7 @@ Interface IDs in Cairo are computed from the trait's selector. The constant is d
 
 ```cairo
 // In game_components_embeddable_game_standard::minigame::interface
-pub const IMINIGAME_ID: felt252 = 0x1050f9a792acfa175e26783e365e1b0b38ff3440b960d0ffdfc0ff9d7dc9f2a;
+pub const IMINIGAME_ID: felt252 = 0x3d1730c22937da340212dec5546ff5826895259966fa6a92d1191ab068cc2b4;
 ```
 
 ## Registering Interfaces

@@ -126,6 +126,8 @@ self.minigame.initializer(
     royalty_fraction,       // Option<u128> - basis points
     skills_address,         // Option<ContractAddress> - AI agent skills
     version,                // u64 - game version number
+    license,                // Option<ByteArray> - game license text
+    game_fee_bps,           // Option<u16> - fee in basis points (default 500 = 5%)
 );
 ```
 

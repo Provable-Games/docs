@@ -12,7 +12,7 @@ For usage examples and integration patterns, see [Registry & Discovery](/embedda
 
 ```cairo
 pub const IMINIGAME_REGISTRY_ID: felt252 =
-    0x2ff8aa8dda405faf0eb17c5f806d7482b7352cf91fa9668e9ddf030f14b2ee9;
+    0x2d4d61e5a2e608d8adab5fc69e6d35baff40ba85dadbd5f4ff0be139d4b69b5;
 
 #[starknet::interface]
 pub trait IMinigameRegistry<TState> {
@@ -40,6 +40,8 @@ pub trait IMinigameRegistry<TState> {
         royalty_fraction: Option<u128>,
         skills_address: Option<ContractAddress>,
         version: u64,
+        license: Option<ByteArray>,
+        fee_numerator: Option<u16>,
     ) -> u64;
 
     // Admin
@@ -62,8 +64,27 @@ pub trait IMinigameRegistry<TState> {
     fn get_games_by_genre(
         self: @TState, genre: ByteArray, start: u64, count: u64,
     ) -> Array<GameMetadata>;
+
+    // Game fees (ERC2981-inspired)
+    fn game_fee_info(self: @TState, game_id: u64) -> GameFeeInfo;
+    fn default_game_fee_info(self: @TState) -> GameFeeInfo;
+    fn set_default_game_fee(ref self: TState, license: ByteArray, fee_numerator: u16);
+    fn set_game_fee(ref self: TState, game_id: u64, license: ByteArray, fee_numerator: u16);
+    fn reset_game_fee(ref self: TState, game_id: u64);
 }
 ```
+
+## GameFeeInfo
+
+```cairo
+#[derive(Drop, Serde, Clone, starknet::Store)]
+pub struct GameFeeInfo {
+    pub license: ByteArray,
+    pub fee_numerator: u16,
+}
+```
+
+Default game fee is 5% (500 basis points out of 10,000). Games can override their fee at registration via `license` and `fee_numerator` parameters, or later via `set_game_fee`. The fee denominator is always 10,000.
 
 ## GameMetadata
 
