@@ -1,0 +1,321 @@
+---
+layout: docs
+---
+
+# Budokan SDK
+
+The Budokan SDK (`@provable-games/budokan-sdk`) provides a TypeScript client for querying tournaments, players, prizes, and leaderboards. It supports both REST API and on-chain RPC queries with automatic fallback, plus WebSocket subscriptions for real-time updates.
+
+## Installation
+
+```bash
+npm install @provable-games/budokan-sdk
+# or
+bun add @provable-games/budokan-sdk
+```
+
+## Quick Start
+
+```typescript
+import { createBudokanClient } from "@provable-games/budokan-sdk";
+
+const client = createBudokanClient({ chain: "mainnet" });
+
+// Fetch tournaments
+const { data: tournaments } = await client.getTournaments({ limit: 10 });
+
+// Fetch a single tournament
+const tournament = await client.getTournament("1");
+
+// Fetch leaderboard
+const leaderboard = await client.getTournamentLeaderboard("1");
+```
+
+## Configuration
+
+```typescript
+import { BudokanClient } from "@provable-games/budokan-sdk";
+
+const client = new BudokanClient({
+  chain: "mainnet",          // or "sepolia" — sets defaults for all URLs and addresses
+  // Override any defaults:
+  apiBaseUrl: "https://budokan-api-production.up.railway.app",
+  wsUrl: "wss://budokan-api-production.up.railway.app/ws",
+  rpcUrl: "https://api.cartridge.gg/x/starknet/mainnet/rpc/v0_10",
+  rpcHeaders: { Authorization: "Bearer <token>" },  // optional RPC auth
+  viewerAddress: "0x00ace1cce7933fbf0d7a2f32c3b5d4c36e63462f81c7845b6d7ac5d8dbdbefa4",
+  primarySource: "api",      // "api" (default) or "rpc"
+  timeout: 10000,
+  retryAttempts: 3,
+  retryDelay: 1000,
+});
+```
+
+### Chain Presets
+
+When you specify `chain: "mainnet"` or `chain: "sepolia"`, the SDK uses these defaults:
+
+### Mainnet
+
+| Service | URL |
+|---------|-----|
+| API | `https://budokan-api-production.up.railway.app` |
+| WebSocket | `wss://budokan-api-production.up.railway.app/ws` |
+| RPC | `https://api.cartridge.gg/x/starknet/mainnet/rpc/v0_10` |
+
+**Contract addresses:**
+
+| Contract | Address |
+|----------|---------|
+| Budokan | `0x020239968a74f3e190d1b5aa0c6316845062a00cb98f787d661fd4aa860553de` |
+| Viewer | `0x00ace1cce7933fbf0d7a2f32c3b5d4c36e63462f81c7845b6d7ac5d8dbdbefa4` |
+
+### Sepolia
+
+| Service | URL |
+|---------|-----|
+| API | `https://budokan-api-sepolia.up.railway.app` |
+| WebSocket | `wss://budokan-api-sepolia.up.railway.app/ws` |
+| RPC | `https://starknet-sepolia.public.blastapi.io` |
+
+**Contract addresses:**
+
+| Contract | Address |
+|----------|---------|
+| Budokan | `0x02a97de0b33fb115f5c32a58232d9941c4a5b2598aa71d30c094076cc592f94d` |
+| Viewer | `0x001f2be7ed811bfa859f8f6cf72d2458f36103ac172ff8e65a630bbcc6cf98c9` |
+
+## Tournament Queries
+
+```typescript
+// List tournaments with filtering
+const { data, total } = await client.getTournaments({
+  gameAddress: "0x...",
+  phase: "live",
+  creator: "0x...",
+  limit: 20,
+  offset: 0,
+  sort: "created_at",
+  includePrizeSummary: true,
+});
+
+// Single tournament (returns null if not found)
+const tournament = await client.getTournament("42");
+
+// Leaderboard
+const entries = await client.getTournamentLeaderboard("42");
+// entries: [{ position: 1, tokenId: "0x..." }, ...]
+
+// Registrations
+const { data: registrations } = await client.getTournamentRegistrations("42");
+
+// Prizes
+const prizes = await client.getTournamentPrizes("42");
+
+// Prize aggregation (totals by token)
+const aggregation = await client.getTournamentPrizeAggregation("42");
+
+// Reward claims
+const { data: claims } = await client.getTournamentRewardClaims("42");
+const summary = await client.getTournamentRewardClaimsSummary("42");
+
+// Qualification entries
+const { data: qualifications } = await client.getTournamentQualifications("42");
+```
+
+## Player Queries
+
+```typescript
+// Player's tournaments (with their registration data)
+const { data: playerTournaments } = await client.getPlayerTournaments("0x...", {
+  phase: "live",
+  limit: 10,
+});
+
+// Player statistics
+const stats = await client.getPlayerStats("0x...");
+// stats: { totalTournaments, totalSubmissions }
+```
+
+## Game Queries
+
+```typescript
+// Tournaments for a specific game
+const { data } = await client.getGameTournaments("0x...", { phase: "live" });
+
+// Game statistics
+const gameStats = await client.getGameStats("0x...");
+```
+
+## Activity & Platform Stats
+
+```typescript
+// Activity feed
+const { data: events } = await client.getActivity({
+  eventType: "tournament_created",
+  limit: 50,
+});
+
+// Platform-wide stats
+const platformStats = await client.getActivityStats();
+// { totalTournaments, totalPrizes, totalRegistrations, totalSubmissions }
+
+// Prize stats
+const prizeStats = await client.getPrizeStats();
+```
+
+## WebSocket Subscriptions
+
+```typescript
+// Connect to WebSocket
+client.connect();
+
+// Subscribe to channels
+const unsubscribe = client.subscribe(
+  ["tournaments", "registrations", "leaderboards"],
+  (message) => {
+    console.log(message.channel, message.data);
+  },
+  ["42", "43"]  // optional: filter by tournament IDs
+);
+
+// Check connection status
+console.log(client.wsConnected);
+
+// Listen for connection changes
+const off = client.onWsConnectionChange((connected) => {
+  console.log("WebSocket connected:", connected);
+});
+
+// Cleanup
+unsubscribe();
+client.disconnect();
+```
+
+**Available channels:** `tournaments`, `registrations`, `leaderboards`, `prizes`, `rewards`, `metrics`
+
+## Data Source & Fallback
+
+The SDK supports dual data sources with automatic fallback:
+
+- **API-first** (default): Queries the REST API, falls back to RPC if API is unavailable
+- **RPC-first**: Set `primarySource: "rpc"` to prefer on-chain reads via the BudokanViewer contract
+
+```typescript
+// Monitor connection status
+const status = client.getConnectionStatus();
+// { api: "connected" | "unavailable", rpc: "connected" | "unavailable", mode: "api" | "rpc" }
+
+const off = client.onConnectionStatusChange((status) => {
+  console.log("Data source mode:", status.mode);
+});
+```
+
+## React Hooks
+
+```bash
+import { BudokanProvider, useBudokanClient } from "@provable-games/budokan-sdk/react";
+```
+
+### Setup
+
+Wrap your app with `BudokanProvider`:
+
+```tsx
+import { BudokanProvider } from "@provable-games/budokan-sdk/react";
+
+function App() {
+  return (
+    <BudokanProvider config={{ chain: "mainnet" }}>
+      <MyTournamentApp />
+    </BudokanProvider>
+  );
+}
+```
+
+### Data Hooks
+
+All data hooks return `{ data, loading, error, refetch }` where `refetch()` returns `Promise<void>`.
+
+```typescript
+import {
+  useTournaments,
+  useTournament,
+  useTournamentCount,
+  usePlayerTournamentCount,
+  useLeaderboard,
+  useRegistrations,
+  usePlayer,
+  usePlayerStats,
+  usePlayerTournaments,
+  usePrizes,
+  usePrizeStats,
+  usePrizeAggregation,
+  useRewardClaims,
+  useRewardClaimsSummary,
+  useQualifications,
+  useActivityStats,
+} from "@provable-games/budokan-sdk/react";
+
+// Tournaments
+const { data: tournaments, loading } = useTournaments({ phase: "live", limit: 10 });
+const { data: tournament } = useTournament("42");
+const { data: count } = useTournamentCount({ phase: "live" });
+
+// Leaderboard & Registrations
+const { data: leaderboard } = useLeaderboard("42");
+const { data: registrations } = useRegistrations("42");
+
+// Player data
+const { data: playerTournaments } = usePlayerTournaments("0x...");
+const { data: playerStats } = usePlayerStats("0x...");
+
+// Prizes & Rewards
+const { data: prizes } = usePrizes("42");
+const { data: aggregation } = usePrizeAggregation("42");
+const { data: claims } = useRewardClaims("42");
+const { data: claimsSummary } = useRewardClaimsSummary("42");
+
+// Qualifications & Activity
+const { data: qualifications } = useQualifications("42");
+const { data: activityStats } = useActivityStats();
+```
+
+### Subscription Hooks
+
+```typescript
+import { useSubscription, useConnectionStatus } from "@provable-games/budokan-sdk/react";
+
+// Subscribe to real-time updates
+const { lastMessage } = useSubscription(
+  ["tournaments", "registrations"],
+  ["42"]  // optional tournament ID filter
+);
+
+// Monitor connection
+const { connected } = useConnectionStatus();
+```
+
+## Error Handling
+
+```typescript
+import {
+  BudokanError,
+  BudokanApiError,
+  BudokanTimeoutError,
+  BudokanConnectionError,
+  TournamentNotFoundError,
+  RpcError,
+  DataSourceError,
+} from "@provable-games/budokan-sdk";
+
+try {
+  const tournament = await client.getTournament("999999");
+} catch (error) {
+  if (error instanceof TournamentNotFoundError) {
+    console.log("Tournament not found");
+  } else if (error instanceof BudokanApiError) {
+    console.log("API error:", error.statusCode);
+  }
+}
+```
