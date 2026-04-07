@@ -154,10 +154,10 @@ See [Settings & Objectives](/embeddable-game-standard/building-a-game/settings-a
 
 ## Step 5: Register with Registry
 
-Your game's initializer should register it with the game registry. The `minigame_token_address` parameter is the **Denshokan Token** contract — see [Deployed Contracts](/embeddable-game-standard/architecture#deployed-contracts) for the current Sepolia address.
+Your game's initializer should register it with the game registry. The `minigame_token_address` parameter is the **Denshokan** contract — see [Deployed Contracts](/embeddable-game-standard/architecture#deployed-contracts) for the current addresses.
 
 :::tip
-Use the shared Denshokan contract as your `minigame_token_address` to get automatic indexing, API access, SDK support, and platform compatibility. See [Denshokan Token = minigame_token_address](/embeddable-game-standard/architecture#denshokan-token--minigame_token_address) for details.
+Use the shared Denshokan contract as your `minigame_token_address` to get automatic indexing, API access, SDK support, and platform compatibility. See [Denshokan = minigame_token_address](/embeddable-game-standard/architecture#denshokan--minigame_token_address) for details.
 :::
 
 ```cairo
@@ -179,10 +179,12 @@ impl InitImpl of INumberGuessInit<ContractState> {
         renderer_address: Option<ContractAddress>,
         settings_address: Option<ContractAddress>,
         objectives_address: Option<ContractAddress>,
-        minigame_token_address: ContractAddress, // Denshokan Token address
+        minigame_token_address: ContractAddress, // Denshokan address
         royalty_fraction: Option<u128>,
         skills_address: Option<ContractAddress>,
         version: u64,
+        license: Option<ByteArray>,
+        game_fee_bps: Option<u16>,
     ) {
         // Register with the game registry via the MinigameComponent
         self.minigame.initializer(
@@ -191,7 +193,7 @@ impl InitImpl of INumberGuessInit<ContractState> {
             game_image, game_color, client_url,
             renderer_address, settings_address, objectives_address,
             minigame_token_address, royalty_fraction,
-            skills_address, version,
+            skills_address, version, license, game_fee_bps,
         );
 
         // ... set up your game's default settings, objectives, etc.
