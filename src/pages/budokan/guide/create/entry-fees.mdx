@@ -36,12 +36,30 @@ The entry fee form offers flexible options for setting the price of entry and ho
   - The percentage of each entry fee that goes to the tournament creator. This is automatically distributed to the creator's account (`Entry #0`) when a player enters.
 
 - **Game Fee:**
-  - The percentage of each entry fee that goes to the game developer. The creator sets this percentage, though a minimum base fee may be enforced in the future. The game developer receives this cut via the account holding `Game #0`.
+  - The percentage of each entry fee that goes to the game developer. Budokan enforces that the game creator share is greater than or equal to the fee declared by the game at deployment (via [`game_fee_info`](/embeddable-game-standard/reference/registry#gamefeeinfo) in the game registry). The default game fee is 5% (500 basis points). Tournament creators can set a higher share but cannot go below the game's declared fee. The game developer receives this cut via the account holding `Game #0`.
+
+- **Refund Share:**
+  - An optional percentage of each entry fee that is refunded to each depositor. This allows tournament creators to return a portion of fees back to all participants.
 
 - **Player Distribution (Prize Pool):**
   - The remaining amount is added to the tournament's prize pool. The creator decides how the prize is split among winners, based on the leaderboard size. Use the slider to adjust distribution weights, or manually enter the splits (they must total 100%).
 
 > **Tip:** Use familiar tokens for your audience to encourage participation. Double-check your fee splits before confirming, as they can't be changed after creation.
+
+### Distribution Strategies
+
+The prize pool portion of entry fees is distributed to winners using one of these strategies:
+
+| Strategy | Description |
+|----------|-------------|
+| **Linear** | Linear decay with configurable step size (e.g., 1st gets most, each position decreases by a fixed amount) |
+| **Exponential** | Exponential decay with configurable base (top-heavy, drops off sharply) |
+| **Uniform** | Equal split across all winning positions |
+| **Custom** | Specify exact basis point shares per position |
+
+### Building on EntryFeeComponent
+
+Budokan's entry fee system is powered by the `EntryFeeComponent` from the open-source [game-components](https://github.com/Provable-Games/game-components) library. This component handles fee collection, share splitting, and payouts. If you're building your own competition platform, you can reuse or extend this component with custom distribution logic. See [Component Architecture](/budokan/key-functions#component-architecture) for details.
 
 ---
 

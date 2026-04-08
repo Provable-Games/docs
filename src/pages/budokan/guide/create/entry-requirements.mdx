@@ -46,7 +46,7 @@ Budokan allows you to chain tournaments together, unlocking advanced formats suc
 <div className="flex flex-row gap-4 items-start">
   <div className="flex-1">
     <p>
-      By leveraging Starknet and Dojo interoperability, you can create tournament structures that were not possible before. For example, you can require players to qualify in one tournament before entering another, or combine results across multiple games.
+      By leveraging Starknet composability, you can create tournament structures that were not possible before. For example, you can require players to qualify in one tournament before entering another, or combine results across multiple games.
     </p>
   </div>
   <div className="flex-shrink-0">
@@ -71,6 +71,74 @@ You can also restrict tournament access by whitelisting specific wallet addresse
 *Figure 5: Whitelisting addresses for tournament entry.*
 
 > **Tip:** Use whitelisting for invitation-only events or to reward select players.
+
+## Extension Validators
+
+Beyond the built-in entry types above, Budokan supports **extension validators** — custom smart contracts that implement the `IEntryRequirementExtension` interface. These allow anyone to create new entry gating logic without modifying Budokan itself.
+
+Extension validators are called at two key moments:
+1. **At entry time** (`valid_entry` / `add_entry`) — to check if a player qualifies and track their entry
+2. **At ban time** (`should_ban` / `remove_entry`) — to check if an existing entry should be revoked
+
+### Available Validators
+
+| Validator | Description |
+|-----------|-------------|
+| **ERC20 Balance** | Validates that a player holds a minimum token balance |
+| **Tournament Qualification** | Requires participation in a previous tournament |
+| **Snapshot Voting** | Validates based on Snapshot governance participation |
+| **Opus Troves** | Validates based on Opus Trove collateral positions |
+| **ZK Passport** | Validates using zero-knowledge passport proofs |
+| **Governance** | Validates based on governance token holdings or participation |
+
+### Example: ERC20 Balance Validator
+
+The ERC20 Balance validator checks that a player holds a sufficient balance of a specific token. This is more powerful than simple token gating because it enables **post-entry enforcement** via the banning mechanism.
+
+**The attack it prevents:** Without a balance validator, a player could hold a qualifying token, enter the tournament, then transfer the token to a second wallet and enter again — effectively getting unlimited entries from a single token position. The ERC20 Balance validator solves this because:
+
+- At entry time, it checks the player's balance meets the threshold
+- After entry, **anyone** can call `ban_entry` on a player whose balance has dropped below the requirement
+- The validator's `should_ban` function re-checks the current balance and confirms the ban if the player no longer qualifies
+- The banned entry is removed from the leaderboard and the player's entry count is decremented
+
+This makes token-transfer exploits unprofitable — transferring tokens to enter from multiple wallets means earlier entries get banned.
+
+### Building Custom Validators
+
+Extension validators implement the `IEntryRequirementExtension` interface:
+
+```cairo
+trait IEntryRequirementExtension<TState> {
+    fn context_owner(self: @TState, context_id: u64) -> ContractAddress;
+    fn registration_only(self: @TState) -> bool;
+    fn valid_entry(self: @TState, context_id: u64, player_address: ContractAddress, qualification: Span<felt252>) -> bool;
+    fn should_ban(self: @TState, context_id: u64, game_token_id: felt252, current_owner: ContractAddress, qualification: Span<felt252>) -> bool;
+    fn entries_left(self: @TState, context_id: u64, player_address: ContractAddress, qualification: Span<felt252>) -> Option<u32>;
+    fn add_config(ref self: TState, context_id: u64, entry_limit: u32, config: Span<felt252>);
+    fn add_entry(ref self: TState, context_id: u64, game_token_id: felt252, player_address: ContractAddress, qualification: Span<felt252>);
+    fn remove_entry(ref self: TState, context_id: u64, game_token_id: felt252, player_address: ContractAddress, qualification: Span<felt252>);
+}
+```
+
+Key design points:
+- `registration_only` — if `true`, entries are only validated during registration (not during the game phase)
+- `add_config` — called when a tournament is created with this extension, allowing the validator to store per-tournament configuration
+- `should_ban` / `remove_entry` — enable post-entry enforcement, allowing the community to police invalid entries
+
+> **Note:** The extension validator system is fully open — anyone can deploy a new validator contract and use it with Budokan tournaments.
+
+## Banning Mechanism
+
+Budokan's `ban_entry` function provides a permissionless way to remove invalid entries from tournaments that use extension validators. Anyone can call it — you don't need to be the tournament creator.
+
+When `ban_entry` is called:
+1. Budokan looks up the tournament's extension validator
+2. Calls `should_ban` on the validator with the entry's current owner and proof data
+3. If the validator confirms the ban, the entry is removed from the leaderboard
+4. The validator's `remove_entry` is called to update its internal tracking
+
+This creates a **community-enforced** security model — exploit attempts can be detected and punished by any participant, not just administrators.
 
 ## Related Guides
 - [Creating a Tournament](/budokan/guide/create)

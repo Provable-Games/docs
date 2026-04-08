@@ -4,9 +4,27 @@ layout: docs
 
 # Budokan: Key Functions
 
-This section details the primary functions exposed by the Budokan tournament system. Each function is designed to be permissionless, composable, and secure.
+This section details the primary functions exposed by the Budokan tournament system and its core data structures.
 
-## `create_tournament`
+## Component Architecture
+
+Budokan is built by composing reusable Cairo components from the open-source [game-components](https://github.com/Provable-Games/game-components) library:
+
+| Component | Purpose |
+|-----------|---------|
+| **PrizeComponent** | Prize pool management, ERC20/ERC721 deposits, distribution, and claims |
+| **EntryFeeComponent** | Entry fee collection, share splitting (creator/game/refund/prize pool), and payouts |
+| **LeaderboardComponent** | Score submission, ranking, and position tracking with hooks |
+| **RegistrationComponent** | Entry tracking, entry counts, and ban management |
+| **EntryRequirementComponent** | Entry gating via token ownership, tournament qualification, or [extension validators](/budokan/guide/create/entry-requirements#extension-validators) |
+
+These components are **not Budokan-specific** — they are general-purpose building blocks from the [Metagame Extensions](/embeddable-game-standard/reference/metagame-extensions) package. Anyone can compose them to build their own tournament or competition system with custom prize logic, entry fee handling, or scoring rules.
+
+For example, you could build a platform that uses the same `PrizeComponent` and `LeaderboardComponent` but with entirely different entry mechanics, or extend the `EntryFeeComponent` with a custom distribution strategy.
+
+## IBudokan Interface
+
+### `create_tournament`
 ```cairo
 fn create_tournament(
     ref self: TState,
@@ -16,23 +34,29 @@ fn create_tournament(
     game_config: GameConfig,
     entry_fee: Option<EntryFee>,
     entry_requirement: Option<EntryRequirement>,
-) -> TournamentModel;
+    leaderboard_config: LeaderboardConfig,
+    salt: u16,
+    metadata_value: u16,
+) -> Tournament;
 ```
 **Purpose:** Create a new tournament with specified metadata, schedule, game configuration, entry fee, and requirements. Mints a game token to the creator for reward distribution.
 
 **Parameters:**
 - `creator_rewards_address`: Address to receive the creator's game token.
-- `metadata`: Tournament metadata (name, description, etc.).
-- `schedule`: Tournament schedule (registration, submission, finalization phases).
-- `game_config`: Game configuration (game address, settings, prize spots).
-- `entry_fee`: Optional entry fee (ERC20/721, amount, etc.).
-- `entry_requirement`: Optional qualification requirement.
+- `metadata`: Tournament metadata (name, description).
+- `schedule`: Delay-based schedule (registration, game, and submission durations).
+- `game_config`: Game configuration (game address, settings, soulbound, paymaster, etc.).
+- `entry_fee`: Optional entry fee with distribution rules.
+- `entry_requirement`: Optional qualification requirement (token gating, tournament qualification, or extension).
+- `leaderboard_config`: Leaderboard scoring rules (ascending/descending, game_must_be_over).
+- `salt`: Salt for token ID packing.
+- `metadata_value`: Additional metadata value for token ID packing.
 
-**Returns:** Tournament model struct.
+**Returns:** `Tournament` struct.
 
 ---
 
-## `enter_tournament`
+### `enter_tournament`
 ```cairo
 fn enter_tournament(
     ref self: TState,
@@ -40,7 +64,9 @@ fn enter_tournament(
     player_name: felt252,
     player_address: ContractAddress,
     qualification: Option<QualificationProof>,
-) -> (u64, u32);
+    salt: u16,
+    metadata_value: u16,
+) -> (felt252, u32);
 ```
 **Purpose:** Register a player for a tournament, minting a game token and assigning an entry number.
 
@@ -48,106 +74,226 @@ fn enter_tournament(
 - `tournament_id`: ID of the tournament to enter.
 - `player_name`: Name of the player (felt252).
 - `player_address`: Address to mint the game token to.
-- `qualification`: Optional qualification proof.
+- `qualification`: Optional qualification proof (NFT ownership or extension data).
+- `salt`: Salt for token ID packing.
+- `metadata_value`: Additional metadata value for token ID packing.
 
-**Returns:** Tuple of (game token ID, entry number).
+**Returns:** Tuple of (game token ID as `felt252`, entry number as `u32`).
 
 ---
 
-## `submit_score`
+### `submit_score`
 ```cairo
 fn submit_score(
     ref self: TState,
     tournament_id: u64,
-    token_id: u64,
-    position: u8,
+    token_id: felt252,
+    position: u32,
 );
 ```
 **Purpose:** Submit a score/position for a tournament entry. Updates the leaderboard and marks the score as submitted.
 
 **Parameters:**
 - `tournament_id`: ID of the tournament.
-- `token_id`: Game token ID for the entry.
+- `token_id`: Game token ID for the entry (`felt252`).
 - `position`: Leaderboard position (1-based index).
 
 ---
 
-## `claim_prize`
+### `claim_reward`
 ```cairo
-fn claim_prize(
+fn claim_reward(
     ref self: TState,
     tournament_id: u64,
-    prize_type: PrizeType,
+    reward_type: RewardType,
 );
 ```
-**Purpose:** Claim a prize for a tournament after it is finalized. Handles entry fee and custom prize types.
+**Purpose:** Claim a reward for a tournament after it is finalized. Handles both entry fee distributions and custom prizes.
 
 **Parameters:**
 - `tournament_id`: ID of the tournament.
-- `prize_type`: Type of prize to claim (entry fees, custom, etc.).
+- `reward_type`: Type of reward to claim — either a `Prize(PrizeType)` or `EntryFee(EntryFeeRewardType)`.
 
 ---
 
-## `add_prize`
+### `add_prize`
 ```cairo
 fn add_prize(
     ref self: TState,
     tournament_id: u64,
     token_address: ContractAddress,
-    token_type: TokenType,
-    position: u8,
-) -> u64;
+    token_type: TokenTypeData,
+    position: Option<u32>,
+) -> PrizeData;
 ```
-**Purpose:** Add a new prize to a tournament for a specific leaderboard position.
+**Purpose:** Add a new prize to a tournament. Specify a leaderboard position or `None` for an unpositioned prize.
 
 **Parameters:**
 - `tournament_id`: ID of the tournament.
-- `token_address`: Address of the prize token.
-- `token_type`: Type of token (ERC20, ERC721, etc.).
-- `position`: Leaderboard position for the prize.
+- `token_address`: Address of the prize token contract.
+- `token_type`: Token type data (`ERC20Data` or `ERC721Data`).
+- `position`: Optional leaderboard position for the prize.
 
-**Returns:** Prize ID.
+**Returns:** `PrizeData` struct.
 
 ---
 
-## `register_token`
+### `ban_entry`
 ```cairo
-fn register_token(
+fn ban_entry(
     ref self: TState,
-    address: ContractAddress,
-    token_type: TokenType,
+    tournament_id: u64,
+    game_token_id: felt252,
+    proof: Span<felt252>,
 );
 ```
-**Purpose:** Register a new token (ERC20/ERC721) for use in tournaments.
-
-**Parameters:**
-- `address`: Token contract address.
-- `token_type`: Type of token.
-
----
-
-## `get_leaderboard`
-```cairo
-fn get_leaderboard(
-    self: @TState,
-    tournament_id: u64,
-) -> Array<u64>;
-```
-**Purpose:** Retrieve the current leaderboard for a tournament.
+**Purpose:** Permissionlessly ban a tournament entry that no longer meets the extension validator's requirements. Anyone can call this — it delegates to the tournament's extension validator to confirm the ban via `should_ban`.
 
 **Parameters:**
 - `tournament_id`: ID of the tournament.
+- `game_token_id`: Token ID of the entry to ban.
+- `proof`: Proof data passed to the validator (validator-specific).
 
-**Returns:** Array of game token IDs ordered by position.
+See [Entry Requirements: Banning Mechanism](/budokan/guide/create/entry-requirements#banning-mechanism) for details on how this works with extension validators.
 
 ---
 
-## Additional Functions
+### View Functions
+
+```cairo
+fn total_tournaments(self: @TState) -> u64;
+fn tournament(self: @TState, tournament_id: u64) -> Tournament;
+fn tournament_entries(self: @TState, tournament_id: u64) -> u32;
+fn get_leaderboard(self: @TState, tournament_id: u64) -> Array<felt252>;
+fn current_phase(self: @TState, tournament_id: u64) -> Phase;
+```
+
 - `total_tournaments`: Returns the total number of tournaments created.
-- `tournament`: Returns the tournament model for a given ID.
-- `get_registration`: Returns registration details for a game token.
-- `get_prize`: Returns prize details for a given prize ID.
+- `tournament`: Returns the `Tournament` struct for a given ID.
 - `tournament_entries`: Returns the number of entries for a tournament.
-- `is_token_registered`: Checks if a token is registered for tournaments.
+- `get_leaderboard`: Returns an array of game token IDs ordered by position.
 - `current_phase`: Returns the current phase of a tournament.
-- `get_tournament_id_for_token_id`: Returns the tournament ID for a given game token. 
+
+:::tip
+For batched RPC queries, use the **BudokanViewer** contract instead of calling these individually. See the [SDK documentation](/budokan/sdk) for details.
+:::
+
+---
+
+## Data Structures
+
+### Schedule
+
+Tournament phases are calculated from cumulative delays relative to the creation timestamp:
+
+```cairo
+pub struct Schedule {
+    pub registration_start_delay: u32,
+    pub registration_end_delay: u32,
+    pub game_start_delay: u32,
+    pub game_end_delay: u32,
+    pub submission_duration: u32,
+}
+```
+
+For example, if a tournament is created at time `T`:
+- Registration opens at `T + registration_start_delay`
+- Registration closes at `T + registration_end_delay`
+- Game starts at `T + game_start_delay`
+- Game ends at `T + game_start_delay + game_end_delay`
+- Submission ends at `T + game_start_delay + game_end_delay + submission_duration`
+
+A delay of `0` for registration means no registration period.
+
+### Phase
+
+```cairo
+pub enum Phase {
+    Scheduled,
+    Registration,
+    Staging,
+    Live,
+    Submission,
+    Finalized,
+}
+```
+
+### LeaderboardConfig
+
+```cairo
+pub struct LeaderboardConfig {
+    pub ascending: bool,          // true = lower scores better, false = higher scores better
+    pub game_must_be_over: bool,  // true = game_over() must return true before submission
+}
+```
+
+### GameConfig
+
+```cairo
+pub struct GameConfig {
+    pub game_address: ContractAddress,
+    pub settings_id: u32,
+    pub soulbound: bool,
+    pub paymaster: bool,
+    pub client_url: Option<ByteArray>,
+    pub renderer: Option<ContractAddress>,
+}
+```
+
+### EntryFee
+
+Budokan enforces that `game_creator_share` is >= the fee declared by the game via [`game_fee_info`](/embeddable-game-standard/reference/registry#gamefeeinfo) in the game registry (default 5% / 500 bps). Tournament creation will revert if the share is too low.
+
+```cairo
+pub struct EntryFee {
+    pub token_address: ContractAddress,
+    pub amount: u128,
+    pub tournament_creator_share: u16,  // basis points
+    pub game_creator_share: u16,        // basis points (must be >= game's declared fee)
+    pub refund_share: u16,              // basis points returned to each depositor
+    pub distribution: Distribution,
+    pub distribution_count: u32,
+}
+```
+
+### RewardType
+
+```cairo
+pub enum RewardType {
+    Prize: PrizeType,
+    EntryFee: EntryFeeRewardType,
+}
+
+pub enum EntryFeeRewardType {
+    Position: u32,
+    TournamentCreator,
+    GameCreator,
+    Refund: felt252,
+}
+```
+
+### Tournament
+
+```cairo
+pub struct Tournament {
+    pub id: u64,
+    pub created_at: u64,
+    pub created_by: ContractAddress,
+    pub creator_token_id: felt252,
+    pub metadata: Metadata,
+    pub schedule: Schedule,
+    pub game_config: GameConfig,
+    pub entry_fee: Option<EntryFee>,
+    pub entry_requirement: Option<EntryRequirement>,
+    pub leaderboard_config: LeaderboardConfig,
+}
+```
+
+### Metadata
+
+```cairo
+pub struct Metadata {
+    pub name: felt252,
+    pub description: ByteArray,
+}
+```

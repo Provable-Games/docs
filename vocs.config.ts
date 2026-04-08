@@ -45,45 +45,32 @@ rootDir: "src",
         text: "Budokan",
         items: [
           { text: "Overview", link: "/budokan" },
-          {
-            text: "Guide",
-            link: "/budokan/guide",
-            collapsed: true,
-            items: [
-              // { text: "Overview", link: "/budokan/guide" },
-              { text: "Onboarding", link: "/budokan/guide/onboarding" },
-              { text: "Enter Tournaments", link: "/budokan/guide/enter" },
-              { text: "Submission", link: "/budokan/guide/submission" },
-              {
-                text: "Prizes",
-                link: "/budokan/guide/prizes",
-              },
-              {
-                text: "Create",
-                link: "/budokan/guide/create",
-                collapsed: true,
-                items: [
-                  {
-                    text: "Game Settings",
-                    link: "/budokan/guide/create/game-settings",
-                  },
-                  {
-                    text: "Entry Fees",
-                    link: "/budokan/guide/create/entry-fees",
-                  },
-                  {
-                    text: "Entry Requirements",
-                    link: "/budokan/guide/create/entry-requirements",
-                  },
-                  {
-                    text: "Best Practices",
-                    link: "/budokan/guide/create/best-practices",
-                  },
-                ],
-              },
-            ],
-          },
+          { text: "Onboarding", link: "/budokan/guide/onboarding" },
+        ],
+      },
+      {
+        text: "Playing",
+        items: [
+          { text: "Enter Tournaments", link: "/budokan/guide/enter" },
+          { text: "Submission", link: "/budokan/guide/submission" },
+          { text: "Prizes", link: "/budokan/guide/prizes" },
+        ],
+      },
+      {
+        text: "Creating",
+        items: [
+          { text: "Create a Tournament", link: "/budokan/guide/create" },
+          { text: "Game Settings", link: "/budokan/guide/create/game-settings" },
+          { text: "Entry Fees", link: "/budokan/guide/create/entry-fees" },
+          { text: "Entry Requirements", link: "/budokan/guide/create/entry-requirements" },
+          { text: "Best Practices", link: "/budokan/guide/create/best-practices" },
+        ],
+      },
+      {
+        text: "Reference",
+        items: [
           { text: "Key Functions", link: "/budokan/key-functions" },
+          { text: "SDK", link: "/budokan/sdk" },
           { text: "FAQ", link: "/budokan/faq" },
         ],
       },
