@@ -104,7 +104,7 @@ rootDir: "src",
         ],
       },
       {
-        text: "game-components Reference",
+        text: "Game Components",
         items: [
           { text: "Overview", link: "/embeddable-game-standard/reference" },
           { text: "MinigameToken (ERC721)", link: "/embeddable-game-standard/reference/token" },
@@ -119,7 +119,7 @@ rootDir: "src",
         text: "Frontend Integration",
         items: [
           { text: "Overview", link: "/embeddable-game-standard/frontend" },
-          { text: "denshokan-sdk", link: "/embeddable-game-standard/frontend/sdk" },
+          { text: "Denshokan SDK", link: "/embeddable-game-standard/frontend/sdk" },
           { text: "Types Reference", link: "/embeddable-game-standard/frontend/types" },
           { text: "React Hooks", link: "/embeddable-game-standard/frontend/react-hooks" },
           { text: "WebSocket Subscriptions", link: "/embeddable-game-standard/frontend/websockets" },
