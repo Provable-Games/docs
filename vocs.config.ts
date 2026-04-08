@@ -80,133 +80,63 @@ rootDir: "src",
       {
         text: "Embeddable Game Standard",
         items: [
-          {
-            text: "Overview",
-            link: "/embeddable-game-standard",
-          },
-          {
-            text: "Architecture",
-            link: "/embeddable-game-standard/architecture",
-          },
-          {
-            text: "Building a Game",
-            link: "/embeddable-game-standard/building-a-game",
-            collapsed: true,
-            items: [
-              {
-                text: "Quick Start",
-                link: "/embeddable-game-standard/building-a-game/quick-start",
-              },
-              {
-                text: "Score & Game Over",
-                link: "/embeddable-game-standard/building-a-game/score-and-game-over",
-              },
-              {
-                text: "Settings & Objectives",
-                link: "/embeddable-game-standard/building-a-game/settings-and-objectives",
-              },
-              {
-                text: "Lifecycle & Playability",
-                link: "/embeddable-game-standard/building-a-game/lifecycle",
-              },
-            ],
-          },
-          {
-            text: "Building a Platform",
-            link: "/embeddable-game-standard/building-a-platform",
-            collapsed: true,
-            items: [
-              {
-                text: "MetagameComponent",
-                link: "/embeddable-game-standard/building-a-platform/metagame",
-              },
-              {
-                text: "Callbacks & Automation",
-                link: "/embeddable-game-standard/building-a-platform/callbacks",
-              },
-              {
-                text: "Registry & Discovery",
-                link: "/embeddable-game-standard/building-a-platform/registry",
-              },
-            ],
-          },
-          {
-            text: "game-components Reference",
-            link: "/embeddable-game-standard/reference",
-            collapsed: true,
-            items: [
-              {
-                text: "MinigameToken (ERC721)",
-                link: "/embeddable-game-standard/reference/token",
-              },
-              {
-                text: "Token Extensions",
-                link: "/embeddable-game-standard/reference/token-extensions",
-              },
-              {
-                text: "MinigameComponent",
-                link: "/embeddable-game-standard/reference/minigame",
-              },
-              {
-                text: "MetagameComponent",
-                link: "/embeddable-game-standard/reference/metagame",
-              },
-              {
-                text: "RegistryComponent",
-                link: "/embeddable-game-standard/reference/registry",
-              },
-              {
-                text: "Metagame Extensions",
-                link: "/embeddable-game-standard/reference/metagame-extensions",
-              },
-            ],
-          },
-          {
-            text: "Frontend Integration",
-            link: "/embeddable-game-standard/frontend",
-            collapsed: true,
-            items: [
-              {
-                text: "denshokan-sdk",
-                link: "/embeddable-game-standard/frontend/sdk",
-              },
-              {
-                text: "Types Reference",
-                link: "/embeddable-game-standard/frontend/types",
-              },
-              {
-                text: "React Hooks",
-                link: "/embeddable-game-standard/frontend/react-hooks",
-              },
-              {
-                text: "WebSocket Subscriptions",
-                link: "/embeddable-game-standard/frontend/websockets",
-              },
-            ],
-          },
-          {
-            text: "Advanced Topics",
-            link: "/embeddable-game-standard/advanced",
-            collapsed: true,
-            items: [
-              {
-                text: "Packed Token IDs",
-                link: "/embeddable-game-standard/advanced/packed-token-ids",
-              },
-              {
-                text: "SRC5 Interface Discovery",
-                link: "/embeddable-game-standard/advanced/src5",
-              },
-            ],
-          },
-          {
-            text: "Games",
-            link: "/embeddable-game-standard/games",
-          },
-          {
-            text: "Applications",
-            link: "/embeddable-game-standard/applications",
-          },
+          { text: "Overview", link: "/embeddable-game-standard" },
+          { text: "Architecture", link: "/embeddable-game-standard/architecture" },
+        ],
+      },
+      {
+        text: "Building a Game",
+        items: [
+          { text: "Overview", link: "/embeddable-game-standard/building-a-game" },
+          { text: "Quick Start", link: "/embeddable-game-standard/building-a-game/quick-start" },
+          { text: "Score & Game Over", link: "/embeddable-game-standard/building-a-game/score-and-game-over" },
+          { text: "Settings & Objectives", link: "/embeddable-game-standard/building-a-game/settings-and-objectives" },
+          { text: "Lifecycle & Playability", link: "/embeddable-game-standard/building-a-game/lifecycle" },
+        ],
+      },
+      {
+        text: "Building a Platform",
+        items: [
+          { text: "Overview", link: "/embeddable-game-standard/building-a-platform" },
+          { text: "MetagameComponent", link: "/embeddable-game-standard/building-a-platform/metagame" },
+          { text: "Callbacks & Automation", link: "/embeddable-game-standard/building-a-platform/callbacks" },
+          { text: "Registry & Discovery", link: "/embeddable-game-standard/building-a-platform/registry" },
+        ],
+      },
+      {
+        text: "Game Components",
+        items: [
+          { text: "Overview", link: "/embeddable-game-standard/reference" },
+          { text: "MinigameToken (ERC721)", link: "/embeddable-game-standard/reference/token" },
+          { text: "Token Extensions", link: "/embeddable-game-standard/reference/token-extensions" },
+          { text: "MinigameComponent", link: "/embeddable-game-standard/reference/minigame" },
+          { text: "MetagameComponent", link: "/embeddable-game-standard/reference/metagame" },
+          { text: "RegistryComponent", link: "/embeddable-game-standard/reference/registry" },
+          { text: "Metagame Extensions", link: "/embeddable-game-standard/reference/metagame-extensions" },
+        ],
+      },
+      {
+        text: "Frontend Integration",
+        items: [
+          { text: "Overview", link: "/embeddable-game-standard/frontend" },
+          { text: "Denshokan SDK", link: "/embeddable-game-standard/frontend/sdk" },
+          { text: "Types Reference", link: "/embeddable-game-standard/frontend/types" },
+          { text: "React Hooks", link: "/embeddable-game-standard/frontend/react-hooks" },
+          { text: "WebSocket Subscriptions", link: "/embeddable-game-standard/frontend/websockets" },
+        ],
+      },
+      {
+        text: "Advanced Topics",
+        items: [
+          { text: "Packed Token IDs", link: "/embeddable-game-standard/advanced/packed-token-ids" },
+          { text: "SRC5 Interface Discovery", link: "/embeddable-game-standard/advanced/src5" },
+        ],
+      },
+      {
+        text: "Ecosystem",
+        items: [
+          { text: "Games", link: "/embeddable-game-standard/games" },
+          { text: "Applications", link: "/embeddable-game-standard/applications" },
           { text: "FAQ", link: "/embeddable-game-standard/faq" },
         ],
       },
@@ -216,30 +146,24 @@ rootDir: "src",
       {
         text: "Dark Shuffle",
         items: [
-          {
-            text: "Overview",
-            link: "/darkshuffle",
-          },
-          {
-            text: "Guide",
-            link: "/darkshuffle/guide",
-            collapsed: true,
-            items: [
-              { text: "Onboarding", link: "/darkshuffle/guide/onboarding" },
-              { text: "Draft", link: "/darkshuffle/guide/draft" },
-              { text: "Cards", link: "/darkshuffle/guide/cards" },
-              { text: "Map", link: "/darkshuffle/guide/map" },
-              { text: "Battle", link: "/darkshuffle/guide/battle" },
-            ],
-          },
-          {
-            text: "Key Functions",
-            link: "/darkshuffle/key-functions",
-          },
-          {
-            text: "Settings",
-            link: "/darkshuffle/settings",
-          },
+          { text: "Overview", link: "/darkshuffle" },
+          { text: "Onboarding", link: "/darkshuffle/guide/onboarding" },
+        ],
+      },
+      {
+        text: "Guide",
+        items: [
+          { text: "Draft", link: "/darkshuffle/guide/draft" },
+          { text: "Cards", link: "/darkshuffle/guide/cards" },
+          { text: "Map", link: "/darkshuffle/guide/map" },
+          { text: "Battle", link: "/darkshuffle/guide/battle" },
+        ],
+      },
+      {
+        text: "Reference",
+        items: [
+          { text: "Key Functions", link: "/darkshuffle/key-functions" },
+          { text: "Settings", link: "/darkshuffle/settings" },
           { text: "FAQ", link: "/darkshuffle/faq" },
         ],
       },
@@ -249,30 +173,27 @@ rootDir: "src",
       {
         text: "Summit",
         items: [
-          {
-            text: "Overview",
-            link: "/summit",
-          },
-          {
-            text: "Battle System",
-            link: "/summit/battle-system",
-          },
-          {
-            text: "Beast Upgrades",
-            link: "/summit/beast-upgrades",
-          },
-          {
-            text: "Consumables",
-            link: "/summit/consumables",
-          },
-          {
-            text: "Rewards",
-            link: "/summit/rewards",
-          },
-          {
-            text: "Quests",
-            link: "/summit/quests",
-          },
+          { text: "Overview", link: "/summit" },
+        ],
+      },
+      {
+        text: "Gameplay",
+        items: [
+          { text: "Battle System", link: "/summit/battle-system" },
+          { text: "Beast Upgrades", link: "/summit/beast-upgrades" },
+          { text: "Consumables", link: "/summit/consumables" },
+        ],
+      },
+      {
+        text: "Economy",
+        items: [
+          { text: "Rewards", link: "/summit/rewards" },
+          { text: "Quests", link: "/summit/quests" },
+        ],
+      },
+      {
+        text: "Reference",
+        items: [
           { text: "FAQ", link: "/summit/faq" },
           { text: "Disclaimers", link: "/summit/disclaimers" },
         ],
@@ -283,125 +204,55 @@ rootDir: "src",
       {
         text: "Loot Survivor",
         items: [
-          {
-            text: "Overview",
-            link: "/lootsurvivor",
-          },
-          {
-            text: "Platforms",
-            link: "/lootsurvivor/platforms",
-          },
-          {
-            text: "Guide",
-            link: "/lootsurvivor/guide",
-            collapsed: true,
-            items: [
-              {
-                text: "Getting Started",
-                link: "/lootsurvivor/guide/getting-started",
-              },
-              { text: "Explore", link: "/lootsurvivor/guide/explore" },
-              { text: "Battle", link: "/lootsurvivor/guide/battle" },
-              { text: "Upgrade", link: "/lootsurvivor/guide/upgrade" },
-            ],
-          },
-          {
-            text: "Dungeon Tickets",
-            link: "/lootsurvivor/dungeon-tickets",
-          },
-          {
-            text: "Stats",
-            link: "/lootsurvivor/stats",
-          },
-          {
-            text: "Combat",
-            link: "/lootsurvivor/combat",
-          },
-          {
-            text: "Market",
-            link: "/lootsurvivor/market",
-          },
-          {
-            text: "Loot",
-            link: "/lootsurvivor/loot",
-            collapsed: true,
-            items: [
-              {
-                text: "Suffix Boosts",
-                link: "/lootsurvivor/loot/suffix-boost",
-              },
-              { text: "Jewelry", link: "/lootsurvivor/loot/jewelry" },
-            ],
-          },
-          {
-            text: "Beasts",
-            link: "/lootsurvivor/beasts",
-            collapsed: true,
-            items: [
-              {
-                text: "Collectibles",
-                link: "/lootsurvivor/beasts/collectibles",
-              },
-              {
-                text: "Wanted Beasts",
-                link: "/lootsurvivor/beasts/wanted-beasts",
-              },
-            ],
-          },
-          {
-            text: "Token",
-            link: "/lootsurvivor/token",
-            collapsed: true,
-            items: [
-              {
-                text: "Tokenomics",
-                link: "/lootsurvivor/token/tokenomics",
-              },
-              {
-                text: "Airdrop",
-                link: "/lootsurvivor/token/airdrop",
-              },
-              {
-                text: "Eligible Collections",
-                link: "/lootsurvivor/token/eligible-collections",
-              },
-            ],
-          },
-          {
-            text: "Golden Token",
-            link: "/lootsurvivor/golden-token",
-          },
-          {
-            text: "Skull Token",
-            link: "/lootsurvivor/skull-token",
-          },
-          {
-            text: "Corpse Token",
-            link: "/lootsurvivor/corpse-token",
-          },
-          // {
-          //   text: "Technical Documentation",
-          //   link: "/lootsurvivor/technical",
-          //   collapsed: true,
-          //   items: [
-          //     {
-          //       text: "Architecture",
-          //       link: "/lootsurvivor/technical/architecture",
-          //     },
-          //     {
-          //       text: "Smart Contracts",
-          //       link: "/lootsurvivor/technical/contracts",
-          //     },
-          //     {
-          //       text: "Integration",
-          //       link: "/lootsurvivor/technical/integration",
-          //     },
-          //   ],
-          // },
-          {
-            text: "Contracts",
-            link: "/lootsurvivor/contracts",
-          },
+          { text: "Overview", link: "/lootsurvivor" },
+          { text: "Platforms", link: "/lootsurvivor/platforms" },
+        ],
+      },
+      {
+        text: "Guide",
+        items: [
+          { text: "Getting Started", link: "/lootsurvivor/guide/getting-started" },
+          { text: "Explore", link: "/lootsurvivor/guide/explore" },
+          { text: "Battle", link: "/lootsurvivor/guide/battle" },
+          { text: "Upgrade", link: "/lootsurvivor/guide/upgrade" },
+        ],
+      },
+      {
+        text: "Game Mechanics",
+        items: [
+          { text: "Dungeon Tickets", link: "/lootsurvivor/dungeon-tickets" },
+          { text: "Stats", link: "/lootsurvivor/stats" },
+          { text: "Combat", link: "/lootsurvivor/combat" },
+          { text: "Market", link: "/lootsurvivor/market" },
+        ],
+      },
+      {
+        text: "Loot & Beasts",
+        items: [
+          { text: "Loot", link: "/lootsurvivor/loot" },
+          { text: "Suffix Boosts", link: "/lootsurvivor/loot/suffix-boost" },
+          { text: "Jewelry", link: "/lootsurvivor/loot/jewelry" },
+          { text: "Beasts", link: "/lootsurvivor/beasts" },
+          { text: "Collectibles", link: "/lootsurvivor/beasts/collectibles" },
+          { text: "Wanted Beasts", link: "/lootsurvivor/beasts/wanted-beasts" },
+        ],
+      },
+      {
+        text: "Tokens",
+        items: [
+          { text: "Token", link: "/lootsurvivor/token" },
+          { text: "Tokenomics", link: "/lootsurvivor/token/tokenomics" },
+          { text: "Airdrop", link: "/lootsurvivor/token/airdrop" },
+          { text: "Eligible Collections", link: "/lootsurvivor/token/eligible-collections" },
+          { text: "Golden Token", link: "/lootsurvivor/golden-token" },
+          { text: "Skull Token", link: "/lootsurvivor/skull-token" },
+          { text: "Corpse Token", link: "/lootsurvivor/corpse-token" },
+        ],
+      },
+      {
+        text: "Reference",
+        items: [
+          { text: "Contracts", link: "/lootsurvivor/contracts" },
           { text: "FAQ", link: "/lootsurvivor/faq" },
         ],
       },
