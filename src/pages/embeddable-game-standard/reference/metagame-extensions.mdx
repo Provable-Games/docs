@@ -4,12 +4,14 @@ layout: docs
 
 # Metagame Extensions
 
-The `game_components_metagame` package provides components for competitive features: leaderboards, registration, entry gating, entry fees, and prizes. These are separate from the core EGS `embeddable_game_standard` package and used by platform contracts like Budokan.
+The `game_components_metagame` package provides components for competitive features: leaderboards, registration, entry gating, entry fees, and prizes. These are separate from the core EGS `embeddable_game_standard` package and used by platform contracts like [Budokan](/budokan).
 
 ```toml
 [dependencies]
 game_components_metagame = { git = "https://github.com/Provable-Games/game-components", tag = "v1.1.3" }
 ```
+
+The extension interfaces (entry validators, custom gating logic) are defined in the separate [metagame_extensions](https://github.com/Provable-Games/metagame_extensions) package. This is where `IEntryRequirementExtension`, `ExtensionConfig`, and related types live.
 
 ## Leaderboard
 
@@ -217,6 +219,30 @@ pub struct AdditionalShare {
 }
 ```
 
+### EntryFee Enum
+
+Entry fees can be configured directly or delegated to an extension contract:
+
+```cairo
+#[derive(Drop, Serde)]
+pub enum EntryFee {
+    Config: EntryFeeConfig,       // Direct ERC20 fee with stored config
+    Extension: ExtensionConfig,   // Custom fee logic via extension contract
+}
+```
+
+### EntryFeeDeposit Enum
+
+When a player pays an entry fee, the deposit type determines the payment flow:
+
+```cairo
+#[derive(Drop, Serde)]
+pub enum EntryFeeDeposit {
+    Config: EntryFeeConfig,       // Direct ERC20 transfer using stored config
+    Extension: Span<felt252>,     // Extension-based payment with caller-provided params
+}
+```
+
 Fee distribution order:
 1. `game_creator_share` goes to the game creator
 2. `refund_share` is returned to each depositor
@@ -250,6 +276,18 @@ pub trait IPrize<TState> {
     fn get_prize(self: @TState, prize_id: u64) -> PrizeData;
     fn get_total_prizes(self: @TState) -> u64;
     fn is_prize_claimed(self: @TState, context_id: u64, prize_type: PrizeType) -> bool;
+}
+```
+
+### Prize Enum
+
+Prizes can be configured directly or delegated to an extension contract:
+
+```cairo
+#[derive(Drop, Serde)]
+pub enum Prize {
+    Config: PrizeConfig,          // Direct token prize (ERC20 or ERC721)
+    Extension: ExtensionConfig,   // Custom prize logic via extension contract
 }
 ```
 
