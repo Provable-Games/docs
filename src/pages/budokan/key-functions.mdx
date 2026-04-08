@@ -224,12 +224,14 @@ pub struct GameConfig {
 
 ### EntryFee
 
+Budokan enforces that `game_creator_share` is >= the fee declared by the game via [`game_fee_info`](/embeddable-game-standard/reference/registry#gamefeeinfo) in the game registry (default 5% / 500 bps). Tournament creation will revert if the share is too low.
+
 ```cairo
 pub struct EntryFee {
     pub token_address: ContractAddress,
     pub amount: u128,
     pub tournament_creator_share: u16,  // basis points
-    pub game_creator_share: u16,        // basis points
+    pub game_creator_share: u16,        // basis points (must be >= game's declared fee)
     pub refund_share: u16,              // basis points returned to each depositor
     pub distribution: Distribution,
     pub distribution_count: u32,

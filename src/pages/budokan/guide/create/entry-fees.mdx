@@ -36,7 +36,7 @@ The entry fee form offers flexible options for setting the price of entry and ho
   - The percentage of each entry fee that goes to the tournament creator. This is automatically distributed to the creator's account (`Entry #0`) when a player enters.
 
 - **Game Fee:**
-  - The percentage of each entry fee that goes to the game developer. A default game fee of 5% is enforced via the [Embeddable Game Standard](/embeddable-game-standard/architecture). The game developer receives this cut via the account holding `Game #0`.
+  - The percentage of each entry fee that goes to the game developer. Budokan enforces that the game creator share is greater than or equal to the fee declared by the game at deployment (via [`game_fee_info`](/embeddable-game-standard/reference/registry#gamefeeinfo) in the game registry). The default game fee is 5% (500 basis points). Tournament creators can set a higher share but cannot go below the game's declared fee. The game developer receives this cut via the account holding `Game #0`.
 
 - **Refund Share:**
   - An optional percentage of each entry fee that is refunded to each depositor. This allows tournament creators to return a portion of fees back to all participants.
