@@ -87,6 +87,7 @@ rootDir: "src",
       {
         text: "Building a Game",
         items: [
+          { text: "Overview", link: "/embeddable-game-standard/building-a-game" },
           { text: "Quick Start", link: "/embeddable-game-standard/building-a-game/quick-start" },
           { text: "Score & Game Over", link: "/embeddable-game-standard/building-a-game/score-and-game-over" },
           { text: "Settings & Objectives", link: "/embeddable-game-standard/building-a-game/settings-and-objectives" },
@@ -96,6 +97,7 @@ rootDir: "src",
       {
         text: "Building a Platform",
         items: [
+          { text: "Overview", link: "/embeddable-game-standard/building-a-platform" },
           { text: "MetagameComponent", link: "/embeddable-game-standard/building-a-platform/metagame" },
           { text: "Callbacks & Automation", link: "/embeddable-game-standard/building-a-platform/callbacks" },
           { text: "Registry & Discovery", link: "/embeddable-game-standard/building-a-platform/registry" },
@@ -104,6 +106,7 @@ rootDir: "src",
       {
         text: "game-components Reference",
         items: [
+          { text: "Overview", link: "/embeddable-game-standard/reference" },
           { text: "MinigameToken (ERC721)", link: "/embeddable-game-standard/reference/token" },
           { text: "Token Extensions", link: "/embeddable-game-standard/reference/token-extensions" },
           { text: "MinigameComponent", link: "/embeddable-game-standard/reference/minigame" },
@@ -115,6 +118,7 @@ rootDir: "src",
       {
         text: "Frontend Integration",
         items: [
+          { text: "Overview", link: "/embeddable-game-standard/frontend" },
           { text: "denshokan-sdk", link: "/embeddable-game-standard/frontend/sdk" },
           { text: "Types Reference", link: "/embeddable-game-standard/frontend/types" },
           { text: "React Hooks", link: "/embeddable-game-standard/frontend/react-hooks" },
