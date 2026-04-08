@@ -131,12 +131,14 @@ fn ban_entry(
     proof: Span<felt252>,
 );
 ```
-**Purpose:** Ban a tournament entry. Used to disqualify players with proof of misconduct.
+**Purpose:** Permissionlessly ban a tournament entry that no longer meets the extension validator's requirements. Anyone can call this — it delegates to the tournament's extension validator to confirm the ban via `should_ban`.
 
 **Parameters:**
 - `tournament_id`: ID of the tournament.
 - `game_token_id`: Token ID of the entry to ban.
-- `proof`: Proof data for the ban.
+- `proof`: Proof data passed to the validator (validator-specific).
+
+See [Entry Requirements: Banning Mechanism](/budokan/guide/create/entry-requirements#banning-mechanism) for details on how this works with extension validators.
 
 ---
 
