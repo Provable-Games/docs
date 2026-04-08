@@ -46,6 +46,21 @@ The entry fee form offers flexible options for setting the price of entry and ho
 
 > **Tip:** Use familiar tokens for your audience to encourage participation. Double-check your fee splits before confirming, as they can't be changed after creation.
 
+### Distribution Strategies
+
+The prize pool portion of entry fees is distributed to winners using one of these strategies:
+
+| Strategy | Description |
+|----------|-------------|
+| **Linear** | Linear decay with configurable step size (e.g., 1st gets most, each position decreases by a fixed amount) |
+| **Exponential** | Exponential decay with configurable base (top-heavy, drops off sharply) |
+| **Uniform** | Equal split across all winning positions |
+| **Custom** | Specify exact basis point shares per position |
+
+### Building on EntryFeeComponent
+
+Budokan's entry fee system is powered by the `EntryFeeComponent` from the open-source [game-components](https://github.com/Provable-Games/game-components) library. This component handles fee collection, share splitting, and payouts. If you're building your own competition platform, you can reuse or extend this component with custom distribution logic. See [Component Architecture](/budokan/key-functions#component-architecture) for details.
+
 ---
 
 ## Related Guides

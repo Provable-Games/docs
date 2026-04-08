@@ -6,6 +6,22 @@ layout: docs
 
 This section details the primary functions exposed by the Budokan tournament system and its core data structures.
 
+## Component Architecture
+
+Budokan is built by composing reusable Cairo components from the open-source [game-components](https://github.com/Provable-Games/game-components) library:
+
+| Component | Purpose |
+|-----------|---------|
+| **PrizeComponent** | Prize pool management, ERC20/ERC721 deposits, distribution, and claims |
+| **EntryFeeComponent** | Entry fee collection, share splitting (creator/game/refund/prize pool), and payouts |
+| **LeaderboardComponent** | Score submission, ranking, and position tracking with hooks |
+| **RegistrationComponent** | Entry tracking, entry counts, and ban management |
+| **EntryRequirementComponent** | Entry gating via token ownership, tournament qualification, or [extension validators](/budokan/guide/create/entry-requirements#extension-validators) |
+
+These components are **not Budokan-specific** — they are general-purpose building blocks from the [Metagame Extensions](/embeddable-game-standard/reference/metagame-extensions) package. Anyone can compose them to build their own tournament or competition system with custom prize logic, entry fee handling, or scoring rules.
+
+For example, you could build a platform that uses the same `PrizeComponent` and `LeaderboardComponent` but with entirely different entry mechanics, or extend the `EntryFeeComponent` with a custom distribution strategy.
+
 ## IBudokan Interface
 
 ### `create_tournament`
