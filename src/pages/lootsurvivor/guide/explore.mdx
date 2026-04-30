@@ -258,11 +258,20 @@ Final Level = Base Level + Difficulty Bonus
 
 ### Damage Mitigation
 
-| Method            | Effect               | Requirement          |
-| ----------------- | -------------------- | -------------------- |
-| **Intelligence**  | Complete avoidance   | INT ≥ obstacle level |
-| **Armor Match**   | 50% damage reduction | Correct armor type   |
-| **No Protection** | Full damage          | No mitigation        |
+Obstacle damage uses the same defensive armor logic as beast attacks. If your
+Intelligence does not avoid the obstacle, treat the obstacle as a beast that
+appears, attacks the adventurer in a random armor slot, and then flees.
+
+The damage you take depends on both:
+
+- **Elemental matchup** - The armor type in the hit slot can reduce or increase damage through the normal rock-paper-scissors relationship.
+- **Armor protection** - The base armor power of the protection in that slot is also applied, so stronger armor reduces obstacle damage even when the elemental matchup is the same.
+
+| Method             | Effect                         | Requirement                     |
+| ------------------ | ------------------------------ | ------------------------------- |
+| **Intelligence**   | Complete avoidance             | INT >= obstacle level           |
+| **Armor Defense**  | Elemental and armor-power math | Armor equipped in the hit slot  |
+| **No Protection**  | No armor reduction             | Empty armor slot                |
 
 ---
 
