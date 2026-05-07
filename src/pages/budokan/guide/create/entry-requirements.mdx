@@ -90,6 +90,9 @@ Extension validators are called at two key moments:
 | **Opus Troves** | Validates based on Opus Trove collateral positions |
 | **ZK Passport** | Validates using zero-knowledge passport proofs |
 | **Governance** | Validates based on governance token holdings or participation |
+| **Merkle** | Validates membership in a Merkle-tree allowlist |
+
+These validators ship as presets in the [`metagame-extensions`](https://github.com/Provable-Games/metagame-extensions) `presets/` package. For the underlying component model, see the [Metagame Extensions reference](/embeddable-game-standard/reference/metagame-extensions) in the EGS docs.
 
 ### Example: ERC20 Balance Validator
 
@@ -110,11 +113,11 @@ Extension validators implement the `IEntryRequirementExtension` interface:
 
 ```cairo
 trait IEntryRequirementExtension<TState> {
-    fn context_owner(self: @TState, context_id: u64) -> ContractAddress;
-    fn registration_only(self: @TState) -> bool;
-    fn valid_entry(self: @TState, context_id: u64, player_address: ContractAddress, qualification: Span<felt252>) -> bool;
-    fn should_ban(self: @TState, context_id: u64, game_token_id: felt252, current_owner: ContractAddress, qualification: Span<felt252>) -> bool;
-    fn entries_left(self: @TState, context_id: u64, player_address: ContractAddress, qualification: Span<felt252>) -> Option<u32>;
+    fn is_context_registered(self: @TState, context_owner: ContractAddress, context_id: u64) -> bool;
+    fn bannable(self: @TState, context_owner: ContractAddress, context_id: u64) -> bool;
+    fn valid_entry(self: @TState, context_owner: ContractAddress, context_id: u64, player_address: ContractAddress, qualification: Span<felt252>) -> bool;
+    fn should_ban(self: @TState, context_owner: ContractAddress, context_id: u64, game_token_id: felt252, current_owner: ContractAddress, qualification: Span<felt252>) -> bool;
+    fn entries_left(self: @TState, context_owner: ContractAddress, context_id: u64, player_address: ContractAddress, qualification: Span<felt252>) -> Option<u32>;
     fn add_config(ref self: TState, context_id: u64, entry_limit: u32, config: Span<felt252>);
     fn add_entry(ref self: TState, context_id: u64, game_token_id: felt252, player_address: ContractAddress, qualification: Span<felt252>);
     fn remove_entry(ref self: TState, context_id: u64, game_token_id: felt252, player_address: ContractAddress, qualification: Span<felt252>);
@@ -122,9 +125,11 @@ trait IEntryRequirementExtension<TState> {
 ```
 
 Key design points:
-- `registration_only` — if `true`, entries are only validated during registration (not during the game phase)
-- `add_config` — called when a tournament is created with this extension, allowing the validator to store per-tournament configuration
-- `should_ban` / `remove_entry` — enable post-entry enforcement, allowing the community to police invalid entries
+- Validator storage is namespaced by `(context_owner, context_id)`. Writes (`add_config`, `add_entry`, `remove_entry`) are always performed by the owner contract, so they take only `context_id`. Reads take `context_owner` explicitly so frontends and indexers can disambiguate contexts that share an `id` across different owner contracts.
+- `bannable` — returns `true` if entries for this context support post-entry banning. When `false`, `should_ban` always returns `false` and entries can't be revoked once admitted.
+- `is_context_registered` — lets external callers check whether a `(context_owner, context_id)` has been initialised via `add_config`.
+- `valid_entry` MUST enforce both eligibility (the gating condition) **and** the per-player entry quota. The framework treats `valid_entry == true` as the sole authority to admit an entry on the hot path — it does not cross-check `entries_left` afterward. Returning `true` for a quota-exhausted player is a quota bypass.
+- `should_ban` / `remove_entry` — enable post-entry enforcement, allowing the community to police invalid entries via Budokan's [`ban_entry`](/budokan/key-functions#ban_entry).
 
 > **Note:** The extension validator system is fully open — anyone can deploy a new validator contract and use it with Budokan tournaments.
 
