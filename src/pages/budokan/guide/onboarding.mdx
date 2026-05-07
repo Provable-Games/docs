@@ -38,7 +38,12 @@ Budokan currently supports connection through several wallets. For the best expe
 Follow these steps to get started:
 
 1. If you don't already have a wallet, select Controller and sign up.
-2. Choose your preferred login method. The Cartridge Controller supports a range of social, wallet, and passkey logins — see the [Cartridge Controller docs](https://docs.cartridge.gg/controller/overview) for the current list.
+2. Choose your preferred login method. The Cartridge Controller supports:
+   - **Passkey** — biometric login via Face ID, Touch ID, or a hardware security key (also works with passkey-capable password managers like Bitwarden or 1Password).
+   - **Social login** — Google, Discord, or X (Twitter). Best used in a desktop or mobile web browser; OAuth flows may not work reliably inside native-app webviews.
+   - **External wallets** — Argent, Braavos, MetaMask, Phantom, Rabby, Base, and WalletConnect. The Ethereum-based wallets (MetaMask, Phantom, Rabby, Base, WalletConnect) are desktop-only and won't appear as options on mobile.
+
+   For the most up-to-date list and platform-support notes, see [Supported Signer Types](https://docs.cartridge.gg/controller/signer-management#supported-signer-types) in the Cartridge Controller docs.
 3. Complete the sign-up process as guided.
 4. Once your wallet is set up, connect it to Budokan through the platform's wallet connection interface.
 
