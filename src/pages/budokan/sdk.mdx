@@ -121,21 +121,13 @@ const summary = await client.getTournamentRewardClaimsSummary("42");
 
 // Qualification entries
 const { data: qualifications } = await client.getTournamentQualifications("42");
+
+// Custom-distribution shares (only populated for Distribution::Custom tournaments)
+const shares = await client.getTournamentDistributionShares("42");
+// shares: number[] — basis points, summing to 10000
 ```
 
-## Player Queries
-
-```typescript
-// Player's tournaments (with their registration data)
-const { data: playerTournaments } = await client.getPlayerTournaments("0x...", {
-  phase: "live",
-  limit: 10,
-});
-
-// Player statistics
-const stats = await client.getPlayerStats("0x...");
-// stats: { totalTournaments, totalSubmissions }
-```
+> **Player queries:** the client doesn't expose direct `getPlayer*` methods. To fetch a player's tournaments or earnings, use the [React hooks](#data-hooks) `useTournamentsByOwner` and `usePlayerRewards`, which compose the underlying token-ownership data.
 
 ## Game Queries
 
@@ -150,12 +142,6 @@ const gameStats = await client.getGameStats("0x...");
 ## Activity & Platform Stats
 
 ```typescript
-// Activity feed
-const { data: events } = await client.getActivity({
-  eventType: "tournament_created",
-  limit: 50,
-});
-
 // Platform-wide stats
 const platformStats = await client.getActivityStats();
 // { totalTournaments, totalPrizes, totalRegistrations, totalSubmissions }
@@ -235,19 +221,19 @@ function App() {
 
 ### Data Hooks
 
-All data hooks return `{ data, loading, error, refetch }` where `refetch()` returns `Promise<void>`.
+Most data hooks return `{ data, loading, error, refetch }` where `refetch()` returns `Promise<void>`. The exception is `usePlayerRewards`, which returns `{ rewards, loading, error, refetch }`.
 
 ```typescript
 import {
   useTournaments,
   useTournament,
   useTournamentCount,
-  usePlayerTournamentCount,
   useLeaderboard,
   useRegistrations,
-  usePlayer,
-  usePlayerStats,
-  usePlayerTournaments,
+  useTournamentsByOwner,
+  useTournamentsByOwnerCount,
+  useRegistrationsByOwner,
+  usePlayerRewards,
   usePrizes,
   usePrizeStats,
   usePrizeAggregation,
@@ -266,9 +252,14 @@ const { data: count } = useTournamentCount({ phase: "live" });
 const { data: leaderboard } = useLeaderboard("42");
 const { data: registrations } = useRegistrations("42");
 
-// Player data
-const { data: playerTournaments } = usePlayerTournaments("0x...");
-const { data: playerStats } = usePlayerStats("0x...");
+// Player-scoped views (resolved via current Budokan token ownership)
+const { data: ownedTournaments } = useTournamentsByOwner("0x...", { phase: "live" });
+const { data: ownedCount } = useTournamentsByOwnerCount("0x...");
+const { data: ownedRegistrations } = useRegistrationsByOwner("42", "0x...");
+
+// Aggregated placements/earnings across finalized tournaments the player holds
+// tokens in. Requires a DenshokanProvider in the tree alongside BudokanProvider.
+const { rewards } = usePlayerRewards("0x...");
 
 // Prizes & Rewards
 const { data: prizes } = usePrizes("42");
