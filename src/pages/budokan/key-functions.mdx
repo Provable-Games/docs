@@ -61,7 +61,7 @@ fn create_tournament(
 fn enter_tournament(
     ref self: TState,
     tournament_id: u64,
-    player_name: felt252,
+    player_name: Option<felt252>,
     player_address: ContractAddress,
     qualification: Option<QualificationProof>,
     salt: u16,
@@ -72,7 +72,7 @@ fn enter_tournament(
 
 **Parameters:**
 - `tournament_id`: ID of the tournament to enter.
-- `player_name`: Name of the player (felt252).
+- `player_name`: Optional player name (`felt252`). Pass `Option::None` to omit.
 - `player_address`: Address to mint the game token to.
 - `qualification`: Optional qualification proof (NFT ownership or extension data).
 - `salt`: Salt for token ID packing.
@@ -166,6 +166,7 @@ fn tournament(self: @TState, tournament_id: u64) -> Tournament;
 fn tournament_entries(self: @TState, tournament_id: u64) -> u32;
 fn get_leaderboard(self: @TState, tournament_id: u64) -> Array<felt252>;
 fn current_phase(self: @TState, tournament_id: u64) -> Phase;
+fn tournament_distribution_shares(self: @TState, tournament_id: u64) -> Array<u16>;
 ```
 
 - `total_tournaments`: Returns the total number of tournaments created.
@@ -173,6 +174,7 @@ fn current_phase(self: @TState, tournament_id: u64) -> Phase;
 - `tournament_entries`: Returns the number of entries for a tournament.
 - `get_leaderboard`: Returns an array of game token IDs ordered by position.
 - `current_phase`: Returns the current phase of a tournament.
+- `tournament_distribution_shares`: Returns the basis-point shares array for tournaments configured with `Distribution::Custom`. `tournament()` returns `Custom([])` to keep that view small; callers that need the shares fetch them here. Returns an empty array for non-`Custom` distributions.
 
 :::tip
 For batched RPC queries, use the **BudokanViewer** contract instead of calling these individually. See the [SDK documentation](/budokan/sdk) for details.
