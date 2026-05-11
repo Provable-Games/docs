@@ -86,10 +86,7 @@ Extension validators are called at two key moments:
 |-----------|-------------|
 | **ERC20 Balance** | Validates that a player holds a minimum token balance |
 | **Tournament Qualification** | Requires participation in a previous tournament |
-| **Snapshot Voting** | Validates based on Snapshot governance participation |
 | **Opus Troves** | Validates based on Opus Trove collateral positions |
-| **ZK Passport** | Validates using zero-knowledge passport proofs |
-| **Governance** | Validates based on governance token holdings or participation |
 | **Merkle** | Validates membership in a Merkle-tree allowlist |
 
 These validators ship as presets in the [`metagame-extensions`](https://github.com/Provable-Games/metagame-extensions) `presets/` package. Deployed addresses for mainnet and sepolia are listed in the [Budokan overview](/budokan#entry-requirement-validators). For the underlying component model, see the [Metagame Extensions reference](/embeddable-game-standard/reference/metagame-extensions) in the EGS docs.
