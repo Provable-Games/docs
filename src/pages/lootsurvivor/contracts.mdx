@@ -16,35 +16,54 @@ The core game engine powering Loot Survivor.
   contracts={[
     {
       name: "Game",
-      address: "0x6f7c4350d6d5ee926b3ac4fa0c9c351055456e75c92227468d84232fc493a9c",
+      address: "0x023f86f5b4702f6ba114b82fb73448c58aad8f37a28b508b80bf129ee1edc405",
     },
     {
       name: "Game Token",
-      address: "0x5e2dfbdc3c193de629e5beb116083b06bd944c1608c9c793351d5792ba29863",
+      address: "0x04de0351ceab4ecd50be6ee09329b0dcb3b96a9da88cc158f453823a389722fa",
     },
     {
-      name: "Beast",
-      address: "0x74abc15c0ddef39bdf1ede2a643c07968d3ed5bacb0123db2d5b7154fbb35c7",
+      name: "Combat",
+      address: "0x045b55409c6b5000132211a1c03dab1ae71ea2e51b53b3796f040b80850ec959",
     },
     {
-      name: "Adventurer",
-      address: "0x3fc7ecd6d577daa1ee855a9fa13a914d01acda06715c9fc74f1ee1a5e346a01",
+      name: "Exploration",
+      address: "0x026aa88895cfd078bc16e9f089703c70ea492c778a48b55b7f58ad6f6eb134d6",
     },
     {
-      name: "Loot",
-      address: "0x4c386505ce1cc0be91e7ae8727c9feec66692a92c851b01e7f764ea0143dbe4",
+      name: "Market",
+      address: "0x048490fa26e9916d13ea03a9ac7e205f9301bbbe2ae2b2b8369b59bf2962ca44",
     },
     {
-      name: "Objectives",
-      address: "0x403224d3586a402bf3d9a7553493ba0d931e306e6aae8472503afdf90083e32",
+      name: "Inventory",
+      address: "0x0445ba9a79934e2f330e5bcda102ca29b9e03284840c36e5804f2a24a808f5a7",
     },
     {
-      name: "Renderer",
-      address: "0x6135cd4ee82eb5e7652a636a952c893315914f0655a3cc834ce8b6b1e5ff1cb",
+      name: "Stat Upgrades",
+      address: "0x06a33a060f20eda810d3d8f6a10038b2780c1b87b39cfaca09ad3b1e06476ef5",
+    },
+  ]}
+/>
+
+## Dungeons
+
+<ContractTable
+  contracts={[
+    {
+      name: "Beast Mode",
+      address: "0x0539d24dfdaa2866d975fa93db501b971c08786f2c88e719800be39903e43bbc",
     },
     {
-      name: "Settings",
-      address: "0x3caf941b916a83550d8f6325802e0cb686c9a0c8b30a23fb9df531ae24d12d0",
+      name: "Greed",
+      address: "0x046db77f066f1bec5ae53d2cf3686a262f308eb904e6b426251bcdf3a6bf34f0",
+    },
+    {
+      name: "Lil Duckies",
+      address: "0x04427c2cdd82bf2283deb39aa939e1ad61051ab932e0de714032fbe22ed0a419",
+    },
+    {
+      name: "Yield",
+      address: "0x0616042ee02abc8c73d7eb975d33ade3b53f8296005363d1ee56a1ccefd4f49f",
     },
   ]}
 />
@@ -88,16 +107,8 @@ The core game engine powering Loot Survivor.
 <ContractTable
   contracts={[
     {
-      name: "Beast Mode",
-      address: "0x00a67ef20b61a9846e1c82b411175e6ab167ea9f8632bd6c2091823c3629ec42",
-    },
-    {
       name: "Dungeon Ticket",
       address: "0x0452810188c4cb3aebd63711a3b445755bc0d6c4f27b923fdd99b1a118858136",
-    },
-    {
-      name: "Free Games Claims",
-      address: "0x07713b8aac77a664792bce1c6cb66649bae64dea85ed5d24bbb0bd3629d66899",
     },
     {
       name: "PG World",
@@ -105,19 +116,77 @@ The core game engine powering Loot Survivor.
     },
     {
       name: "Token Event Relayer",
-      address: "0x2f1c516fa4d2c41f2021edc3b46f33326e73755e55982374381150e6d8d12df",
+      address: "0x02f1c516fa4d2c41f2021edc3b46f33326e73755e55982374381150e6d8d12df",
     },
     {
-      name: "Minigame Registry",
-      address: "0x06e9c39be20dee2800407fe6cb22214a96a71d339940d6f21fcb354604b6cc7e",
+      name: "Denshokan",
+      address: "0x00263cc540dac11334470a64759e03952ee2f84a290e99ba8cbc391245cd0bf9",
+    },
+  ]}
+/>
+
+## Archive
+
+Previous contract versions, retained for historical reference.
+
+### Game V1
+
+<ContractTable
+  contracts={[
+    {
+      name: "Game",
+      address: "0x06f7c4350d6d5ee926b3ac4fa0c9c351055456e75c92227468d84232fc493a9c",
+    },
+    {
+      name: "Game Token",
+      address: "0x05e2dfbdc3c193de629e5beb116083b06bd944c1608c9c793351d5792ba29863",
+    },
+    {
+      name: "Beast",
+      address: "0x074abc15c0ddef39bdf1ede2a643c07968d3ed5bacb0123db2d5b7154fbb35c7",
+    },
+    {
+      name: "Adventurer",
+      address: "0x03fc7ecd6d577daa1ee855a9fa13a914d01acda06715c9fc74f1ee1a5e346a01",
+    },
+    {
+      name: "Loot",
+      address: "0x04c386505ce1cc0be91e7ae8727c9feec66692a92c851b01e7f764ea0143dbe4",
+    },
+    {
+      name: "Objectives",
+      address: "0x0403224d3586a402bf3d9a7553493ba0d931e306e6aae8472503afdf90083e32",
+    },
+    {
+      name: "Renderer",
+      address: "0x06135cd4ee82eb5e7652a636a952c893315914f0655a3cc834ce8b6b1e5ff1cb",
+    },
+    {
+      name: "Settings",
+      address: "0x03caf941b916a83550d8f6325802e0cb686c9a0c8b30a23fb9df531ae24d12d0",
+    },
+    {
+      name: "Beast Mode V1",
+      address: "0x00a67ef20b61a9846e1c82b411175e6ab167ea9f8632bd6c2091823c3629ec42",
+    },
+  ]}
+/>
+
+### Ecosystem Contracts V1
+
+<ContractTable
+  contracts={[
+    {
+      name: "Dungeon Ticket",
+      address: "0x035f581b050a39958b7188ab5c75daaa1f9d3571a0c032203038c898663f31f8",
+    },
+    {
+      name: "Free Games Claims",
+      address: "0x07713b8aac77a664792bce1c6cb66649bae64dea85ed5d24bbb0bd3629d66899",
     },
     {
       name: "Denshokan",
       address: "0x036017e69d21d6d8c13e266eabb73ef1f1d02722d86bdcabe5f168f8e549d3cd",
-    },
-    {
-      name: "Budokan",
-      address: "0x58f888ba5897efa811eca5e5818540d35b664f4281660cd839cd5a4b0bf4582",
     },
   ]}
 />

@@ -34,15 +34,37 @@ Budokan is an onchain tournament system designed to power competitive gaming exp
 ### Mainnet
 
 <ContractTable network="mainnet" contracts={[
-  { name: "Budokan", address: "0x020239968a74f3e190d1b5aa0c6316845062a00cb98f787d661fd4aa860553de" },
-  { name: "BudokanViewer", address: "0x00ace1cce7933fbf0d7a2f32c3b5d4c36e63462f81c7845b6d7ac5d8dbdbefa4" },
+  { name: "Budokan", address: "0x0596ced030e74ebc37f33607f07ecd5a62eff22cdc4ae31fe2d724040c1bdc0b" },
+  { name: "BudokanViewer", address: "0x013c8239361fdbd7ec26db2c83f4ff270c5bba83a0bc105b4005b676ff57fdbe" },
 ]} />
 
 ### Sepolia
 
 <ContractTable network="sepolia" contracts={[
-  { name: "Budokan", address: "0x02a97de0b33fb115f5c32a58232d9941c4a5b2598aa71d30c094076cc592f94d" },
-  { name: "BudokanViewer", address: "0x001f2be7ed811bfa859f8f6cf72d2458f36103ac172ff8e65a630bbcc6cf98c9" },
+  { name: "Budokan", address: "0x017750a167b7c4968249d7db06dccc8b3908ef8954cb40cfe4d3c651ca0dcd1d" },
+  { name: "BudokanViewer", address: "0x03d5febe0042b943967074f4ebd850a6b5d50850cd3fb84fbd0eb66dadd9ddec" },
+]} />
+
+## Entry Requirement Validators
+
+Preset extension validators from [`metagame-extensions`](https://github.com/Provable-Games/metagame-extensions) that are deployed and ready to use as the `entry_requirement` argument to `create_tournament`. See [Entry Requirements → Available Validators](/budokan/guide/create/entry-requirements#available-validators) for what each one does, and the [Metagame Extensions reference](/embeddable-game-standard/reference/metagame-extensions) for the underlying component model.
+
+### Mainnet
+
+<ContractTable network="mainnet" contracts={[
+  { name: "ERC20 Balance", address: "0x05b46bedc2134e6e5bb4b28301fd03bb6c8ccc33bd63cd831230ed8f16f460a9" },
+  { name: "Tournament", address: "0x03b8a0c224dc393b8ea8dd51fe691b298977b27bf9926e01dc37ccbb7e25bd40" },
+  { name: "Merkle", address: "0x0570d41b66f0eea3c342d570e456e51194817b8eb563dc580c63c2f3d6e505ec" },
+  { name: "Opus Troves", address: "0x0391111c6c51a83e8ab3bf3c632377424c76e42cff571ac2f2c424e6077f49a3" },
+]} />
+
+### Sepolia
+
+<ContractTable network="sepolia" contracts={[
+  { name: "ERC20 Balance", address: "0x0717524e75b53bfa3ebfb0a16014d4e6b873a22d0e979d1bcd0a3f41bd0e3523" },
+  { name: "Tournament", address: "0x062b54188ee532026d3151e564db8668b3587266c8c73ad2fef68c19bfd3e57e" },
+  { name: "Merkle", address: "0x0094393c9516f3a0cb16fd56aaa558d94c2da20a2f5074fd15e6f2624b5daf43" },
+  { name: "Opus Troves", address: "0x05c75a4a48f1fe37cdd49766a2b4317f4ae57e87504ac8879f150c0686490e59" },
 ]} />
 
 ## Key Features
