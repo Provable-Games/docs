@@ -206,6 +206,8 @@ rootDir: "src",
         items: [
           { text: "Overview", link: "/lootsurvivor" },
           { text: "Platforms", link: "/lootsurvivor/platforms" },
+          { text: "Mainnet Terms", link: "https://www.lootsurvivor.io/terms" },
+          { text: "Privacy Policy", link: "https://provable.games/privacy/paid" },
         ],
       },
       {
