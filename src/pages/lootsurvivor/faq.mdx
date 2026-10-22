@@ -12,12 +12,12 @@ Loot Survivor is a fully onchain dungeon crawler RPG built on Starknet. Every ac
 
 **Is Loot Survivor free to play?**
 
-Yes, Loot Survivor has a completely free game mode for players to practice their skills. For the full dungeon experience, a ticket is required which can be purchased directly through the game. No gas required.
+There are separate free testnet games for practice. Mainnet dungeons may require an entry fee or ticket, and mainnet transactions incur gas fees unless sponsorship is available. Free or sponsored mainnet entry still uses real contracts and is covered by the mainnet platform terms.
 
 **What do I need to play?**
 
-- **Free Version:** No wallet, gas, or ticket required — just a modern browser (Chrome, Firefox, Safari, Edge).
-- **Full Version:** A Cartridge Controller wallet (for VRF support) and a dungeon ticket purchased through the game. No gas fees.
+- **Free Testnet Version:** A supported browser; no personal wallet or real-value funds are required.
+- **Mainnet Version:** A supported wallet or Game Account, any required entry fee or ticket, and funds for gas unless sponsorship is available. Wallet options and session permissions depend on the dungeon and client. Mainnet play is restricted to users aged 18 or older.
 
 **Is the game mobile-friendly?**
 
@@ -57,15 +57,15 @@ No single best strategy. Focus on type advantages, stat balance, tactical decisi
 
 **What blockchain is Loot Survivor on?**
 
-Loot Survivor runs on Starknet, a Layer 2 scaling solution for Ethereum. Benefits include low fees (under $0.01 per transaction), fast confirmations (1-3 seconds), and Ethereum-level security.
+Loot Survivor runs on Starknet, a Layer 2 network for Ethereum. Fees and confirmation times vary. Network security does not guarantee the safety of the game's contracts, accounts, sessions or client software; see the unaudited-software disclosure below.
 
 **Are the game outcomes truly random?**
 
-Uses VRF (Verifiable Random Function) seeds by default for true randomness. Can be configured to use deterministic seeds in settings.
+The randomness mechanism depends on the dungeon. Some use a VRF (Verifiable Random Function); others use a commit-reveal system based on future block hashes. Review the rules and deployed contracts for the dungeon you choose.
 
 **Can I verify the game logic?**
 
-Yes. All contracts are open source and verified on Starknet. You can inspect the code on [GitHub](https://github.com/Provable-Games/death-mountain) and verify any game action onchain.
+You can inspect published source code on [GitHub](https://github.com/Provable-Games/death-mountain) and deployed contracts and transactions through Starknet explorers. Check that the source and addresses correspond to the dungeon you use, including any upgrades. Source publication or explorer verification is not a security audit.
 
 **How are gas fees kept low?**
 
@@ -89,7 +89,7 @@ Yes. When you kill beasts during gameplay, you collect them and earn $SURVIVOR t
 
 **Which wallets are supported?**
 
-For VRF ([Budokan](/budokan) tournament) mode, Cartridge Controller is required. For standard mode, any Starknet-compatible wallet works (Argent X, Braavos, etc.).
+Use the wallet options offered by the current client for your chosen dungeon. These can include Cartridge Controller and, where available, the experimental session-enabled Game Account. Other external-wallet features depend on the operation. Review account ownership, session permissions and any spending limits before authorizing access.
 
 **I lost access to my wallet. Can I recover my adventurer?**
 
@@ -163,19 +163,23 @@ Yes. Regular tournaments with prize pools are held on [Budokan](/budokan), the p
 
 **Is Loot Survivor audited?**
 
-The smart contracts have not undergone an official audit yet. As with all blockchain applications, use at your own risk.
+The platform's contracts, including the session-enabled Game Account, have not undergone a formal security audit. The software is experimental. Published or verified source code is not a security audit or a guarantee of safety. Bugs, vulnerabilities and signing mistakes can cause the permanent loss of all funds you expose. Review the contracts and transactions you authorize, including session permissions. Provable Games, Inc. cannot reverse blockchain transactions or guarantee recovery and does not offer compensation for losses, subject to rights that applicable law does not allow you to waive. Read the [Mainnet Platform Terms of Service](https://www.lootsurvivor.io/terms), including the public version archive, before connecting a wallet.
 
-**Is this gambling?**
+**How does gameplay work?**
 
-Loot Survivor is a skill-based game with random elements. The outcome depends on player decisions and strategy, not purely chance.
+Loot Survivor combines player decisions with random elements. Your choices about equipment, combat and exploration affect each run. Dungeon and tournament rules explain the available actions, scoring and rewards.
 
 **What data is collected?**
 
-Only onchain data (transactions, game actions) is recorded. No personal information is collected or stored off-chain.
+Wallet addresses and transactions are publicly recorded onchain. Technical data and, where permitted or consented to, analytics data may also be processed off-chain. When you use the signed agreement process, Provable Games, Inc. stores the message and signature, wallet and account-authority information, the exact legal-document versions, verification results and timestamps privately off-chain. The [mainnet privacy policy](https://provable.games/privacy/paid) explains the purposes, retention and your rights. Promotions or identity verification can involve additional personal data under separate policies, including the [KYC privacy policy](https://provable.games/privacy/kyc).
+
+**Why am I asked to sign the terms?**
+
+Where enabled, the platform asks your wallet owner to sign a message recording agreement to a specific terms version and receipt of the privacy notice. This message authorizes no transaction, transfer, token approval or gameplay session. The platform confirms agreement after the service verifies and stores the record; a browser checkbox alone is not a server signature record. You can read the documents before signing and download your own evidence privately. Optional analytics choices stay separate. Declining leaves public information and limited existing-asset recovery available; new platform activity requires agreement.
 
 **Can I lose money playing?**
 
-You pay entry fees for certain game modes. Entry fees can be paid in any supported token. Never spend more than you can afford to lose.
+Yes. Some modes charge entry fees, rewards are not guaranteed, and software or contract failures can put more than an entry fee at risk, including assets exposed through your account or approvals. Never deposit, approve or spend more than you can afford to lose. See the [platform terms](https://www.lootsurvivor.io/terms) for the full risk disclosures and liability provisions. Mainnet platform participation is restricted to users aged 18 or older, including free mainnet entries; separate free testnet games have their own terms.
 
 ## Getting More Help
 
