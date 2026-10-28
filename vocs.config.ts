@@ -69,6 +69,7 @@ rootDir: "src",
       {
         text: "Reference",
         items: [
+          { text: "Brackets", link: "/budokan/brackets" },
           { text: "Key Functions", link: "/budokan/key-functions" },
           { text: "SDK", link: "/budokan/sdk" },
           { text: "FAQ", link: "/budokan/faq" },

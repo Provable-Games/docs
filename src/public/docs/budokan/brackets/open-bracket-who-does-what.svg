@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 752 542" width="752" height="542" role="img" aria-label="Open bracket component view: Player, budokan-bots keeper, Bracket, Budokan with entry checks, Game">
+<title>Open bracket component view: Player, budokan-bots keeper, Bracket, Budokan with entry checks, Game</title>
+<style>
+text{fill:#18181b;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.t{font-size:12.5px;font-weight:600}
+.lb{font-size:12px}
+.sm{font-size:11px;fill:#5f5f69}
+.cp{font-size:11px;fill:#5f5f69;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.ph{font-size:11px;font-weight:700;letter-spacing:.06em;fill:#5f5f69}
+.halo{paint-order:stroke;stroke:#ffffff;stroke-width:5px;stroke-linejoin:round}
+.box{fill:#ffffff;stroke-width:1.5}
+.player{stroke:#2563eb} .budokan{stroke:#0d9488} .new{stroke:#d97706} .game{stroke:#7c3aed}
+.off{stroke:#5f5f69;stroke-dasharray:4 3}
+.arr{stroke:#5f5f69;stroke-width:1.3;fill:none}
+.money-arr{stroke:#d97706;stroke-width:1.8;fill:none}
+.dash{stroke-dasharray:4 3}
+.life{stroke:#e4e4e7;stroke-width:1;stroke-dasharray:3 3}
+</style>
+<rect x="0.5" y="0.5" width="751" height="541" rx="12" fill="#ffffff" stroke="#e4e4e7"/>
+<g transform="translate(16,16)">
+
+  <defs><marker id="ob" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:#5f5f69"/></marker><marker id="obm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:#d97706"/></marker></defs>
+  <rect class="box player" x="20" y="20" width="180" height="430" rx="10"/>
+  <text class="t" x="110" y="48" text-anchor="middle">Player ×32</text>
+  <text class="sm" x="110" y="68" text-anchor="middle">own wallet, Controller</text>
+  <text class="sm" x="110" y="84" text-anchor="middle">or Game Account</text>
+  <text class="sm" x="110" y="112" text-anchor="middle">registers themselves and</text>
+  <text class="sm" x="110" y="128" text-anchor="middle">can see who else has</text>
+  <text class="sm" x="110" y="144" text-anchor="middle">registered</text>
+
+  <rect class="box off" x="480" y="20" width="220" height="64" rx="8"/>
+  <text class="t" x="496" y="44">budokan-bots keeper</text>
+  <text class="sm" x="496" y="62">off-chain; anyone else may too</text>
+  <text class="cp" x="496" y="77">close · draw · build</text>
+
+  <rect class="box budokan" x="480" y="120" width="220" height="60" rx="8"/>
+  <text class="t" x="496" y="143">Bracket</text>
+  <text class="sm" x="496" y="161">holds entry fees, draws seats</text>
+  <text class="sm" x="496" y="174">already deployed</text>
+
+  <rect class="box budokan" x="480" y="220" width="220" height="130" rx="8"/>
+  <text class="t" x="496" y="244">Budokan</text>
+  <text class="sm" x="568" y="244">31 match tournaments</text>
+  <rect class="box budokan" x="494" y="262" width="192" height="76" rx="7" style="stroke-dasharray:4 2"/>
+  <text class="t" x="506" y="282" style="font-size:12px">Entry checks</text>
+  <text class="cp" x="506" y="301">R1  MerkleValidator</text>
+  <text class="cp" x="506" y="317">R2+ WinnerValidator</text>
+  <text class="sm" x="506" y="332">validators, already deployed</text>
+
+  <rect class="box game" x="480" y="390" width="220" height="60" rx="8"/>
+  <text class="t" x="496" y="413">Game (Death Mountain)</text>
+  <text class="sm" x="496" y="431">one game per attempt</text>
+  <text class="sm" x="496" y="444">already deployed</text>
+
+  <path class="money-arr" d="M202 150H478" marker-end="url(#obm)"/>
+  <text class="lb" x="214" y="143">① registers and pays the entry fee</text>
+  <path class="money-arr dash" d="M478 238H204" marker-end="url(#obm)"/>
+  <text class="lb" x="214" y="231">⑥ champion claims the pool</text>
+  <path class="arr" d="M202 300H492" marker-end="url(#ob)"/>
+  <text class="lb" x="214" y="293">⑤ enters a match: entry is checked</text>
+  <path class="arr" d="M202 420H478" marker-end="url(#ob)"/>
+  <text class="lb" x="214" y="413">⑤ plays, up to 5 attempts per match</text>
+
+  <path class="arr" d="M506 84V118" marker-end="url(#ob)"/>
+  <text class="lb" x="516" y="106">②③④ closes, draws, builds</text>
+  <path class="money-arr" d="M506 180V218" marker-end="url(#obm)"/>
+  <text class="lb" x="516" y="204">④ 31 matches, pool on final</text>
+  <path class="arr" d="M506 350V388" marker-end="url(#ob)"/>
+  <text class="lb" x="516" y="374">⑤ starts a game per attempt</text>
+  <g class="legend-svg"><path class="money-arr" d="M20 474H48"/><text class="sm" x="56" y="478">money moves</text><path class="arr" d="M160 474H188"/><text class="sm" x="196" y="478">an action, no money</text><path class="arr dash" d="M330 474H358"/><text class="sm" x="366" y="478">off-chain, or only in some cases</text><rect class="box player" x="20" y="487" width="16" height="11" rx="3"/><text class="sm" x="42" y="497">Player</text><rect class="box budokan" x="90" y="487" width="16" height="11" rx="3"/><text class="sm" x="112" y="497">Budokan stack (deployed)</text><rect class="box game" x="265" y="487" width="16" height="11" rx="3"/><text class="sm" x="287" y="497">Game</text><rect class="box off" x="330" y="487" width="16" height="11" rx="3"/><text class="sm" x="352" y="497">Off-chain</text></g>
+
+</g>
+</svg>

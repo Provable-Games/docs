@@ -1,0 +1,99 @@
+---
+layout: docs
+---
+
+import { ContractTable } from '../../components/ContractTable'
+
+# Brackets
+
+A Budokan bracket is a single-elimination knockout. Players register and pay once. A random draw seats them, and every match is played as its own Budokan tournament: winners advance round by round until one champion takes the pool.
+
+The Bracket contract sits on top of Budokan. It holds the entry fees, runs the seating draw, creates one tournament per match, and gates each match so that only the right two players can enter it.
+
+![Open bracket: key ideas](/docs/budokan/brackets/open-bracket-key-ideas.png)
+
+## How a bracket runs
+
+The example below is an open bracket of 32 players over 5 rounds.
+
+![Open bracket timeline](/docs/budokan/brackets/open-bracket-timeline.png)
+
+1. **Register and pay.** Players see the event and who has already registered, then `register` themselves. The entry fee goes to the Bracket contract, which holds the pool.
+2. **Registration closes.** When the bracket is full, or its deadline passes, anyone calls `close_registration`.
+3. **Random seating draw.** Closing commits the draw to a future block. About 10 blocks later anyone calls `fulfill_assignment`, which uses that block's hash to shuffle the players into seats.
+4. **Matches built.** Anyone calls `build_matches(id, max)` until all matches exist: one Budokan tournament per match, so 31 for 32 players. When the final is built, Budokan's protocol fee is paid and the rest of the pool becomes the final's prize.
+5. **Play, round by round.** In each match a player gets the bracket's number of attempts at the game, and the better score wins the match (higher, unless the bracket ranks lower scores first). Each round starts one full match window after the last.
+6. **Champion paid.** The winner of the final claims the pool from Budokan.
+
+Steps 2–4 are keeper steps. Anyone can run them, and the budokan-bots keeper normally does.
+
+## Who does what
+
+![Open bracket: who does what](/docs/budokan/brackets/open-bracket-who-does-what.svg)
+
+| Piece | Role |
+| --- | --- |
+| **Bracket** | Holds entry fees, runs the seating draw, creates the match tournaments and places the pool on the final. |
+| **Budokan** | Runs each match as a tournament: entries, leaderboards, prizes and the protocol fee. |
+| **Entry checks** | Round 1 matches use a two-player Merkle allowlist of the drawn pair. Later rounds use the BracketWinnerValidator, which admits only the winners of the two feeder matches. |
+| **Game** | Mints one game token per attempt and reports scores. |
+| **Keeper** | Calls the permissionless lifecycle steps. budokan-bots does this by default. |
+
+## Bracket sizes
+
+![32-player bracket](/docs/budokan/brackets/open-bracket-tree.svg)
+
+- **Fixed size:** a power of two from 2 to 8,192. A bracket of N players has N − 1 matches over log₂ N rounds.
+- **Open size (`size = 0`):** registration runs until the deadline, up to 1,024 players. The largest power of two that registered is seated, and the extra registrants are refunded with `refund_overflow`.
+
+| Players | Matches | Rounds |
+| --- | --- | --- |
+| 2 | 1 | 1 |
+| 8 | 7 | 3 |
+| 32 | 31 | 5 |
+| 128 | 127 | 7 |
+
+## Creating a bracket
+
+Every creation call takes a `BracketConfig`: game, size, settings id, entry fee and token, registration deadline, per-match game and submission durations, leaderboard order, and whether the game must be over before a score counts.
+
+| Function | Use it for |
+| --- | --- |
+| `create_bracket(config, prize_tiers)` | One attempt per player per match. |
+| `create_bracket_with_attempts(config, prize_tiers, attempts)` | Several attempts per player per match. |
+| `create_bracket_with_setup(config, prize_tiers, attempts, setup_window)` | A custom setup window (60s–24h). |
+| `create_bracket_with_requirements(…, require_full)` | Only start if every seat fills. |
+| `create_bracket_with_allowlist(…)` + `set_registration_allowlist` | Invite-only registration. |
+| `create_free_roster(config, attempts, setup_window)` | A free bracket with a creator-supplied roster. |
+
+**Prizes.** The pool goes to the champion, or is split between the champion and the runner-up when you pass two `prize_tiers` in basis points that sum to 10,000. Split prizes need one attempt per player, because with several attempts one player can hold both top places on the final's leaderboard.
+
+**Fees.** Budokan's protocol fee rate is fixed when the bracket is created and paid when the final is built. Nothing else is taken.
+
+**Sponsoring an entry.** `register(id, recipient)` charges the caller and seats the recipient. A sponsor can pay for an invited player, but an invited player can't buy a seat for someone who isn't invited.
+
+## Refunds
+
+| When | What happens | Function |
+| --- | --- | --- |
+| An open bracket seats fewer players than registered | Each extra registrant is refunded their fee. | `refund_overflow` |
+| Too few players by the deadline, or building stalls past the setup window | Anyone can cancel. Every entry is refunded. | `cancel_setup`, then `refund_overflow` |
+| Nobody wins the final (for example, no-shows) | The pool is recovered and split evenly across the seats. | `recover_entry_pool`, then `refund_entry_pool` |
+
+Refunds always go to whoever paid for the entry. For a sponsored entry, that is the sponsor.
+
+Paid brackets get a one-hour setup window by default, as do brackets of more than 256 seats. The clock starts at the registration deadline, or at the first `build_matches` call if that comes later. A two-player bracket finishes setup in that one call, so it can't stall.
+
+There is no withdrawal: once registered, a player is in the bracket until it finishes or is cancelled.
+
+## Contracts
+
+### Mainnet
+
+<ContractTable network="mainnet" contracts={[
+  { name: "Bracket", address: "0x525e28ecaf636e9dfb7b03221965614bc43afd173048f1dc9b96705fff846d" },
+  { name: "BracketWinnerValidator", address: "0x0135b04cc6b2f8b94ef9eec17f5eea262fde594068d7030dd1d418710ecb6d29" },
+  { name: "Budokan (bracket host)", address: "0x341263a7a0fda541d57b4de1365017066badee008d5536a8adbb14c9292be57" },
+]} />
+
+Bracket ids restart at 1 on this deployment. Its events start at block 16,278,886.
