@@ -24,6 +24,7 @@ Budokan is an onchain tournament system designed to power competitive gaming exp
 
 
 ## Table of Contents
+- [Brackets](/budokan/brackets)
 - [Key Functions](/budokan/key-functions)
 - [SDK](/budokan/sdk)
 - [Guide](/budokan/guide)
@@ -34,15 +35,19 @@ Budokan is an onchain tournament system designed to power competitive gaming exp
 ### Mainnet
 
 <ContractTable network="mainnet" contracts={[
-  { name: "Budokan", address: "0x0596ced030e74ebc37f33607f07ecd5a62eff22cdc4ae31fe2d724040c1bdc0b" },
-  { name: "BudokanViewer", address: "0x013c8239361fdbd7ec26db2c83f4ff270c5bba83a0bc105b4005b676ff57fdbe" },
+  { name: "Budokan", address: "0x341263a7a0fda541d57b4de1365017066badee008d5536a8adbb14c9292be57" },
+  { name: "BudokanViewer", address: "0x49f78887ca959bf1738ee5a875c5ad948b4e79bdcb39315f4f9ac93d7c78c8" },
+  { name: "Bracket", address: "0x525e28ecaf636e9dfb7b03221965614bc43afd173048f1dc9b96705fff846d" },
 ]} />
+
+This deployment went live on 12 October 2026, and tournament ids restart at 1. Use its addresses, viewer and API together. The previous host (`0x0596ced…0b`, viewer `0x013c823…be`) remains on-chain for its existing tournaments and prizes.
 
 ### Sepolia
 
 <ContractTable network="sepolia" contracts={[
-  { name: "Budokan", address: "0x017750a167b7c4968249d7db06dccc8b3908ef8954cb40cfe4d3c651ca0dcd1d" },
-  { name: "BudokanViewer", address: "0x03d5febe0042b943967074f4ebd850a6b5d50850cd3fb84fbd0eb66dadd9ddec" },
+  { name: "Budokan", address: "0x011067f85b3ad43e6d0555d2dd55f9b0013ff86d35ad5e40e9343989ed3ba000" },
+  { name: "BudokanViewer", address: "0x042e7d012b0c6e1cee122beb79e8cefce674fc480939771391809034adde7ecd" },
+  { name: "Bracket", address: "0x0751bd2c742c4c09f02f4af0fb4da51c582b22058ca62784dfa074c3490fa7a8" },
 ]} />
 
 ## Entry Requirement Validators
@@ -72,6 +77,9 @@ Preset extension validators from [`metagame-extensions`](https://github.com/Prov
 - **Secure and Permissionless**: Anyone can create or enter tournaments, with robust checks for entry requirements and prize claims.
 - **Flexible Entry and Prize Logic**: Supports entry fees, qualification proofs, and multiple prize types.
 - **Leaderboard and Scoring**: Built-in leaderboard management and score submission.
+- **Knockout Brackets**: Single-elimination brackets with a random seating draw, where each match is its own tournament. See [Brackets](/budokan/brackets).
+- **Early Finish**: Tournaments with an entry cap finish as soon as every entry is ranked, instead of waiting for the schedule.
+- **Protocol Fee**: A 5% fee on entry fees, fixed for each tournament when it is created.
 
 ## Use Cases
 - Esports tournaments for onchain games

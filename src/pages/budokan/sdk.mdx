@@ -39,11 +39,15 @@ import { BudokanClient } from "@provable-games/budokan-sdk";
 const client = new BudokanClient({
   chain: "mainnet",          // or "sepolia" — sets defaults for all URLs and addresses
   // Override any defaults:
-  apiBaseUrl: "https://budokan-api-production.up.railway.app",
-  wsUrl: "wss://budokan-api-production.up.railway.app/ws",
-  rpcUrl: "https://api.cartridge.gg/x/starknet/mainnet/rpc/v0_10",
+  apiBaseUrl: "https://api-packed-production.up.railway.app",
+  wsUrl: "wss://api-packed-production.up.railway.app/ws",
+  rpcUrl: "https://rpc.provable.games/rpc",
   rpcHeaders: { Authorization: "Bearer <token>" },  // optional RPC auth
-  viewerAddress: "0x013c8239361fdbd7ec26db2c83f4ff270c5bba83a0bc105b4005b676ff57fdbe",
+  budokanAddress: "0x341263a7a0fda541d57b4de1365017066badee008d5536a8adbb14c9292be57",
+  viewerAddress: "0x49f78887ca959bf1738ee5a875c5ad948b4e79bdcb39315f4f9ac93d7c78c8",
+  bracketAddress: "0x525e28ecaf636e9dfb7b03221965614bc43afd173048f1dc9b96705fff846d",
+  bracketStartBlock: 16278886, // where the RPC fallback scans for brackets
+  bracketCacheMs: 5000,        // reuse bracket reads for this long (0 = no reuse)
   primarySource: "api",      // "api" (default) or "rpc"
   timeout: 10000,
   retryAttempts: 3,
@@ -59,16 +63,19 @@ When you specify `chain: "mainnet"` or `chain: "sepolia"`, the SDK uses these de
 
 | Service | URL |
 |---------|-----|
-| API | `https://budokan-api-production.up.railway.app` |
-| WebSocket | `wss://budokan-api-production.up.railway.app/ws` |
-| RPC | `https://api.cartridge.gg/x/starknet/mainnet/rpc/v0_10` |
+| API | `https://api-packed-production.up.railway.app` |
+| WebSocket | `wss://api-packed-production.up.railway.app/ws` |
+| RPC | `https://rpc.provable.games/rpc` |
 
 **Contract addresses:**
 
 | Contract | Address |
 |----------|---------|
-| Budokan | `0x0596ced030e74ebc37f33607f07ecd5a62eff22cdc4ae31fe2d724040c1bdc0b` |
-| Viewer | `0x013c8239361fdbd7ec26db2c83f4ff270c5bba83a0bc105b4005b676ff57fdbe` |
+| Budokan | `0x341263a7a0fda541d57b4de1365017066badee008d5536a8adbb14c9292be57` |
+| Viewer | `0x49f78887ca959bf1738ee5a875c5ad948b4e79bdcb39315f4f9ac93d7c78c8` |
+| Bracket | `0x525e28ecaf636e9dfb7b03221965614bc43afd173048f1dc9b96705fff846d` (from block 16,278,886) |
+
+These are the October 2026 deployment's addresses, and tournament ids restart at 1. Keep the API, host, viewer and bracket together. To read the previous deployment, override all of them explicitly.
 
 ### Sepolia
 
@@ -76,14 +83,15 @@ When you specify `chain: "mainnet"` or `chain: "sepolia"`, the SDK uses these de
 |---------|-----|
 | API | `https://budokan-api-sepolia.up.railway.app` |
 | WebSocket | `wss://budokan-api-sepolia.up.railway.app/ws` |
-| RPC | `https://starknet-sepolia.public.blastapi.io` |
+| RPC | `https://api.cartridge.gg/x/starknet/sepolia/rpc/v0_10` |
 
 **Contract addresses:**
 
 | Contract | Address |
 |----------|---------|
-| Budokan | `0x017750a167b7c4968249d7db06dccc8b3908ef8954cb40cfe4d3c651ca0dcd1d` |
-| Viewer | `0x03d5febe0042b943967074f4ebd850a6b5d50850cd3fb84fbd0eb66dadd9ddec` |
+| Budokan | `0x011067f85b3ad43e6d0555d2dd55f9b0013ff86d35ad5e40e9343989ed3ba000` |
+| Viewer | `0x042e7d012b0c6e1cee122beb79e8cefce674fc480939771391809034adde7ecd` |
+| Bracket | `0x0751bd2c742c4c09f02f4af0fb4da51c582b22058ca62784dfa074c3490fa7a8` (from block 11,806,766) |
 
 ## Tournament Queries
 
@@ -128,6 +136,26 @@ const shares = await client.getTournamentDistributionShares("42");
 ```
 
 > **Player queries:** the client doesn't expose direct `getPlayer*` methods. To fetch a player's tournaments or earnings, use the [React hooks](#data-hooks) `useTournamentsByOwner` and `usePlayerRewards`, which compose the underlying token-ownership data.
+
+## Bracket Queries
+
+Indexed on-chain [brackets](/budokan/brackets). Each method falls back to RPC: when the API hasn't indexed a bracket yet, the SDK reads it from the chain.
+
+```typescript
+// List brackets, optionally by game, status or contract
+const { data: brackets } = await client.getBrackets({ gameAddress: "0x...", limit: 20 });
+
+// One bracket, with its seats and match tournament ids
+const bracket = await client.getBracket("1");
+
+// Registrations, including refund status
+const { data: registrations } = await client.getBracketRegistrations("1");
+
+// Every bracket a player has registered for
+const { data: mine } = await client.getPlayerBracketRegistrations("0x...");
+```
+
+Identical bracket reads in flight share one request, and an answer is reused for `bracketCacheMs`. Failures are never cached.
 
 ## Game Queries
 
@@ -221,7 +249,7 @@ function App() {
 
 ### Data Hooks
 
-Most data hooks return `{ data, loading, error, refetch }` where `refetch()` returns `Promise<void>`. The exception is `usePlayerRewards`, which returns `{ rewards, loading, error, refetch }`.
+Most data hooks return `{ data, loading, error, refetch }` where `refetch()` returns `Promise<void>`. The exceptions are `usePlayerRewards`, which returns `{ rewards, … }`, and the bracket hooks, which return `{ brackets, … }`, `{ bracket, … }` and `{ registrations, … }`.
 
 ```typescript
 import {
@@ -241,6 +269,9 @@ import {
   useRewardClaimsSummary,
   useQualifications,
   useActivityStats,
+  useBrackets,
+  useBracket,
+  usePlayerBracketRegistrations,
 } from "@provable-games/budokan-sdk/react";
 
 // Tournaments
@@ -270,6 +301,11 @@ const { data: claimsSummary } = useRewardClaimsSummary("42");
 // Qualifications & Activity
 const { data: qualifications } = useQualifications("42");
 const { data: activityStats } = useActivityStats();
+
+// Brackets: these return named fields rather than `data`
+const { brackets } = useBrackets({ limit: 20 });
+const { bracket } = useBracket("1");
+const { registrations: myBrackets } = usePlayerBracketRegistrations("0x...");
 ```
 
 ### Subscription Hooks
