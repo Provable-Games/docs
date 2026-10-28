@@ -83,6 +83,7 @@ export default defineConfig({
         text: "Reference",
         items: [
           { text: "Brackets", link: "/budokan/brackets" },
+          { text: "Lobbies (in development)", link: "/budokan/lobbies" },
           { text: "Key Functions", link: "/budokan/key-functions" },
           { text: "SDK", link: "/budokan/sdk" },
           { text: "FAQ", link: "/budokan/faq" },

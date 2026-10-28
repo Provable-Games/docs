@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 752 722" width="752" height="722" role="img" aria-label="Technical sequence diagram">
+<title>Technical sequence diagram</title>
+<style>
+text{fill:#18181b;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.t{font-size:12.5px;font-weight:600}
+.lb{font-size:12px}
+.sm{font-size:11px;fill:#5f5f69}
+.cp{font-size:11px;fill:#5f5f69;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.ph{font-size:11px;font-weight:700;letter-spacing:.06em;fill:#5f5f69}
+.halo{paint-order:stroke;stroke:#ffffff;stroke-width:5px;stroke-linejoin:round}
+.box{fill:#ffffff;stroke-width:1.5}
+.player{stroke:#2563eb} .budokan{stroke:#0d9488} .new{stroke:#d97706} .game{stroke:#7c3aed}
+.off{stroke:#5f5f69;stroke-dasharray:4 3}
+.arr{stroke:#5f5f69;stroke-width:1.3;fill:none}
+.money-arr{stroke:#d97706;stroke-width:1.8;fill:none}
+.dash{stroke-dasharray:4 3}
+.life{stroke:#e4e4e7;stroke-width:1;stroke-dasharray:3 3}
+</style>
+<rect x="0.5" y="0.5" width="751" height="721" rx="12" fill="#ffffff" stroke="#e4e4e7"/>
+<g transform="translate(16,16)">
+
+  <defs><marker id="d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:#5f5f69"/></marker><marker id="dm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:#d97706"/></marker></defs>
+  <rect class="box player" x="6" y="8" width="108" height="40" rx="7"/><text class="t" x="60" y="26" text-anchor="middle">Game Account</text><text class="sm" x="60" y="41" text-anchor="middle">×N players</text>
+  <rect class="box off" x="126" y="8" width="108" height="40" rx="7"/><text class="t" x="180" y="26" text-anchor="middle">Matchmaker</text><text class="sm" x="180" y="41" text-anchor="middle">budokan-bots</text>
+  <rect class="box new" x="246" y="8" width="108" height="40" rx="7"/><text class="t" x="300" y="33" text-anchor="middle">LobbyEscrow</text>
+  <rect class="box game" x="366" y="8" width="108" height="40" rx="7"/><text class="t" x="420" y="33" text-anchor="middle">USDC</text>
+  <rect class="box budokan" x="486" y="8" width="108" height="40" rx="7"/><text class="t" x="540" y="26" text-anchor="middle">Bracket</text><text class="sm" x="540" y="41" text-anchor="middle">+ Budokan</text>
+  <rect class="box game" x="606" y="8" width="108" height="40" rx="7"/><text class="t" x="660" y="33" text-anchor="middle">Game</text>
+  <path class="life" d="M60 48V684M180 48V684M300 48V684M420 48V684M540 48V684M660 48V684"/>
+
+  <text class="ph halo" x="8" y="74">ONE-TIME SETUP</text>
+  <path class="arr" d="M60 100H418" marker-end="url(#d)"/>
+  <text class="cp halo" x="70" y="94">approve(LobbyEscrow, cap) · owner wallet</text>
+
+  <text class="ph halo" x="8" y="128">QUEUE · OFF-CHAIN</text>
+  <path class="arr dash" d="M60 152H178" marker-end="url(#d)"/>
+  <text class="lb halo" x="66" y="146">signed intent</text>
+  <text class="cp halo" x="190" y="156">join(tier) · escrow-only · 6h · once</text>
+  <path class="arr" d="M180 168h24v16h-22" marker-end="url(#d)"/>
+  <text class="lb halo" x="212" y="182">pick N from the tier queue at random</text>
+
+  <text class="ph halo" x="8" y="214" style="fill:#92400e">CREATE_LOBBY · ONE TX · ALL OR NOTHING</text>
+  <path class="arr" d="M180 238H298" marker-end="url(#d)"/>
+  <text class="cp halo" x="188" y="232">create_lobby</text>
+  <rect x="36" y="250" width="444" height="88" rx="6" style="fill:none;stroke:#d97706;stroke-dasharray:3 3"/>
+  <text class="ph halo" x="44" y="264" style="fill:#92400e">FOR EACH PLAYER</text>
+  <path class="arr" d="M300 282H62" marker-end="url(#d)"/>
+  <text class="cp halo" x="110" y="276">execute_from_outside_v2</text>
+  <path class="arr" d="M60 306H298" marker-end="url(#d)"/>
+  <text class="cp halo" x="110" y="300">join(tier) · signature ok</text>
+  <path class="money-arr" d="M418 328H302" marker-end="url(#dm)"/>
+  <text class="cp halo" x="308" y="322">transfer_from (buy-in)</text>
+  <path class="arr" d="M300 366H538" marker-end="url(#d)"/>
+  <text class="cp halo" x="308" y="360">create bracket(size N, allowlist)</text>
+  <path class="money-arr" d="M300 394H538" marker-end="url(#dm)"/>
+  <text class="cp halo" x="308" y="388">register ×N · escrow pays entries</text>
+  <text class="sm halo" x="308" y="414">any failure → whole tx reverts, nobody charged</text>
+
+  <text class="ph halo" x="8" y="446">BRACKET RUNS</text>
+  <path class="arr" d="M180 470H538" marker-end="url(#d)"/>
+  <text class="cp halo" x="190" y="464">close · block-hash draw · build_matches (N−1)</text>
+
+  <text class="ph halo" x="8" y="502">PLAY</text>
+  <path class="arr" d="M60 526H538" marker-end="url(#d)"/>
+  <text class="cp halo" x="70" y="520">enter_tournament · session key, no prompt</text>
+  <path class="arr" d="M60 554H658" marker-end="url(#d)"/>
+  <text class="lb halo" x="70" y="548">play, up to 5 attempts per match</text>
+
+  <text class="ph halo" x="8" y="588">PAYOUT · REFUND</text>
+  <path class="money-arr dash" d="M540 612H62" marker-end="url(#dm)"/>
+  <text class="lb halo" x="70" y="606">champion claims the pool (minus ~5% protocol fee)</text>
+  <path class="arr" d="M540 644H302" marker-end="url(#d)"/>
+  <text class="lb halo" x="310" y="638">refund to payer (no winner / cancelled)</text>
+  <path class="arr" d="M300 672H62" marker-end="url(#d)"/>
+  <text class="cp halo" x="70" y="666">forward_pool / cancel_refund</text>
+  <text class="sm halo" x="310" y="676">anyone can trigger · once per player</text>
+
+</g>
+</svg>

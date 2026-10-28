@@ -1,0 +1,78 @@
+---
+layout: docs
+---
+
+# Lobbies
+
+:::warning
+**In development.** Lobbies are not live yet. The LobbyEscrow contract is written and tested but not audited or deployed, and the matchmaker and the in-game queue are still being built. Details on this page may change before launch.
+:::
+
+A lobby is a paid sit-and-go: you queue for a buy-in tier, the matchmaker groups you with other queued players, and the game starts as soon as the lobby is full. A 1v1 is a lobby of two. Lobbies can also be 4, 8 and up to 64 players.
+
+What's different from an [open bracket](/budokan/brackets) is that **you can't see who is in your lobby until everyone in it has paid**, and once you're matched you can't back out. Both happen in the same on-chain step.
+
+![Lobby: key ideas](/docs/budokan/lobbies/lobby-key-ideas.png)
+
+## From tap to payout
+
+![Lobby timeline](/docs/budokan/lobbies/lobby-timeline.png)
+
+1. **Approve once.** Your owner wallet lets LobbyEscrow spend up to a capped amount of USDC. In-game session keys can't approve tokens, so this is a one-time step.
+2. **Tap to queue.** You pick a tier, for example $1 · 1v1. Your Game Account signs a permission slip that lets LobbyEscrow call `join(tier)` on your account. Only the escrow can use it, it works once, and it expires after 6 hours. It goes to the matchmaker, not on-chain, so nobody else sees it. **No money moves.**
+3. **Matched.** When the matchmaker has enough queued players for the tier, it picks a group at random and keeps it secret.
+4. **Locked in.** In one transaction, LobbyEscrow checks each player's slip, takes each buy-in, creates a bracket the size of the lobby that only those players can join, and registers everyone. **This is the moment money moves, for everyone at once.** If any player can't pay, the whole transaction is undone and nobody is charged.
+5. **Play.** From here it's an ordinary Budokan [bracket](/budokan/brackets): a seating draw, then matches of up to 5 attempts each, with winners advancing. Your session key covers entry, so there are no wallet prompts.
+6. **Paid.** The champion claims the pool, minus Budokan's protocol fee. There is no house fee.
+
+## Who does what
+
+![Lobby: who does what](/docs/budokan/lobbies/lobby-who-does-what.svg)
+
+| Piece | Role |
+| --- | --- |
+| **Your Game Account** | Signs the permission slip with its session key. The owner wallet approves the spending cap once. |
+| **Matchmaker** | Off-chain, run by budokan-bots. Holds the queue for each tier and groups players in secret. It can't move anyone's money without that player's own slip. |
+| **LobbyEscrow** | The only new contract. Takes the buy-ins, then creates and fills the lobby's bracket in the same transaction. |
+| **Bracket and Budokan** | Already deployed. They run the lobby exactly like any other bracket. |
+
+## Lobby sizes
+
+![1v1 vs 8-player lobby](/docs/budokan/lobbies/lobby-sizes.svg)
+
+Each tier sets its lobby size: a power of two from 2 to 64.
+
+| Lobby | Matches | Rounds |
+| --- | --- | --- |
+| 1v1 | 1 | 1 |
+| 4 players | 3 | 2 |
+| 8 players | 7 | 3 |
+
+Larger lobbies take longer to finish, because each round waits for the one before it. Launch tiers will start small: every player's slip is checked in one transaction, so large lobbies need gas testing first.
+
+## Lobbies vs open brackets
+
+![Open bracket vs lobby](/docs/budokan/lobbies/comparison.png)
+
+## Refunds
+
+LobbyEscrow pays every entry, so Budokan's refunds go to the escrow. Anyone can then trigger it to pass each refund on to its player, once:
+
+- `forward_pool_refund`: nobody won the final (for example, no-shows), so the pool is split across the seats.
+- `forward_cancel_refund`: a lobby of 4 or more was cancelled because its setup stalled, so each entry fee comes back.
+
+## Technical sequence
+
+For integrators, here is the full call sequence with function names:
+
+![Lobby technical sequence](/docs/budokan/lobbies/lobby-technical-sequence.svg)
+
+| Call | Who | What |
+| --- | --- | --- |
+| `create_lobby(tier_id, intents)` | Matchmaker only | Runs each player's signed SNIP-9 outside execution, takes each buy-in, then creates and registers the bracket. Returns the bracket id. |
+| `join(tier_id)` | A player's account, during `create_lobby` | Confirms the player signed for this tier. Fails at any other time. |
+| `forward_pool_refund(bracket_id, registration_index, seat_index)` | Anyone | Passes one seat's share of an unwon pool to its player. |
+| `forward_cancel_refund(bracket_id, registration_index)` | Anyone | Passes a cancelled lobby's entry fee to its player. |
+| `set_tier(tier_id, tier)` | Owner | Sets a tier: token, buy-in, lobby size, game, settings, attempts and durations. |
+
+The matchmaker can only spend a player's allowance by submitting that player's own signed slip, into a lobby that seats them, for the tier's fixed amount. Tiers are set by the owner, so the matchmaker can't choose the game, the price or the size.
