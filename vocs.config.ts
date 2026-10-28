@@ -1,5 +1,13 @@
 import { defineConfig } from "vocs";
 
+function cairoAsRust() {
+  const walk = (node: any) => {
+    if (node.type === "code" && node.lang === "cairo") node.lang = "rust";
+    node.children?.forEach(walk);
+  };
+  return walk;
+}
+
 export default defineConfig({
 rootDir: "src",
   title: "Provable Games",
@@ -26,15 +34,28 @@ rootDir: "src",
     pattern: "https://github.com/provable-games/docs/blob/main/src/pages/:path",
     text: "Edit on GitHub",
   },
+  font: { google: "Inter" },
+  markdown: {
+    // Shiki's bundled "cairo" grammar is Cairo 0 (no fn/ref/impl), so Cairo 1 blocks render
+    // as plain text. Cairo 1 syntax is Rust-like: highlight ```cairo fences with the Rust grammar.
+    remarkPlugins: [cairoAsRust],
+  },
   theme: {
     colorScheme: "dark",
     variables: {
       color: {
         textAccent: "#46A9F0",
+        textAccentHover: "#7cc3f5",
+        backgroundAccent: "#1f6fa8",
+        backgroundAccentHover: "#2a82c2",
+        backgroundAccentText: "#ffffff",
+        borderAccent: "#46A9F0",
         background: "#0c0c0c",
         backgroundDark: "#121212",
         noteBackground: "#1a1a1a",
+        text: "rgba(255, 255, 255, 0.86)",
       },
+      fontWeight: { regular: "400", medium: "500", semibold: "600" },
     },
   },
   // Seperate sidebars for different sections

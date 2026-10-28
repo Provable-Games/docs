@@ -14,7 +14,7 @@ export function ContractLink({ address, label, network }: ContractLinkProps) {
       href={`https://${host}/contract/${address}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-(--color-brand) hover:text-(--color-brand) hover:underline font-mono text-xs"
+      className="text-primary hover:text-primary hover:underline font-mono text-xs"
     >
       {label || address}
     </a>

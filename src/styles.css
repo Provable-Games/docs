@@ -1,5 +1,20 @@
 @import "tailwindcss" important;
+@source "./components";
+@source "./pages";
 
 @theme {
     --color-primary: #46A9F0;
+}
+
+/* Diagrams and screenshots: sit them on a consistent framed surface. */
+.vocs_Content img:not([class]) {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-block: 1.25rem;
+}
+/* White-card diagrams: soften the glare on the dark theme. */
+html.dark .vocs_Content img[src*="/docs/budokan/brackets/"],
+html.dark .vocs_Content img[src*="/docs/budokan/lobbies/"] {
+  filter: brightness(0.9) contrast(1.02);
+  box-shadow: 0 0 0 6px #161616;
 }
