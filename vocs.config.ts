@@ -18,7 +18,7 @@ export default defineConfig({
   renderStrategy: "full-static",
   title: "Provable Games",
   description:
-    "Using cryptography to create incorruptible and indestructible fun.",
+    "Play. Prove. Persist. Docs for games where every run, match and prize can be proven.",
   iconUrl: "/favicon.ico",
   logoUrl: "/logo.svg",
   ogImageUrl: "/new-banner.png",

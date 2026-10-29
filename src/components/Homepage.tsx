@@ -249,14 +249,12 @@ export function HomePage() {
           </a>
 
           <h1 className="max-w-[18ch] text-balance text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.035em] sm:text-[3.6rem] lg:text-[4.25rem]">
-            Using cryptography to create{" "}
-            <span className="pg-gradient-text">incorruptible</span> and{" "}
-            <span className="pg-gradient-text">indestructible</span> fun.
+            Play. <span className="pg-gradient-text">Prove.</span> Persist.
           </h1>
 
           <p className="mt-6 max-w-[36rem] text-pretty text-[16px] leading-relaxed text-white/55 sm:text-[17px]">
-            Guides, mechanics and contract references for our fully onchain games,
-            the Budokan tournament platform and the Embeddable Game Standard.
+            Games where every run, match and prize can be proven, so nobody can rig them,
+            shut them down or take what you've won. Learn how to play, and how it's proven.
           </p>
 
           <div className="mt-10 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
@@ -293,7 +291,7 @@ export function HomePage() {
         {/* ---------- Games ---------- */}
         <section>
           <SectionHeading id="games" index="01" kicker="Play" title="Games">
-            Fully onchain games. Learn the rules, the strategy and the contracts behind each one.
+            Learn the rules, the strategy and how every result is proven.
           </SectionHeading>
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {games.map((g) => (
@@ -391,7 +389,7 @@ export function HomePage() {
             <img src="/PG-logomark-inverted.svg" alt="" className="h-8 w-8 rounded-lg" />
             <div>
               <p className="text-[14px] font-medium text-white/85">Provable Games</p>
-              <p className="text-[13px] text-white/45">Incorruptible and indestructible fun.</p>
+              <p className="text-[13px] text-white/45">Play. Prove. Persist.</p>
             </div>
           </div>
           <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[13.5px] text-white/50">
