@@ -38,7 +38,7 @@ Prizes can be added at multiple stages during a tournament's lifecycle:
 *Figure 2: Tournament Prizes Form during creation.*
 
 2. **After Tournament Creation:**
-   - Add prizes at any time before the tournament ends.
+   - Add prizes at any time before the tournament's game period ends.
    - Go to the tournament page and click the **Add Prizes** button.
 
 ![Add Prizes Button](/docs/add-prizes-button.png)
@@ -67,7 +67,13 @@ Prizes are distributed based on the tournament's rules and leaderboard positions
 
 2. **How to Claim:**
    - Go to the tournament page and look for the **Claim Prizes** button in the top right.
-   - The will effectively distribute all prizes, game fees and creator fees in a single tx.
+   - This pays out every prize, the creator fee and the protocol fee in a single transaction. Anyone can claim: each payout always goes to its rightful recipient.
+
+3. **Unclaimed positions:**
+   - If a sponsored prize's position has no winner (for example, fewer players than paid places), that prize goes back to its sponsor.
+   - Unfilled positions in the entry-fee pool go to the tournament creator's token.
+
+> **Note:** A tournament with an entry cap can finish early. Once the cap is filled and every entry has a ranked score, prizes become claimable straight away.
 
 ## For Sponsors & Community Contributors
 

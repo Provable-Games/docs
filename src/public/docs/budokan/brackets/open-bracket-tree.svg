@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 752 514" width="752" height="514" role="img" aria-label="32-player open bracket: 16 round-one matches, 8, 4, 2 semi-finals, 1 final">
+<title>32-player open bracket: 16 round-one matches, 8, 4, 2 semi-finals, 1 final</title>
+<style>
+text{fill:#18181b;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.t{font-size:12.5px;font-weight:600}
+.lb{font-size:12px}
+.sm{font-size:11px;fill:#5f5f69}
+.cp{font-size:11px;fill:#5f5f69;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.ph{font-size:11px;font-weight:700;letter-spacing:.06em;fill:#5f5f69}
+.halo{paint-order:stroke;stroke:#ffffff;stroke-width:5px;stroke-linejoin:round}
+.box{fill:#ffffff;stroke-width:1.5}
+.player{stroke:#2563eb} .budokan{stroke:#0d9488} .new{stroke:#d97706} .game{stroke:#7c3aed}
+.off{stroke:#5f5f69;stroke-dasharray:4 3}
+.arr{stroke:#5f5f69;stroke-width:1.3;fill:none}
+.money-arr{stroke:#d97706;stroke-width:1.8;fill:none}
+.dash{stroke-dasharray:4 3}
+.life{stroke:#e4e4e7;stroke-width:1;stroke-dasharray:3 3}
+</style>
+<rect x="0.5" y="0.5" width="751" height="513" rx="12" fill="#ffffff" stroke="#e4e4e7"/>
+<g transform="translate(16,16)">
+
+  <text class="ph" x="55.0" y="16" text-anchor="middle">R1</text>
+  <text class="sm" x="55.0" y="32" text-anchor="middle">16 matches</text>
+  <text class="ph" x="175.0" y="16" text-anchor="middle">R2</text>
+  <text class="sm" x="175.0" y="32" text-anchor="middle">8 matches</text>
+  <text class="ph" x="295.0" y="16" text-anchor="middle">R3</text>
+  <text class="sm" x="295.0" y="32" text-anchor="middle">4 matches</text>
+  <text class="ph" x="415.0" y="16" text-anchor="middle">SF</text>
+  <text class="sm" x="415.0" y="32" text-anchor="middle">2 matches</text>
+  <text class="ph" x="540.0" y="16" text-anchor="middle">Final</text>
+  <text class="sm" x="540.0" y="32" text-anchor="middle">1 match</text>
+  <path class="arr" d="M90 61H115V72H140 M90 83H115V72 M90 105H115V116H140 M90 127H115V116 M90 149H115V160H140 M90 171H115V160 M90 193H115V204H140 M90 215H115V204 M90 237H115V248H140 M90 259H115V248 M90 281H115V292H140 M90 303H115V292 M90 325H115V336H140 M90 347H115V336 M90 369H115V380H140 M90 391H115V380 M210 72H235V94H260 M210 116H235V94 M210 160H235V182H260 M210 204H235V182 M210 248H235V270H260 M210 292H235V270 M210 336H235V358H260 M210 380H235V358 M330 94H355V138H380 M330 182H355V138 M330 270H355V314H380 M330 358H355V314 M450 138H475V226H500 M450 314H475V226"/>
+  <rect x="20" y="53" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="75" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="97" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="119" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="141" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="163" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="185" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="207" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="229" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="251" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="273" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="295" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="317" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="339" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="361" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="20" y="383" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="140" y="64" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="140" y="108" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="140" y="152" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="140" y="196" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="140" y="240" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="140" y="284" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="140" y="328" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="140" y="372" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="260" y="86" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="260" y="174" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="260" y="262" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="260" y="350" width="70" height="16" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="380" y="128" width="70" height="20" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="380" y="304" width="70" height="20" rx="4" style="fill:#ffffff;stroke:#0d9488;stroke-width:1.6"/>
+  <rect x="500" y="212" width="80" height="28" rx="6" style="fill:#fef3c7;stroke:#f59e0b;stroke-width:2"/>
+  <text class="t" x="540.0" y="230" text-anchor="middle" style="font-size:12px">Pool</text>
+  <text class="sm" x="592" y="220">champion claims</text>
+  <text class="sm" x="592" y="236">the pool, net of</text>
+  <text class="sm" x="592" y="252">the ~5% fee</text>
+  <path d="M20 410V417H90V410" style="fill:none;stroke:#0d9488;stroke-width:1.6"/>
+  <text class="lb" x="20" y="438" style="font-weight:600">Round 1 entry</text>
+  <text class="sm" x="20" y="454">only the 2 players drawn into</text>
+  <text class="sm" x="20" y="470">that match · <tspan class="cp">MerkleValidator</tspan></text>
+  <path d="M140 410V417H580V410" style="fill:none;stroke:#0d9488;stroke-width:1.6"/>
+  <text class="lb" x="260" y="438" style="font-weight:600">Round 2 onward entry</text>
+  <text class="sm" x="260" y="454">only the winners of the two feeder matches</text>
+  <text class="sm" x="260" y="470"><tspan class="cp">WinnerValidator</tspan></text>
+  
+</g>
+</svg>
