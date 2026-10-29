@@ -1,0 +1,275 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #46a9f0;
+}
+
+:root {
+  --vocs-font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --vocs-background-color-primary: #0c0c0c;
+  --vocs-background-color-surface: #121212;
+  --vocs-text-color-primary: rgba(255, 255, 255, 0.86);
+}
+
+/* Diagrams and screenshots: sit them on a consistent framed surface. */
+article img:not([class]) {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-block: 1.25rem;
+}
+/* White-card diagrams: soften the glare on the dark theme. */
+article img[src*="/docs/budokan/brackets/"],
+article img[src*="/docs/budokan/lobbies/"] {
+  filter: brightness(0.9) contrast(1.02);
+  box-shadow: 0 0 0 6px #161616;
+}
+
+/* ------------------------------------------------------------------ */
+/* Homepage (src/components/Homepage.tsx). Everything is scoped to     */
+/* .pg-home; per-card colour comes from the --accent custom property. */
+/* ------------------------------------------------------------------ */
+/* The blank layout caps the article at the docs content width; let the homepage run full-bleed. */
+article[data-v-content]:has(> .pg-home) {
+  max-width: none;
+  padding: 0;
+}
+.pg-home {
+  --pg-surface: #111112;
+  --pg-line: rgba(255, 255, 255, 0.08);
+  --accent: #46a9f0;
+  font-family: var(--vocs-font-family);
+}
+.pg-home .pg-mono {
+  font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+.pg-home .pg-anchor {
+  scroll-margin-top: 6rem;
+}
+
+/* Hero */
+.pg-home .pg-hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: center top;
+  mask-image: radial-gradient(ellipse 60% 55% at 50% 0%, #000 20%, transparent 70%);
+}
+.pg-home .pg-hero-glow {
+  background: radial-gradient(
+    closest-side,
+    rgba(70, 169, 240, 0.28),
+    rgba(70, 169, 240, 0.08) 55%,
+    transparent
+  );
+  filter: blur(10px);
+}
+.pg-home .pg-gradient-text {
+  background: linear-gradient(100deg, #9fd4ff 0%, #46a9f0 45%, #7c8cff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.pg-home .pg-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.pg-home .pg-pill:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.07);
+}
+.pg-home .pg-btn-primary {
+  background: #fff;
+  color: #0c0c0c;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 8px 30px -8px rgba(70, 169, 240, 0.55);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.pg-home .pg-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 12px 36px -8px rgba(70, 169, 240, 0.7);
+}
+.pg-home .pg-btn-ghost {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.pg-home .pg-btn-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.06);
+}
+.pg-home .pg-arrow {
+  transition: transform 0.2s ease-out;
+}
+.pg-home a:hover > .pg-arrow,
+.pg-home .pg-card:hover .pg-cta .pg-arrow {
+  transform: translateX(3px);
+}
+
+.pg-home .pg-strip img {
+  filter: grayscale(1) brightness(1.7);
+  opacity: 0.5;
+  transition: filter 0.25s, opacity 0.25s;
+}
+.pg-home .pg-strip a:hover img {
+  filter: none;
+  opacity: 1;
+}
+.pg-home .pg-icon-tile {
+  color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+/* Cards */
+.pg-home .pg-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0) 40%), var(--pg-surface);
+  border: 1px solid var(--pg-line);
+  transition: border-color 0.25s ease-out, transform 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+.pg-home .pg-card:hover {
+  border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+  box-shadow: 0 20px 60px -30px color-mix(in oklab, var(--accent) 55%, transparent);
+}
+.pg-home .pg-card:has(.pg-stretched:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.pg-home .pg-stretched::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.pg-home .pg-accent-text {
+  color: var(--accent);
+}
+.pg-home .pg-cta {
+  color: color-mix(in oklab, var(--accent) 70%, white);
+}
+.pg-home .pg-chip {
+  position: relative;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+.pg-home .pg-chip:hover {
+  color: #fff;
+  border-color: color-mix(in oklab, var(--accent) 50%, transparent);
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+}
+
+/* Game card art panel */
+.pg-home .pg-art {
+  background: radial-gradient(120% 90% at 50% 120%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 70%),
+    #0d0d0e;
+}
+.pg-home .pg-art-dots {
+  background-image: radial-gradient(color-mix(in oklab, var(--accent) 35%, transparent) 1px, transparent 1.2px);
+  background-size: 14px 14px;
+  mask-image: radial-gradient(ellipse 75% 70% at 50% 100%, #000 10%, transparent 80%);
+  opacity: 0.45;
+  transition: opacity 0.3s;
+}
+.pg-home .pg-art-glow {
+  background: var(--accent);
+  filter: blur(48px);
+  opacity: 0.18;
+  transition: opacity 0.3s;
+}
+.pg-home .pg-art-rule {
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--accent) 60%, transparent), transparent);
+}
+.pg-home .pg-logo {
+  filter: drop-shadow(0 6px 24px color-mix(in oklab, var(--accent) 35%, transparent));
+  transition: transform 0.35s ease-out;
+}
+.pg-home .pg-card:hover .pg-art-glow {
+  opacity: 0.3;
+}
+.pg-home .pg-card:hover .pg-art-dots {
+  opacity: 0.7;
+}
+.pg-home .pg-card:hover .pg-logo {
+  transform: scale(1.04);
+}
+
+/* Feature panels */
+.pg-home .pg-feature {
+  background:
+    radial-gradient(60% 80% at 100% 0%, color-mix(in oklab, var(--accent) 10%, transparent), transparent 70%),
+    var(--pg-surface);
+}
+.pg-home .pg-status {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.pg-home .pg-dot-live {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 25%, transparent);
+}
+
+/* Bracket illustration */
+.pg-home .pg-seat {
+  fill: rgba(255, 255, 255, 0.035);
+  stroke: rgba(255, 255, 255, 0.1);
+}
+.pg-home .pg-seat-hot {
+  fill: color-mix(in oklab, var(--accent) 18%, transparent);
+  stroke: color-mix(in oklab, var(--accent) 70%, transparent);
+}
+.pg-home .pg-wire {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 1.2;
+}
+.pg-home .pg-wire-hot {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.pg-home .pg-crown-halo {
+  fill: color-mix(in oklab, var(--accent) 12%, transparent);
+}
+.pg-home .pg-crown {
+  fill: color-mix(in oklab, var(--accent) 22%, #0d0d0e);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.pg-home .pg-crown-icon {
+  fill: var(--accent);
+}
+
+/* Code window */
+.pg-home .pg-code {
+  background: #0a0a0b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 80px -40px color-mix(in oklab, var(--accent) 60%, transparent);
+  color: rgba(255, 255, 255, 0.78);
+}
+.pg-home .pg-k { color: #c49cff; }
+.pg-home .pg-t { color: #7dd3fc; }
+.pg-home .pg-f { color: #f5d77a; }
+
+.pg-home .pg-foot-link {
+  transition: color 0.2s;
+}
+.pg-home .pg-foot-link:hover {
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-home *,
+  .pg-home *::before,
+  .pg-home *::after {
+    transition: none !important;
+  }
+}

@@ -15,3 +15,6 @@ src/dist/
 
 # Logs
 *.log
+
+# Vercel build output
+.vercel/
