@@ -1,3 +1,5 @@
+"use client";
+
 const gameCards = [
   {
     title: "Loot Survivor",

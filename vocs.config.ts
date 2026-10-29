@@ -1,21 +1,29 @@
-import { defineConfig } from "vocs";
+import { defineConfig } from "vocs/config";
 
-function cairoAsRust() {
+// MDX wraps text inside a JSX <p> in its own paragraph, giving <p><p>, which React rejects on hydration.
+// Unwrap those inner paragraphs so the existing pages hydrate cleanly.
+function unwrapParagraphsInJsxP() {
   const walk = (node: any) => {
-    if (node.type === "code" && node.lang === "cairo") node.lang = "rust";
+    if (node.type === "mdxJsxFlowElement" && node.name === "p") {
+      node.children = node.children.flatMap((c: any) =>
+        c.type === "paragraph" ? c.children : [c],
+      );
+    }
     node.children?.forEach(walk);
   };
   return walk;
 }
 
 export default defineConfig({
-rootDir: "src",
+  renderStrategy: "full-static",
   title: "Provable Games",
   description:
     "Using cryptography to create incorruptible and indestructible fun.",
   iconUrl: "/favicon.ico",
   logoUrl: "/logo.svg",
   ogImageUrl: "/new-banner.png",
+  accentColor: "#46A9F0",
+  colorScheme: "dark",
   socials: [
     {
       icon: "github",
@@ -31,32 +39,16 @@ rootDir: "src",
     },
   ],
   editLink: {
-    pattern: "https://github.com/provable-games/docs/blob/main/src/pages/:path",
+    link: "https://github.com/provable-games/docs/blob/main/src/pages/:path",
     text: "Edit on GitHub",
   },
-  font: { google: "Inter" },
   markdown: {
+    remarkPlugins: [unwrapParagraphsInJsxP],
+  },
+  codeHighlight: {
     // Shiki's bundled "cairo" grammar is Cairo 0 (no fn/ref/impl), so Cairo 1 blocks render
     // as plain text. Cairo 1 syntax is Rust-like: highlight ```cairo fences with the Rust grammar.
-    remarkPlugins: [cairoAsRust],
-  },
-  theme: {
-    colorScheme: "dark",
-    variables: {
-      color: {
-        textAccent: "#46A9F0",
-        textAccentHover: "#7cc3f5",
-        backgroundAccent: "#1f6fa8",
-        backgroundAccentHover: "#2a82c2",
-        backgroundAccentText: "#ffffff",
-        borderAccent: "#46A9F0",
-        background: "#0c0c0c",
-        backgroundDark: "#121212",
-        noteBackground: "#1a1a1a",
-        text: "rgba(255, 255, 255, 0.86)",
-      },
-      fontWeight: { regular: "400", medium: "500", semibold: "600" },
-    },
+    langAlias: { cairo: "rust" },
   },
   // Seperate sidebars for different sections
   sidebar: {

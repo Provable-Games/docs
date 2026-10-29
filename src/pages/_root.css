@@ -1,0 +1,29 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #46a9f0;
+}
+
+:root {
+  --vocs-font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --vocs-background-color-primary: #0c0c0c;
+  --vocs-background-color-surface: #121212;
+  --vocs-text-color-primary: rgba(255, 255, 255, 0.86);
+}
+
+/* Diagrams and screenshots: sit them on a consistent framed surface. */
+article img:not([class]) {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-block: 1.25rem;
+}
+/* White-card diagrams: soften the glare on the dark theme. */
+article img[src*="/docs/budokan/brackets/"],
+article img[src*="/docs/budokan/lobbies/"] {
+  filter: brightness(0.9) contrast(1.02);
+  box-shadow: 0 0 0 6px #161616;
+}
