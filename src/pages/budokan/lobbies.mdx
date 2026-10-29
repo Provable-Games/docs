@@ -1,0 +1,97 @@
+---
+layout: docs
+---
+
+# Lobbies
+
+:::warning
+**In development.** Lobbies are not live yet. The LobbyEscrow contract is written and tested but not audited or deployed, and the matchmaker and the in-game queue are still being built. Details on this page may change before launch.
+:::
+
+A lobby is a paid sit-and-go table. You queue for a buy-in tier, and the matchmaker seats you with other queued players. Everyone at the table plays in **one tournament over the same window**, and **the best single run takes the pool**. A 1v1 is a table of two. Tables can seat anywhere from 2 to 64 players, and it is always one round.
+
+What's different from an [open bracket](/budokan/brackets) is that **you can't see who is at your table until everyone at it has paid**, and once you're matched you can't back out. Both happen in the same on-chain step.
+
+![Lobby: key ideas](/docs/budokan/lobbies/lobby-key-ideas.png)
+
+## From tap to payout
+
+![Lobby timeline](/docs/budokan/lobbies/lobby-timeline.png)
+
+1. **Approve once.** Your owner wallet lets LobbyEscrow spend up to a capped amount of USDC. In-game session keys can't approve tokens, so this is a one-time step.
+2. **Tap to queue.** You pick a tier, for example $1 · 4 players. Your Game Account signs a permission slip that lets LobbyEscrow call `join(tier)` on your account.
+   - Only the escrow can use the slip, it works once, and it expires after 6 hours.
+   - It goes to the matchmaker, not on-chain, so nobody else sees it.
+   - **No money moves.**
+3. **Matched.** When the matchmaker has enough queued players for the tier, it picks a table and keeps it secret.
+4. **Locked in.** In one transaction, LobbyEscrow:
+   - checks each player's slip and takes each buy-in;
+   - creates one tournament that only those players can enter, each for the tier's number of attempts;
+   - pays Budokan's protocol fee;
+   - puts the rest of the pool up as the prize.
+
+   **This is the moment money moves, for everyone at once.** If any player can't pay, the whole transaction is undone and nobody is charged.
+5. **Play.** You enter and play your attempts (for example up to 5) any time in the window. Each entry is a small transaction that you pay the gas for, about a cent.
+6. **Paid.** The best single run at the table claims the pool, minus Budokan's protocol fee. There is no house fee.
+
+## Who does what
+
+![Lobby: who does what](/docs/budokan/lobbies/lobby-who-does-what.svg)
+
+| Piece | Role |
+| --- | --- |
+| **Your Game Account** | Signs the permission slip with its session key and enters your attempts. The owner wallet approves the spending cap once. |
+| **Matchmaker** | Off-chain, run by budokan-bots. Holds the queue for each tier and seats players in secret. It can't move anyone's money without that player's own slip. |
+| **LobbyEscrow** | The only new contract. Takes the buy-ins, creates the table's tournament, pays the protocol fee and puts up the prize. |
+| **Budokan** | Already deployed. Runs the table's tournament: entries, leaderboard and prize. |
+| **Merkle validator** | Already deployed. Checks that each entry comes from a seated player who has attempts left. |
+| **Game** | Mints a game token for each attempt and reports its score. |
+
+## Table sizes
+
+![Table sizes: one tournament at any size](/docs/budokan/lobbies/lobby-sizes.svg)
+
+Each tier sets its table size, anywhere from 2 to 64 players. Whatever the size, a table is one tournament played over one window, and the top run wins. A bigger table doesn't take longer.
+
+| Table | Tournaments | Rounds | Who wins |
+| --- | --- | --- | --- |
+| 1v1 | 1 | 1 | The better run |
+| 4 players | 1 | 1 | The best run of the four |
+| 8 players | 1 | 1 | The best run of the eight |
+
+Launch tiers will start small. Every player's slip is checked in one transaction, so large tables need gas testing first.
+
+## Lobbies vs open brackets
+
+![Open bracket vs lobby](/docs/budokan/lobbies/comparison.png)
+
+## Refunds
+
+If nobody at the table posts a score, Budokan returns the prize to LobbyEscrow. Anyone can then call `refund_unwon`, once, to split it evenly back to the players. The protocol fee is not refunded.
+
+## Technical sequence
+
+For integrators, here is the full call sequence with function names:
+
+![Lobby technical sequence](/docs/budokan/lobbies/lobby-technical-sequence.svg)
+
+| Call | Who | What |
+| --- | --- | --- |
+| `create_lobby(tier_id, intents)` | Matchmaker only | Does the following, then returns the tournament id, which is also the lobby's id:<br />- runs each player's signed SNIP-9 outside execution;<br />- takes each buy-in;<br />- registers the table's allowlist with the merkle validator;<br />- creates the Budokan tournament (gated on that allowlist, capped at seats × attempts);<br />- pays the protocol fee;<br />- adds the prize. |
+| `join(tier_id)` | A player's account, during `create_lobby` | Confirms the player signed for this tier. Fails at any other time. |
+| `entry_qualification(players, attempts, seat)` | Anyone (view) | Returns the `[attempts, ...proof]` a player passes to `enter_tournament` as an extension qualification. |
+| `enter_tournament(…)` | Each player, per attempt | Budokan's normal entry, checked by the merkle validator. |
+| `refund_unwon(tournament_id, players)` | Anyone | Once nobody has scored and the tournament is finalized, splits the returned prize evenly across the players. Works once per lobby. |
+| `set_tier(tier_id, tier)` | Owner | Sets a tier: token, buy-in, table size, game, settings, attempts and durations. |
+
+`LobbyCreated` lists the following, so clients can find the table and build each player's proof:
+- the tournament id;
+- the tier;
+- the buy-in;
+- the attempts;
+- the players, in seat order;
+- the protocol fee;
+- the prize id;
+- the prize.
+
+The matchmaker can only spend a player's allowance by submitting that player's own signed slip, into a table that seats them, for the tier's fixed amount. Tiers are set by the owner, so the matchmaker can't choose the game, the price or the size.

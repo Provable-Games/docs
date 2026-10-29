@@ -203,14 +203,14 @@ export function HomePage() {
                 set entry fees, requirements and prizes, then compete for them.
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="pg-status inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[12.5px] text-white/80">
+                <a href="/budokan/brackets" className="pg-status pg-chip relative z-10 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[12.5px] text-white/80">
                   <span className="pg-dot-live h-1.5 w-1.5 rounded-full" />
                   Brackets <span className="text-white/40">Live</span>
-                </span>
-                <span className="pg-status inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[12.5px] text-white/80">
+                </a>
+                <a href="/budokan/lobbies" className="pg-status pg-chip relative z-10 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[12.5px] text-white/80">
                   <span className="h-1.5 w-1.5 rounded-full border border-white/40" />
                   Lobbies <span className="text-white/40">Coming soon</span>
-                </span>
+                </a>
               </div>
               <Chips
                 links={[
