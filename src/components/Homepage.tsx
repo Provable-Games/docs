@@ -3,53 +3,35 @@ import type { CSSProperties, ReactNode } from "react";
 type Accent = { "--accent": string } & CSSProperties;
 const accent = (hex: string): Accent => ({ "--accent": hex });
 
-const games = [
-  {
-    name: "Loot Survivor",
-    logo: "/ls-logo.svg",
-    logoHeight: 26,
-    href: "/lootsurvivor",
-    accent: "#33FF33",
-    genre: "Dungeon crawler",
-    description:
-      "A procedurally generated onchain dungeon crawler. Explore an endless dungeon and fight for your life against beasts and obstacles.",
-    links: [
-      { label: "Getting started", href: "/lootsurvivor/guide/getting-started" },
-      { label: "Game modes", href: "/lootsurvivor/game-modes" },
-      { label: "Contracts", href: "/lootsurvivor/contracts" },
-    ],
-  },
-  {
-    name: "Dark Shuffle",
-    logo: "/DS - Horizontal Logo.svg",
-    logoHeight: 34,
-    href: "/darkshuffle",
-    accent: "#8B5CF6",
-    genre: "Deck builder",
-    description:
-      "An onchain deck builder. Draft a deck, battle beasts across the map, and play with your own settings and tokens.",
-    links: [
-      { label: "Draft", href: "/darkshuffle/guide/draft" },
-      { label: "Cards", href: "/darkshuffle/guide/cards" },
-      { label: "Settings", href: "/darkshuffle/settings" },
-    ],
-  },
-  {
-    name: "Summit",
-    logo: "/summit-logo.png",
-    logoHeight: 52,
-    href: "/summit",
-    accent: "#F43F5E",
-    genre: "King of the hill",
-    description:
-      "A king-of-the-hill battle where players send their collectable beasts to fight for control of the Summit.",
-    links: [
-      { label: "Battle system", href: "/summit/battle-system" },
-      { label: "Upgrades", href: "/summit/beast-upgrades" },
-      { label: "Rewards", href: "/summit/rewards" },
-    ],
-  },
-];
+const lootSurvivor = {
+  name: "Loot Survivor",
+  logo: "/ls-logo.svg",
+  href: "/lootsurvivor",
+  accent: "#33FF33",
+  genre: "Dungeon crawler",
+  description:
+    "A procedurally generated dungeon crawler. Explore an endless dungeon, fight for your life against beasts and obstacles, and collect the beasts you defeat.",
+  links: [
+    { label: "Getting started", href: "/lootsurvivor/guide/getting-started" },
+    { label: "Game modes", href: "/lootsurvivor/game-modes" },
+    { label: "Beasts", href: "/lootsurvivor/beasts/collectibles" },
+    { label: "Contracts", href: "/lootsurvivor/contracts" },
+  ],
+};
+
+function Chips({ links }: { links: { label: string; href: string }[] }) {
+  return (
+    <ul className="relative z-10 flex flex-wrap gap-1.5">
+      {links.map((l) => (
+        <li key={l.href}>
+          <a href={l.href} className="pg-chip inline-flex rounded-full px-2.5 py-1 text-[12px]">
+            {l.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 function Arrow({ className = "" }: { className?: string }) {
   return (
@@ -100,57 +82,6 @@ function SectionHeading({
   );
 }
 
-function GameCard({ game }: { game: (typeof games)[number] }) {
-  return (
-    <div className="pg-card group relative flex flex-col overflow-hidden rounded-2xl" style={accent(game.accent)}>
-      {/* Art panel */}
-      <div className="pg-art relative flex h-32 items-center justify-center overflow-hidden sm:h-44">
-        <div className="pg-art-dots absolute inset-0" />
-        <div className="pg-art-glow absolute inset-x-0 -bottom-16 mx-auto h-40 w-4/5 rounded-full" />
-        <img
-          src={game.logo}
-          alt={game.name}
-          className="pg-logo relative w-auto max-w-[78%] object-contain"
-          style={{ height: game.logoHeight }}
-        />
-        <div className="pg-art-rule absolute inset-x-0 bottom-0 h-px" />
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 flex-col gap-4 p-6">
-        <div className="flex flex-col gap-2">
-          <p className="pg-mono pg-accent-text text-[11px] uppercase tracking-[0.18em]">
-            {game.genre}
-          </p>
-          <h3 className="text-lg font-semibold tracking-[-0.01em] text-white">
-            <a href={game.href} className="pg-stretched outline-none">
-              {game.name}
-            </a>
-          </h3>
-          <p className="text-[14.5px] leading-relaxed text-white/55">
-            {game.description}
-          </p>
-        </div>
-
-        <div className="mt-auto flex flex-col gap-4">
-          <ul className="relative z-10 flex flex-wrap gap-1.5">
-            {game.links.map((l) => (
-              <li key={l.href}>
-                <a href={l.href} className="pg-chip inline-flex rounded-full px-2.5 py-1 text-[12px]">
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <span className="pg-cta flex items-center gap-1.5 text-[13.5px] font-medium">
-            Read the docs <Arrow />
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function BracketArt() {
   // An 8-player single-elimination bracket, drawn in Budokan green.
   const rows = [0, 1, 2, 3, 4, 5, 6, 7];
@@ -189,46 +120,6 @@ function BracketArt() {
   );
 }
 
-function EgsGlyph() {
-  // A game node wired out to the platforms around it.
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
-      <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor" />
-      <path d="M12 8V4M12 16v4M8 12H4M16 12h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      <circle cx="12" cy="3" r="1.6" fill="currentColor" />
-      <circle cx="12" cy="21" r="1.6" fill="currentColor" />
-      <circle cx="3" cy="12" r="1.6" fill="currentColor" />
-      <circle cx="21" cy="12" r="1.6" fill="currentColor" />
-    </svg>
-  );
-}
-
-function CodeWindow() {
-  return (
-    <div className="pg-code overflow-hidden rounded-xl">
-      <div className="flex items-center gap-2 border-b border-white/[0.06] px-4 py-3">
-        <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-        <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-        <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-        <span className="pg-mono ml-2 text-[11px] text-white/35">minigame.cairo</span>
-      </div>
-      <pre className="pg-mono overflow-x-auto px-4 py-4 text-[12px] leading-[1.75] sm:px-5 sm:text-[13px]">
-        <code>
-          <span className="text-white/35">{"// Implement one trait to plug into every EGS platform"}</span>
-          {"\n"}
-          <span className="pg-k">pub trait</span> <span className="pg-t">IMinigameTokenData</span>
-          {"<TState> {\n"}
-          {"    "}<span className="pg-k">fn</span> <span className="pg-f">score</span>
-          {"(self: @TState, token_id: felt252) -> "}<span className="pg-t">u64</span>{";\n"}
-          {"    "}<span className="pg-k">fn</span> <span className="pg-f">game_over</span>
-          {"(self: @TState, token_id: felt252) -> "}<span className="pg-t">bool</span>{";\n"}
-          {"}"}
-        </code>
-      </pre>
-    </div>
-  );
-}
-
 export function HomePage() {
   return (
     <div className="pg-home relative isolate overflow-x-clip text-white">
@@ -261,48 +152,46 @@ export function HomePage() {
             <a href="#games" className="pg-btn-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[14px] font-medium">
               <span className="text-black/45">Players</span>
               <span className="h-3.5 w-px bg-black/15" />
-              Explore the games
+              Start playing
             </a>
-            <a href="#build" className="pg-btn-ghost inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[14px] font-medium">
+            <a href="/budokan/sdk" className="pg-btn-ghost inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[14px] font-medium">
               <span className="text-white/40">Developers</span>
               <span className="h-3.5 w-px bg-white/15" />
-              Start building <Arrow />
+              Build with Budokan <Arrow />
             </a>
           </div>
-
-          <ul className="pg-strip mt-16 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:mt-20 sm:gap-x-14">
-            {[
-              { src: "/ls-logo.svg", alt: "Loot Survivor", href: "/lootsurvivor", h: 15 },
-              { src: "/DS - Horizontal Logo.svg", alt: "Dark Shuffle", href: "/darkshuffle", h: 22 },
-              { src: "/summit-logo.png", alt: "Summit", href: "/summit", h: 30 },
-              { src: "/budokan-logo.svg", alt: "Budokan", href: "/budokan", h: 22 },
-            ].map((l) => (
-              <li key={l.href}>
-                <a href={l.href} className="block">
-                  <img src={l.src} alt={l.alt} className="w-auto" style={{ height: l.h }} />
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
 
       <div className="mx-auto flex max-w-[72rem] flex-col gap-24 px-5 pb-36 sm:gap-28 sm:px-8">
         {/* ---------- Games ---------- */}
         <section>
-          <SectionHeading id="games" index="01" kicker="Play" title="Games">
+          <SectionHeading id="games" index="01" kicker="Game" title="Play">
             Learn the rules, the strategy and how every result is proven.
           </SectionHeading>
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-            {games.map((g) => (
-              <GameCard key={g.name} game={g} />
-            ))}
+          <div className="pg-card pg-feature group relative grid grid-cols-[minmax(0,1fr)] overflow-hidden rounded-3xl lg:grid-cols-[1.05fr_1fr]" style={accent(lootSurvivor.accent)}>
+            <div className="relative z-10 order-2 flex flex-col justify-center gap-6 p-7 sm:p-10 lg:order-1">
+              <div className="flex flex-col gap-3">
+                <p className="pg-mono pg-accent-text text-[11px] uppercase tracking-[0.18em]">{lootSurvivor.genre}</p>
+                <h3 className="text-2xl font-semibold tracking-[-0.02em] text-white">{lootSurvivor.name}</h3>
+                <p className="max-w-[42ch] text-[16px] leading-relaxed text-white/60">{lootSurvivor.description}</p>
+              </div>
+              <Chips links={lootSurvivor.links} />
+              <a href={lootSurvivor.href} className="pg-stretched pg-cta mt-2 flex items-center gap-1.5 text-[14px] font-medium">
+                Read the Loot Survivor docs <Arrow />
+              </a>
+            </div>
+            <div className="pg-art relative order-1 flex h-44 items-center justify-center overflow-hidden sm:h-56 lg:order-2 lg:h-auto lg:min-h-[20rem]">
+              <div className="pg-art-dots absolute inset-0" />
+              <div className="pg-art-glow absolute inset-x-0 -bottom-16 mx-auto h-48 w-4/5 rounded-full" />
+              <img src={lootSurvivor.logo} alt={lootSurvivor.name} className="pg-logo relative h-9 w-auto max-w-[80%] object-contain sm:h-11" />
+            </div>
           </div>
         </section>
 
         {/* ---------- Platform ---------- */}
         <section>
-          <SectionHeading id="compete" index="02" kicker="Compete" title="Platform">
+          <SectionHeading id="compete" index="02" kicker="Platform" title="Compete">
             Run and enter tournaments for any compatible game.
           </SectionHeading>
 
@@ -323,6 +212,14 @@ export function HomePage() {
                   Lobbies <span className="text-white/40">Coming soon</span>
                 </span>
               </div>
+              <Chips
+                links={[
+                  { label: "Enter a tournament", href: "/budokan/guide/enter" },
+                  { label: "Create a tournament", href: "/budokan/guide/create" },
+                  { label: "SDK", href: "/budokan/sdk" },
+                  { label: "Key functions", href: "/budokan/key-functions" },
+                ]}
+              />
               <a href="/budokan" className="pg-stretched pg-cta mt-2 flex items-center gap-1.5 text-[14px] font-medium">
                 Read the Budokan docs <Arrow />
               </a>
@@ -331,54 +228,6 @@ export function HomePage() {
               <div className="w-full max-w-[26rem]">
                 <BracketArt />
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ---------- Build ---------- */}
-        <section>
-          <SectionHeading id="build" index="03" kicker="Build" title="Developer tools">
-            Open standards, Cairo components and SDKs for building on the same rails we do.
-          </SectionHeading>
-
-          <div className="pg-card pg-feature group relative grid grid-cols-[minmax(0,1fr)] overflow-hidden rounded-3xl lg:grid-cols-[1fr_1.05fr]" style={accent("#46A9F0")}>
-            <div className="pg-feature-art relative order-2 flex items-center px-5 pb-7 sm:px-10 sm:pb-10 lg:order-1 lg:py-10">
-              <div className="relative z-10 w-full min-w-0">
-                <CodeWindow />
-              </div>
-            </div>
-            <div className="relative z-10 order-1 flex flex-col justify-center gap-6 p-7 sm:p-10 lg:order-2">
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="pg-icon-tile flex h-9 w-9 items-center justify-center rounded-lg">
-                    <EgsGlyph />
-                  </span>
-                  <p className="pg-mono pg-accent-text text-[11px] uppercase tracking-[0.18em]">Open standard</p>
-                </div>
-                <h3 className="text-2xl font-semibold tracking-[-0.02em] text-white">
-                  Embeddable Game Standard
-                </h3>
-                <p className="max-w-[42ch] text-[16px] leading-relaxed text-white/60">
-                  Makes onchain games portable and composable. Implement one trait and
-                  your game works with every EGS platform, from tournaments to quests.
-                </p>
-              </div>
-              <ul className="relative z-10 flex flex-wrap gap-1.5">
-                {[
-                  { label: "Build a game", href: "/embeddable-game-standard/building-a-game" },
-                  { label: "Build a platform", href: "/embeddable-game-standard/building-a-platform" },
-                  { label: "Frontend SDK", href: "/embeddable-game-standard/frontend" },
-                ].map((l) => (
-                  <li key={l.href}>
-                    <a href={l.href} className="pg-chip inline-flex rounded-full px-2.5 py-1 text-[12px]">
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-              <a href="/embeddable-game-standard" className="pg-stretched pg-cta mt-2 flex items-center gap-1.5 text-[14px] font-medium">
-                Read the EGS docs <Arrow />
-              </a>
             </div>
           </div>
         </section>
