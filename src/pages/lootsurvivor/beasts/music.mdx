@@ -11,15 +11,13 @@ Every Beast's music is generated onchain, and its metadata carries a playable pa
 
 ## Listen
 
-Pick a reference Beast and a track, then press play on the card. Each sample runs in that token's own onchain player page, and only one track plays at a time. On MIDI and Shiny + MIDI Beasts the page draws the song's notes behind the art.
+Pick a Beast, a rarity and a track, then press play on the card. Each option is a real token with one of the four [rarities](/lootsurvivor/beasts/collectibles#rarity), playing in that token's own onchain player page, and only one track plays at a time. On MIDI and Shiny + MIDI Beasts the page draws the song's notes behind the art.
 
 <BeastMusicPlayer />
 
-**Static samples** are real mainnet output saved to this site, so they make no RPC calls. They show each Beast at the capture block named in the player, and can age as holders buy tracks and the King changes settings.
+**Original** is SoundMode Original on mainnet: the music as the track was minted.
 
-**Live mode** asks mainnet for the Beast's Named Song at the moment you press the button. Nothing is read until you do, and there is no wallet or signature involved. The player uses the Beast's captured card either way.
-
-Both are about where the player gets its data. Neither one is the [Live sound mode](#sound-modes) below.
+**Live** is SoundMode Live: the Beast's Named Song as it drifts with the chain right now. Pressing **Read Live from mainnet** composes it for you without changing anything about the Beast, and needs no wallet or signature. See [Sound modes](#sound-modes).
 
 ## Tracks
 
@@ -30,7 +28,7 @@ Both are about where the player gets its data. Neither one is the [Live sound mo
 | **Named Song** | Named Beasts only, not Genesis; derived from the Beast's prefix and suffix | Original mode | The token's |
 | **Purchased Songs and Editions** | Any Beast, one track per purchase | Songs start in Original mode, Editions in Live | The token's |
 
-A Beast starts with three tracks, or two for Genesis. The traits `Track Count`, `Shared Tracks`, `Named Tracks` and `Purchased Tracks` show its catalogue, and `Active Track` and `Sound Mode` show what `animation_url` plays right now.
+A Beast starts with three tracks. A Genesis Beast has two, because it has no Named Song. The traits `Track Count`, `Shared Tracks`, `Named Tracks` and `Purchased Tracks` show its catalogue, and `Active Track` and `Sound Mode` show what `animation_url` plays right now.
 
 ## Effects
 
