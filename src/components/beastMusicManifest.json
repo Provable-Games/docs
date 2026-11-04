@@ -1,0 +1,324 @@
+{
+  "note": "Read-only capture from Starknet mainnet by scripts/capture-beast-samples.mjs. Static samples are chain output and can age: holders buy tracks, the King changes Species Song settings, and rankings move.",
+  "capture": {
+    "block": 17444612,
+    "timestamp": 1793811236,
+    "date": "2026-11-04"
+  },
+  "contracts": {
+    "nft": "0xf739e402e52830a736335a0f47d58ec78ba067443c9c6930da182eab2ff8b0",
+    "registry": "0x140e8868c7c9277b8b864d78efb5172a42d41e0b501329b043db7d2cb3bc8b3",
+    "soundManager": "0x1bbece5870dabbbec40efb73457848fd5425320600a42684aa23271c43abe8b",
+    "renderer": "0x1cda1fa6d9d97f484603e32a7958cc0693dc971582319b9577b136d23019bd5"
+  },
+  "beasts": [
+    {
+      "slug": "genesis-warlock",
+      "role": "Genesis",
+      "name": "Warlock",
+      "tokenId": "947810826190769320837858821737753470652770173935338384837652250624",
+      "speciesId": 1,
+      "genesis": true,
+      "visualEffects": "3",
+      "soundEffects": "3",
+      "cardGrade": "10",
+      "rank": "0",
+      "trackCount": 2,
+      "pageSha256": "4f132f5182c333aa77a7a5943fff9c8b578c42b08aa95388d2aa9f720ef887a7",
+      "cardSha256": "894fc9e06c1879a529ef9ba72e7a29a8de9fde1537b3783ce405defd11d2abb4",
+      "tracks": [
+        {
+          "key": "sound-check",
+          "label": "Sound Check",
+          "midiBytes": 497,
+          "midiSha256": "b2031b84db4954f8815e0f13322b9f83cfba9a99c2784c287c93dd8f55a310d1",
+          "segmentSha256": "247fb71d96cff7b1f0ca443e8ac9ab2006fb527a01d962fbfbcfb68ea18bc814",
+          "mode": "Original",
+          "effects": "Mega + echo",
+          "effectsFrom": "token"
+        },
+        {
+          "key": "species-song",
+          "label": "Species Song",
+          "midiBytes": 4726,
+          "midiSha256": "1b4adad6141df6d407a3630071a5660aac24f29aba817051cff66fc706368adf",
+          "segmentSha256": "dd0467c36868619fb685046ab6a96a50b1365fc88d7f581c0c87eada230b2395",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "King-controlled"
+        }
+      ]
+    },
+    {
+      "slug": "gloom-shadow-warlock",
+      "role": "Regular",
+      "name": "\"Gloom Shadow\" Warlock",
+      "tokenId": "947833927173332754261423897567498916256629074254081657670519128847",
+      "speciesId": 1,
+      "genesis": false,
+      "visualEffects": "0",
+      "soundEffects": "0",
+      "cardGrade": "10",
+      "rank": "2",
+      "trackCount": 3,
+      "pageSha256": "dfcf9d40ea35ad2930c64cd511a17404d65dcd11861db8ff20aef420813a98a3",
+      "cardSha256": "261a43e7a8f82aaaa33a8e8fcc20dbef5dc65b734dbbaed973892a2a3ef9d8dd",
+      "tracks": [
+        {
+          "key": "sound-check",
+          "label": "Sound Check",
+          "midiBytes": 497,
+          "midiSha256": "7f854fdac1ed74921637d48ee6d497a3ec1ef81beda7c95bb3a921db56623f53",
+          "segmentSha256": "6155d93c0b9b1288345a9169560d8daa7f45794562f7eda764b416175d6372d9",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "token"
+        },
+        {
+          "key": "species-song",
+          "label": "Species Song",
+          "midiBytes": 4726,
+          "midiSha256": "1b4adad6141df6d407a3630071a5660aac24f29aba817051cff66fc706368adf",
+          "segmentSha256": "dd0467c36868619fb685046ab6a96a50b1365fc88d7f581c0c87eada230b2395",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "King-controlled"
+        },
+        {
+          "key": "named-song",
+          "label": "Named Song",
+          "midiBytes": 4708,
+          "midiSha256": "85d43b3d0ef7563062dff106b066337e1a09d08428054a2ee121d8d8085ac6a0",
+          "segmentSha256": "912bb23f1c0b37006db01f3c28fad32a53cd6cb7f8276d0278a2708dadf610d0",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "token"
+        }
+      ]
+    },
+    {
+      "slug": "wrath-bane-warlock",
+      "role": "Shiny",
+      "name": "\"Wrath Bane\" Warlock",
+      "tokenId": "947826896832528324890603807747113870591355288299816018771018891435",
+      "speciesId": 1,
+      "genesis": false,
+      "visualEffects": "1",
+      "soundEffects": "1",
+      "cardGrade": "10",
+      "rank": "20",
+      "trackCount": 3,
+      "pageSha256": "715a455c231d42ea361df4224c4630c3ac086be136186dbc8e9406a7c8b28e01",
+      "cardSha256": "fcb99bd4c8435c7ca53ac8e6b8486704249935222576aedebceacf6dfed265f3",
+      "tracks": [
+        {
+          "key": "sound-check",
+          "label": "Sound Check",
+          "midiBytes": 497,
+          "midiSha256": "3ed946c3387cfe7667f081e0fe3c69b2ccafd0ec3d6ea341272a7ce1bbe12538",
+          "segmentSha256": "4f0d19f6da786ff523c8e9cc5abfcda385c32bd80b4d278212096a0f44a55c6a",
+          "mode": "Original",
+          "effects": "Mega",
+          "effectsFrom": "token"
+        },
+        {
+          "key": "species-song",
+          "label": "Species Song",
+          "midiBytes": 4726,
+          "midiSha256": "1b4adad6141df6d407a3630071a5660aac24f29aba817051cff66fc706368adf",
+          "segmentSha256": "dd0467c36868619fb685046ab6a96a50b1365fc88d7f581c0c87eada230b2395",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "King-controlled"
+        },
+        {
+          "key": "named-song",
+          "label": "Named Song",
+          "midiBytes": 6441,
+          "midiSha256": "f0c0c9c183813bdcedf2989991d3c94d4009d5d964f85e91565dc3f89726fb4b",
+          "segmentSha256": "17051f51890abaf04cf4cfa7e92b18507d0fd3efed51fc1734e39d62b67e72ed",
+          "mode": "Original",
+          "effects": "Mega",
+          "effectsFrom": "token"
+        }
+      ]
+    },
+    {
+      "slug": "armageddon-growl-warlock",
+      "role": "MIDI",
+      "name": "\"Armageddon Growl\" Warlock",
+      "tokenId": "947829708249244366760431565815325961877289817362008620300144132267",
+      "speciesId": 1,
+      "genesis": false,
+      "visualEffects": "2",
+      "soundEffects": "2",
+      "cardGrade": "9",
+      "rank": "9",
+      "trackCount": 3,
+      "pageSha256": "03c60e828ab70b1c0d3d94c7408cfef0da90ec46f2448e22d69a017047c2e389",
+      "cardSha256": "1989e5c08d2903298f3d2d58e7c902d2b35771302f5fa7547e1ad60eadedf75b",
+      "tracks": [
+        {
+          "key": "sound-check",
+          "label": "Sound Check",
+          "midiBytes": 499,
+          "midiSha256": "65161b1e1ac7b9f96daf959746eb822b68a938310ae483237bdf69398c88aa88",
+          "segmentSha256": "a53fca6c6c6758c910110a246593255b7e0959d65f8f5bfaa1d0451c9043d846",
+          "mode": "Original",
+          "effects": "Echo",
+          "effectsFrom": "token"
+        },
+        {
+          "key": "species-song",
+          "label": "Species Song",
+          "midiBytes": 4726,
+          "midiSha256": "1b4adad6141df6d407a3630071a5660aac24f29aba817051cff66fc706368adf",
+          "segmentSha256": "dd0467c36868619fb685046ab6a96a50b1365fc88d7f581c0c87eada230b2395",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "King-controlled"
+        },
+        {
+          "key": "named-song",
+          "label": "Named Song",
+          "midiBytes": 5997,
+          "midiSha256": "68485388aab6e6ea2a572375367a47830e5feda132894708531ecfd64aae5252",
+          "segmentSha256": "fc92bc945177e771dab195e88108c07354c2a0b2c605e7e9cfbf2853bd28a898",
+          "mode": "Original",
+          "effects": "Echo",
+          "effectsFrom": "token"
+        }
+      ]
+    },
+    {
+      "slug": "dusk-root-warlock",
+      "role": "Shiny + MIDI",
+      "name": "\"Dusk Root\" Warlock",
+      "tokenId": "947815045188325454773795971956342143321663163700628410504256521537",
+      "speciesId": 1,
+      "genesis": false,
+      "visualEffects": "3",
+      "soundEffects": "3",
+      "cardGrade": "8",
+      "rank": "751",
+      "trackCount": 6,
+      "pageSha256": "1b80e06c510095882aacb523482d590def046a84ec137d0a69b162b9f0023f78",
+      "cardSha256": "627948077781f552b8ca06ae67e5897885872bfd798dca840c18a14f729dbf47",
+      "tracks": [
+        {
+          "key": "sound-check",
+          "label": "Sound Check",
+          "midiBytes": 497,
+          "midiSha256": "b2031b84db4954f8815e0f13322b9f83cfba9a99c2784c287c93dd8f55a310d1",
+          "segmentSha256": "247fb71d96cff7b1f0ca443e8ac9ab2006fb527a01d962fbfbcfb68ea18bc814",
+          "mode": "Original",
+          "effects": "Mega + echo",
+          "effectsFrom": "token"
+        },
+        {
+          "key": "species-song",
+          "label": "Species Song",
+          "midiBytes": 4726,
+          "midiSha256": "1b4adad6141df6d407a3630071a5660aac24f29aba817051cff66fc706368adf",
+          "segmentSha256": "dd0467c36868619fb685046ab6a96a50b1365fc88d7f581c0c87eada230b2395",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "King-controlled"
+        },
+        {
+          "key": "named-song",
+          "label": "Named Song",
+          "midiBytes": 7545,
+          "midiSha256": "6c551beb5b08451f7f6f5f648eb0c5e8e22fc5c640954af02408ef6a53a85903",
+          "segmentSha256": "403caaac9b2266532e17912fe9292516df407a70166a6eb6a76b81f8dabbd51f",
+          "mode": "Original",
+          "effects": "Mega + echo",
+          "effectsFrom": "token"
+        },
+        {
+          "key": "purchased-0",
+          "label": "Purchased Song 1",
+          "midiBytes": 4702,
+          "midiSha256": "17723bbafe86ee5f6f4ee4e1ea783aeb76bfcc9499647d669852129545069210",
+          "segmentSha256": "854504f2199ca53f242af683fc33b4e38bbef2db6bddae1d1d900fc7a63e5376",
+          "mode": "Original",
+          "effects": "Mega + echo",
+          "effectsFrom": "token",
+          "purchaseBlock": 17390228,
+          "edition": 0
+        },
+        {
+          "key": "purchased-1",
+          "label": "Purchased Song 2",
+          "midiBytes": 6811,
+          "midiSha256": "156a164192eeae835061261bf4f7329a0c0c1eb40742c96719f00a6d5a32ad1e",
+          "segmentSha256": "a48f34af353b0cd215055f94819ed7fa75b1bdcd7b20b4cf32cf3261072f6b83",
+          "mode": "Original",
+          "effects": "Mega + echo",
+          "effectsFrom": "token",
+          "purchaseBlock": 17390252,
+          "edition": 0
+        },
+        {
+          "key": "purchased-2",
+          "label": "Purchased Song 3",
+          "midiBytes": 4009,
+          "midiSha256": "1eb880e3d6841c67b9dea1480c559077fbb4f7168d7b1fbb6613ad7df600a920",
+          "segmentSha256": "233a42b263a7f5400117787e05c4ed4d4f803496d5990a16ffcf1b4421e46409",
+          "mode": "Original",
+          "effects": "Mega + echo",
+          "effectsFrom": "token",
+          "purchaseBlock": 17390272,
+          "edition": 0
+        }
+      ]
+    },
+    {
+      "slug": "woe-peak-minotaur",
+      "role": "Lower grade, Beast Mode",
+      "name": "\"Woe Peak\" Minotaur",
+      "tokenId": "25393433559843487302423503000384220863444752981348771839542211477686",
+      "speciesId": 30,
+      "genesis": false,
+      "visualEffects": "0",
+      "soundEffects": "0",
+      "cardGrade": "6",
+      "rank": "0",
+      "trackCount": 3,
+      "pageSha256": "83d4057d2aa42eed95d59f915524b30e3ac235fb5cb8656ecae5778f180465bf",
+      "cardSha256": "e88a8f9beacba3d998f898b1247e29eb77185cbb1008b9630d3a7cbff34ff36b",
+      "tracks": [
+        {
+          "key": "sound-check",
+          "label": "Sound Check",
+          "midiBytes": 499,
+          "midiSha256": "52cb11e3166edff51b1e36edb6cc44decf8edc7c2b0923cce7c236e6041fdc85",
+          "segmentSha256": "8458c8e43ddee7f7e63492a406c3afa1780500ff002c59e2d144a5e7fd5f9c1f",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "token"
+        },
+        {
+          "key": "species-song",
+          "label": "Species Song",
+          "midiBytes": 5464,
+          "midiSha256": "7a1b2d6b3404b11cb4baca090ceb0806fe269cc83f2f258f2bc00c2735ef4714",
+          "segmentSha256": "715923fa638aaed9b86724c9954f8f2018662343d8f75dd73d758cfa79f6c89b",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "King-controlled"
+        },
+        {
+          "key": "named-song",
+          "label": "Named Song",
+          "midiBytes": 5428,
+          "midiSha256": "d55bd429df0a83a0f7f7becebf35c97abb26063a012c9959d372b8dce07b7655",
+          "segmentSha256": "7ab1e7bffc8b3a346c79780f8647c4e4f1b09d2c33f730fcf77c0c3f1d8fac39",
+          "mode": "Original",
+          "effects": "Written",
+          "effectsFrom": "token"
+        }
+      ]
+    }
+  ]
+}

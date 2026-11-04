@@ -1,0 +1,62 @@
+Files in this folder
+
+page.txt and the track files are onchain output: each token's animation_url page
+and the renderer's music segments, read from Starknet mainnet. cards/*.svg are
+the tokens' metadata images. Official card and player outputs may be shared and
+cached. See src/components/beastMusicManifest.json for the capture block and
+hashes.
+
+The Beast pixels and animations are CC0. The original music supplied through
+Midi Fun retains its MIT terms.
+
+The player pages contain code from onchain-midi-player (Apache License 2.0, full
+text in LICENSE-onchain-midi-player.txt). Its NOTICE reads, verbatim:
+
+----------------------------------------------------------------------------
+onchain-midi-player
+Copyright 2026 Provable Games
+https://github.com/Provable-Games/onchain-midi-player
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product embeds a modified version of webaudio-tinysynth by
+Tatsuya Shinyagaito (g200kg), https://github.com/g200kg/webaudio-tinysynth,
+licensed under the Apache License, Version 2.0. The modified version is
+maintained as pocket-synth at https://github.com/Provable-Games/pocket-synth; see that
+repository's NOTICE file for the list of modifications.
+
+The player page also embeds a gunzip routine derived from fflate by
+Arjun Barrett, https://github.com/101arrowz/fflate, licensed under the
+MIT License (Copyright (c) 2026 Arjun Barrett; the full text is in
+tests/vendor/fflate-0.8.3.LICENSE and in the class's license()).
+
+The class also embeds the base64 encoder of game-components (the package
+game_components_encoding) by Provable Games,
+https://github.com/Provable-Games/game-components, licensed under the MIT
+License (Copyright (c) 2026 Provable Games; the full text is in
+tests/vendor/game-components.LICENSE and in the class's license()).
+----------------------------------------------------------------------------
+
+fflate, whose gunzip routine is embedded in the player pages:
+
+MIT License
+
+Copyright (c) 2026 Arjun Barrett
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
