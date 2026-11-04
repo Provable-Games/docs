@@ -2,196 +2,156 @@
 layout: docs
 ---
 
-# Beast Collectibles
+import { ContractTable } from "../../../components/ContractTable";
 
-In **Beast Mode** defeating uncollected named beasts in Loot Survivor will mint an NFT to your wallet. There is a fixed supply of **93,225** uniquely generated Beasts across **75 species** (1,243 variants per species) to be collected.
+# Musical Onchain Beasts
 
-<div style={{ display: 'flex', gap: '1rem', margin: '2rem 0', textAlign: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+Beast collectibles are **Musical Onchain Beasts** (symbol **MOB**) on Starknet: fully onchain cards with animated art, card grades and [music](/lootsurvivor/beasts/music). At launch the collection has 75 species and holds 86,157 Beasts: 75 Genesis and 86,082 airdropped from V2. It can hold at most 93,225 live Beasts, 1,243 per species including its Genesis.
 
-<div>
-  <img
-    src="/docs/lootsurvivor/warlock_regular_static.svg"
-    alt="Warlock Regular Static"
-    style={{
-      width: "200px",
-      height: "200px",
-      margin: "0 auto",
-      borderRadius: "12px",
-    }}
-  />
-  <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-    Regular Static
-  </p>
+<div className="not-prose my-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+  <figure className="m-0 text-center text-sm">
+    <img src="/docs/lootsurvivor/beast-music/cards/gloom-shadow-warlock.svg" alt={'"Gloom Shadow" Warlock, a Regular Beast'} loading="lazy" className="w-full" />
+    <figcaption className="mt-2 opacity-80">Regular</figcaption>
+  </figure>
+  <figure className="m-0 text-center text-sm">
+    <img src="/docs/lootsurvivor/beast-music/cards/wrath-bane-warlock.svg" alt={'"Wrath Bane" Warlock, a Shiny Beast'} loading="lazy" className="w-full" />
+    <figcaption className="mt-2 opacity-80">Shiny</figcaption>
+  </figure>
+  <figure className="m-0 text-center text-sm">
+    <img src="/docs/lootsurvivor/beast-music/cards/armageddon-growl-warlock.svg" alt={'"Armageddon Growl" Warlock, a MIDI Beast'} loading="lazy" className="w-full" />
+    <figcaption className="mt-2 opacity-80">MIDI</figcaption>
+  </figure>
+  <figure className="m-0 text-center text-sm">
+    <img src="/docs/lootsurvivor/beast-music/cards/dusk-root-warlock.svg" alt={'"Dusk Root" Warlock, a Shiny + MIDI Beast'} loading="lazy" className="w-full" />
+    <figcaption className="mt-2 opacity-80">Shiny + MIDI</figcaption>
+  </figure>
+  <figure className="m-0 text-center text-sm">
+    <img src="/docs/lootsurvivor/beast-music/cards/genesis-warlock.svg" alt="Genesis Warlock" loading="lazy" className="w-full" />
+    <figcaption className="mt-2 opacity-80">Genesis</figcaption>
+  </figure>
 </div>
 
-<div>
-  <img
-    src="/docs/lootsurvivor/warlock_shiny_static.svg"
-    alt="Warlock Shiny Static"
-    style={{
-      width: "200px",
-      height: "200px",
-      margin: "0 auto",
-    }}
-  />
-  <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-    Shiny Static
-  </p>
+## Earning a Beast
+
+Defeat a named Beast in [Beast Mode](/lootsurvivor/guide/getting-started). Named Beasts are level 19 or higher, and each is one identity: species + prefix + suffix, such as "Doom Shadow" Kraken.
+
+- **Preview:** when a collectable Beast appears, the game client shows the grade it would have.
+- **Claim:** after the kill, the client sends the claim for you as a separate onchain transaction. The NFT goes to the adventurer's owner.
+- **One at a time:** only one live token can exist per identity. Burning a Beast frees its identity, except Genesis, which can't be burned.
+
+See the [prefix reference](/lootsurvivor/loot/prefixes) for every prefix and suffix.
+
+## SURVIVOR Reward
+
+The first collection of an identity pays SURVIVOR by tier:
+
+| Tier | SURVIVOR |
+| --- | --- |
+| T1 | 14 |
+| T2 | 12 |
+| T3 | 10 |
+| T4 | 8 |
+| T5 | 6 |
+
+A later remint of the same identity pays nothing. A kill of a remapped species pays nothing.
+
+## Migrating from V2
+
+Every ordinary V2 Beast was airdropped to its V2 owner: 86,082 in total, keeping their original dates and rarity. The 75 Genesis Beasts went to the designated recipient. V2 minting is closed.
+
+## Rarity
+
+These names are the labels used in these docs. Metadata only shows `Visual Effects: 0–3`.
+
+| Name | Preset | Fresh mint odds | Art and rim | Music page | Sound effect |
+| --- | --- | --- | --- | --- | --- |
+| **Regular** | 0 | 89.75% | Regular GIF, gold rim, tier logo | Standard | Written |
+| **Shiny** | 1 | 5% | Shiny GIF, rainbow rim and logo | Standard | Mega |
+| **MIDI** | 2 | 5% | Regular GIF, gold rim, tier logo | Notes background | Echo |
+| **Shiny + MIDI** | 3 | 0.25% | Shiny GIF, rainbow rim and logo | Notes background | Mega + echo |
+
+Every Original is animated. MIDI means the piano-roll notes drawn behind the art on the [music page](/lootsurvivor/beasts/music), so a MIDI card looks the same as a Regular card in a marketplace image. Airdropped Beasts keep their V2 rarity.
+
+## Card Grade
+
+Every Beast has a condition, like a printed trading card, and a **Card Grade** from 1 to 10 derived from it. The defects are visible on the card: centering, hickeys, voids, roller marks, and edge and corner chips. Grade 10 means no defects with centering of 55/45 or better.
+
+<div className="not-prose my-6 grid grid-cols-1 items-center gap-4 sm:grid-cols-[200px_1fr]">
+  <img src="/docs/lootsurvivor/beast-music/cards/woe-peak-minotaur.svg" alt={'"Woe Peak" Minotaur, grade 6, with moderate roller marks in the art'} loading="lazy" className="mx-auto w-[200px]" />
+  <p className="m-0 text-sm opacity-80">"Woe Peak" Minotaur, claimed in Beast Mode. Grade 6: moderate roller marks run down the left of the art.</p>
 </div>
 
-<div>
-  <img
-    src="/docs/lootsurvivor/warlock_regular_animated.svg"
-    alt="Warlock Regular Animated"
-    style={{
-      width: "200px",
-      height: "200px",
-      margin: "0 auto",
-    }}
-  />
-  <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-    Regular Animated
-  </p>
-</div>
+| Source | 10 | 9 | 8 | 7 | 6 | 5 |
+| --- | --- | --- | --- | --- | --- | --- |
+| **Beast Mode** | 10% | 15% | 25% | 25% | 20% | 5% |
+| **Airdrop** | 20% | 30% | 50% | - | - | - |
+| **Genesis** | Always | - | - | - | - | - |
 
-<div>
-  <img
-    src="/docs/lootsurvivor/warlock_shiny_animated.svg"
-    alt="Warlock Shiny Animated"
-    style={{
-      width: "200px",
-      height: "200px",
-      margin: "0 auto",
-    }}
-  />
-  <p style={{ fontSize: "0.9rem", margin: "0", opacity: "0.9" }}>
-    Shiny Animated
-  </p>
-</div>
+### How to read the traits
 
-</div>
+| Trait | Values | Meaning |
+| --- | --- | --- |
+| `Card Grade` | 1–10 | The overall grade |
+| `Horizontal Centering`, `Vertical Centering` | e.g. `56.725/43.275` | Border ratio, larger side first |
+| `Horizontal Shift`, `Vertical Shift` | `Centered`, `Left`/`Right`, `Up`/`Down` | Which way the print moved |
+| `Hickeys` | 0–3 | Number of hickeys |
+| `Voids` | `None`, `Low`, `Medium`, `High` | Severity of ink voids |
+| `Roller Marks`, `Edge Chips`, `Corner Chips` | `None`, `Light`, `Moderate`, `Heavy` | Severity of each defect |
+| `Hickey Location`, `Void Location`, `Roller Location` | `None`, `Outside Art`, `In Art` | Where the defect sits |
 
-## Beast Mode NFT System
+## Rankings and the King
 
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '2rem 0', lineHeight: '1.6' }}>
+Each species is ranked by power, then health, then earliest mint block. Rankings are updated separately from minting, and anyone can trigger an update. A new Beast shows Rank 0 until the next update. Genesis is always Rank 0.
 
-**NFT Minting:** Defeating uncollected named beasts automatically mints collectible NFTs to your wallet
+The **King** is the species' current Rank 1 Beast. Its owner controls the [Species Song's sound mode and effects](/lootsurvivor/beasts/music#who-controls-what).
 
-**Beast Mode Features:**
+## Metadata and Provenance
 
-- **Named Beast Focus**: Only special named beasts (Level 19+) mint NFTs
-- **First Victory Bonus**: NFTs only mint on first defeat of each named beast
-- **Automatic Collection**: No manual claiming - NFTs appear directly in your wallet
-- **Permanent Ownership**: Each NFT represents a unique named beast victory
+Art and metadata are generated by the contracts. Alongside the grade and rarity traits, each token reports current onchain state:
 
-> **Collect Them All:** Build your personal gallery of defeated legendary named beasts!
+| Trait | Meaning |
+| --- | --- |
+| `Beast`, `Prefix`, `Suffix`, `Type`, `Tier` | Identity |
+| `Level`, `Health`, `Power`, `Rank` | Combat stats and current rank |
+| `Adventurers Killed` | Adventurers this Beast has killed |
+| `Last Killed By` | The adventurer who last killed this Beast |
+| `Minted`, `Mint Block` | When it was minted, as a timestamp and block |
+| `Genesis` | 1 for a Genesis Beast, otherwise 0 |
 
-</div>
+## Autographs
 
-## Collection Overview
-
-<div style={{ background: '#0f172a', padding: '1.25rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.7', border: '1px solid #334155' }}>
-
-- **Fully onchain artwork + metadata**: Images and JSON are generated and rendered directly from smart contracts
-- **Born onchain**: Beasts are earned in Loot Survivor using verifiable randomness; every step is recorded onchain
-- **Battle‑ready NFTs**: Each Beast mints with combat stats (level, health), type, and tier compatible with gameplay
-- **Live ranking within species**: Each species tracks ranks #1–#1,243 as they mint; when complete, a King Beast is crowned
-- **Credibly neutral traits**: Onchain state includes defeat timestamp and the last Adventurer to slay that Beast
-
-</div>
-
-### 🎨 NFT Visual Rarity & Properties
-
-<div style={{ background: '#1a1a1a', padding: '1.5rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.8' }}>
-
-<div style={{ marginBottom: '1.5rem' }}>
-
-**NFT Visual Rarities:**
-
-</div>
-
-<div style={{ marginBottom: '1rem' }}>
-
-| Visual Type          | Rarity Chance | Description                | Collection Value |
-| -------------------- | ------------- | -------------------------- | ---------------- |
-| **Standard**         | 89.75%        | Regular static beast image | Base             |
-| **Animated**         | 5%            | Moving/animated beast NFT  | Rare             |
-| **Shiny**            | 5%            | Shimmering visual effects  | Rare             |
-| **Animated + Shiny** | 0.25%         | Both animated AND shiny    | Ultra Rare       |
-
-</div>
-
-<div style={{ marginBottom: '1.5rem' }}>
-
-**NFT Metadata (All Beasts Include):**
-
-</div>
-
-<div style={{ marginBottom: '0' }}>
-
-- **Level & Health**: Combat stats encoded at mint
-- **Tier & Type**: T1–T5 tier and one of Magical, Hunter, Brute
-- **Name & Prefix**: Base species name plus optional prefix (e.g., "Doom Kraken")
-- **Defeat Timestamp**: Onchain record of when the Beast was defeated
-- **Provenance Fields**: Credibly neutral traits like last slayer enable onchain leaderboards and history
-
-</div>
-
-</div>
-
-## NFT Minting Requirements
-
-<div style={{ background: '#2a2a1a', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eab308', margin: '1rem 0', lineHeight: '1.6' }}>
-
-### Named Beast NFT Mechanics
-
-**Level Requirement:** Only beasts level 19+ can gain special names and be collected  
-**Name Structure:** [Prefix] [Suffix] [Beast Name] = Unique NFT  
-**Example:** "Doom Shadow" Kraken and "Demon Moon" Kraken mint as separate collectibles
-
-### NFT Minting Rules
-
-**First Victory Only:** Each named beast can only mint one NFT per wallet  
-**Automatic Process:** No manual claiming - NFT appears immediately after victory  
-**Unique Metadata:** Each NFT contains beast stats, prefix, and victory timestamp  
-**Permanent Record:** NFTs serve as proof of your legendary victories
-
-> **Complete Reference:** Visit the loot section for the full categorized list of all 69 prefixes!
-
-</div>
+A holder can ask a registered signer for an autograph, and the signer approves it onchain. A completed autograph appears on the card and stays with it through transfers.
 
 ## Tier Logo Colors
 
-<div style={{ background: '#1a1a1a', padding: '1rem', borderRadius: '8px', margin: '1rem 0', lineHeight: '1.6' }}>
+| Tier | Logo |
+| --- | --- |
+| T1 | Orange |
+| T2 | Purple |
+| T3 | Blue |
+| T4 | Green |
+| T5 | White |
 
-- **Tier 1 (Legendary)**: Orange logo — most powerful
-- **Tier 2 (Epic)**: Purple logo
-- **Tier 3 (Rare)**: Blue logo
-- **Tier 4 (Uncommon)**: Green logo
-- **Tier 5 (Common)**: White logo
+Shiny and Shiny + MIDI Beasts have a rainbow logo instead.
 
-</div>
+## Contracts
 
-## Contract & Source Code
+<ContractTable
+  contracts={[
+    { name: "Beasts NFT (MOB)", address: "0xf739e402e52830a736335a0f47d58ec78ba067443c9c6930da182eab2ff8b0" },
+    { name: "Beast Registry", address: "0x140e8868c7c9277b8b864d78efb5172a42d41e0b501329b043db7d2cb3bc8b3" },
+    { name: "Beast Mode", address: "0x075ca042091b8e1418d0510b8d6519a89222ef5f7bbceb0ff760bb3c62c98174" },
+    { name: "Beasts V2 (historical)", address: "0x046da8955829adf2bda310099a0063451923f02e648cf25a1203aac6335cf0e4" },
+  ]}
+/>
 
-- [Mainnet Contract](https://voyager.online/nft-contract/0x046da8955829adf2bda310099a0063451923f02e648cf25a1203aac6335cf0e4)
-- [Source Code](https://github.com/Provable-Games/beasts/tree/v1.0.1)
+## Ownership
 
-## NFT Ownership Benefits
-
-### Digital Asset Value
-
-- **True Ownership**: NFTs belong to you, not the game
-- **Transferable Assets**: Trade or sell your named beast NFTs
-- **Provable Rarity**: Onchain verification of NFT scarcity
-- **Permanent Record**: Victory achievements stored forever on Starknet
-
----
-
-_The Beasts are a generative art collection where the algorithm is the decisions of the adventurers in the Loot Survivor dungeon._
+Beasts are transferable ERC-721 tokens. Original species carry a 5% royalty to the Survivor DAO, though not every marketplace honors royalties.
 
 ## See Also
 
+- [Beast Music](/lootsurvivor/beasts/music) - Tracks, effects and sound modes, with a player
 - [Beast Overview](/lootsurvivor/beasts) - Complete beast guide and combat types
 - [Combat Mechanics](/lootsurvivor/combat) - Damage calculations and combat system
 - [Battle Guide](/lootsurvivor/guide/battle) - Tactical combat strategies
