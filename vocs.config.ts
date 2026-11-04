@@ -182,37 +182,6 @@ export default defineConfig({
         ],
       },
     ],
-    // Summit sidebar
-    "/summit": [
-      {
-        text: "Summit",
-        items: [
-          { text: "Overview", link: "/summit" },
-        ],
-      },
-      {
-        text: "Gameplay",
-        items: [
-          { text: "Battle System", link: "/summit/battle-system" },
-          { text: "Beast Upgrades", link: "/summit/beast-upgrades" },
-          { text: "Consumables", link: "/summit/consumables" },
-        ],
-      },
-      {
-        text: "Economy",
-        items: [
-          { text: "Rewards", link: "/summit/rewards" },
-          { text: "Quests", link: "/summit/quests" },
-        ],
-      },
-      {
-        text: "Reference",
-        items: [
-          { text: "FAQ", link: "/summit/faq" },
-          { text: "Disclaimers", link: "/summit/disclaimers" },
-        ],
-      },
-    ],
     // Loot Survivor sidebar
     "/lootsurvivor": [
       {
