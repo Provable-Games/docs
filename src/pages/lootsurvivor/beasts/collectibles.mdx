@@ -2,48 +2,28 @@
 layout: docs
 ---
 
+import { BeastRarityCards } from "../../../components/BeastRarityCards";
 import { ContractTable } from "../../../components/ContractTable";
 
 # Musical Onchain Beasts
 
-Beast collectibles are **Musical Onchain Beasts** (symbol **MOB**) on Starknet: fully onchain cards with animated art, card grades and [music](/lootsurvivor/beasts/music). At launch the collection has 75 species and holds 86,157 Beasts: 75 Genesis and 86,082 airdropped from V2. Those 75 Original species can hold at most 93,225 live Beasts, 1,243 per species including its Genesis.
+Beast collectibles are **Musical Onchain Beasts** (symbol **MOB**) on Starknet: fully onchain cards with animated art, card grades and [music](/lootsurvivor/beasts/music). There are more than 86,000 Beasts across 75 species, and those species can hold at most 93,225 live Beasts, 1,243 per species including its Genesis.
 
-<div className="not-prose my-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-  <figure className="m-0 text-center text-sm">
-    <img src="/docs/lootsurvivor/beast-music/cards/gloom-shadow-warlock.svg" alt={'"Gloom Shadow" Warlock, a Regular Beast'} loading="lazy" className="w-full" />
-    <figcaption className="mt-2 opacity-80">Regular</figcaption>
-  </figure>
-  <figure className="m-0 text-center text-sm">
-    <img src="/docs/lootsurvivor/beast-music/cards/wrath-bane-warlock.svg" alt={'"Wrath Bane" Warlock, a Shiny Beast'} loading="lazy" className="w-full" />
-    <figcaption className="mt-2 opacity-80">Shiny</figcaption>
-  </figure>
-  <figure className="m-0 text-center text-sm">
-    <img src="/docs/lootsurvivor/beast-music/cards/armageddon-growl-warlock.svg" alt={'"Armageddon Growl" Warlock, a MIDI Beast'} loading="lazy" className="w-full" />
-    <figcaption className="mt-2 opacity-80">MIDI</figcaption>
-  </figure>
-  <figure className="m-0 text-center text-sm">
-    <img src="/docs/lootsurvivor/beast-music/cards/dusk-root-warlock.svg" alt={'"Dusk Root" Warlock, a Shiny + MIDI Beast'} loading="lazy" className="w-full" />
-    <figcaption className="mt-2 opacity-80">Shiny + MIDI</figcaption>
-  </figure>
-  <figure className="m-0 text-center text-sm">
-    <img src="/docs/lootsurvivor/beast-music/cards/genesis-warlock.svg" alt="Genesis Warlock" loading="lazy" className="w-full" />
-    <figcaption className="mt-2 opacity-80">Genesis</figcaption>
-  </figure>
-</div>
+<BeastRarityCards />
 
 ## Earning a Beast
 
-Defeat a named Beast in [Beast Mode](/lootsurvivor/guide/getting-started). Named Beasts are level 19 or higher, and each is one identity: species + prefix + suffix, such as "Doom Shadow" Kraken.
+Be the first to defeat a named Beast in [Beast Mode](/lootsurvivor/guide/getting-started).
 
 - **Preview:** when a collectable Beast appears, the game client shows the grade it would have.
 - **Claim:** after the kill, the client sends the claim for you as a separate onchain transaction. The NFT goes to the adventurer's owner.
-- **One at a time:** only one live token can exist per identity, so a Beast that's already collected can't be claimed again. Burning a Beast frees its identity, except Genesis, which can't be burned.
+- **One at a time:** only one live token can exist per species, prefix and suffix, so a Beast that's already collected can't be claimed again. Burning a Beast frees that name, except Genesis, which can't be burned.
 
 See the [prefix reference](/lootsurvivor/loot/prefixes) for every prefix and suffix.
 
-## SURVIVOR Reward
+## [Survivor Token](/lootsurvivor/token) Reward
 
-The first collection of an identity pays SURVIVOR by tier:
+The first collection of a species, prefix and suffix pays SURVIVOR by tier:
 
 | Tier | SURVIVOR |
 | --- | --- |
@@ -53,24 +33,20 @@ The first collection of an identity pays SURVIVOR by tier:
 | T4 | 8 |
 | T5 | 6 |
 
-A later remint of the same identity pays nothing. A kill of a remapped species pays nothing.
-
-## Migrating from V2
-
-Every ordinary V2 Beast was airdropped to its V2 owner: 86,082 in total, keeping their original dates and rarity. The 75 Genesis Beasts went to the designated recipient. V2 minting is closed.
+A later remint of the same Beast pays nothing. A kill of a remapped species pays nothing.
 
 ## Rarity
 
 These names are the labels used in these docs. Metadata only shows `Visual Effects: 0–3`.
 
-| Name | Preset | Fresh mint odds | Art and rim | Music page | Sound effect |
+| Name | Preset | Odds | Art and rim | Music page | Sound effect |
 | --- | --- | --- | --- | --- | --- |
 | **Regular** | 0 | 89.75% | Regular GIF, gold rim, tier logo | Standard | Written |
 | **Shiny** | 1 | 5% | Shiny GIF, rainbow rim and logo | Standard | Mega |
 | **MIDI** | 2 | 5% | Regular GIF, gold rim, tier logo | Notes background | Echo |
 | **Shiny + MIDI** | 3 | 0.25% | Shiny GIF, rainbow rim and logo | Notes background | Mega + echo |
 
-Every Original is animated. MIDI means the piano-roll notes drawn behind the art on the [music page](/lootsurvivor/beasts/music), so a MIDI card looks the same as a Regular card in a marketplace image. Airdropped Beasts keep their V2 rarity.
+Every Original is animated. MIDI means the piano-roll notes drawn behind the art in the token's [music player](/lootsurvivor/beasts/music), as in the examples above. Marketplace images never show them, so a MIDI card looks the same as a Regular card there.
 
 ## Card Grade
 
@@ -81,11 +57,16 @@ Every Beast has a condition, like a printed trading card, and a **Card Grade** f
   <p className="m-0 text-sm opacity-80">"Woe Peak" Minotaur, claimed in Beast Mode. Grade 6: moderate roller marks run down the left of the art.</p>
 </div>
 
-| Source | 10 | 9 | 8 | 7 | 6 | 5 |
-| --- | --- | --- | --- | --- | --- | --- |
-| **Beast Mode** | 10% | 15% | 25% | 25% | 20% | 5% |
-| **Airdrop** | 20% | 30% | 50% | - | - | - |
-| **Genesis** | Always | - | - | - | - | - |
+Odds for Beasts earned in Beast Mode:
+
+| Grade | Odds |
+| --- | --- |
+| 10 | 10% |
+| 9 | 15% |
+| 8 | 25% |
+| 7 | 25% |
+| 6 | 20% |
+| 5 | 5% |
 
 ### How to read the traits
 
@@ -141,13 +122,12 @@ Shiny and Shiny + MIDI Beasts have a rainbow logo instead.
     { name: "Beasts NFT (MOB)", address: "0xf739e402e52830a736335a0f47d58ec78ba067443c9c6930da182eab2ff8b0" },
     { name: "Beast Registry", address: "0x140e8868c7c9277b8b864d78efb5172a42d41e0b501329b043db7d2cb3bc8b3" },
     { name: "Beast Mode", address: "0x075ca042091b8e1418d0510b8d6519a89222ef5f7bbceb0ff760bb3c62c98174" },
-    { name: "Beasts V2 (historical)", address: "0x046da8955829adf2bda310099a0063451923f02e648cf25a1203aac6335cf0e4" },
   ]}
 />
 
 ## Ownership
 
-Beasts are transferable ERC-721 tokens. Original species carry a 5% royalty to the Survivor DAO, though not every marketplace honors royalties.
+Beasts are transferable ERC-721 tokens. Original species carry a 5% royalty to the Survivor DAO.
 
 ## See Also
 
