@@ -1,10 +1,9 @@
 Files in this folder
 
-page.txt and the track files are onchain output: each token's animation_url page
-and the renderer's music segments, read from Starknet mainnet. cards/*.svg are
-the tokens' metadata images. Official card and player outputs may be shared and
-cached. See src/components/beastMusicManifest.json for the capture block and
-hashes.
+Everything here is onchain output read from Starknet mainnet: the tokens' metadata
+images (cards/, and the parts in card-parts.json), their animation_url player pages
+(the shell files plus tokens/), and the renderer's music segments (settings/, midi/).
+Official card and player outputs may be shared and cached.
 
 The Beast pixels and animations are CC0. The original music supplied through
 Midi Fun retains its MIT terms.
