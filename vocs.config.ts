@@ -243,12 +243,17 @@ export default defineConfig({
         ],
       },
       {
-        text: "Loot & Beasts",
+        text: "Loot",
         items: [
-          { text: "Loot", link: "/lootsurvivor/loot" },
+          { text: "Overview", link: "/lootsurvivor/loot" },
           { text: "Suffix Boosts", link: "/lootsurvivor/loot/suffix-boost" },
           { text: "Jewelry", link: "/lootsurvivor/loot/jewelry" },
-          { text: "Beasts", link: "/lootsurvivor/beasts" },
+        ],
+      },
+      {
+        text: "Beasts",
+        items: [
+          { text: "Overview", link: "/lootsurvivor/beasts" },
           { text: "Collectibles", link: "/lootsurvivor/beasts/collectibles" },
           { text: "Music", link: "/lootsurvivor/beasts/music" },
           { text: "Wanted Beasts", link: "/lootsurvivor/beasts/wanted-beasts" },
