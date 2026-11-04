@@ -250,6 +250,7 @@ export default defineConfig({
           { text: "Jewelry", link: "/lootsurvivor/loot/jewelry" },
           { text: "Beasts", link: "/lootsurvivor/beasts" },
           { text: "Collectibles", link: "/lootsurvivor/beasts/collectibles" },
+          { text: "Music", link: "/lootsurvivor/beasts/music" },
           { text: "Wanted Beasts", link: "/lootsurvivor/beasts/wanted-beasts" },
         ],
       },
