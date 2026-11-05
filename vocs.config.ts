@@ -237,7 +237,6 @@ export default defineConfig({
           { text: "Eligible Collections", link: "/lootsurvivor/token/eligible-collections" },
           { text: "Golden Token", link: "/lootsurvivor/golden-token" },
           { text: "Skull Token", link: "/lootsurvivor/skull-token" },
-          { text: "Corpse Token", link: "/lootsurvivor/corpse-token" },
         ],
       },
       {
