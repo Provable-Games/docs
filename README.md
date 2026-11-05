@@ -37,7 +37,6 @@ vocs.config.ts  # Site configuration and sidebar navigation
 - **[Loot Survivor](/lootsurvivor)** - Onchain survival game with combat, loot, and beasts
 - **[Dark Shuffle](/darkshuffle)** - Onchain card game with drafting and battles
 - **[Budokan](/budokan)** - Tournament platform for onchain games
-- **[Summit](/summit)** - Beast battle game with upgrades and consumables
 - **[Embeddable Game Standard](/embeddable-game-standard)** - Standard for embedding onchain games
 
 ## Contributing

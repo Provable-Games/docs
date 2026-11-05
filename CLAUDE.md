@@ -24,7 +24,6 @@ src/
     budokan/       # Budokan tournament platform docs
     darkshuffle/   # Dark Shuffle card game docs
     lootsurvivor/  # Loot Survivor docs
-    summit/        # Summit docs
     embeddable-game-standard/  # Embeddable Game Standard docs
     _root.css      # Global styles: Tailwind, fonts, Vocs theme variables
   components/      # React components (Button, ContractTable, ContractLink, GameCard, Homepage)
