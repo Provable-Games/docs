@@ -16,13 +16,19 @@ const CARDS = [
 
 /**
  * Every card is the token's own player page. MIDI cards draw the Named Song's notes behind the art
- * before anything plays. The players ignore pointer input until picked, and picking one reloads the
- * previous one, so at most one can make a sound.
+ * before anything plays. The players are inert until picked, so neither pointer nor keyboard can
+ * reach them, and picking one reloads the previous one, so at most one can make a sound.
  */
 function PlayerCard({ slug, alt, picked, resets, onPick }: { slug: string; alt: string; picked: boolean; resets: number; onPick: () => void }) {
   const [srcDoc, setSrcDoc] = useState<string | null>(null);
   const [scale, setScale] = useState<number | null>(null);
   const frame = useRef<HTMLDivElement>(null);
+  const player = useRef<HTMLIFrameElement>(null);
+
+  // The selection button disappears once picked, so keep keyboard focus on this player.
+  useEffect(() => {
+    if (picked) player.current?.focus();
+  }, [picked]);
 
   // Below about 250px wide the player page drops its play icon off-centre, so lay it out at its
   // full size and scale the whole page down to fit the card.
@@ -56,12 +62,13 @@ function PlayerCard({ slug, alt, picked, resets, onPick }: { slug: string; alt: 
           sandbox="allow-scripts"
           referrerPolicy="no-referrer"
           className="absolute top-0 left-0 border-0"
+          inert={!picked}
+          ref={player}
           style={{
             width: PLAYER_WIDTH,
             height: PLAYER_HEIGHT,
             transform: `scale(${scale})`,
             transformOrigin: "0 0",
-            pointerEvents: picked ? "auto" : "none",
           }}
         />
       )}
