@@ -1,0 +1,92 @@
+---
+layout: docs
+---
+
+import { BeastMusicPlayer } from "../../../components/BeastMusicPlayer";
+import { ContractTable } from "../../../components/ContractTable";
+
+# Beast Music
+
+Every Beast's music is generated onchain, and its metadata carries a playable page: the token's `animation_url` is a self-contained player with the card, the synth and one track. Open it on a marketplace or wallet that supports `animation_url` and press play.
+
+## Listen
+
+Pick a Beast, a rarity and a track, then press play on the card. Each option is a real token with one of the four [rarities](/lootsurvivor/beasts/collectibles#rarity), playing in that token's own onchain player page, and only one track plays at a time. On MIDI and Shiny + MIDI Beasts the page draws the song's notes behind the art.
+
+<BeastMusicPlayer />
+
+**Original** is SoundMode Original on mainnet: the music as the track was minted.
+
+**Live** is SoundMode Live: the Beast's Named Song as it drifts with the chain right now. Pressing **Read Live from mainnet** composes it for you without changing anything about the Beast, and needs no wallet or signature. See [Sound modes](#sound-modes).
+
+## Tracks
+
+| Track | Who has it | How it starts | Effects |
+| --- | --- | --- | --- |
+| **Sound Check** | Every Beast; the species' short test piece | Selected by default, Original mode | The token's |
+| **Species Song** | Every Beast; shared across the species | Original mode | Set by the King |
+| **Named Song** | Named Beasts only, not Genesis; derived from the Beast's prefix and suffix | Original mode | The token's |
+| **Purchased Songs and Editions** | Any Beast, one track per purchase | Songs start in Original mode, Editions in Live | The token's |
+
+A Beast starts with three tracks. A Genesis Beast has two, because it has no Named Song. The traits `Track Count`, `Shared Tracks`, `Named Tracks` and `Purchased Tracks` show its catalogue, and `Active Track` and `Sound Mode` show what `animation_url` plays right now.
+
+## Effects
+
+A Beast's rarity sets its `Sound Effects` preset, which changes how a track is performed. The notes as written stay the same underneath.
+
+| Preset | Name | What changes |
+| --- | --- | --- |
+| 0 | **Written** | Plays as written |
+| 1 | **Mega** | Mega lead sound, with the lead doubled an octave up; faster, louder |
+| 2 | **Echo** | Lead repeated a dotted eighth later, half as loud; faster, louder |
+| 3 | **Mega + echo** | Both, at the fastest and loudest settings |
+
+Sound Checks, Named Songs and purchased tracks use the token's preset. Sound Checks skip the echo itself, but its preset still changes their tempo, loudness and articulation. Species Songs ignore the token's preset and use the one the King sets for that song, so every Beast of the species hears the same thing.
+
+## Sound modes
+
+Each track plays in one of three sound modes.
+
+| Sound mode | What you hear |
+| --- | --- |
+| **Original** | The composition as written. It never changes with the chain. |
+| **Live** | The composition drifting with the chain. It follows day, week and month block hashes, reading the chain as of ten blocks ago. |
+| **AtBlock** | A replay of the drift at one chosen earlier block. It fixes the drift, not a recording: the current effects and composer still apply. |
+
+Sound Checks never drift, so their mode makes no audible difference. A freshly bought track can't play until ten blocks after its purchase.
+
+## Who controls what
+
+| Choice | Who decides |
+| --- | --- |
+| Which track a Beast plays | Its current owner |
+| Sound mode of its Sound Check, Named Song and purchased tracks | Its current owner |
+| Sound mode and effects of each Species Song | The owner of the species' [King](/lootsurvivor/beasts/collectibles#rankings-and-the-king) |
+| Publishing shared tracks and species defaults | The species owner |
+
+Marketplace approvals don't grant any of these. Settings stay with the token when it's transferred, and King settings stay in place when a new King takes over.
+
+## Buying tracks
+
+Anyone can buy a track for any existing Beast. Each purchase burns exactly 1 [SKULL](/lootsurvivor/skull-token) from the buyer and adds one track. It doesn't change what the Beast plays: the owner selects a new track separately.
+
+Editions change every 30 days. A purchase in the first edition is a Song, and later editions sell that edition's style track.
+
+## Contracts
+
+The Sound Manager can change for a species, so integrations should read it from the registry with `get_sound_manager(species_id)`.
+
+<ContractTable
+  contracts={[
+    { name: "Sound Manager", address: "0x1bbece5870dabbbec40efb73457848fd5425320600a42684aa23271c43abe8b" },
+    { name: "Beast Registry", address: "0x140e8868c7c9277b8b864d78efb5172a42d41e0b501329b043db7d2cb3bc8b3" },
+    { name: "SKULL", address: "0x2798a8dc91bf1ef502cf8710751d26128fdf8e9d0823522fc08632ecc9172e8" },
+  ]}
+/>
+
+Mainnet runs onchain-midi-player v0.12.0, pocket-synth v2.1.2 and Midi Fun v1.1.0. Licence notices for the player pages are in the <a href="/docs/lootsurvivor/beast-music/NOTICE.txt">notice file</a>. Midi Fun is by Casey Wescott.
+
+## See Also
+
+- [Beast Collectibles](/lootsurvivor/beasts/collectibles) - Rarity, grades, rankings and contracts
+- [Skull Token](/lootsurvivor/skull-token) - How SKULL is earned and spent

@@ -6,42 +6,45 @@
 
 ## Overview
 
-$SKULL is an ERC20 token on Starknet that represents beast kills in Loot Survivor, created alongside [Summit](/summit). Every time one of your beasts kills an adventurer, you can claim 1 $SKULL. Currently, the only known use case for $SKULL is upgrading beasts in [Summit](/summit/beast-upgrades).
+$SKULL is an ERC20 token on Starknet that represents beast kills in Loot Survivor, created alongside [Summit](/summit). Each verified kill credited to your Beast lets you claim 1 $SKULL. You can spend it on [music tracks](/lootsurvivor/beasts/music#buying-tracks) for any Beast.
 
 ### At a Glance
 
 - **Standard**: ERC20 on Starknet
 - **Supply**: Uncapped — minted continuously as adventurers are killed in Loot Survivor
-- **Earning**: 1 $SKULL per adventurer killed by your beast
-- **Current Use**: Beast upgrades in [Summit](/summit/beast-upgrades)
-- **Contract Address**: TBA
+- **Earning**: 1 $SKULL per verified kill credited to your Beast
+- **Uses**: [Beast music tracks](/lootsurvivor/beasts/music#buying-tracks) (each burns exactly 1 $SKULL)
+- **Contract Address**: `0x2798a8dc91bf1ef502cf8710751d26128fdf8e9d0823522fc08632ecc9172e8`
+- **Legacy V1 Address**: `0x01c3c8284d7eed443b42f47e764032a56eaf50a9079d67993b633930e3689814`
 
 ## How to Earn $SKULL
 
 $SKULL tokens are earned exclusively through [Loot Survivor](/lootsurvivor) gameplay:
 
-- Own a beast NFT
-- When an adventurer encounters your beast and is killed, you can claim **1 $SKULL**
-- Tokens accumulate across all your beasts — every kill counts
+- Own a Beast of an eligible species (Genesis Beasts can't claim)
+- When your Beast kills an adventurer and the kill is credited through its dungeon's verifier, you can claim **1 $SKULL**
+- Unclaimed $SKULL stays with the Beast's identity, so it moves with the NFT
 
 The more beasts you own and the stronger they are (tier 1 beasts kill most adventurers), the more adventurers they'll defeat and the more $SKULL you'll accumulate.
 
-### Retroactive Claims
+### What Counts
 
-Beasts that haven't been minted yet may have already slain adventurers in Loot Survivor. Once you mint a beast, you can claim $SKULL for all of its past kills — meaning a newly minted beast could come with multiple $SKULL ready to claim.
+$SKULL V2 pays only for verified kills credited to the Beast on the Beasts NFT. Death Mountain history isn't counted, because SKULL V1 already paid for it. A newly minted identity starts with zero credited kills, though an eligible earlier run can be credited after minting if a trusted verifier confirms it. Burning and reminting an identity keeps its credited kills and what it has already claimed.
+
+V1 $SKULL can be converted 1:1 into V2 through the contract's `convert` function.
 
 ## What $SKULL Is Used For
 
-$SKULL is currently used in [Summit](/summit) to upgrade your beasts with attributes and abilities. See the [Beast Upgrades](/summit/beast-upgrades) guide for full details on available upgrades and costs.
+- **Music tracks:** anyone can buy a track for any Beast. Each purchase burns exactly 1 $SKULL. See [Buying tracks](/lootsurvivor/beasts/music#buying-tracks).
+- **Summit:** [beast upgrades](/summit/beast-upgrades) spend SKULL. The [Summit overview](/summit) lists the contract it uses.
 
 ## Token Economics
 
 $SKULL creates a natural connection between Loot Survivor and Summit:
 
-1. **Collect beasts** → Own beast NFTs through Loot Survivor gameplay or the [marketplace](https://beast-dex.vercel.app/marketplace)
-2. **Beasts kill adventurers** → Earn $SKULL from kills in Loot Survivor
-3. **Spend $SKULL in Summit** → Upgrade beasts → Compete for $SURVIVOR rewards
-4. **Stronger beasts in Summit** → More $SURVIVOR earned → Greater ecosystem participation
+1. **Collect beasts** → Own Beasts through [Loot Survivor gameplay](/lootsurvivor/beasts/collectibles) or a secondary market
+2. **Beasts kill adventurers** → Earn $SKULL from verified kills in Loot Survivor
+3. **Spend $SKULL** → Buy music tracks, or upgrade beasts in Summit with the contract it lists
 
 Since $SKULL has no supply cap, the token continues to be minted as long as Loot Survivor is played. This means the upgrade economy grows alongside the player base — more players means more kills, more $SKULL, and more competition in Summit.
 
